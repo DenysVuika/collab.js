@@ -1,0 +1,15 @@
+body {
+  padding-top: 60px;
+  padding-bottom: 40px;
+  /*font: 14px "Lucida Grande", Helvetica, Arial, sans-serif;*/
+}
+
+/*
+a {
+  color: #00B7FF;
+}
+*/
+
+.sidebar-nav {
+  padding: 9px 0;
+}

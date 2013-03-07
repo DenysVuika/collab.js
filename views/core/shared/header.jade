@@ -1,0 +1,58 @@
+div.navbar.navbar-fixed-top
+    div.navbar-inner
+      div.container-fluid
+        a.btn.btn-navbar(data-toggle="collapse", data-target=".nav-collapse")
+          span.icon-bar
+          span.icon-bar
+          span.icon-bar
+        a.brand(href='/')= settings.brand
+        div.nav-collapse.collapse
+          ul.nav.pull-right
+            li.dropdown
+              a.dropdown-toggle(href='#', data-toggle='dropdown', style='padding-bottom:5px')
+                img(src='/images/icon-settings.png',
+                  style='margin:0;padding:0;max-height:24px;max-width:24px')
+                b.caret
+              ul.dropdown-menu
+                if (user)
+                  li 
+                    a(href='/account') Edit account
+                  li.divider
+                  li
+                    a(href='/help') Help
+                  li
+                    a(href='#') About
+                  li.divider
+                  li 
+                    a(href='/logout') Logout
+                else
+                  li
+                    a(href='/login') Sign in
+                  li.divider
+                  li
+                    a(href='/register') Register
+          ul.nav
+            li.divider-vertical
+            if (user)  
+              li
+                a(href='/timeline') Home
+              //- dynamic links
+              each link in settings.header.links
+                li
+                  a(href='#{link.url}')= link.text
+              li.dropdown
+                a.dropdown-toggle(href='#', data-toggle="dropdown") Dropdown
+                  b.caret
+                ul.dropdown-menu
+                  li
+                    a(href='#') Action
+                  li
+                    a(href='#') Another action
+                  li
+                    a(href='#') Something else here
+                  li.divider
+                  li.nav-header Nav header
+                  li
+                    a(href='#') Separated Link
+                  li
+                    a(href='#') One more separated link

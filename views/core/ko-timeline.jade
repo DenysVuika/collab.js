@@ -1,0 +1,63 @@
+script(type='text/html', id='timeline-template')
+  ul.media-list(data-bind='foreach: posts')
+    li.media(style='border-top: solid 1px lightgrey; padding-top: 15px;')
+      button.close(data-bind='visible: canDismiss, click: $parent.removePost') &times;
+      a.pull-left(href='#')
+        img.media-object.user-profile-icon(data-link-type='account',
+          data-bind="attr: { id: 'prof_' + id, 'data-link-value': account, src: picture }")
+      div.media-body
+        h4.media-heading
+          span
+            a(data-bind='attr: { href: postUrl }')
+              strong(data-bind='text: name')
+            a(data-bind="text: '@' + account, attr: { href: feed }",
+              style='color: grey; font-weight: normal; font-size: 90%; padding-left: 5px;')
+        blockquote
+          p(data-bind='html: content')
+          small(data-bind="text: created.calendar(), attr: { title : created.format('LLLL') }")
+        div(data-bind='visible: hashtags.length > 0')
+          i.icon-tags
+          span(data-bind='foreach: hashtags')
+            span.label(data-bind='text: $data', style='margin-left: 2px;')
+        // ko if: openBlank
+        div(data-bind="template: { name: 'view-all-comments-template' }")
+        // /ko
+        // ko ifnot: openBlank
+        div(data-bind="template: { name: 'comments-section-template' }")
+        // /ko
+
+script(type='text/html', id='comments-section-template')
+  div
+    a(data-toggle='collapse', data-bind="attr: { 'data-target': '#comments_' + id }", style='cursor: pointer')
+      i.icon-comment
+      | &nbsp;Comments
+      span(data-bind="visible: commentsCount() > 0, text: '(' + commentsCount() + ')'",
+        style='padding-left: 4px;')
+  div.collapse(data-link-type='comment', data-bind="attr: { id: 'comments_' + id }", style='margin-top: 10px; overflow: visible !important')
+    ul.media-list(data-bind="visible: comments().length > 0, template: { name: 'post-comment-template', foreach: comments }")
+    div(data-bind="template: { name: 'post-commentbox-template' }")
+
+script(type='text/html', id='post-comment-template')
+  li.media(style='margin-top: 0; margin-bottom: 0;')
+    a.pull-left(href='#')
+      img.media-object.user-profile-icon(data-link-type='account',
+        data-bind="attr: { id: 'cprof_' + id, 'data-link-value': account, src: picture }")
+    div.media-body
+      blockquote.post-comment
+        p
+          a(data-bind='attr: { href: feed }')
+            strong(data-bind='text: name')
+          span(data-bind='html: content', style='margin-left: 5px;')
+        small(data-bind="text: created.calendar(), attr: { title : created.format('LLLL') }")
+
+script(type='text/html', id='post-commentbox-template')
+  form(method='post', action='', onSubmit='doPostComment(this); return false;')
+    input(name='postId', type='hidden', data-bind='value: id')
+    input.input-block-level(name='content', type='text', placeholder='Write a comment...', autocomplete='off'
+      data-bind="attr: { id: 'comment-box-' + id }")
+
+script(type='text/html', id='view-all-comments-template')
+  div
+    a(data-bind='attr: { href: postUrl }')
+      i.icon-comment
+      span(data-bind="text: ' View all {0} comments'.formatString(commentsCount())")

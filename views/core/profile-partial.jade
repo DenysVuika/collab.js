@@ -1,0 +1,75 @@
+style(type='text/css')
+  .popover {
+      width: auto;
+    }
+    
+    .popover-content {
+      padding: 0;
+    }
+
+    .profile-header {
+        margin-left: 58px;
+    }
+
+    .profile-user-name {
+        font-size: 24px;
+        line-height: 28px;
+        white-space: nowrap;
+        font-weight: bold;
+        color: #333;
+        margin: 0;
+    }
+
+    .profile-user-account {
+        font-size: 16px;
+        line-height: 20px;
+        color: #777;
+        margin: 0;
+        font-weight: normal;
+    }
+
+    .profile-user-picture {
+        float: left;
+        display: inline-block;
+        width: 48px;
+        height: 48px;
+    }
+     
+    .profile-footer {
+      background-color: #f5f5f5;
+      border-top: 1px solid #ddd;
+      padding: 8px 14px;
+      font-size: 14px;
+      line-height: 18px;
+    }
+
+div(style='padding:9px 14px')
+  div
+    a(href='/people/#{profile.account}/timeline')
+      img.profile-user-picture(src='/accounts/#{profile.account}/picture', alt='#{profile.name}')
+    div.profile-header
+      a(href='/people/#{profile.account}/timeline', style='text-decoration: none')
+        h2.profile-user-name= profile.name
+      a(href='/people/#{profile.account}/timeline', style='text-decoration: none')
+        h3.profile-user-account @#{profile.account}
+div
+  ul.profile-stats-list-horizontal
+    li
+      a(href='/people/#{profile.account}/timeline')
+        strong= profile.posts
+        | Posts
+    li
+      a(href='/people/#{profile.account}/following')
+        strong= profile.following
+        | Following
+    li
+      a(href='/people/#{profile.account}/followers')
+        strong= profile.followers
+        | Followers
+div.profile-footer
+  if (isOwnProfile)
+    a.btn(href='/account') Edit profile
+  else if (profile.isFollowed)
+    a.btn.btn-danger(href='/people/#{profile.account}/unfollow') Unfollow
+  else
+    a.btn.btn-primary(href='/people/#{profile.account}/follow') Follow

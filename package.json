@@ -1,0 +1,36 @@
+{
+  "name": "collab.js",
+  "version": "0.1.0",
+  "author": "Denis Vuyka <denis.vuyka@gmail.com>",
+  "description": "Starter kit for social-enabled web applications.",
+  "contributors": [
+    {
+      "name": "Denis Vuyka",
+      "email": "denis.vuyka@gmail.com"
+    }
+  ],
+  "main": "./server.js",
+  "keywords": [
+    "azure",
+    "boilerplate",
+    "express",
+    "node.js"
+  ],
+  "dependencies": {
+    "express": "3.0.4",
+    "jade": ">= 0.0.1",
+    "passport": ">= 0.0.0",
+    "passport-local": ">= 0.0.0",
+    "connect-flash": ">= 0.1.0",
+    "password-hash": "~1.2.1",
+    "mysql": "~2.0.0-alpha5",
+    "marked": "~0.2.8",
+    "nodemailer": "~0.3.42",
+    "recaptcha": "~1.2.0"
+  },
+  "noAnalyze": true,
+  "license": "MIT",
+  "engines": {
+    "node": ">=0.6.14"
+  }
+}

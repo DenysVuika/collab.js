@@ -1,0 +1,58 @@
+extends layout-plain
+
+block content
+  include tb-mixins
+  h2= title
+  p Use the form below to create a new account.
+  mixin showError(message)
+  script(type='text/javascript')
+    var RecaptchaOptions = {
+      theme: 'clean',
+      lang: 'en'
+    }
+  form(method='post').form-horizontal
+    fieldset
+      legend Account Information
+      div.control-group
+        div.control-label
+          label(for='invite') Invitation code
+        div.controls
+          input(type='text', required, id='invite', name='invite', placeholder='Your invitation code')
+      div.control-group
+        div.control-label
+          label(for='account') Account
+        div.controls
+          input(type='text', required, id='account', name='account', placeholder='e.g. johndoe')
+      div.control-group
+        div.control-label
+          label(for='name') Name
+        div.controls
+          input(type='text', required, id='name', name='name', placeholder='e.g. John Doe')
+      div.control-group
+        div.control-label
+          label(for='email') Email
+        div.controls
+          input(type='email', required, id='email', name='email', placeholder='e.g. jdoe@mail.com')
+      div.control-group
+        div.control-label
+          label(for='password') Password
+        div.controls
+          input(type='password', required, id='password', name='password')
+      div.control-group
+        div.control-label
+          label(for='password-confirm') Confirm password
+        div.controls
+          input(type='password', required, id='password-confirm',
+            data-validation-required-message='Password confirmation is required'
+            data-validation-matches-match='password',
+            data-validation-matches-message='Must match password entered above')
+      div.control-group
+        div.controls
+          != recaptcha_form
+      div.form-actions
+        input.btn.btn-primary(type='submit', value='Submit')
+
+block scripts
+  script(src='/js/jqBootstrapValidation.js', type='text/javascript')
+  script(type='text/javascript')
+    $(function() { $("input").not(["type=submit"]).jqBootstrapValidation(); });

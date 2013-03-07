@@ -1,0 +1,27 @@
+extends layout
+
+block content
+  h3
+    i.icon-user
+    &nbsp;#{title}
+  include ko-people
+
+  script(type='text/javascript')
+    $(document).ready(function () {
+      $.get('/api/people', function (data) {
+        if (data && data.length > 0) {
+          onPeopleDataLoaded(data);
+        } else {
+          onPeopleDataLoaded([]);
+        }
+       });
+      initLazyLoading(getDataUrl, onPeopleDataLoaded);
+    });
+    // smooth infinite scrolling
+    // (downloads additional posts as soon as user scrolls to bottom)
+    function getDataUrl(page) {
+      var bottomUserId = Math.max.apply(this, $.map(window.peopleFeed.profiles(), function (u) {
+        return u.id;
+      }));
+      return '/api/people?topId=' + bottomUserId;
+    }

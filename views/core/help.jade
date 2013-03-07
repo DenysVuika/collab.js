@@ -1,0 +1,11 @@
+extends layout
+
+block styles
+  link(rel='stylesheet', href='/css/GitHub2md.css')
+
+block content
+  h3
+    i.icon-flag
+    &nbsp;#{title}
+  div.md
+    != content

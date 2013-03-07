@@ -1,0 +1,40 @@
+extends layout-plain
+
+block content
+  include tb-mixins
+  h2= title
+  mixin showError(message)
+  p= message.error
+  p
+    | Please enter your user name and password. 
+    a(href='/register') Register
+    |  if you don't have an account.
+  form(method='post', action=formAction).form-horizontal
+    fieldset
+      legend Account Information
+      div.control-group
+        div.control-label
+          label(for='username') Account
+        div.controls
+          div.input-prepend
+            span.add-on @
+            input(type='text', id='username', name='username', required, placeholder='e.g. johndoe')
+      div.control-group
+        div.control-label
+          label(for='password') Password
+        div.controls
+          div.input-prepend
+            span.add-on
+              i.icon-lock
+            input(type='password', id='password', name='password', required)
+      div.control-group
+        div.control-label
+          label(for='rememberme') Remember me
+        div.controls
+          input(type='checkbox', id='rememberme', name='rememberme')
+      div.form-actions
+        input.btn.btn-primary(type='submit', value='Submit')
+
+block scripts
+  script(src='/js/jqBootstrapValidation.js', type='text/javascript')
+  

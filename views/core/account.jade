@@ -1,0 +1,81 @@
+extends layout-account
+
+block styles
+  style(type='text/css')
+    .form-horizontal .control-group {
+      margin-bottom: 10px;
+    }
+
+    .controls-hint {
+      color: #999;
+    }
+
+    .bio-counter {
+      width: 530px;
+    }
+
+    .bio-counter-label {
+      color: #999;
+      float: right;
+      font-weight: bold;
+    }
+
+block content
+  include tb-mixins
+  h3
+    i.icon-user
+    &nbsp;#{title}
+  mixin showInfo(info, true)
+  mixin showError(error)
+  div.alert.alert-block(id='browserWarning', style='display: none')
+    button.close(type='button', data-dismiss='alert') &times;
+    h4 Warning
+    | Your current browser supports HTML5 File Api only partially. Profile picture preview will be disabled.
+  form.form-horizontal(id='frmAccount', name='frmAccount', method='post', action='/account', enctype='multipart/form-data')
+    div.control-group
+      div.control-label Photo
+      div.controls
+        div
+          img.picture-128(src='/accounts/#{user.account}/picture', alt='Photo')
+          img.picture-128(id='previewer', style='display: none')
+        div
+          input(id='picture', name='picture', type='file', onchange='preview(this)')
+    hr
+    div.control-group
+      div.control-label
+        label(for='name') Name
+      div.controls
+        input(type='text', required, id='name', name='name', value=user.name)
+        p.controls-hint 
+        | Enter your real name, so people you know can recognize you.
+    div.control-group
+      div.control-label
+        label(for='location') Location
+      div.controls
+        input(type='text', id='location', name='location', value=user.location)
+        p.controls-hint
+        | Where in the world are you?
+    div.control-group
+      div.control-label
+        label(for='website') Website
+      div.controls
+        input(type='text', id='website', name='website', value=user.website)
+        p.controls-hint
+        | Have a homepage or a blog? Put the address here.
+    div.control-group
+      div.control-label
+        label(for='bio') Bio
+      div.controls
+        textarea.input-xxlarge(id='bio', name='bio', rows='3', style='resize: vertical')= user.bio
+        p.controls-hint.bio-counter
+          | About yourself in 160 characters or less.
+          span.bio-counter-label(id='bio_counter') 160
+    hr
+    div.form-actions(style='background-color: white; border-top: none;')
+      input(id='submit', type='submit', value='Save Changes').btn.btn-primary
+      a(href='/timeline', style='padding-left: 10px;') Cancel
+
+
+block scripts
+  script(src='/js/collabjs.js', type='text/javascript')
+  script(src='/js/collabjs.account.js', type='text/javascript')
