@@ -68,8 +68,8 @@ div
         | Followers
 div.profile-footer
   if (isOwnProfile)
-    a.m-btn.green(href='/account') Edit profile
+    a.m-btn.green(href='/account', style='margin-top: 0') Edit profile
   else if (profile.isFollowed)
-    a.m-btn.black(href='/people/#{profile.account}/unfollow') Unfollow
+    a.m-btn.black(href='/people/#{profile.account}/unfollow', style='margin-top: 0') Unfollow
   else
-    a.m-btn.blue(href='/people/#{profile.account}/follow') Follow
+    a.m-btn.blue(href='/people/#{profile.account}/follow', style='margin-top: 0') Follow
