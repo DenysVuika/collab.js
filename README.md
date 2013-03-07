@@ -7,6 +7,25 @@ sponsored by  [Raythos Interactive](http://raythos.com/)
 
 [![Raythos Interactive](public/images/raythos.png)](http://raythos.com)
 
+## Major features
+
+- Account registration with reCaptcha support
+- User account settings and photo management
+- News timeline with user posts (status updates)
+- Public user profiles
+- Following/Unfollowing users
+- Personal feeds and "twitterization" of content (account links, hash tags, etc.)
+- Comment system (including separate post view for large amount of comments)
+- Mentions system
+- People hub, browsing user networks
+- Markdown-based help system (with GitHub styling)
+- Smooth (infinite) scrolling with chunked data download
+- Background checks for new status updates
+- RESTful APIs to access everything used by frontend
+- Flexible configuration, easy to extend
+- Extensible data layer with multiple providers
+- Runs everywhere node.js can run
+
 ## Supported databases
 
 - Microsoft SQL Server
