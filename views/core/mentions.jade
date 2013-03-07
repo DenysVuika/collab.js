@@ -4,7 +4,7 @@ block content
   include ko-timeline
   h3
     i.icon-globe
-    &nbsp;#{title}
+    | &nbsp;#{title}
   p.lead(style='display: none', data-bind='visible: posts().length == 0') No mentions found...
   div(style='display: none;', data-bind="visible: posts().length > 0, template: { name: 'timeline-template' }")
   // Loading progress indicator

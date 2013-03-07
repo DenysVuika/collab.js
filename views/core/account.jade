@@ -24,7 +24,7 @@ block content
   include tb-mixins
   h3
     i.icon-user
-    &nbsp;#{title}
+    | &nbsp;#{title}
   mixin showInfo(info, true)
   mixin showError(error)
   div.alert.alert-block(id='browserWarning', style='display: none')
@@ -71,10 +71,11 @@ block content
           | About yourself in 160 characters or less.
           span.bio-counter-label(id='bio_counter') 160
     hr
-    div.form-actions(style='background-color: white; border-top: none;')
-      input(id='submit', type='submit', value='Save Changes').btn.btn-primary
-      a(href='/timeline', style='padding-left: 10px;') Cancel
-
+    div.form-actions(style='background-color: white; border-top: none;padding-top:0;')
+      input.m-btn.blue(type='submit', value='Save Changes')
+      a.m-btn.black(href='/timeline', style='vertical-align: middle;')
+        i.m-icon-swapleft.m-icon-white
+        | &nbsp;Cancel
 
 block scripts
   script(src='/js/collabjs.js', type='text/javascript')

@@ -1,15 +1,14 @@
 body {
-    padding-top: 60px;
-    padding-bottom: 40px;
+  padding-top: 60px;
+  padding-bottom: 40px;
 }
 
 .sidebar-nav {
-    padding: 9px 0;
+  padding: 9px 0;
 }
 
-.field-validation-error
-{
-    color: #B94A48;
+.field-validation-error {
+  color: #B94A48;
 }
 
 /* Profile Picture */
@@ -59,74 +58,7 @@ img.picture-48 {
     max-width: 48px;
 }
 
-/* timeline */
 
-.m_stream {
-    padding: 0;
-    margin: 0;
-    list-style-type: none;
-}
-    .m_stream form {
-        margin: 0;
-        margin-top: 5px;
-    }
-
-    .m_stream .timelineItem {
-        zoom: 1;
-        padding: 12px 35px 0 18px;
-        margin-left: -18px;
-        position: relative;
-        border: 0 solid #e9e9e9;
-        border-top-width: 1px;
-        display: block;
-    }
-
-    .m_stream :first-child.allowTopBorder {
-        border-top-color: currentColor;
-        border-top-width: 0;
-        border-top-style: none;
-    }
-
-.timelineImageContainer {
-    float: left;
-    display: block;
-    margin-right: 10px;
-}
-
-.timelineMessage {
-    color: #000;
-    font-size: 11px;
-    font-weight: normal;
-    margin-top: 0;
-    margin-right: 0;
-    margin-bottom: 5px;
-    margin-left: 0;
-}
-
-.timelineContentBlock {
-    width: 10000px;
-    vertical-align: top;
-    display: table-cell;
-    height: 50px;
-}
-
-.timelineItem a {
-    color: #3b5998;
-    text-decoration: none;
-    cursor: pointer;
-}
-
-.timelineMessageHeader {
-    padding-bottom: 3px;
-    font-weight: bold;
-}
-
-/* Feeds */
-
-/*.m-stream-container {
-    display: none;
-}
-*/
 .profile-stats {
     line-height: 16px;
 }
@@ -174,7 +106,7 @@ img.picture-48 {
       border-top: 1px solid #e8e8e8;
       margin: 0;
       padding: 0;
-      height: 48px;
+      height: 40px;
       overflow: hidden;
     }
 
@@ -188,9 +120,7 @@ img.picture-48 {
 
     .profile-stats-list-horizontal a {
       float: left;
-      padding: 7px 12px;
-      padding-left: 15px;
-      padding-right: 15px;
+      padding: 5px 15px;
       color: #999;
       font-size: 10px;
       line-height: 16px;
@@ -215,7 +145,6 @@ img.picture-48 {
     background-color: #ececec;
     border-bottom: 1px solid #ddd;
 }
-
     /*.modal-header.draggable {
         cursor: move;
     }*/
@@ -231,44 +160,7 @@ img.picture-48 {
     }
 
 /* Twitter Bootstrap patches */
-/*
-.media,
-.media-body {
-    overflow: hidden;
-    *overflow: visible;
-    zoom: 1;
-}
 
-    .media,
-    .media .media {
-        margin-top: 15px;
-    }
-
-        .media:first-child {
-            margin-top: 0;
-        }
-
-        .media .pull-left {
-            margin-right: 10px;
-        }
-
-        .media .pull-right {
-            margin-left: 10px;
-        }
-
-.media-list {
-    margin-left: 0;
-    list-style: none;
-}
-
-.media-object {
-    display: block;
-}
-
-.media-heading {
-    margin: 0 0 5px;
-}
-*/
 .media a {
     text-decoration: none;
 }

@@ -6,7 +6,7 @@ script(type='text/html', id='timeline-template')
         img.media-object.user-profile-icon(data-link-type='account',
           data-bind="attr: { id: 'prof_' + id, 'data-link-value': account, src: picture }")
       div.media-body
-        h4.media-heading
+        div.media-heading
           span
             a(data-bind='attr: { href: postUrl }')
               strong(data-bind='text: name')
@@ -46,7 +46,7 @@ script(type='text/html', id='post-comment-template')
       blockquote.post-comment
         p
           a(data-bind='attr: { href: feed }')
-            strong(data-bind='text: name')
+            strong(data-bind='text: name', style='font-size: 14px;')
           span(data-bind='html: content', style='margin-left: 5px;')
         small(data-bind="text: created.calendar(), attr: { title : created.format('LLLL') }")
 

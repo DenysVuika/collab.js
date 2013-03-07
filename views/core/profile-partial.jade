@@ -12,7 +12,7 @@ style(type='text/css')
     }
 
     .profile-user-name {
-        font-size: 24px;
+        font-size: 15px;
         line-height: 28px;
         white-space: nowrap;
         font-weight: bold;
@@ -21,7 +21,7 @@ style(type='text/css')
     }
 
     .profile-user-account {
-        font-size: 16px;
+        font-size: 13px;
         line-height: 20px;
         color: #777;
         margin: 0;
@@ -68,8 +68,8 @@ div
         | Followers
 div.profile-footer
   if (isOwnProfile)
-    a.btn(href='/account') Edit profile
+    a.m-btn.green(href='/account') Edit profile
   else if (profile.isFollowed)
-    a.btn.btn-danger(href='/people/#{profile.account}/unfollow') Unfollow
+    a.m-btn.black(href='/people/#{profile.account}/unfollow') Unfollow
   else
-    a.btn.btn-primary(href='/people/#{profile.account}/follow') Follow
+    a.m-btn.blue(href='/people/#{profile.account}/follow') Follow

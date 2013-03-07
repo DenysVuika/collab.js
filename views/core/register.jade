@@ -49,8 +49,8 @@ block content
       div.control-group
         div.controls
           != recaptcha_form
-      div.form-actions
-        input.btn.btn-primary(type='submit', value='Submit')
+      div.form-actions(style='background-color:inherit;')
+        input.m-btn.blue(type='submit', value='Submit')
 
 block scripts
   script(src='/js/jqBootstrapValidation.js', type='text/javascript')

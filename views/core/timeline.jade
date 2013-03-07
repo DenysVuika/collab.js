@@ -6,13 +6,6 @@ block styles
       margin: 0;
     }
 
-    //- .collapse {
-    //-   -webkit-transition: height 0.25s ease;
-    //-   -moz-transition: height 0.25s ease;
-    //-   -o-transition: height 0.25s ease;
-    //-   transition: height 0.25s ease;
-    //- }
-
 block content
   include ko-timeline
   h3
@@ -23,8 +16,9 @@ block content
       name='content', rows='3', 
       placeholder="What's on your mind?",
       style='resize: vertical; max-height: 300px;')
-    div(style='padding-bottom: 20px')
-      input.btn.btn-success.pull-right(type='submit', value='Submit')
+    div(style='padding-bottom: 30px')
+      //input.btn.btn-success.pull-right(type='submit', value='Submit')
+      input.m-btn.green.pull-right(type='submit', value='Submit')
 
   p.lead(style='display: none', data-bind='visible: posts().length == 0') No posts found...
 
