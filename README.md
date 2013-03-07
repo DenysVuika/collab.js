@@ -3,6 +3,10 @@ collab.js
 
 collab.js is a starter kit for modern, extensible and social-enabled web applications created with node.js, express and jade.
 
+sponsored by  [Raythos Interactive](http://raythos.com/)
+
+![Raythos Interactive](public/images/raythos.png)
+
 ## Supported databases
 
 - Microsoft SQL Server
