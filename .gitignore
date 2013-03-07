@@ -12,3 +12,13 @@ logs
 results
 
 npm-debug.log
+
+.DS_Store
+.idea
+iisnode/
+node_modules/
+
+# masonryjs-specific files
+config/*.js
+!config/config.global.js
+!config/config.default.js
