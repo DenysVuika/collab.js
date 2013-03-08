@@ -58,6 +58,9 @@ Provider.prototype = {
       if (params.length > 0) command = command + ', ';
       command = command + 'location = ?';
       params.push(json.location);
+    } else {
+      if (params.length > 0) command = command + ', ';
+      command = command + 'location = null';
     }
     if (json.website && json.website.length > 0) {
       if (params.length > 0) command = command + ', ';

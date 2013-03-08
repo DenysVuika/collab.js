@@ -45,8 +45,10 @@ Provider.prototype = {
     var fields = {};
     if (json.name && json.name.length > 0)
       fields.name = json.name;
-    if (json.location && json.location.length > 0)
+    if (json.location)
       fields.location = json.location;
+    else
+      fields.location = '';
     if (json.website && json.website.length > 0)
       fields.website = json.website;
     if (json.bio && json.bio.length > 0)
