@@ -3,6 +3,11 @@
   "version": "0.1.0",
   "author": "Denis Vuyka <denis.vuyka@gmail.com>",
   "description": "Starter kit for social-enabled web applications.",
+  "homepage": "https://github.com/DenisVuyka/collab.js",
+  "repository": {
+    "type" : "git",
+    "url": "https://github.com/DenisVuyka/collab.js.git"
+  },
   "contributors": [
     {
       "name": "Denis Vuyka",
@@ -28,7 +33,7 @@
     "nodemailer": "~0.3.42",
     "recaptcha": "~1.2.0"
   },
-  "noAnalyze": true,
+  "analyze": false,
   "license": "MIT",
   "engines": {
     "node": ">=0.6.14"

@@ -46,19 +46,21 @@ module.exports = function (app) {
       title: 'Register',
       user: req.user,
       message: req.flash('error'),
+      invitation: config.invitation.enabled,
       recaptcha_form: recaptcha.toHTML()
     })
   });
 
   app.post('/register', function (req, res) {
     var body = req.body;
-
-    // validate invitation code
-    if (!body.invite || body.invite.length == 0 || body.invite !== config.invitationCode) {
-      req.flash('error', 'Wrong invitation code.');
-      return res.redirect('/register');
+    // check whether invitation codes are enabled
+    if (config.invitation.enabled) {
+      // validate invitation code
+      if (!body.invite || body.invite.length == 0 || body.invite !== config.invitation.code) {
+        req.flash('error', 'Wrong invitation code.');
+        return res.redirect('/register');
+      }
     }
-
     // extract recaptcha-specific data
     var data = {
       remoteip: req.connection.remoteAddress,

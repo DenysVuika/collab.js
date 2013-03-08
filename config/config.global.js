@@ -6,7 +6,11 @@ config.env.ipaddress = '127.0.0.1';
 // used to generate 'back' urls in emails, 
 // helps solving issues with load balancers and proxies
 config.hostname = 'http://localhost:3000';
-config.invitationCode = '123123123'; // temporary
+
+// simple invitation code
+config.invitation = {};
+config.invitation.enabled = false;
+config.invitation.code = '123123123';
 
 // data layer
 config.data = {};

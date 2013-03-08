@@ -13,11 +13,12 @@ block content
   form(method='post').form-horizontal
     fieldset
       legend Account Information
-      div.control-group
-        div.control-label
-          label(for='invite') Invitation code
-        div.controls
-          input(type='text', required, id='invite', name='invite', placeholder='Your invitation code')
+      if (invitation)
+        div.control-group
+          div.control-label
+            label(for='invite') Invitation code
+          div.controls
+            input(type='text', required, id='invite', name='invite', placeholder='Your invitation code')
       div.control-group
         div.control-label
           label(for='account') Account
