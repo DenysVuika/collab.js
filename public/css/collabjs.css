@@ -159,6 +159,28 @@ img.picture-48 {
         text-align: center;
     }
 
+/* Fixed sidebar */
+.sidebar-nav-fixed {
+  position: fixed;
+  top: 60px;
+  /*width: 21.97%;*/
+  width: 14.3646408839779%;
+  *width: 14.840425531914894%
+}
+
+@media (max-width: 767px) {
+  .sidebar-nav-fixed {
+    position: static;
+    width: auto;
+  }
+}
+
+@media (max-width: 979px) {
+  .sidebar-nav-fixed {
+    top: 70px;
+  }
+}
+
 /* Twitter Bootstrap patches */
 
 .media a {
