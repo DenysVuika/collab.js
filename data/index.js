@@ -26,6 +26,10 @@ module.exports.updateAccount = function (id, json, callback) {
 	provider.updateAccount(id, json, callback);
 };
 
+module.exports.setAccountPassword = function (userId, password, callback) {
+  provider.setAccountPassword(userId, password, callback);
+};
+
 module.exports.getProfilePictureId = function (userId, callback) {
 	provider.getProfilePictureId(userId, callback);
 };

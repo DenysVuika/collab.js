@@ -185,6 +185,52 @@ module.exports = function (app) {
     });
   });
 
+  app.get('/account/password', ensureAuthenticated, function (req, res) {
+    res.render('core/password', {
+      settings: config.ui,
+      title: 'Change password',
+      user: req.user,
+      error: req.flash('error'),
+      info: req.flash('info')
+    });
+  });
+
+  app.post('/account/password', ensureAuthenticated, function (req, res) {
+    var settings = req.body;
+
+    // verify fields
+    if (!settings.pwdOld || settings.pwdOld.length == 0
+      || !settings.pwdNew || settings.pwdNew.length == 0
+      || !settings.pwdConfirm || settings.pwdConfirm.length == 0
+      || settings.pwdNew != settings.pwdConfirm) {
+      req.flash('error', 'Incorrect password values.');
+      return res.redirect('/account/password');
+    }
+
+    if (settings.pwdOld == settings.pwdNew) {
+      req.flash('info', 'New password is the same as old one.');
+      return res.redirect('/account/password');
+    }
+
+    // verify old password
+    //var oldHash = passwordHash.generate(settings.pwdOld);
+    if (!passwordHash.verify(settings.pwdOld, req.user.password)) {
+      req.flash('error', 'Invalid old password.');
+      return res.redirect('/account/password');
+    }
+
+    repository.setAccountPassword(req.user.id, settings.pwdNew, function (err, hash) {
+      if (err || !hash) {
+        req.flash('error', 'Error setting password.');
+        return res.redirect('/account/password');
+      } else {
+        req.user.password = hash;
+        req.flash('info', 'Password has been successfully changed.');
+        return res.redirect('/account');
+      }
+    });
+  });
+
   //app.get('/accounts/:account/picture', requireAuthenticated, function (req, res) {
   app.get('/accounts/:account/picture', function (req, res) {
     repository.getProfilePicture(req.params.account, function (err, file) {

@@ -1,5 +1,6 @@
 var config = require('../../config')
-	, mysql = require('mysql');
+	, mysql = require('mysql')
+  , passwordHash = require('password-hash');
 
 function Provider() {
 	this.connection = mysql.createConnection({
@@ -54,6 +55,27 @@ Provider.prototype = {
     this.connection.query('UPDATE users SET ? WHERE id = ' + this.connection.escape(id), fields, function (err, result) {
       if (err) console.log('Error updating account settings. ' + err);
       callback(err, result);
+    });
+  },
+  setAccountPassword: function (userId, password, callback) {
+    var self = this;
+    if (!userId || !password || password.length == 0) {
+      return callback('Error setting account password.', null);
+    }
+    self.getAccountById(userId, function (err, result) {
+      if (err) {
+        console.log(err);
+        return callback(err, result);
+      }
+      var hashedPassword = passwordHash.generate(password);
+      var command = 'UPDATE users SET password = ? WHERE id = ?';
+      self.connection.query(command, [hashedPassword, userId], function (err, result) {
+        if (err) {
+          console.log(err);
+          return callback(err, result);
+        }
+        return callback(null, hashedPassword);
+      });
     });
   },
   getProfilePictureId: function (userId, callback) {

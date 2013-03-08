@@ -1,5 +1,6 @@
 var config = require('../../config')
-	, sql = require('msnodesql');
+	, sql = require('msnodesql')
+  , passwordHash = require('password-hash');
 
 function Provider() {
 	//this.connection = "Driver={SQL Server Native Client 11.0};Server={.};Database={collabjs};Trusted_Connection={Yes};";
@@ -74,6 +75,40 @@ Provider.prototype = {
 
     sql.query(this.connection, command, params, function (err, result) {
       callback(err, result);
+    });
+  },
+//  validateAccountPassword: function (account, password, callback) {
+//    if (!account || account.length == 0)
+//      return callback('Account is not defined', false);
+//    if (!password || password.length == 0)
+//      return callback('Password is not defined', false);
+//    this.getAccount(account, function (err, user) {
+//      if (err) return callback('Account not found', false);
+//      if (passwordHash.verify(password, user.password))
+//        return callback(null, true);
+//      else
+//        return callback('Invalid password.', false);
+//    });
+//  },
+  setAccountPassword: function (userId, password, callback) {
+    var self = this;
+    if (!userId || !password || password.length == 0) {
+      return callback('Error setting account password.', null);
+    }
+    self.getAccountById(userId, function (err, result) {
+      if (err) {
+        console.log(err);
+        return callback(err, result);
+      }
+      var hashedPassword = passwordHash.generate(password);
+      var command = 'UPDATE users SET password = ? WHERE id = ?';
+      sql.query(self.connection, command, [hashedPassword, userId], function (err, result) {
+        if (err) {
+          console.log(err);
+          return callback(err, result);
+        }
+        return callback(null, hashedPassword);
+      });
     });
   },
   getProfilePictureId: function (userId, callback) {
