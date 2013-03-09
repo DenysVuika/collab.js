@@ -69,6 +69,31 @@ function isNullOrWhiteSpace(str) {
   };
 })(jQuery);
 
+/* Knockout extensions */
+
+ko.bindingHandlers.country = {
+  init: function(element, valueAccessor, allBindingsAccessor, viewModel, bindingContext) {
+    // This will be called when the binding is first applied to an element
+    // Set up any initial state, event handlers, etc. here
+  },
+  update: function(element, valueAccessor, allBindingsAccessor, viewModel, bindingContext) {
+    // This will be called once when the binding is first applied to an element,
+    // and again whenever the associated observable changes value.
+    // Update the DOM element based on the supplied values here.
+    var $element = $(element);
+    var valueUnwrapped = ko.utils.unwrapObservable(valueAccessor());
+    // show only when value is provided
+    if (valueUnwrapped && valueUnwrapped.length > 0) {
+      $element.css('display', 'block');
+      $element.attr('data-country', valueUnwrapped);
+      $element.bfhcountries($element.data());
+    } else {
+      $element.css('display', 'none');
+    }
+  }
+};
+
+/* String extensions */
 String.prototype.formatString = function() {
   var formatted = this;
   for (var i = 0; i < arguments.length; i++) {
@@ -206,6 +231,7 @@ function UserProfileViewModel(data) {
   self.id = data.id;
   self.account = data.account;
   self.name = data.name;
+  self.location = data.location;
   self.website = data.website;
   self.bio = data.bio;
   self.posts = data.posts;

@@ -13,9 +13,12 @@ ul.media-list(style='display: none', data-bind='visible: profiles().length > 0, 
         a.m-btn.blue.pull-right(data-bind='visible: !isFollowed && !isOwnProfile, attr: { href: followAction }', style='min-width:80px') Follow
         a.m-btn.black.pull-right(data-bind='visible: isFollowed && !isOwnProfile, attr: { href: unfollowAction }', style='min-width:80px') Unfollow
         a.m-btn.green.pull-right(data-bind='visible: isOwnProfile', href='/account', style='min-width:80px') Edit profile
-      em(data-bind='text: bio')
-      p
+      p(style='padding: 0; margin: 0;')
+        span.bfh-countries(data-bind='country: location', data-flags='true')
+      p(style='padding: 0; margin: 0;')
         a(data-bind='attr: { href: website }, text: website')
+      p(style='padding-top: 5px')
+        em(data-bind='text: bio')
       ul.profile-stats-list
         li.profile-stats
           a(data-bind='attr: { href: feed }')
