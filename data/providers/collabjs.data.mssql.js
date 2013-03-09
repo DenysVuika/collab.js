@@ -49,11 +49,12 @@ Provider.prototype = {
   updateAccount: function (id, json, callback) {
     var command = 'UPDATE users SET ';
     var params = [];
-
+    // update 'user.name'
     if (json.name && json.name.length > 0) {
       command = command + 'name = ?';
       params.push(json.name);
     }
+    // update or reset user.location
     if (json.location && json.location.length > 0) {
       if (params.length > 0) command = command + ', ';
       command = command + 'location = ?';
@@ -62,16 +63,25 @@ Provider.prototype = {
       if (params.length > 0) command = command + ', ';
       command = command + 'location = null';
     }
+    // update or reset user.website
     if (json.website && json.website.length > 0) {
       if (params.length > 0) command = command + ', ';
       command = command + 'website = ?';
       params.push(json.website);
+    } else {
+      if (params.length > 0) command = command + ', ';
+      command = command + 'website = null';
     }
+    // update or reset user.bio
     if (json.bio && json.bio.length > 0) {
       if (params.length > 0) command = command + ', ';
       command = command + 'bio = ?';
       params.push(json.bio);
+    } else {
+      if (params.length > 0) command = command + ', ';
+      command = command + 'bio = null';
     }
+
     if (params.length == 0) return callback(null, null);
     command = command + ' WHERE id = ?';
     params.push(id);

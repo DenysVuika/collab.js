@@ -43,16 +43,15 @@ Provider.prototype = {
   },
   updateAccount: function (id, json, callback) {
     var fields = {};
+    // update user.name
     if (json.name && json.name.length > 0)
       fields.name = json.name;
-    if (json.location)
-      fields.location = json.location;
-    else
-      fields.location = '';
-    if (json.website && json.website.length > 0)
-      fields.website = json.website;
-    if (json.bio && json.bio.length > 0)
-      fields.bio = json.bio;
+    // update or reset user.location
+    fields.location = json.location ? json.location : '';
+    // update or reset user.website
+    fields.website = json.website ? json.website : '';
+    // update or reset user.bio
+    fields.bio = json.bio ? json.bio : '';
 
     this.connection.query('UPDATE users SET ? WHERE id = ' + this.connection.escape(id), fields, function (err, result) {
       if (err) console.log('Error updating account settings. ' + err);
