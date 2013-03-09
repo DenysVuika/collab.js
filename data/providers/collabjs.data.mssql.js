@@ -3,8 +3,8 @@ var config = require('../../config')
   , passwordHash = require('password-hash');
 
 function Provider() {
-	//this.connection = "Driver={SQL Server Native Client 11.0};Server={.};Database={collabjs};Trusted_Connection={Yes};";
-	this.connection = 
+  // create connection based on either full connection string or it's blocks
+	this.connection = config.data.connectionString ||
 		'Driver={SQL Server Native Client 11.0};Server=' + config.data.host + 
 		';Database=' + config.data.database + 
 		';Uid=' + config.data.user + 

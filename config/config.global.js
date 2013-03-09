@@ -16,6 +16,11 @@ config.invitation.code = '123123123';
 config.data = {};
 config.data.provider = 'collabjs.data.mysql';
 //config.data.provider = 'collabjs.data.mssql';
+// Note: if defined, 'connectionString' value supersedes parameters host/database/user/password
+// this allows providing driver-specific connection strings like one the following samples:
+//  'Driver={SQL Server Native Client 11.0};Server={.};Database={collabjs};Trusted_Connection={Yes};'
+//  'mysql://user:pass@host/db?debug=true&charset=BIG5_CHINESE_CI&timezone=-0700'
+config.data.connectionString = null;
 config.data.host = 'localhost';
 config.data.database = 'collabjs';
 config.data.user = '<username>';

@@ -3,7 +3,8 @@ var config = require('../../config')
   , passwordHash = require('password-hash');
 
 function Provider() {
-	this.connection = mysql.createConnection({
+  // create connection based on either full connection string or it's blocks
+	this.connection = mysql.createConnection(config.data.connectionString || {
 		host: config.data.host,
 		database: config.data.database,
 		user: config.data.user,
