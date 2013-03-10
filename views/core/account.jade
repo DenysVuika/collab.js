@@ -29,28 +29,22 @@ block content
     | &nbsp;#{title}
   mixin showInfo(info, true)
   mixin showError(error)
-  div.alert.alert-block(id='browserWarning', style='display: none')
-    button.close(type='button', data-dismiss='alert') &times;
-    h4 Warning
-    | Your current browser supports HTML5 File Api only partially. Profile picture preview will be disabled.
   hr
   form.form-horizontal(id='frmAccount', name='frmAccount', method='post', action='/account', enctype='multipart/form-data')
     div.control-group
-      div.control-label Photo
+      div.control-label Picture
       div.controls
-        div
-          img.picture-128(src='/accounts/#{user.account}/picture', alt='Photo')
-          img.picture-128(id='previewer', style='display: none')
-        div
-          input(id='picture', name='picture', type='file', onchange='preview(this)')
-    hr
+        a(href='http://www.gravatar.com', target='_blank')
+          img(src='https://www.gravatar.com/avatar/#{user.pictureId}', alt='Gravatar')
+        p.controls-hint
+          | Click the picture to configure your Gravatar
     div.control-group
       div.control-label
         label(for='name') Name
       div.controls
         input(type='text', required, id='name', name='name', value=user.name)
         p.controls-hint 
-        | Enter your real name, so people you know can recognize you.
+          | Enter your real name, so people you know can recognize you.
     div.control-group
       div.control-label
         label(for='location') Location
@@ -65,14 +59,14 @@ block content
             input.bfh-selectbox-filter(type='text')
             ul(role='options')
         p.controls-hint
-        | Where in the world are you?
+          | Where in the world are you?
     div.control-group
       div.control-label
         label(for='website') Website
       div.controls
         input(type='text', id='website', name='website', value=user.website)
         p.controls-hint
-        | Have a homepage or a blog? Put the address here.
+          | Have a homepage or a blog? Put the address here.
     div.control-group
       div.control-label
         label(for='bio') Bio

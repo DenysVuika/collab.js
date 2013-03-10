@@ -149,7 +149,7 @@ function PostViewModel(data) {
   self.content = data.content.twitterize();
   self.created = moment(data.created);
   self.hashtags = data.content.getHashTags();
-  self.picture = '/accounts/' + data.account + '/picture';
+  self.picture = 'https://www.gravatar.com/avatar/' + data.pictureId + '?s=48';
   self.feed = '/people/' + data.account + '/timeline';
   self.canDismiss = false;
   self.postUrl = '/timeline/posts/' + data.id;
@@ -206,7 +206,8 @@ function FeedViewModel(account, data) {
           account: entry.account,
           name: entry.name,
           content: entry.content,
-          created: entry.created
+          created: entry.created,
+          pictureId: entry.pictureId
         }));
       });
 
@@ -240,7 +241,7 @@ function UserProfileViewModel(data) {
   self.following = data.following;
   self.followingUrl = '/people/' + data.account + '/following';
   self.isFollowed = data.isFollowed;
-  self.picture = '/accounts/' + data.account + '/picture';
+  self.picture = 'https://www.gravatar.com/avatar/' + data.pictureId + '?s=48';
   self.feed = '/people/' + data.account + '/timeline';
   self.followAction = '/people/' + data.account + '/follow';
   self.unfollowAction = '/people/' + data.account + '/unfollow';
@@ -378,7 +379,8 @@ function onCommentsLoaded(post, data) {
         account: entry.account,
         name: entry.name,
         content: entry.content,
-        created: entry.created
+        created: entry.created,
+        pictureId: entry.pictureId
       }));
     });
 
@@ -406,7 +408,8 @@ function onCommentPosted(data, status, response) {
     account: data.account,
     name: data.name,
     content: data.content,
-    created: data.created
+    created: data.created,
+    pictureId: data.pictureId
   }));
 
   enableAccountPopups();

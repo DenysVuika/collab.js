@@ -1,6 +1,7 @@
 var config = require('../../config')
 	, sql = require('msnodesql')
-  , passwordHash = require('password-hash');
+  , passwordHash = require('password-hash')
+  , crypto = require('crypto');
 
 function Provider() {
   // create connection based on either full connection string or it's blocks
@@ -34,8 +35,9 @@ Provider.prototype = {
     //      password: hashedPassword,
     //      email: body.email
     //    };
-    var command = 'exec create_account ?,?,?,?';
-    sql.query(this.connection, command, [json.account, json.name, json.password, json.email], function (err, result) {
+    var emailHash = crypto.createHash('md5').update(json.email.trim().toLowerCase()).digest('hex');
+    var command = 'exec create_account ?,?,?,?,?';
+    sql.query(this.connection, command, [json.account, json.name, json.password, json.email, emailHash], function (err, result) {
       if (err) {
         console.log(err);
         var errorMessage = 'Error creating account.';
@@ -122,55 +124,6 @@ Provider.prototype = {
         }
         return callback(null, hashedPassword);
       });
-    });
-  },
-  getProfilePictureId: function (userId, callback) {
-    var command = 'SELECT TOP(1) id FROM pictures WHERE userId = ?';
-    sql.query(this.connection, command, [userId], function (err, result) {
-      if (err) {
-        console.log('Error reading pictures. ' + err);
-        callback(err, null);
-      }
-      else if (result.length > 0) callback(null, { id: result[0].id });
-      else callback(null, null);
-    });
-  },
-  updateProfilePicture: function (id, json, callback) {
-    // var picture = {
-    //   userId: req.user.id,
-    //   data: data,
-    //   length: file.length,
-    //   mime: file.mime,
-    //   lastModified: file.lastModifiedDate,
-    //   md5: md5
-    // };
-    // temporary conversion to/from base64 (until MS fixes bug with varbinary)
-    var base64 = json.data.toString('base64');
-    var command = 'UPDATE pictures SET userId = ?, data = ?, length = ?, mime = ?, lastModified = ?, md5 = ? WHERE id = ?';
-    sql.query(this.connection, command, [json.userId, base64, json.length, json.mime, json.lastModified, json.md5, id], function (err, result) {
-      if (err) console.log('Error updating picture. ' + err);
-      callback(err, result);
-    });
-  },
-  addProfilePicture: function (json, callback) {
-    // temporary conversion to/from base64 (until MS fixes bug with varbinary)
-    var base64 = json.data.toString('base64');
-    var command = 'INSERT INTO pictures (userId, data, length, mime, lastModified, md5) VALUES (?,?,?,?,?,?)';
-    sql.query(this.connection, command, [json.userId, base64, json.length, json.mime, json.lastModified, json.md5], function (err, result) {
-      if (err) console.log('Error inserting picture: ' + err);
-      callback(err, result);
-    });
-  },
-  getProfilePicture: function (account, callback) {
-    var command = 'SELECT TOP (1) p.* FROM pictures AS p LEFT JOIN users AS u ON u.id = p.userId WHERE u.account = ?';
-    sql.query(this.connection, command, [account], function (err, result) {
-      if (err || result.length == 0) callback(err, null);
-      else {
-        // temporary conversion to/from base64 (until MS fixes bug with varbinary)
-        var picture = result[0];
-        picture.data = new Buffer(picture.data, 'base64');
-        callback(err, picture);
-      }
     });
   },
   getPublicProfile: function (callerAccount, targetAccount, callback) {

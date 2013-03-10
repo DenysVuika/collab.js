@@ -1,6 +1,7 @@
 var config = require('../../config')
 	, mysql = require('mysql')
-  , passwordHash = require('password-hash');
+  , passwordHash = require('password-hash')
+  , crypto = require('crypto');
 
 function Provider() {
   // create connection based on either full connection string or it's blocks
@@ -30,6 +31,7 @@ Provider.prototype = {
     });
   },
   createAccount: function (json, callback) {
+    json.emailHash = crypto.createHash('md5').update(json.email.trim().toLowerCase()).digest('hex');
     this.connection.query('INSERT INTO users SET ?', json, function (err, result) {
       if (err) {
         console.log(err);
@@ -78,38 +80,6 @@ Provider.prototype = {
         }
         return callback(null, hashedPassword);
       });
-    });
-  },
-  getProfilePictureId: function (userId, callback) {
-    this.connection.query('SELECT id FROM pictures WHERE userId = ?', [userId], function (err, result) {
-      if (err) {
-        console.log('Error reading pictures. ' + err);
-        callback(err, null);
-      }
-      else if (result.length > 0) callback(null, { id: result[0].id });
-      else callback(null, null);
-    });
-  },
-  updateProfilePicture: function (id, json, callback) {
-    this.connection.query('UPDATE pictures SET ? WHERE id = ' + this.connection.escape(id), json, function (err, result) {
-      if (err) console.log('Error updating picture. ' + err);
-      callback(err, result);
-    });
-  },
-  addProfilePicture: function (json, callback) {
-    this.connection.query('INSERT INTO pictures SET ?', json, function (err, result) {
-      if (err) console.log('Error inserting picture. ' + err);
-      callback(err, result);
-    });
-  },
-  getProfilePicture: function (account, callback) {
-    var query = 'SELECT p.* FROM pictures as p LEFT JOIN users as u ON u.id = p.userId WHERE u.account = ? LIMIT 1';
-    this.connection.query(query, [account], function (err, result) {
-      if (err || !result || result.length == 0) {
-        callback(err, null);
-      } else {
-        callback(err, result[0]);
-      }
     });
   },
   getPublicProfile: function (callerAccount, targetAccount, callback) {

@@ -53,16 +53,17 @@ SET QUOTED_IDENTIFIER ON
 GO
 
 CREATE PROCEDURE [dbo].[create_account]
-	@account nvarchar(50),
+  @account nvarchar(50),
   @name nvarchar(50),
   @password varchar(128),
-  @email varchar(256)
+  @email varchar(256),
+  @emailHash varchar(32)
 AS
 BEGIN
-	SET NOCOUNT ON;
+  SET NOCOUNT ON;
 
-  INSERT INTO users (account, name, password, email) 
-    values (@account, @name, @password, @email);
+  INSERT INTO users (account, name, password, email, emailHash)
+    values (@account, @name, @password, @email, @emailHash);
 
   SELECT SCOPE_IDENTITY() AS insertId;
 END
@@ -104,7 +105,7 @@ CREATE PROCEDURE [dbo].[get_account]
 AS
 BEGIN
 	SET NOCOUNT ON;
-  SELECT TOP 1 *, dbo.get_user_roles(id) AS roles 
+  SELECT TOP 1 *, emailHash as pictureId, dbo.get_user_roles(id) AS roles
     FROM users
   WHERE account = @account
 END
@@ -121,7 +122,7 @@ CREATE PROCEDURE [dbo].[get_account_by_id]
 AS
 BEGIN
 	SET NOCOUNT ON;
-  SELECT TOP 1 *, dbo.get_user_roles(id) AS roles 
+  SELECT TOP 1 *, emailHash as pictureId, dbo.get_user_roles(id) AS roles
     FROM users
   WHERE id = @id
 END
@@ -138,7 +139,7 @@ CREATE PROCEDURE [dbo].[get_comments]
 AS
 BEGIN
 	SET NOCOUNT ON;
-  SELECT c.*, u.account, u.name 
+  SELECT c.*, u.account, u.name, u.emailHash as pictureId
   FROM comments AS c 
 	  LEFT JOIN users AS u ON u.id = c.userId 
   WHERE c.postId = @postId
@@ -167,7 +168,7 @@ BEGIN
   SELECT TOP (@limit) result.* FROM
   (
     SELECT
-	    u.id, u.account, u.name, u.website, u.location, u.bio,
+	    u.id, u.account, u.name, u.website, u.location, u.bio, u.emailHash as pictureId,
       dbo.count_user_posts(u.id) as posts,
 	    (SELECT COUNT(id) FROM subscriptions WHERE userId = u.id) AS following,
 	    (SELECT COUNT(id) FROM subscriptions WHERE targetUserId = u.id) AS followers,
@@ -210,7 +211,7 @@ BEGIN
   SELECT TOP (@limit) result.* FROM
   (
     SELECT
-	    u.id, u.account, u.name, u.website, u.location, u.bio,
+	    u.id, u.account, u.name, u.website, u.location, u.bio, u.emailHash as pictureId,
       dbo.count_user_posts(u.id) as posts,
 	    (SELECT COUNT(id) FROM subscriptions WHERE userId = u.id) AS following,
 	    (SELECT COUNT(id) FROM subscriptions WHERE targetUserId = u.id) AS followers,
@@ -239,17 +240,17 @@ SET QUOTED_IDENTIFIER ON
 GO
 
 CREATE PROCEDURE [dbo].[get_main_timeline]
-	@originatorId int,
+  @originatorId int,
   @topId int,
   @limit int = 20
 AS
 BEGIN
-	SET NOCOUNT ON;
+  SET NOCOUNT ON;
 
   SELECT TOP (@limit) result.* FROM
   (
     SELECT 
-      p.*, u.name, u.account,
+      p.*, u.name, u.account, u.emailHash as pictureId,
       dbo.count_post_comments(p.id) as commentsCount
     FROM posts AS p
 	    LEFT JOIN users AS u ON u.id = p.userId
@@ -285,7 +286,7 @@ BEGIN
   SELECT TOP (@limit) result.* FROM
   (
     SELECT 
-      p.*, u.name, u.account,
+      p.*, u.name, u.account, u.emailHash as pictureId,
       dbo.count_post_comments(p.id) as commentsCount
     FROM posts AS p
 	    LEFT JOIN users AS u ON u.id = p.userId
@@ -314,7 +315,7 @@ BEGIN
   SELECT TOP (@limit) result.* FROM
   (
     SELECT u.id, u.account, u.name, u.website, u.location, u.bio,
-      u.created,
+      u.created, u.emailHash as pictureId,
       dbo.count_user_posts(u.id) as posts,
 	    (SELECT COUNT(id) FROM subscriptions WHERE userId = u.id) AS following,
 	    (SELECT COUNT(id) FROM subscriptions WHERE targetUserId = u.id) AS followers,
@@ -347,7 +348,7 @@ CREATE PROCEDURE [dbo].[get_post]
 AS
 BEGIN
 	SET NOCOUNT ON;
-  SELECT TOP (1) p.*, u.name, u.account
+  SELECT TOP (1) p.*, u.name, u.account, u.emailHash as pictureId
   FROM posts AS p
 	  LEFT JOIN users AS u ON u.id = p.userId
   WHERE p.id = @postId;
@@ -366,7 +367,7 @@ AS
 BEGIN
 	SET NOCOUNT ON;
 
-  select TOP (1) u.id, u.account, u.name, u.email
+  select TOP (1) u.id, u.account, u.name, u.email, u.emailHash as pictureId
   from posts as p 
     left join users as u on u.id = p.userId 
   where p.id = @postId
@@ -386,7 +387,7 @@ AS
 BEGIN
 	SET NOCOUNT ON;
 
-  select u.id, u.account, u.name, u.website, u.bio,
+  select u.id, u.account, u.name, u.website, u.bio, u.emailHash as pictureId,
       dbo.count_user_posts(u.id) as posts,
 		  (select count(id) from subscriptions where userId = u.id) as following,
 		  (select count(id) from subscriptions where targetUserId = u.id) as followers,
@@ -410,7 +411,7 @@ SET QUOTED_IDENTIFIER ON
 GO
 
 CREATE PROCEDURE [dbo].[get_timeline] 
-	@targetAccount varchar(50),
+  @targetAccount varchar(50),
   @topId int,
   @limit int = 20
 AS
@@ -420,7 +421,7 @@ BEGIN
   SELECT TOP (@limit) result.* FROM
   (
     SELECT 
-      p.*, u.name, u.account,
+      p.*, u.name, u.account, u.emailHash as pictureId,
       dbo.count_post_comments(p.id) as commentsCount
     FROM posts AS p
 	    LEFT JOIN users AS u ON u.id = p.userId
@@ -447,7 +448,7 @@ BEGIN
   SELECT result.* FROM
   (
     SELECT 
-      p.*, u.name, u.account,
+      p.*, u.name, u.account, u.emailHash as pictureId,
       dbo.count_post_comments(p.id) as commentsCount
     FROM posts AS p
 	    LEFT JOIN users AS u ON u.id = p.userId
@@ -599,30 +600,6 @@ CREATE TABLE [dbo].[comments](
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 ) ON [PRIMARY] TEXTIMAGE_ON [PRIMARY]
 GO
-/****** Object:  Table [dbo].[pictures]    Script Date: 2/25/2013 8:19:50 PM ******/
-SET ANSI_NULLS ON
-GO
-SET QUOTED_IDENTIFIER ON
-GO
-SET ANSI_PADDING ON
-GO
-CREATE TABLE [dbo].[pictures](
-	[id] [int] IDENTITY(1,1) NOT NULL,
-	[userId] [int] NOT NULL,
-	[data] [nvarchar](max) NOT NULL,
-	[length] [int] NOT NULL,
-	[mime] [varchar](50) NOT NULL,
-	[lastModified] [datetime] NOT NULL,
-	[md5] [varchar](32) NOT NULL,
- CONSTRAINT [PK_pictures] PRIMARY KEY CLUSTERED 
-(
-	[id] ASC
-)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
-) ON [PRIMARY] TEXTIMAGE_ON [PRIMARY]
-
-GO
-SET ANSI_PADDING OFF
-GO
 /****** Object:  Table [dbo].[posts]    Script Date: 2/25/2013 8:19:50 PM ******/
 SET ANSI_NULLS ON
 GO
@@ -702,6 +679,7 @@ CREATE TABLE [dbo].[users](
 	[created] [datetime] NOT NULL,
 	[password] [varchar](128) NOT NULL,
 	[email] [varchar](256) NOT NULL,
+	[emailHash] [varchar](32) NOT NULL,
 	[location] [nvarchar](50) NULL,
 	[website] [nvarchar](256) NULL,
 	[bio] [nvarchar](160) NULL,
@@ -737,13 +715,13 @@ CREATE UNIQUE NONCLUSTERED INDEX [IX_account] ON [dbo].[users]
 GO
 ALTER TABLE [dbo].[comments] ADD  CONSTRAINT [DF_comments_created]  DEFAULT (getutcdate()) FOR [created]
 GO
-ALTER TABLE [dbo].[pictures] ADD  CONSTRAINT [DF_pictures_length]  DEFAULT ((0)) FOR [length]
-GO
 ALTER TABLE [dbo].[posts] ADD  CONSTRAINT [DF_posts_created]  DEFAULT (getutcdate()) FOR [created]
 GO
 ALTER TABLE [dbo].[subscriptions] ADD  CONSTRAINT [DF_subscriptions_isBlocked]  DEFAULT ((0)) FOR [isBlocked]
 GO
-ALTER TABLE [dbo].[users] ADD  CONSTRAINT [DF_users_created]  DEFAULT (getutcdate()) FOR [created]
+ALTER TABLE [dbo].[users] ADD  CONSTRAINT [DF_users_created] DEFAULT (getutcdate()) FOR [created]
+GO
+ALTER TABLE [dbo].[users] ADD  CONSTRAINT [DF_users_emailHash] DEFAULT ('00000000000000000000000000000000') FOR [emailHash]
 GO
 ALTER TABLE [dbo].[comments]  WITH CHECK ADD  CONSTRAINT [FK_comments_post] FOREIGN KEY([postId])
 REFERENCES [dbo].[posts] ([id])
@@ -755,12 +733,6 @@ ALTER TABLE [dbo].[comments]  WITH CHECK ADD  CONSTRAINT [FK_comments_user] FORE
 REFERENCES [dbo].[users] ([id])
 GO
 ALTER TABLE [dbo].[comments] CHECK CONSTRAINT [FK_comments_user]
-GO
-ALTER TABLE [dbo].[pictures]  WITH CHECK ADD  CONSTRAINT [FK_pictures_users] FOREIGN KEY([userId])
-REFERENCES [dbo].[users] ([id])
-ON DELETE CASCADE
-GO
-ALTER TABLE [dbo].[pictures] CHECK CONSTRAINT [FK_pictures_users]
 GO
 ALTER TABLE [dbo].[posts]  WITH CHECK ADD  CONSTRAINT [FK_posts_user] FOREIGN KEY([userId])
 REFERENCES [dbo].[users] ([id])

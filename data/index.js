@@ -30,22 +30,6 @@ module.exports.setAccountPassword = function (userId, password, callback) {
   provider.setAccountPassword(userId, password, callback);
 };
 
-module.exports.getProfilePictureId = function (userId, callback) {
-	provider.getProfilePictureId(userId, callback);
-};
-
-module.exports.updateProfilePicture = function (id, json, callback) {
-	provider.updateProfilePicture(id, json, callback);
-};
-
-module.exports.addProfilePicture = function (json, callback) {
-	provider.addProfilePicture(json, callback);
-};
-
-module.exports.getProfilePicture = function (account, callback) {
-	provider.getProfilePicture(account, callback);
-};
-
 module.exports.getPublicProfile = function (callerAccount, targetAccount, callback) {
 	provider.getPublicProfile(callerAccount, targetAccount, callback);
 };

@@ -29,7 +29,7 @@ CREATE TABLE IF NOT EXISTS `comments` (
 DELIMITER //
 CREATE PROCEDURE `get_account`(IN account VARCHAR(50))
 BEGIN
-SELECT u.*, get_user_roles(u.id) AS roles 
+SELECT u.*, emailHash as pictureId, get_user_roles(u.id) AS roles
 FROM users AS u 
 WHERE u.account = account
 LIMIT 1;
@@ -41,7 +41,7 @@ DELIMITER ;
 DELIMITER //
 CREATE PROCEDURE `get_account_by_id`(IN uid INT)
 BEGIN
-SELECT u.*, get_user_roles(u.id) AS roles 
+SELECT u.*, emailHash as pictureId, get_user_roles(u.id) AS roles
 FROM users AS u 
 WHERE u.id = uid
 LIMIT 1;
@@ -53,7 +53,7 @@ DELIMITER ;
 DELIMITER //
 CREATE PROCEDURE `get_comments`(IN `postId` INT)
 BEGIN
-SELECT c.*, u.account, u.name 
+SELECT c.*, u.account, u.name, u.emailHash as pictureId
 FROM comments AS c 
 	LEFT JOIN users AS u ON u.id = c.userId 
 WHERE c.postId = postId
@@ -73,7 +73,7 @@ SELECT u.id INTO targetId FROM users AS u  WHERE u.account = targetAccount;
 SELECT result.* FROM
 (
 SELECT
-	u.id, u.account, u.name, u.website, u.location, u.bio,
+	u.id, u.account, u.name, u.website, u.location, u.bio, u.emailHash as pictureId,
 	COUNT(p.id) as posts,
 	(SELECT COUNT(id) FROM subscriptions WHERE userId = u.id) AS following,
 	(SELECT COUNT(id) FROM subscriptions WHERE targetUserId = u.id) AS followers,
@@ -110,7 +110,7 @@ SELECT u.id INTO targetId FROM users AS u  WHERE u.account = targetAccount;
 SELECT result.* FROM
 (
 SELECT
-	u.id, u.account, u.name, u.website, u.location, u.bio,
+	u.id, u.account, u.name, u.website, u.location, u.bio, u.emailHash as pictureId,
 	COUNT(p.id) as posts,
 	(SELECT COUNT(id) FROM subscriptions WHERE userId = u.id) AS following,
 	(SELECT COUNT(id) FROM subscriptions WHERE targetUserId = u.id) AS followers,
@@ -143,7 +143,8 @@ CREATE PROCEDURE `get_main_timeline`(IN `originatorId` INT, IN topId INT)
 BEGIN
 SELECT result.* FROM
 (
-SELECT p.*, u.name, u.account, COUNT(c.id) AS commentsCount 
+SELECT p.*, u.name, u.account, u.emailHash as pictureId,
+    COUNT(c.id) AS commentsCount
 FROM posts AS p
 	LEFT JOIN users AS u ON u.id = p.userId
 	LEFT JOIN comments AS c ON c.postId = p.id
@@ -151,12 +152,11 @@ WHERE p.userId IN (
 	SELECT s.targetUserId FROM subscriptions AS s
 	WHERE s.userId = originatorId AND s.isBlocked = FALSE
 	UNION SELECT originatorId
-) -- AND (topId <= 0 || p.id < topId)
+)
 AND EXISTS (select id from posts where id = topId OR topId = 0)
 GROUP BY p.id
 ORDER BY p.created DESC
 ) as result
--- HAVING (topId <= 0 || result.id < topId);
 WHERE (topId <= 0 || result.id < topId)
 LIMIT 20;
 END//
@@ -171,7 +171,8 @@ DECLARE term VARCHAR(51);
 SET term = CONCAT('%@', originatorAccount, '%');
 SELECT result.* FROM
 (
-SELECT p.*, u.name, u.account, COUNT(c.id) AS commentsCount 
+SELECT p.*, u.name, u.account, u.emailHash as pictureId,
+    COUNT(c.id) AS commentsCount
 FROM posts AS p
 	LEFT JOIN users AS u ON u.id = p.userId
 	LEFT JOIN comments AS c ON c.postId = p.id
@@ -192,7 +193,7 @@ CREATE PROCEDURE `get_people`(IN `originatorId` INT, IN topId INT)
 BEGIN
 SELECT result.* FROM
 (
-SELECT u.id, u.account, u.name, u.website, u.location, u.bio,
+SELECT u.id, u.account, u.name, u.website, u.location, u.bio, u.emailHash as pictureId,
 	COUNT(p.id) AS posts,
 	(SELECT COUNT(id) FROM subscriptions WHERE userId = u.id) AS following,
 	(SELECT COUNT(id) FROM subscriptions WHERE targetUserId = u.id) AS followers,
@@ -222,7 +223,7 @@ DELIMITER ;
 DELIMITER //
 CREATE PROCEDURE `get_post_author`(IN postId INT)
 BEGIN
-select u.id, u.account, u.name, u.email
+select u.id, u.account, u.name, u.email, u.emailHash as pictureId
 from posts as p 
 left join users as u on u.id = p.userId 
 where p.id = postId
@@ -235,14 +236,14 @@ DELIMITER ;
 DELIMITER //
 CREATE PROCEDURE `get_post_full`(IN `postId` INT)
 BEGIN
-SELECT p.*, u.name, u.account -- , COUNT(c.id) AS commentsCount
+SELECT p.*, u.name, u.account, u.emailHash as pictureId
 FROM posts AS p
 	LEFT JOIN users AS u ON u.id = p.userId
 	LEFT JOIN comments AS c ON c.postId = p.id
 WHERE p.id = postId
 ORDER BY p.id;
 
-SELECT c.*, u.account, u.name 
+SELECT c.*, u.account, u.name, u.emailHash as pictureId
 FROM comments AS c 
 	LEFT JOIN users AS u ON u.id = c.userId 
 WHERE c.postId = postId 
@@ -256,7 +257,7 @@ DELIMITER //
 CREATE PROCEDURE `get_public_profile`(IN `originator` VARCHAR(50), IN `target` VARCHAR(50))
 BEGIN
 
-select u.id, u.account, u.name, u.website, u.bio,
+select u.id, u.account, u.name, u.website, u.bio, u.emailHash as pictureId,
 		count(p.id) as posts,
 		(select count(id) from subscriptions where userId = u.id) as following,
 		(select count(id) from subscriptions where targetUserId = u.id) as followers,
@@ -285,7 +286,8 @@ CREATE PROCEDURE `get_timeline`(IN `targetAccount` VARCHAR(50), IN topId INT)
 BEGIN
 SELECT result.* FROM
 (
-SELECT p.*, u.name, u.account, COUNT(c.id) AS commentsCount 
+SELECT p.*, u.name, u.account, u.emailHash as pictureId,
+    COUNT(c.id) AS commentsCount
 FROM posts AS p
 	LEFT JOIN users AS u ON u.id = p.userId
 	LEFT JOIN comments AS c ON c.postId = p.id
@@ -306,7 +308,8 @@ CREATE PROCEDURE `get_timeline_updates`(IN `originatorId` INT, IN topId INT)
 BEGIN
 SELECT result.* FROM
 (
-SELECT p.*, u.name, u.account, COUNT(c.id) AS commentsCount 
+SELECT p.*, u.name, u.account, u.emailHash as pictureId,
+    COUNT(c.id) AS commentsCount
 FROM posts AS p
 	LEFT JOIN users AS u ON u.id = p.userId
 	LEFT JOIN comments AS c ON c.postId = p.id
@@ -360,24 +363,6 @@ ORDER BY r.loweredName);
 RETURN result;
 END//
 DELIMITER ;
-
-
--- Dumping structure for table collabjs.pictures
-CREATE TABLE IF NOT EXISTS `pictures` (
-  `id` int(11) NOT NULL AUTO_INCREMENT,
-  `userId` int(11) NOT NULL,
-  `data` mediumblob NOT NULL,
-  `length` int(11) NOT NULL,
-  `mime` varchar(50) COLLATE utf8_unicode_ci NOT NULL,
-  `lastModified` datetime NOT NULL,
-  `md5` varchar(32) COLLATE utf8_unicode_ci NOT NULL,
-  PRIMARY KEY (`id`),
-  KEY `FK_Pictures_Users_idx` (`userId`),
-  CONSTRAINT `FK_Pictures_Users` FOREIGN KEY (`userId`) REFERENCES `users` (`Id`) ON DELETE CASCADE ON UPDATE NO ACTION
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
-
--- Data exporting was unselected.
-
 
 -- Dumping structure for table collabjs.posts
 CREATE TABLE IF NOT EXISTS `posts` (
@@ -459,6 +444,7 @@ CREATE TABLE IF NOT EXISTS `users` (
   `created` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
   `password` varchar(128) COLLATE utf8_unicode_ci NOT NULL,
   `email` varchar(256) COLLATE utf8_unicode_ci NOT NULL,
+  `emailHash` varchar(32) NOT NULL DEFAULT '00000000000000000000000000000000',
   `location` varchar(50) COLLATE utf8_unicode_ci DEFAULT NULL,
   `website` varchar(256) COLLATE utf8_unicode_ci DEFAULT NULL,
   `bio` varchar(160) COLLATE utf8_unicode_ci DEFAULT NULL,

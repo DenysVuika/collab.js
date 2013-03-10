@@ -1,7 +1,4 @@
 $(document).ready(function() {
-	if (!window.FileReader)
-		$('#browserWarning').css('display', '')
-	
 	$('#bio').countdown({
 		limit: 160,
 		init: function (counter) {
@@ -17,18 +14,3 @@ $(document).ready(function() {
 		}
 	});
 });
-
-function preview(input) {
-	if (!!window.FileReader && input.files && input.files[0]) {
-		$('#previewer').css('display', 'inline');
-		var reader = new window.FileReader();
-		reader.onload = function (e) {
-			$('#previewer')
-				.attr('src', e.target.result)
-				.width(128)
-				.height(128);
-		};
-
-		reader.readAsDataURL(input.files[0]);
-	}
-}

@@ -72,6 +72,7 @@ module.exports = function (app) {
           id: result.id,
           account: req.user.account,
           name: req.user.name,
+          pictureId: req.user.pictureId,
           content: req.body.content,
           created: date,
           commentsCount: 0,
@@ -130,6 +131,7 @@ module.exports = function (app) {
         comment.id = result.id;
         comment.account = req.user.account;
         comment.name = req.user.name;
+        comment.pictureId = req.user.pictureId;
         res.json(200, comment);
         // send email notification
         notifyOnPostCommented(req, comment);
@@ -161,7 +163,7 @@ function notifyOnPostCommented(req, comment) {
   		if (user.id == req.user.id) return;
   		var html = template_comment({
 		  		user: req.user.name,
-		  		profilePictureUrl: getProfilePictureUrl(req.user.account),
+		  		profilePictureUrl: getGravatarUrl(req.user.pictureId),
 		  		timelineUrl: getTimelineUrl(req.user.account),
 		  		postUrl: getPostUrl(comment.postId),
 		  		content: comment.content
@@ -189,8 +191,8 @@ function getTimelineUrl(account) {
   return config.hostname + '/people/' + account + '/timeline';
 }
 
-function getProfilePictureUrl(account) {
-  return config.hostname + '/accounts/' + account + '/picture';
+function getGravatarUrl(pictureId) {
+  return 'https://www.gravatar.com/avatar/' + pictureId + '?s=48';
 }
 
 // Require user authentication prior to accessing resources.

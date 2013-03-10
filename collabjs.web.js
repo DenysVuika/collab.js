@@ -7,8 +7,6 @@ var repository = require('./data')
 	, marked = require('marked')
   , Recaptcha = require('recaptcha').Recaptcha;
 
-var defaultProfilePicture = __dirname + '/public/images/profile_undefined.png';
-
 module.exports = function (app) {
 
   console.log('Initializing collabjs.web routes...');
@@ -136,52 +134,10 @@ module.exports = function (app) {
 
   app.post('/account', ensureAuthenticated, function (req, res) {
     var settings = req.body;
-    repository.updateAccount(req.user.id, settings, function (err, result) {
-      if (err) {
-        req.flash('error', 'Error updating account settings.');
-        res.redirect('/account');
-      } else {
-        req.flash('info', 'Account settings have been successfully updated.');
-        // try uploading or updating profile picture
-        if (req.files.picture && req.files.picture.length > 0) {
-          var file = req.files.picture;
-          repository.getProfilePictureId(req.user.id, function (err, result) {
-            if (err) {
-              req.flash('err', 'Internal error.');
-              res.redirect('/account');
-            } else {
-              // TODO: check mime type and length
-              fs.readFile(file.path, function (err, data) {
-                var md5 = crypto.createHash('md5').update(data).digest('hex');
-                var picture = {
-                  userId: req.user.id,
-                  data: data,
-                  length: file.length,
-                  mime: file.mime,
-                  lastModified: file.lastModifiedDate,
-                  md5: md5
-                };
-
-                if (result) {
-                  // update
-                  repository.updateProfilePicture(result.id, picture, function (err, result) {
-                    if (err) req.flash('error', 'Error updating picture.');
-                    res.redirect('/account');
-                  });
-                } else {
-                  // insert
-                  repository.addProfilePicture(picture, function (err, result) {
-                    if (err) req.flash('error', 'Error uploading picture.');
-                    res.redirect('/account');
-                  });
-                }
-              });
-            }
-          });
-        } else {
-          res.redirect('/account');
-        }
-      }
+    repository.updateAccount(req.user.id, settings, function (err) {
+      if (err) req.flash('error', 'Error updating account settings.');
+      else req.flash('info', 'Account settings have been successfully updated.');
+      res.redirect('/account');
     });
   });
 
@@ -231,25 +187,24 @@ module.exports = function (app) {
     });
   });
 
-  //app.get('/accounts/:account/picture', requireAuthenticated, function (req, res) {
-  app.get('/accounts/:account/picture', function (req, res) {
-    repository.getProfilePicture(req.params.account, function (err, file) {
-      if (err || !file) {
-        res.set('ETag', '0');
-        res.sendfile(defaultProfilePicture);
-      } else {
-        if (req.get('if-none-match') === file.md5) {
-          res.send(304); // Not modified
-        } else {
-          res.set('Content-Type', file.mime)
-            .set('Content-Length', file.length)
-            .set('Last-Modified', file.lastModified)
-            .set('ETag', file.md5);
-          res.send(file.data);
-        }
-      }
-    });
-  });
+//  app.get('/accounts/:account/picture', function (req, res) {
+//    repository.getProfilePicture(req.params.account, function (err, file) {
+//      if (err || !file) {
+//        res.set('ETag', '0');
+//        res.sendfile(defaultProfilePicture);
+//      } else {
+//        if (req.get('if-none-match') === file.md5) {
+//          res.send(304); // Not modified
+//        } else {
+//          res.set('Content-Type', file.mime)
+//            .set('Content-Length', file.length)
+//            .set('Last-Modified', file.lastModified)
+//            .set('ETag', file.md5);
+//          res.send(file.data);
+//        }
+//      }
+//    });
+//  });
 
   app.get('/accounts/:account/profile', requireAuthenticated, function (req, res) {
     repository.getPublicProfile(req.user.account, req.params.account, function (err, result) {

@@ -46,7 +46,7 @@ style(type='text/css')
 div(style='padding:9px 14px')
   div
     a(href='/people/#{profile.account}/timeline')
-      img.profile-user-picture(src='/accounts/#{profile.account}/picture', alt='#{profile.name}')
+      img.profile-user-picture(src='https://www.gravatar.com/avatar/#{profile.pictureId}?s=48', alt='#{profile.name}')
     div.profile-header
       a(href='/people/#{profile.account}/timeline', style='text-decoration: none')
         h2.profile-user-name= profile.name
