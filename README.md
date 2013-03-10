@@ -9,8 +9,8 @@ sponsored by  [Raythos Interactive](http://raythos.com/)
 
 ## Major features
 
-- Account registration with reCaptcha support
-- User account settings and photo management
+- Account registration with [reCaptcha](http://www.google.com/recaptcha) support
+- User account settings and [Gravatar](http://www.gravatar.com) support
 - News timeline with user posts (status updates)
 - Public user profiles
 - Following/Unfollowing users
