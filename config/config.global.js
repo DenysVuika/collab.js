@@ -37,7 +37,7 @@ config.smtp.noreply = 'collab.js <noreply@collabjs.org>';
 
 // recaptcha settings
 config.recaptcha = {};
-// config.recaptcha.enabled = true; // not implemented yet
+config.recaptcha.enabled = false;
 config.recaptcha.publicKey = '6LeWatcSAAAAABpe4Xkm1-fKKOnCG3hF0Z_pfwQ1'; // localhost
 config.recaptcha.privateKey = '6LeWatcSAAAAAE6MsdnnV6gA8fzSoUmmPHG8ZSLq'; // localhost
 

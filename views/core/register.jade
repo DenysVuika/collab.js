@@ -47,9 +47,10 @@ block content
             data-validation-required-message='Password confirmation is required'
             data-validation-matches-match='password',
             data-validation-matches-message='Must match password entered above')
-      div.control-group
-        div.controls
-          != recaptcha_form
+      if (recaptcha)
+        div.control-group
+          div.controls
+            != recaptcha_form
       div.form-actions(style='background-color:inherit;')
         input.m-btn.blue(type='submit', value='Submit')
 

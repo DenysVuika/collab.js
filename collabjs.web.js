@@ -5,7 +5,13 @@ var repository = require('./data')
 	, passport = require('passport')
 	, passwordHash = require('password-hash')
 	, marked = require('marked')
+<<<<<<< HEAD
   , Recaptcha = require('recaptcha').Recaptcha;
+=======
+  , utils = require('./collabjs.utils.js')
+  , Recaptcha = require('recaptcha').Recaptcha
+  , NullRecaptcha = utils.NullRecaptcha;
+>>>>>>> origin/dev
 
 module.exports = function (app) {
 
@@ -38,15 +44,22 @@ module.exports = function (app) {
   });
 
   app.get('/register', function (req, res) {
-    var recaptcha = new Recaptcha(config.recaptcha.publicKey, config.recaptcha.privateKey);
-    res.render('core/register', {
+    // define variables for the 'register' form
+    var locals = {
       settings: config.ui,
       title: 'Register',
       user: req.user,
       message: req.flash('error'),
       invitation: config.invitation.enabled,
-      recaptcha_form: recaptcha.toHTML()
-    })
+      recaptcha: config.recaptcha.enabled
+    };
+    // generate appropriate html content if recaptcha is enabled
+    if (config.recaptcha.enabled) {
+      var recaptcha = new Recaptcha(config.recaptcha.publicKey, config.recaptcha.privateKey);
+      locals.recaptcha_form = recaptcha.toHTML();
+    }
+
+    res.render('core/register', locals);
   });
 
   app.post('/register', function (req, res) {
@@ -59,14 +72,19 @@ module.exports = function (app) {
         return res.redirect('/register');
       }
     }
-    // extract recaptcha-specific data
-    var data = {
-      remoteip: req.connection.remoteAddress,
-      challenge: body.recaptcha_challenge_field,
-      response: body.recaptcha_response_field
-    };
+    // instantiate a stub in case reCaptcha feature is disabled
+    var recaptcha = new NullRecaptcha();
+    // create real reCaptcha settings if enabled
+    if (config.recaptcha.enabled) {
+      // extract recaptcha-specific data
+      var data = {
+        remoteip: req.connection.remoteAddress,
+        challenge: body.recaptcha_challenge_field,
+        response: body.recaptcha_response_field
+      };
+      recaptcha = new Recaptcha(config.recaptcha.publicKey, config.recaptcha.privateKey, data);
+    }
 
-    var recaptcha = new Recaptcha(config.recaptcha.publicKey, config.recaptcha.privateKey, data);
     // verify recaptcha
     recaptcha.verify(function (success, err) {
       if (!success) {
@@ -169,7 +187,6 @@ module.exports = function (app) {
     }
 
     // verify old password
-    //var oldHash = passwordHash.generate(settings.pwdOld);
     if (!passwordHash.verify(settings.pwdOld, req.user.password)) {
       req.flash('error', 'Invalid old password.');
       return res.redirect('/account/password');
