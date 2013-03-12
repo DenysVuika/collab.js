@@ -28,7 +28,7 @@ sponsored by  [Raythos Interactive](http://raythos.com/)
 
 ## Supported databases
 
-- Microsoft SQL Server 2012 (full or express edition)
+- Microsoft SQL Server 2008/2012 (full or express edition)
 - MySQL Server
 
 Database schemas can be found at **```data/schema```** folder.
