@@ -5,13 +5,9 @@ var repository = require('./data')
 	, passport = require('passport')
 	, passwordHash = require('password-hash')
 	, marked = require('marked')
-<<<<<<< HEAD
-  , Recaptcha = require('recaptcha').Recaptcha;
-=======
   , utils = require('./collabjs.utils.js')
   , Recaptcha = require('recaptcha').Recaptcha
   , NullRecaptcha = utils.NullRecaptcha;
->>>>>>> origin/dev
 
 module.exports = function (app) {
 
