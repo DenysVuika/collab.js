@@ -74,4 +74,35 @@ That's it, you can now run the server:
 
 ```node server.js```
 
-*Default invitation code for registration form is ```123123123```, you can change it later on within ```config/config.global.js``` file.*
+## Configuration
+
+It is possible (and recommended) having multiple configurations for running and testing collab.js. 
+Default configuration layer consists of the following files:
+
+* ```index.js``` - default entry point
+* ```config.global.js``` - global application settings
+* ```config.default.js``` - custom application settings
+
+Common configuration loading workflow is as follows: 
+
+1. ```index.js``` checks ```NODE_CFG``` environment variable to determine whether custom configuration file should be loaded, and takes ```config.default.js``` as a fallback resource
+2. ```config.default.js``` inherits ```config.global.js``` structure and overrides global settings with custom values (if any)
+
+Out-of-box implementation of [config.default.js](config/config.default.js) may look similar to the following:
+
+```javascript
+var config = require('./config.global');
+
+// TODO: override global settings here
+
+// configure data provider
+config.data.provider = 'collabjs.data.mysql';
+config.data.host = 'localhost';
+config.data.database = 'collabjs';
+config.data.user = '<user>';
+config.data.password = '<password>';
+
+module.exports = config;
+```
+
+*For the full list of available global settings please refer to the contents of [config.global.js](config/config.global.js) file.*
