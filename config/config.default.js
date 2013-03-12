@@ -2,9 +2,9 @@ var config = require('./config.global');
 
 // OVERRIDE GLOBAL SETTINGS HERE
 
-// DATA PROVIDER CONFIGURATION SAMPLES
-
+//
 // SAMPLE #1: Local database
+//
 /*
 config.data.provider = 'collabjs.data.mysql';
 config.data.host = 'localhost';
@@ -13,8 +13,12 @@ config.data.user = '<user>';
 config.data.password = '<password>';
 */
 
-// SAMPLE #2: Red Hat OpenShift Configuration (MySQL cartridge)
+//
+// SAMPLE #2: Red Hat OpenShift Configuration (with MySQL cartridge)
+//
 /*
+config.env.ipaddress = process.env.OPENSHIFT_INTERNAL_IP || '127.0.0.1';
+config.env.port = process.env.OPENSHIFT_INTERNAL_PORT || 8080;
 config.data.provider = 'collabjs.data.mysql';
 config.data.host = process.env.OPENSHIFT_MYSQL_DB_HOST;
 config.data.database = 'collabjs';

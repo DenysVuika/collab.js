@@ -1,3 +1,7 @@
+#!/bin/env node
+// for more details on the command above please refer to the following resource:
+// http://stackoverflow.com/questions/15061001/what-do-bin-env-mean-in-node-js
+
 /**
  * Module dependencies.
  */

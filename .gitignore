@@ -18,7 +18,7 @@ npm-debug.log
 iisnode/
 node_modules/
 
-# masonryjs-specific files
+# collab.js files
 config/*.js
 !config/index.js
 !config/config.global.js

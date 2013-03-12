@@ -19,7 +19,9 @@
     "azure",
     "boilerplate",
     "express",
-    "node.js"
+    "node.js",
+    "openshift",
+    "application"
   ],
   "dependencies": {
     "express": "3.0.4",
