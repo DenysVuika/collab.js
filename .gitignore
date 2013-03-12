@@ -20,5 +20,6 @@ node_modules/
 
 # masonryjs-specific files
 config/*.js
+!config/index.js
 !config/config.global.js
 !config/config.default.js
