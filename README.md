@@ -106,3 +106,36 @@ module.exports = config;
 ```
 
 *For the full list of available global settings please refer to the contents of [config.global.js](config/config.global.js) file.*
+
+### Creating custom configurations
+
+On practice you may want having multiple different configurations in order to test multiple settings, i.e.
+different database connections, local or remote storage, etc. Follow the steps below in order to create a new
+configuration file.
+
+* create a file named ```config.debug.js``` and put it into the **/config** folder
+* open the file with your favorite text editor and override some global settings, for example enabling invitation code for registration form
+
+```javascript
+var config = require('./config.global');
+// enable invitation
+config.invitation.enabled = true;
+config.invitation.code = '12345';
+// export settings
+module.exports = config;
+```
+
+* assign a ```NODE_CFG``` environment varible with ```debug``` value (name of your configuration file without 'config.' prefix
+and '.js' extension.
+
+####Running on OSX
+
+It is possible exporting environment variables right from the command line like shown below:
+
+```NODE_CFG=debug node server.js```
+
+####Running on Windows
+
+If you are using [WebStorm](http://www.jetbrains.com/webstorm/) for node.js development on Windows then you can edit your project settings to define 
+```NODE_CFG=debug``` environment variable so that every time you run/debug your project the custom configuration
+file is used.
