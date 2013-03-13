@@ -82,6 +82,10 @@ module.exports.getTimelineUpdates = function (userId, topId, callback) {
 	provider.getTimelineUpdates(userId, topId, callback);
 };
 
+module.exports.getPostsByHashTag = function (hashtag, topId, callback) {
+  provider.getPostsByHashTag(hashtag, topId, callback);
+}
+
 module.exports.addComment = function (json, callback) {
 	provider.addComment(json, callback);
 };

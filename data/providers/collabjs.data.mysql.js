@@ -212,6 +212,20 @@ Provider.prototype = {
       }
     });
   },
+  getPostsByHashTag: function (hashtag, topId, callback) {
+    var tag = hashtag;
+    if (tag.indexOf('#') != 0)
+      tag = '#' + tag;
+    this.connection.query('CALL get_posts_by_hashtag(?,?)', [tag, topId], function (err, result) {
+      if (err) {
+        console.log(err);
+        callback(err, null);
+      } else {
+        var rows = result[0];
+        callback(err, rows)
+      }
+    });
+  },
   addComment: function (json, callback) {
     this.connection.query('INSERT INTO comments SET ?', json, function (err, result) {
       if (err) {

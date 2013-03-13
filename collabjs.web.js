@@ -306,6 +306,31 @@ module.exports = function (app) {
     renderHelpArticle(article, req, res);
   });
 
+  app.get('/search', ensureAuthenticated, function (req, res) {
+
+//    if (req.query.q) {
+//      console.log('q found: ' + req.query.q);
+//    }
+//
+//    if (req.query.src) {
+//      console.log('src found: ' + req.query.src);
+//    }
+
+    // TODO: validate input
+
+    var q = req.query.q;
+    if (q.indexOf('#') != 0)
+      q = '#' + q;
+
+    return res.render('core/search-posts', {
+      settings: config.ui,
+      title: 'Search',
+      user: req.user,
+      search_q: encodeURIComponent(q),
+      search_src: encodeURIComponent(req.query.src)
+    });
+  });
+
 }; // module.exports
 
 function renderHelpArticle(fileName, req, res) {

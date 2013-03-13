@@ -466,6 +466,32 @@ CREATE TABLE IF NOT EXISTS `user_roles` (
   CONSTRAINT `FK_ur_role` FOREIGN KEY (`roleId`) REFERENCES `roles` (`id`) ON DELETE NO ACTION ON UPDATE NO ACTION
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 
+-- v.0.2.0
+
+DELIMITER //
+CREATE PROCEDURE get_posts_by_hashtag (
+	IN `tag` VARCHAR(250),
+	IN `topId` INT
+)
+BEGIN
+DECLARE term VARCHAR(256);
+SET term = CONCAT('%', `tag`, '%');
+SELECT result.* FROM
+(
+SELECT p.*, u.name, u.account, COUNT(c.id) AS commentsCount
+FROM posts AS p
+	LEFT JOIN users AS u ON u.id = p.userId
+	LEFT JOIN comments AS c ON c.postId = p.id
+WHERE p.content LIKE term
+AND EXISTS (select id from posts where id = topId OR topId = 0)
+GROUP BY p.id
+ORDER BY p.created DESC
+) AS result
+WHERE (topId <= 0 || result.id < topId)
+LIMIT 20;
+END//
+DELIMITER ;
+
 -- Data exporting was unselected.
 /*!40101 SET SQL_MODE=IFNULL(@OLD_SQL_MODE, '') */;
 /*!40014 SET FOREIGN_KEY_CHECKS=IF(@OLD_FOREIGN_KEY_CHECKS IS NULL, 1, @OLD_FOREIGN_KEY_CHECKS) */;

@@ -760,3 +760,30 @@ REFERENCES [dbo].[users] ([id])
 GO
 ALTER TABLE [dbo].[user_roles] CHECK CONSTRAINT [FK_ur_user]
 GO
+
+-- v0.2.0
+
+CREATE PROCEDURE get_posts_by_hashtag
+  @query nvarchar(256),
+  @topId int,
+  @limit int = 20
+AS
+BEGIN
+  SET NOCOUNT ON;
+  DECLARE @hashtag VARCHAR(256);
+  SET @hashtag = '%' + @query + '%';
+
+  SELECT TOP (@limit) result.* FROM
+  (
+    SELECT
+      p.*, u.name, u.account, u.emailHash as pictureId,
+      dbo.count_post_comments(p.id) as commentsCount
+    FROM posts AS p
+	    LEFT JOIN users AS u ON u.id = p.userId
+    WHERE p.content LIKE @hashtag
+    AND EXISTS (select id from posts where id = @topId OR @topId = 0)
+  ) AS result
+  WHERE (@topId <= 0 OR result.id < @topId)
+  ORDER BY result.created DESC
+END
+GO

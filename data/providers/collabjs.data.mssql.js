@@ -241,6 +241,17 @@ Provider.prototype = {
       } else callback(err, result);
     });
   },
+  getPostsByHashTag: function (hashtag, topId, callback) {
+    var tag = hashtag;
+    if (tag.indexOf('#') != 0)
+      tag = '#' + tag;
+    sql.query(this.connection, 'exec get_posts_by_hashtag ?,?', [tag, topId], function (err, result) {
+      if (err) {
+        console.log(err);
+        callback(err, null);
+      } else callback(err, result);
+    });
+  },
   addComment: function (json, callback) {
     /*var comment = {
      userId: req.user.id,

@@ -153,6 +153,18 @@ module.exports = function (app) {
     });
   });
 
+  app.get('/api/search', requireAuthenticated, function (req, res) {
+    if (!req.query.q || !req.query.src)
+      res.send(400);
+    else {
+      var _topId = (req.query.topId && req.query.topId > 0) ? req.query.topId : 0;
+      repository.getPostsByHashTag(req.query.q, _topId, function (err, result) {
+        if (err) res.send(400);
+        else res.json(200, result);
+      });
+    }
+  });
+
 }; // module.exports
 
 function notifyOnPostCommented(req, comment) {
