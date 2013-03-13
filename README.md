@@ -7,6 +7,20 @@ sponsored by  [Raythos Interactive](http://raythos.com/)
 
 [![Raythos Interactive](public/images/raythos.png)](http://raythos.com)
 
+## Table of Contents
+
+- [Features](#major-features)
+- [Supported Databases](#supported-databases)
+- [Supported Environments](#supported-environments)
+- [First Run](#first-run)
+  * [Configuring](#configuring)
+  * [Installing SQL driver for node.js](#installing-microsof-driver-for-nodejs-for-sql-server-optional-windows-only)
+  * [Running](#running)
+- [Configuration](#configuration)
+  * [Creating custom configurations](#creating-custom-configurations)
+      - [Running on OSX](#running-on-osx)
+      - [Running on Windows](#running-on-windows)
+
 ## Major features
 
 - Account registration with [reCaptcha](http://www.google.com/recaptcha) support
