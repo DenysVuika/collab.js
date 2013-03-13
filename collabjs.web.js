@@ -132,7 +132,8 @@ module.exports = function (app) {
       user: req.user,
       postId: req.params.postId,
       //error: 'Post not found'
-      error: false
+      error: false,
+      requestPath: '/timeline' // keep 'Timeline' selected at sidebar
     });
   });
 
@@ -260,7 +261,8 @@ module.exports = function (app) {
       settings: config.ui,
       title: req.params.account + ': followers',
       user: req.user,
-      account: req.params.account
+      account: req.params.account,
+      requestPath: '/people' // keep 'People' selected at sidebar
     });
   });
 
@@ -269,7 +271,8 @@ module.exports = function (app) {
       settings: config.ui,
       title: req.params.account + ': following',
       user: req.user,
-      account: req.params.account
+      account: req.params.account,
+      requestPath: '/people' // keep 'People' selected at sidebar
     });
   });
 
@@ -278,7 +281,8 @@ module.exports = function (app) {
       settings: config.ui,
       title: req.params.account,
       user: req.user,
-      account: req.params.account
+      account: req.params.account,
+      requestPath: '/people' // keep 'People' selected at sidebar
     });
   });
 
@@ -307,17 +311,7 @@ module.exports = function (app) {
   });
 
   app.get('/search', ensureAuthenticated, function (req, res) {
-
-//    if (req.query.q) {
-//      console.log('q found: ' + req.query.q);
-//    }
-//
-//    if (req.query.src) {
-//      console.log('src found: ' + req.query.src);
-//    }
-
     // TODO: validate input
-
     var q = req.query.q;
     if (q.indexOf('#') != 0)
       q = '#' + q;
@@ -342,7 +336,8 @@ function renderHelpArticle(fileName, req, res) {
 			  title: 'Help',
 			  user: req.user, 
 			  message: req.flash('error'),
-			  content: 'Content not found.'
+			  content: 'Content not found.',
+        requestPath: '/help' // keep 'Help' selected at sidebar
 			})
 		} else {
 			res.render('core/help', {
@@ -350,7 +345,8 @@ function renderHelpArticle(fileName, req, res) {
 			  title: 'Help',
 			  user: req.user, 
 			  message: req.flash('error'),
-			  content: marked(data)
+			  content: marked(data),
+        requestPath: '/help' // keep 'Help' selected at sidebar
 			})
 		}
 	});

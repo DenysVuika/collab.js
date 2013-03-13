@@ -25,10 +25,14 @@ html
 
   script(type='text/javascript', src='/lib/bootstrap/js/bootstrap.min.js')
   block scripts
+  // initialize request path variable if not defined
+  if (typeof(requestPath) === 'undefined')
+    requestPath = '';
+
   script(type='text/javascript')
     $(function() {
       // Synchronize sidebar/header selection with current request path
-      var path = window.location.pathname;
+      var path = '#{requestPath}' || window.location.pathname;
       $('.nav li a[href="' + path + '"]').parents('li').addClass('active');
     });
 
