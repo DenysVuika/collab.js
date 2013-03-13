@@ -20,6 +20,8 @@ sponsored by  [Raythos Interactive](http://raythos.com/)
   * [Creating custom configurations](#creating-custom-configurations)
       - [Running on OSX](#running-on-osx)
       - [Running on Windows](#running-on-windows)
+- [Deployment](#deployment)
+  * [RedHat OpenShift](#redhat-openshift)
 
 ## Major features
 
@@ -153,3 +155,9 @@ It is possible exporting environment variables right from the command line like 
 If you are using [WebStorm](http://www.jetbrains.com/webstorm/) for node.js development on Windows then you can edit your project settings to define 
 ```NODE_CFG=debug``` environment variable so that every time you run/debug your project the custom configuration
 file is used.
+
+## Deployment
+
+This section contains various deployment scenarios and hints.
+
+### RedHat OpenShift
