@@ -1,3 +1,5 @@
+'use strict';
+
 var config = require('../../config')
 	, sql = require('msnodesql')
   , passwordHash = require('password-hash')
@@ -16,16 +18,16 @@ function Provider() {
 Provider.prototype = {
   getAccountById: function (id, callback) {
     sql.query(this.connection, 'exec get_account_by_id ?', [id], function (err, result) {
-      if (err) return callback(err, null);
-      if (result.length > 0) callback(err, result[0]);
-      else callback(err, null);
+      if (err) { return callback(err, null); }
+      if (result.length > 0) { callback(err, result[0]); }
+      else { callback(err, null); }
     });
   },
   getAccount: function (account, callback) {
     sql.query(this.connection, 'exec get_account ?', [account], function (err, result) {
-      if (err) return callback(err, null);
-      if (result.length > 0) callback(err, result[0]);
-      else callback(err, null);
+      if (err) { return callback(err, null); }
+      if (result.length > 0) { callback(err, result[0]); }
+      else { callback(err, null); }
     });
   },
   createAccount: function (json, callback) {
@@ -41,11 +43,13 @@ Provider.prototype = {
       if (err) {
         console.log(err);
         var errorMessage = 'Error creating account.';
-        if (err.code === 2601)
+        if (err.code === 2601) {
           errorMessage = 'User with such account already exists.';
-        return callback(errorMessage);
+        }
+        callback(errorMessage);
+      } else {
+        callback(null, { id: result[0].insertId });
       }
-      callback(null, { id: result[0].insertId });
     });
   },
   updateAccount: function (id, json, callback) {
@@ -58,33 +62,33 @@ Provider.prototype = {
     }
     // update or reset user.location
     if (json.location && json.location.length > 0) {
-      if (params.length > 0) command = command + ', ';
+      if (params.length > 0) { command = command + ', '; }
       command = command + 'location = ?';
       params.push(json.location);
     } else {
-      if (params.length > 0) command = command + ', ';
+      if (params.length > 0) { command = command + ', '; }
       command = command + 'location = null';
     }
     // update or reset user.website
     if (json.website && json.website.length > 0) {
-      if (params.length > 0) command = command + ', ';
+      if (params.length > 0) { command = command + ', '; }
       command = command + 'website = ?';
       params.push(json.website);
     } else {
-      if (params.length > 0) command = command + ', ';
+      if (params.length > 0) { command = command + ', '; }
       command = command + 'website = null';
     }
     // update or reset user.bio
     if (json.bio && json.bio.length > 0) {
-      if (params.length > 0) command = command + ', ';
+      if (params.length > 0) { command = command + ', '; }
       command = command + 'bio = ?';
       params.push(json.bio);
     } else {
-      if (params.length > 0) command = command + ', ';
+      if (params.length > 0) { command = command + ', '; }
       command = command + 'bio = null';
     }
 
-    if (params.length == 0) return callback(null, null);
+    if (params.length === 0) { return callback(null, null); }
     command = command + ' WHERE id = ?';
     params.push(id);
 
@@ -107,7 +111,7 @@ Provider.prototype = {
 //  },
   setAccountPassword: function (userId, password, callback) {
     var self = this;
-    if (!userId || !password || password.length == 0) {
+    if (!userId || !password || password.length === 0) {
       return callback('Error setting account password.', null);
     }
     self.getAccountById(userId, function (err, result) {
@@ -128,22 +132,24 @@ Provider.prototype = {
   },
   getPublicProfile: function (callerAccount, targetAccount, callback) {
     sql.query(this.connection, 'exec get_public_profile ?, ?', [callerAccount, targetAccount], function (err, result) {
-      if (err || result.length == 0) {
+      if (err || result.length === 0) {
         console.log('Error getting public profile. ' + err);
         callback(err, null);
-      } else callback(err, result[0]);
+      } else {
+        callback(err, result[0]);
+      }
     });
   },
   followAccount: function (callerId, targetAccount, callback) {
     sql.query(this.connection, 'exec follow_account ?,?', [callerId, targetAccount], function (err, result) {
       console.log('callerId: ' + callerId + ', targetAccount: ' + targetAccount);
-      if (err) console.log('Error following account. ' + err);
+      if (err) { console.log('Error following account. ' + err); }
       callback(err, result);
     });
   },
   unfollowAccount: function (callerId, targetAccount, callback) {
     sql.query(this.connection, 'exec unfollow_account ?,?', [callerId, targetAccount], function (err, result) {
-      if (err) console.log('Error unfollowing account.' + err);
+      if (err) { console.log('Error unfollowing account.' + err); }
       callback(err, result);
     });
   },
@@ -152,7 +158,7 @@ Provider.prototype = {
       if (err) {
         console.log('Error getting mentions. ' + err);
         callback(err, null);
-      } else callback(err, result);
+      } else { callback(err, result); }
     });
   },
   getPeople: function (callerId, topId, callback) {
@@ -160,7 +166,7 @@ Provider.prototype = {
       if (err) {
         console.log('Error getting people. ' + err);
         callback(err, null);
-      } else callback(err, result);
+      } else { callback(err, result); }
     });
   },
   getFollowers: function (callerId, targetAccount, topId, callback) {
@@ -168,7 +174,7 @@ Provider.prototype = {
       if (err) {
         console.log('Error getting followers. ' + err);
         callback(err, null);
-      } else callback(err, result);
+      } else { callback(err, result); }
     });
   },
   getFollowing: function (callerId, targetAccount, topId, callback) {
@@ -176,7 +182,7 @@ Provider.prototype = {
       if (err) {
         console.log('Error getting following. ' + err);
         callback(err, null);
-      } else callback(err, result);
+      } else { callback(err, result); }
     });
   },
   getTimeline: function (targetAccount, topId, callback) {
@@ -184,7 +190,7 @@ Provider.prototype = {
       if (err) {
         console.log('Error getting timeline. ' + err);
         callback(err, null);
-      } else callback(err, result);
+      } else { callback(err, result); }
     });
   },
   addPost: function (json, callback) {
@@ -215,11 +221,11 @@ Provider.prototype = {
   },
   deletePost: function (postId, userId, callback) {
     var command = 'DELETE FROM posts WHERE id = ? AND userId = ?';
-    sql.query(this.connection, command, [postId, userId], function (err, result) {
+    sql.query(this.connection, command, [postId, userId], function (err) {
       if (err) {
         console.log('Error removing post. ' + err);
         callback(err, false);
-      } else callback(err, true);
+      } else { callback(err, true); }
     });
   },
   getTimelineUpdatesCount: function (userId, topId, callback) {
@@ -238,18 +244,19 @@ Provider.prototype = {
       if (err) {
         console.log('Error getting timeline updates. ' + err);
         callback(err, null);
-      } else callback(err, result);
+      } else { callback(err, result); }
     });
   },
   getPostsByHashTag: function (hashtag, topId, callback) {
     var tag = hashtag;
-    if (tag.indexOf('#') != 0)
+    if (tag.indexOf('#') !== 0) {
       tag = '#' + tag;
+    }
     sql.query(this.connection, 'exec get_posts_by_hashtag ?,?', [tag, topId], function (err, result) {
       if (err) {
         console.log(err);
         callback(err, null);
-      } else callback(err, result);
+      } else { callback(err, result); }
     });
   },
   addComment: function (json, callback) {
@@ -276,7 +283,7 @@ Provider.prototype = {
         console.log('Error getting post. ' + err);
         callback(err, null);
       } else {
-        if (result.length == 0) return callback(err, null);
+        if (result.length === 0) { return callback(err, null); }
         var post = result[0];
         sql.query(self.connection, 'exec get_comments ?', [postId], function (err, result) {
           if (err) {
@@ -312,7 +319,7 @@ Provider.prototype = {
         console.log('Error getting post author. ' + err);
         callback(err, null);
       } else {
-        if (result.length == 0) {
+        if (result.length === 0) {
           console.log('Post author not found. PostId: ' + postId);
           return callback(err, null);
         }

@@ -1,3 +1,5 @@
+'use strict';
+
 var config = require('../config');
 /*
  * GET home page.
@@ -5,12 +7,12 @@ var config = require('../config');
 
 exports.index = function (req, res) {
   if (req.isAuthenticated()) {
-  	res.redirect('/timeline');
+    res.redirect('/timeline');
   } else {
-  	res.render('core/index', {
-  		settings: config.ui,
-  		title: config.ui.brand,
-  		user: req.user
-  	});
+    res.render('core/index', {
+      settings: config.ui,
+      title: config.ui.brand,
+      user: req.user
+    });
   }
 };

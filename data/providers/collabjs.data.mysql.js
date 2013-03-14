@@ -1,3 +1,5 @@
+'use strict';
+
 var config = require('../../config')
 	, mysql = require('mysql')
   , passwordHash = require('password-hash')
@@ -16,18 +18,18 @@ function Provider() {
 Provider.prototype = {
   getAccountById: function (id, callback) {
     this.connection.query('CALL get_account_by_id(?)', [id], function (err, result) {
-      if (err) return callback(err, null);
+      if (err) { return callback(err, null); }
       var rows = result[0];
-      if (rows.length > 0) callback(err, rows[0]);
-      else callback(err, null);
+      if (rows.length > 0) { callback(err, rows[0]); }
+      else { callback(err, null); }
     });
   },
   getAccount: function (account, callback) {
     this.connection.query('CALL get_account(?)', [account], function (err, result) {
-      if (err) return callback(err, null);
+      if (err) { return callback(err, null); }
       var rows = result[0];
-      if (rows.length > 0) callback(err, rows[0]);
-      else callback(err, null);
+      if (rows.length > 0) { callback(err, rows[0]); }
+      else { callback(err, null); }
     });
   },
   createAccount: function (json, callback) {
@@ -36,8 +38,9 @@ Provider.prototype = {
       if (err) {
         console.log(err);
         var errorMessage = 'Error creating account.';
-        if (err.code === 'ER_DUP_ENTRY')
+        if (err.code === 'ER_DUP_ENTRY') {
           errorMessage = 'User with such account already exists.';
+        }
         return callback(errorMessage);
       } else {
         callback(null, { id: result.insertId });
@@ -47,8 +50,9 @@ Provider.prototype = {
   updateAccount: function (id, json, callback) {
     var fields = {};
     // update user.name
-    if (json.name && json.name.length > 0)
+    if (json.name && json.name.length > 0) {
       fields.name = json.name;
+    }
     // update or reset user.location
     fields.location = json.location ? json.location : '';
     // update or reset user.website
@@ -57,13 +61,13 @@ Provider.prototype = {
     fields.bio = json.bio ? json.bio : '';
 
     this.connection.query('UPDATE users SET ? WHERE id = ' + this.connection.escape(id), fields, function (err, result) {
-      if (err) console.log('Error updating account settings. ' + err);
+      if (err) { console.log('Error updating account settings. ' + err); }
       callback(err, result);
     });
   },
   setAccountPassword: function (userId, password, callback) {
     var self = this;
-    if (!userId || !password || password.length == 0) {
+    if (!userId || !password || password.length === 0) {
       return callback('Error setting account password.', null);
     }
     self.getAccountById(userId, function (err, result) {
@@ -84,7 +88,7 @@ Provider.prototype = {
   },
   getPublicProfile: function (callerAccount, targetAccount, callback) {
     this.connection.query('CALL get_public_profile(?,?)', [callerAccount, targetAccount], function (err, result) {
-      if (err || !result || result.length != 2 || result[0].length == 0) {
+      if (err || !result || result.length !== 2 || result[0].length === 0) {
         console.log('Error getting public profile.' + err);
         callback(err, null);
       } else {
@@ -95,13 +99,13 @@ Provider.prototype = {
   },
   followAccount: function (callerId, targetAccount, callback) {
     this.connection.query('CALL subscribe_account(?,?)', [callerId, targetAccount], function (err, result) {
-      if (err) console.log('Error subscribing account.' + err);
+      if (err) { console.log('Error subscribing account.' + err); }
       callback(err, result);
     });
   },
   unfollowAccount: function (callerId, targetAccount, callback) {
     this.connection.query('CALL unsubscribe_account(?,?)', [callerId, targetAccount], function (err, result) {
-      if (err) console.log('Error unsubscribing account. ' + err);
+      if (err) { console.log('Error unsubscribing account. ' + err); }
       callback(err, result);
     });
   },
@@ -184,10 +188,10 @@ Provider.prototype = {
   deletePost: function (postId, userId, callback) {
     var query = 'DELETE FROM posts WHERE id = ? AND userId = ?';
     this.connection.query(query, [postId, userId], function (err, result) {
-      if (err || !result || result.affectedRows == 0) {
+      if (err || !result || result.affectedRows === 0) {
         console.log('Error removing post. ' + err);
         callback(err, false);
-      } else callback(err, true);
+      } else { callback(err, true); }
     });
   },
   getTimelineUpdatesCount: function (userId, topId, callback) {
@@ -197,7 +201,7 @@ Provider.prototype = {
         callback(err, null);
       } else {
         var row = result[0];
-        callback(err, row[0])
+        callback(err, row[0]);
       }
     });
   },
@@ -214,15 +218,16 @@ Provider.prototype = {
   },
   getPostsByHashTag: function (hashtag, topId, callback) {
     var tag = hashtag;
-    if (tag.indexOf('#') != 0)
+    if (tag.indexOf('#') !== 0) {
       tag = '#' + tag;
+    }
     this.connection.query('CALL get_posts_by_hashtag(?,?)', [tag, topId], function (err, result) {
       if (err) {
         console.log(err);
         callback(err, null);
       } else {
         var rows = result[0];
-        callback(err, rows)
+        callback(err, rows);
       }
     });
   },
@@ -243,7 +248,7 @@ Provider.prototype = {
         callback(err, null);
       } else {
         var rows = result[0];
-        if (!rows || rows.length == 0 || !rows[0] || rows[0].length == 0) {
+        if (!rows || rows.length === 0 || !rows[0] || rows[0].length === 0) {
           callback(err, null);
         } else {
           var post = rows[0];
@@ -277,7 +282,7 @@ Provider.prototype = {
         callback(err, null);
       } else {
         var rows = result[0];
-        if (!rows || rows.length == 0) {
+        if (!rows || rows.length === 0) {
           console.log('Post author not found. PostId: ' + postId);
           return callback(err, null);
         }

@@ -1,9 +1,11 @@
+'use strict';
+
 var config = require('../config')
 	, Provider = require('./providers/' + config.data.provider);
 
 // Notes:
 // it is possible to just promote underlying provider like following:
-// 	module.exports = new Provider()
+// module.exports = new Provider()
 // however the approach below allows defining contracts for data providers
 // and in addition lists APIs required to be be supported 
 // by every provider implementation
@@ -84,7 +86,7 @@ module.exports.getTimelineUpdates = function (userId, topId, callback) {
 
 module.exports.getPostsByHashTag = function (hashtag, topId, callback) {
   provider.getPostsByHashTag(hashtag, topId, callback);
-}
+};
 
 module.exports.addComment = function (json, callback) {
 	provider.addComment(json, callback);

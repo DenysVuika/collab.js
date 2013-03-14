@@ -2,6 +2,8 @@
 // for more details on the command above please refer to the following resource:
 // http://stackoverflow.com/questions/15061001/what-do-bin-env-mean-in-node-js
 
+'use strict';
+
 /**
  * Module dependencies.
  */
@@ -48,10 +50,11 @@ passport.use(new LocalStrategy(
       // indicate failure and set a flash message. Otherwise, return the 
       // authenticated 'user'.
       db.getAccount(username, function (err, user) {
-        if (err) return done(err);
-        if (!user) return done(null, false, { message: 'Unknown user ' + username });
-        if (!passwordHash.verify(password, user.password))
+        if (err) { return done(err); }
+        if (!user) { return done(null, false, { message: 'Unknown user ' + username }); }
+        if (!passwordHash.verify(password, user.password)) {
           return done(null, false, { message: 'Invalid password' });
+        }
         return done(null, user);
       });
     });

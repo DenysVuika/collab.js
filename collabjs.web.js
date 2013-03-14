@@ -1,3 +1,5 @@
+'use strict';
+
 var repository = require('./data')
 	, config = require('./config')
 	, fs = require('fs')
@@ -27,10 +29,11 @@ module.exports = function (app) {
     passport.authenticate('local', { failureRedirect: '/login', failureFlash: true }),
     function (req, res) {
       var returnUrl = req.query.returnUrl;
-      if (returnUrl && isUrlLocalToHost(returnUrl))
+      if (returnUrl && isUrlLocalToHost(returnUrl)) {
         res.redirect(returnUrl);
-      else
+      } else {
         res.redirect('/');
+      }
     });
 
   app.all('/logout', function (req, res) {
@@ -63,7 +66,7 @@ module.exports = function (app) {
     // check whether invitation codes are enabled
     if (config.invitation.enabled) {
       // validate invitation code
-      if (!body.invite || body.invite.length == 0 || body.invite !== config.invitation.code) {
+      if (!body.invite || body.invite.length === 0 || body.invite !== config.invitation.code) {
         req.flash('error', 'Wrong invitation code.');
         return res.redirect('/register');
       }
@@ -150,8 +153,8 @@ module.exports = function (app) {
   app.post('/account', ensureAuthenticated, function (req, res) {
     var settings = req.body;
     repository.updateAccount(req.user.id, settings, function (err) {
-      if (err) req.flash('error', 'Error updating account settings.');
-      else req.flash('info', 'Account settings have been successfully updated.');
+      if (err) { req.flash('error', 'Error updating account settings.'); }
+      else { req.flash('info', 'Account settings have been successfully updated.'); }
       res.redirect('/account');
     });
   });
@@ -170,15 +173,15 @@ module.exports = function (app) {
     var settings = req.body;
 
     // verify fields
-    if (!settings.pwdOld || settings.pwdOld.length == 0
-      || !settings.pwdNew || settings.pwdNew.length == 0
-      || !settings.pwdConfirm || settings.pwdConfirm.length == 0
-      || settings.pwdNew != settings.pwdConfirm) {
+    if (!settings.pwdOld || settings.pwdOld.length === 0 ||
+      !settings.pwdNew || settings.pwdNew.length === 0 ||
+      !settings.pwdConfirm || settings.pwdConfirm.length === 0 ||
+      settings.pwdNew !== settings.pwdConfirm) {
       req.flash('error', 'Incorrect password values.');
       return res.redirect('/account/password');
     }
 
-    if (settings.pwdOld == settings.pwdNew) {
+    if (settings.pwdOld === settings.pwdNew) {
       req.flash('info', 'New password is the same as old one.');
       return res.redirect('/account/password');
     }
@@ -222,7 +225,7 @@ module.exports = function (app) {
 
   app.get('/accounts/:account/profile', requireAuthenticated, function (req, res) {
     repository.getPublicProfile(req.user.account, req.params.account, function (err, result) {
-      if (err || !result) res.send(400);
+      if (err || !result) { res.send(400); }
       else {
         res.render('core/profile-partial', {
           settings: config.ui,
@@ -300,21 +303,23 @@ module.exports = function (app) {
       title: 'Timeline',
       user: req.user,
       message: req.flash('error')
-    })
+    });
   });
 
   app.get('/help/:article?', ensureAuthenticated, function (req, res) {
     var article = 'help/index.md';
-    if (req.params.article && req.params.article.length > 0)
+    if (req.params.article && req.params.article.length > 0) {
       article = 'help/' + req.params.article + '.md';
+    }
     renderHelpArticle(article, req, res);
   });
 
   app.get('/search', ensureAuthenticated, function (req, res) {
     // TODO: validate input
     var q = req.query.q;
-    if (q.indexOf('#') != 0)
+    if (q.indexOf('#') !== 0) {
       q = '#' + q;
+    }
 
     return res.render('core/search-posts', {
       settings: config.ui,
@@ -333,21 +338,21 @@ function renderHelpArticle(fileName, req, res) {
 			console.log('Error reading file ' + fileName + '. ' + err);
 			res.render('core/help', {
 				settings: config.ui,
-			  title: 'Help',
-			  user: req.user, 
-			  message: req.flash('error'),
-			  content: 'Content not found.',
+        title: 'Help',
+        user: req.user,
+        message: req.flash('error'),
+        content: 'Content not found.',
         requestPath: '/help' // keep 'Help' selected at sidebar
-			})
+			});
 		} else {
 			res.render('core/help', {
 				settings: config.ui,
-			  title: 'Help',
-			  user: req.user, 
-			  message: req.flash('error'),
-			  content: marked(data),
+        title: 'Help',
+        user: req.user,
+        message: req.flash('error'),
+        content: marked(data),
         requestPath: '/help' // keep 'Help' selected at sidebar
-			})
+			});
 		}
 	});
 }
@@ -363,29 +368,31 @@ function ensureAuthenticated(req, res, next) {
 
 // Require user authentication prior to accessing resources.
 function requireAuthenticated(req, res, next) {
-  if (req.isAuthenticated()) return next();
+  if (req.isAuthenticated()) { return next(); }
   res.writeHead(401); // Unauthorized
   return res.end();
 }
 
 function isUrlLocalToHost(url) {
   return !isStringEmpty(url) &&
-    ((url[0] == '/' && (url.length == 1 || (url[1] != '/' && url[1] != '\\'))) || // "/" or "/foo" but not "//" or "/\"
-      (url.length > 1 && url[0] == '~' && url[1] == '/' )); // "~/" or "~/foo"
+    ((url[0] === '/' && (url.length === 1 || (url[1] !== '/' && url[1] !== '\\'))) || // "/" or "/foo" but not "//" or "/\"
+      (url.length > 1 && url[0] === '~' && url[1] === '/' )); // "~/" or "~/foo"
 }
 
 function isStringEmpty(str) {
-  return !(str && str != '');
+  return !(str && str !== '');
 }
 
 // Middleware
 
 var ensureRole = function (role) {
 	return function (req, res, next) {
-		if (!req.isAuthenticated())
-			return res.redirect('/login?returnUrl=' + req.url);
-		else if (req.user.roles && req.user.roles.split(',').indexOf(role) >= 0)
-			return next();
+		if (!req.isAuthenticated()) {
+      return res.redirect('/login?returnUrl=' + req.url);
+    }
+		else if (req.user.roles && req.user.roles.split(',').indexOf(role) >= 0) {
+      return next();
+    }
 		else {
 			return res.render('core/403', {
 				settings: config.ui,
@@ -393,16 +400,17 @@ var ensureRole = function (role) {
 				title: 'Forbidden'
 			});
 		}
-	}
+	};
 };
 
 var requireRole = function (role) {
 	return function (req, res, next) {
-		if (!req.isAuthenticated())
+		if (!req.isAuthenticated()) {
 			return res.redirect('/login?returnUrl=' + req.url);
-		else if (req.user.roles && req.user.roles.split(',').indexOf(role) >= 0)
+    } else if (req.user.roles && req.user.roles.split(',').indexOf(role) >= 0) {
 			return next();
-		else
+    } else {
 			return res.send(403);
-	}
+    }
+	};
 };
