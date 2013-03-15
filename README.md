@@ -3,6 +3,8 @@ collab.js
 
 collab.js is a starter kit for modern, extensible and social-enabled web applications created with node.js, express and jade.
 
+[![Build Status](https://travis-ci.org/DenisVuyka/collab.js.png?branch=master)](https://travis-ci.org/DenisVuyka/collab.js)
+
 sponsored by  [Raythos Interactive](http://raythos.com/)
 
 [![Raythos Interactive](public/images/raythos.png)](http://raythos.com)
