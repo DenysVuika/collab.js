@@ -12,6 +12,19 @@ var config = require('../config')
 
 var provider = new Provider();
 
+/**
+ * Overrides current provider value with new instance.
+ * @param instance New provider instance.
+ */
+module.exports.setProvider = function (instance) {
+  provider = instance;
+};
+
+/**
+ * Returns account by id.
+ * @param id Account id.
+ * @param {function(err, user)} callback Callback function.
+ */
 module.exports.getAccountById = function (id, callback) {
 	provider.getAccountById(id, callback);
 };

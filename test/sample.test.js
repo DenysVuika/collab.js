@@ -1,9 +1,26 @@
-var assert = require("assert")
-describe('Array', function(){
-  describe('#indexOf()', function(){
-    it('should return -1 when the value is not present', function(){
-      assert.equal(-1, [1,2,3].indexOf(5));
-      assert.equal(-1, [1,2,3].indexOf(0));
-    })
-  })
-})
+/* global describe, it */
+'use strict';
+
+var assert = require('assert')
+  , data = require('../data');
+
+describe('Samples', function(){
+  describe('data layer', function () {
+    it('getAccountById', function (done) {
+      var provider = {
+        getAccountById: function (id, callback) {
+          callback(null, { id: id });
+        }
+      };
+      data.setProvider(provider);
+      data.getAccountById(1, function (err, result) {
+        if (err) {
+          done(err);
+        } else {
+          assert.equal(result.id, 1);
+          done();
+        }
+      });
+    });
+  });
+});

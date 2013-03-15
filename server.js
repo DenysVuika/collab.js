@@ -69,7 +69,8 @@ app.configure(function () {
   app.set('port', config.env.port);
   app.set('views', __dirname + '/views');
   app.set('view engine', 'jade');
-  app.use(express.favicon());
+  //app.use(express.favicon());
+  app.use(express.favicon(__dirname + '/favicon.ico'));
   app.use(express.logger('dev'));
   app.use(express.cookieParser('keyboard cat'));
   app.use(express.bodyParser());
