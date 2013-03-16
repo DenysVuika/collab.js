@@ -6,6 +6,10 @@ var repository = require('./data')
 	, jade = require('jade')
 	, fs = require('fs');
 
+// import middleware
+var auth = require('./collabjs.auth')
+  , requireAuthenticated = auth.requireAuthenticated;
+
 var template_comment = jade.compile(fs.readFileSync(__dirname + '/config/templates/comment.jade', 'utf8'));
 
 module.exports = function (app) {
@@ -207,11 +211,4 @@ function getTimelineUrl(account) {
 
 function getGravatarUrl(pictureId) {
   return 'https://www.gravatar.com/avatar/' + pictureId + '?s=48';
-}
-
-// Require user authentication prior to accessing resources.
-function requireAuthenticated(req, res, next) {
-  if (req.isAuthenticated()) { return next(); }
-  res.writeHead(401); // Unauthorized
-  return res.end();
 }

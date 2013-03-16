@@ -11,6 +11,11 @@ var repository = require('./data')
   , Recaptcha = require('recaptcha').Recaptcha
   , NullRecaptcha = utils.NullRecaptcha;
 
+// import middleware
+var auth = require('./collabjs.auth')
+  , ensureAuthenticated = auth.ensureAuthenticated
+  , requireAuthenticated = auth.requireAuthenticated;
+
 module.exports = function (app) {
 
   console.log('Initializing collabjs.web routes...');
@@ -325,22 +330,6 @@ function renderHelpArticle(fileName, req, res) {
 	});
 }
 
-// Simple route middleware to ensure user is authenticated.
-//  Use this route middleware on any resource that needs to be protected. If
-//  the request is authenticated (typically via a persistent Login session),
-//  the request will proceed. Otherwise, the user will be redirected to the Login page.
-function ensureAuthenticated(req, res, next) {
-  if (req.isAuthenticated()) { return next(); }
-  return res.redirect('/login?returnUrl=' + req.url);
-}
-
-// Require user authentication prior to accessing resources.
-function requireAuthenticated(req, res, next) {
-  if (req.isAuthenticated()) { return next(); }
-  res.writeHead(401); // Unauthorized
-  return res.end();
-}
-
 function isUrlLocalToHost(url) {
   return !isStringEmpty(url) &&
     ((url[0] === '/' && (url.length === 1 || (url[1] !== '/' && url[1] !== '\\'))) || // "/" or "/foo" but not "//" or "/\"
@@ -350,34 +339,3 @@ function isUrlLocalToHost(url) {
 function isStringEmpty(str) {
   return !(str && str !== '');
 }
-
-// Middleware
-
-var ensureRole = function (role) {
-	return function (req, res, next) {
-		if (!req.isAuthenticated()) {
-      return res.redirect('/login?returnUrl=' + req.url);
-    }
-		else if (req.user.roles && req.user.roles.split(',').indexOf(role) >= 0) {
-      return next();
-    }
-		else {
-			return res.render('core/403', {
-				user: req.user,
-				title: 'Forbidden'
-			});
-		}
-	};
-};
-
-var requireRole = function (role) {
-	return function (req, res, next) {
-		if (!req.isAuthenticated()) {
-			return res.redirect('/login?returnUrl=' + req.url);
-    } else if (req.user.roles && req.user.roles.split(',').indexOf(role) >= 0) {
-			return next();
-    } else {
-			return res.send(403);
-    }
-	};
-};

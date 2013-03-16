@@ -17,7 +17,8 @@ var express = require('express')
   , passwordHash = require('password-hash')
   , db = require('./data')
   , config = require('./config')
-  , utils = require('./collabjs.utils.js');
+  , auth = require('./collabjs.auth')
+  , utils = require('./collabjs.utils');
 
 /*
  * Authentication Layer
@@ -88,11 +89,11 @@ app.configure(function () {
 
   // Initialize variables that are provided to all templates rendered within the application
   app.locals.config = config;
-  app.locals.isUserInRole = utils.isUserInRole;
+  //app.locals.isUserInRole = auth.isUserInRole;
   app.use(function (req, res, next) {
     res.locals.user = req.user;
     res.locals.isAuthenticated = req.isAuthenticated();
-    res.locals.isAdministrator = utils.isUserInRole(req.user, 'administrator');
+    res.locals.isAdministrator = auth.isUserInRole(req.user, 'administrator');
     next();
   });
 
