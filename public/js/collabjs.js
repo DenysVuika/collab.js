@@ -1,3 +1,4 @@
+/* global ko, moment */
 /// <reference path="jquery-1.8.3.js" />
 /// <reference path="bootstrap.js" />
 /// <reference path="knockout-2.2.0.js" />
@@ -39,10 +40,11 @@ function isNullOrWhiteSpace(str) {
     function updateUi(sender) {
       var available = options.limit - $(sender).val().length;
       var counter = options.prefix + available + options.suffix;
-      if (counter >= 0)
+      if (counter >= 0) {
         options.plus(counter);
-      else
+      } else {
         options.minus(counter);
+      }
     }
 
     updateUi($(this));
@@ -149,7 +151,7 @@ function PostViewModel(data) {
   self.content = data.content.twitterize();
   self.created = moment(data.created);
   self.hashtags = data.content.getHashTags();
-  self.picture = 'https://www.gravatar.com/avatar/' + data.pictureId + '?s=48';
+  self.picture = 'https://www.gravatar.com/avatar/' + data.pictureId + '?s=' + (data.pictureSize || '48');
   self.feed = '/people/' + data.account + '/timeline';
   self.canDismiss = false;
   self.postUrl = '/timeline/posts/' + data.id;
@@ -163,7 +165,7 @@ function PostViewModel(data) {
   // sorts comments by creation date in descending order
   self.sortComments = function () {
     self.comments.sort(function (left, right) {
-      var result = left.created == right.created ? 0 : (left.created < right.created ? -1 : 1);
+      var result = left.created === right.created ? 0 : (left.created < right.created ? -1 : 1);
       return result;
     });
   };
@@ -191,13 +193,13 @@ function FeedViewModel(account, data) {
 
   self.addNewPost = function (post) {
     var viewmodel = new PostViewModel(post);
-    viewmodel.canDismiss = (post.account == account);
+    viewmodel.canDismiss = (post.account === account);
     self.posts.unshift(viewmodel);
   };
 
   self.addPost = function (post) {
     var viewmodel = new PostViewModel(post);
-    viewmodel.canDismiss = (post.account == account);
+    viewmodel.canDismiss = (post.account === account);
 
     if (post.comments && post.comments.length > 0) {
       $(post.comments).each(function (index, entry) {
@@ -207,6 +209,7 @@ function FeedViewModel(account, data) {
           name: entry.name,
           content: entry.content,
           created: entry.created,
+          pictureSize: 32,
           pictureId: entry.pictureId
         }));
       });
@@ -214,7 +217,7 @@ function FeedViewModel(account, data) {
       viewmodel.commentsLoaded = true;
     }
 
-    viewmodel.openBlank = viewmodel.commentsLoaded == false && viewmodel.commentsCount() > 9;
+    viewmodel.openBlank = viewmodel.commentsLoaded === false && viewmodel.commentsCount() > 9;
     self.posts.push(viewmodel);
   };
 
@@ -277,7 +280,7 @@ function onPeopleDataLoaded(data) {
 }
 
 function onFeedDataLoaded(data, account) {
-  if (!data) return;
+  if (!data) { return; }
   if (!window.timelineFeed) {
     window.timelineFeed = new FeedViewModel(account, data);
     ko.applyBindings(window.timelineFeed);
@@ -291,7 +294,7 @@ function onFeedDataLoaded(data, account) {
 
 $(document).bind("collabjs.onStatusUpdated", function (event, data) {
   var feed = window.timelineFeed;
-  if (data && feed && data.account == feed.account) {
+  if (data && feed && data.account === feed.account) {
     window.timelineFeed.addNewPost(data);
     enableAccountPopups();
     enableAccountTooltips();
@@ -380,6 +383,7 @@ function onCommentsLoaded(post, data) {
         name: entry.name,
         content: entry.content,
         created: entry.created,
+        pictureSize: 32,
         pictureId: entry.pictureId
       }));
     });
@@ -409,6 +413,7 @@ function onCommentPosted(data, status, response) {
     name: data.name,
     content: data.content,
     created: data.created,
+    pictureSize: 32,
     pictureId: data.pictureId
   }));
 
@@ -459,7 +464,7 @@ function onAccountPopupClick(e) {
   var sender = $(this);
   var senderId = sender.attr("id");
 
-  if (openedPopup != senderId) {
+  if (openedPopup !== senderId) {
     $("#" + openedPopup).popover("hide");
 
     sender.data("data-popover-data", {
@@ -497,13 +502,13 @@ function onUserProfileFetched(senderId, data, profile) {
   profile.html = data;
 
   // this is async invoke so we need to ensure that this particular popup is still opened
-  if (openedPopup == senderId) {
+  if (openedPopup === senderId) {
     $('#' + senderId).popover('show'); // rebind opened view
   }
 }
 
 function onAccountPopupClickedAway() {
-  if (isPopupVisible & clickedAway) {
+  if (isPopupVisible && clickedAway) {
     if (openedPopup) {
       $("#" + openedPopup).popover('hide');
       openedPopup = null;
@@ -524,7 +529,7 @@ var _inCallback = false;
 
 function initLazyLoading(url, onSuccess) {
   $(window).scroll(function () {
-    if ($(window).scrollTop() == $(document).height() - $(window).height()) {
+    if ($(window).scrollTop() === $(document).height() - $(window).height()) {
       if (_page > -1 && !_inCallback) {
         _inCallback = true;
         _page++;

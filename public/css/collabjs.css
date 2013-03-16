@@ -11,54 +11,6 @@ body {
   color: #B94A48;
 }
 
-/* Profile Picture */
-.profile-picture-small {
-    max-width: 48px;
-    max-height: 48px;
-    width: 48px;
-    height: 48px;
-}
-
-.profile-picture-tiny {
-    max-width: 24px;
-    max-height: 24px;
-    width: 24px;
-    height: 24px;
-}
-
-.picture-tiny {
-    max-width: 24px;
-    max-height: 24px;
-    width: 24px;
-    height: 24px;
-}
-
-blockquote.post-comment {
-    border-left-color: sandybrown;
-}
-
-img.user-profile-icon {
-    width: 48px;
-    height: 48px;
-    display: block;
-    vertical-align: top;
-}
-
-img.picture-128 {
-    width: 128px;
-    height: 128px;
-    max-height: 128px;
-    max-width: 128px;
-}
-
-img.picture-48 {
-    width: 48px;
-    height: 48px;
-    max-height: 48px;
-    max-width: 48px;
-}
-
-
 .profile-stats {
     line-height: 16px;
 }
@@ -159,13 +111,93 @@ img.picture-48 {
         text-align: center;
     }
 
+img.media-object {
+  border-radius: 4px;
+}
+
+li.media.post {
+  border-top: solid 1px lightgray;
+  padding-top: 15px;
+}
+
+li.media.post:first-child {
+  border-top: none;
+}
+
+li.media.post .media-heading {
+  margin-bottom: 0;
+}
+
+li.media.post .media-body blockquote {
+  border-left: none;
+  padding: 0;
+}
+
+li.media.comment {
+  margin-top: 0;
+  margin-bottom: 0;
+}
+
+li.media.comment blockquote {
+  border-left: none;
+  padding: 0;
+  margin-bottom: 5px;
+}
+
+li.media.comment blockquote p {
+  font-size: 13px;
+  line-height: 1.38;
+}
+
+a.profile-link {
+  padding-bottom: 7px !important;
+}
+
+a.profile-link div {
+  white-space: nowrap;
+  line-height: 14px;
+  padding-top: 2px;
+}
+
+a.profile-link img {
+  display: inline-block;
+  border: 0;
+  border-radius: 4px;
+  width: 32px;
+  height: 32px;
+  max-width: 32px;
+  max-height: 32px;
+  position: absolute;
+  top: 8px;
+}
+
+a.profile-link strong {
+  white-space: nowrap;
+  display: block;
+  padding-left: 40px;
+  font-size: 13px;
+  font-weight: bold;
+}
+
+a.profile-link small {
+  white-space: nowrap;
+  overflow: hidden;
+  display: block;
+  padding-left: 40px;
+  font-size: 11px;
+}
+
+div.collapse.comments {
+  margin-top: 10px;
+  overflow: visible !important;
+}
+
 /* Fixed sidebar */
 .sidebar-nav-fixed {
   position: fixed;
   top: 60px;
   /*width: 21.97%;*/
   width: 14.3646408839779%;
-  *width: 14.840425531914894%
 }
 
 @media (max-width: 767px) {

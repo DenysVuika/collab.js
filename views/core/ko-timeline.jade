@@ -1,9 +1,9 @@
 script(type='text/html', id='timeline-template')
   ul.media-list(data-bind='foreach: posts')
-    li.media(style='border-top: solid 1px lightgrey; padding-top: 15px;')
+    li.media.post
       button.close(data-bind='visible: canDismiss, click: $parent.removePost') &times;
       a.pull-left(href='#')
-        img.media-object.user-profile-icon(data-link-type='account',
+        img.media-object(data-link-type='account',
           data-bind="attr: { id: 'prof_' + id, 'data-link-value': account, src: picture }")
       div.media-body
         div.media-heading
@@ -17,8 +17,9 @@ script(type='text/html', id='timeline-template')
           small(data-bind="text: created.calendar(), attr: { title : created.format('LLLL') }")
         div(data-bind='visible: hashtags.length > 0')
           i.icon-tags
+          | &nbsp
           span(data-bind='foreach: hashtags')
-            span.label(data-bind='text: $data', style='margin-left: 2px;')
+            span.label(data-bind='text: $data')
         // ko if: openBlank
         div(data-bind="template: { name: 'view-all-comments-template' }")
         // /ko
@@ -31,19 +32,18 @@ script(type='text/html', id='comments-section-template')
     a(data-toggle='collapse', data-bind="attr: { 'data-target': '#comments_' + id }", style='cursor: pointer')
       i.icon-comment
       | &nbsp;Comments
-      span(data-bind="visible: commentsCount() > 0, text: '(' + commentsCount() + ')'",
-        style='padding-left: 4px;')
-  div.collapse(data-link-type='comment', data-bind="attr: { id: 'comments_' + id }", style='margin-top: 10px; overflow: visible !important')
+      span(data-bind="visible: commentsCount() > 0, text: '(' + commentsCount() + ')'")
+  div.collapse.comments(data-link-type='comment', data-bind="attr: { id: 'comments_' + id }")
     ul.media-list(data-bind="visible: comments().length > 0, template: { name: 'post-comment-template', foreach: comments }")
     div(data-bind="template: { name: 'post-commentbox-template' }")
 
 script(type='text/html', id='post-comment-template')
-  li.media(style='margin-top: 0; margin-bottom: 0;')
+  li.media.comment
     a.pull-left(href='#')
-      img.media-object.user-profile-icon(data-link-type='account',
+      img.media-object(data-link-type='account',
         data-bind="attr: { id: 'cprof_' + id, 'data-link-value': account, src: picture }")
     div.media-body
-      blockquote.post-comment
+      blockquote
         p
           a(data-bind='attr: { href: feed }')
             strong(data-bind='text: name', style='font-size: 14px;')

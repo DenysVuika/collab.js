@@ -1,9 +1,9 @@
 p.lead(style='display:none', data-bind='visible: profiles().length == 0') No people found...
 
 ul.media-list(style='display: none', data-bind='visible: profiles().length > 0, foreach: profiles')
-  li.media(style='border-top: solid 1px lightgray; padding-top: 15px')
-    div.pull-left(style='margin-right: 10px')
-      img.media-object.picture-48(data-bind='attr: { src: picture }', alt='')
+  li.media.post
+    div.pull-left
+      img.media-object(data-bind='attr: { src: picture }', alt='')
     div.media-body
       div.media-heading(style='font-weight: normal')
         span
