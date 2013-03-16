@@ -1,8 +1,8 @@
 div.well.sidebar-nav.sidebar-nav-fixed
   ul.nav.nav-list
-    //
-    // 'Main' section
-    //
+    //-
+    //- 'Main' section
+    //-
     li.nav-header Main
     li
       a(href='/timeline')
@@ -24,9 +24,9 @@ div.well.sidebar-nav.sidebar-nav-fixed
       a(href='#')
         i.icon-tasks
         | &nbsp;Tasks
-    //
-    // Dynamic categories
-    //
+    //-
+    //- Dynamic categories
+    //-
     each category in config.ui.sidebar.categories
       li.nav-header= category.name
       each entry in category.entries
@@ -34,9 +34,9 @@ div.well.sidebar-nav.sidebar-nav-fixed
           a(href='#{entry.url}')
             i(class='#{entry.icon}')
             | &nbsp; #{entry.text}
-    //
-    // 'Connect' section
-    //
+    //-
+    //- 'Connect' section
+    //-
     li.nav-header Connect
     li
       a(href='/people')
@@ -50,9 +50,20 @@ div.well.sidebar-nav.sidebar-nav-fixed
       a(href='#')
         i.icon-plus-sign
         | &nbsp;Invite Friends
-    //
-    // 'Help' section
-    //
+    //-
+    //- 'Administration' category
+    //-
+    if (isAdministrator)
+      li.divider
+      li.nav-header Administration
+      each link in config.ui.sidebar.administration
+        li
+          a(href='#{link.url}')
+            i(class='#{link.icon}')
+            | &nbsp; #{link.text}
+    //-
+    //- 'Help' section
+    //-
     li.divider
     li
       a(href='/help')

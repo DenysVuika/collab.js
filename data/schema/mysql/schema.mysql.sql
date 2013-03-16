@@ -492,6 +492,11 @@ LIMIT 20;
 END//
 DELIMITER ;
 
+INSERT INTO roles (`name`, `loweredName`)
+SELECT 'Administrator', 'administrator' FROM DUAL
+WHERE NOT EXISTS (SELECT * FROM `roles` WHERE `loweredName` = 'administrator')
+LIMIT 1;
+
 -- Data exporting was unselected.
 /*!40101 SET SQL_MODE=IFNULL(@OLD_SQL_MODE, '') */;
 /*!40014 SET FOREIGN_KEY_CHECKS=IF(@OLD_FOREIGN_KEY_CHECKS IS NULL, 1, @OLD_FOREIGN_KEY_CHECKS) */;

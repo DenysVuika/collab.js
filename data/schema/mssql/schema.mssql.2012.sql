@@ -787,3 +787,9 @@ BEGIN
   ORDER BY result.created DESC
 END
 GO
+
+IF NOT EXISTS (SELECT TOP 1 id from roles where loweredName = 'administrator')
+BEGIN
+  INSERT INTO roles (name, loweredName) VALUES ('Administrator', 'administrator')
+END
+GO

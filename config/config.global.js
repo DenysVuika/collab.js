@@ -47,7 +47,11 @@ config.ui.brand = 'collab.js';
 config.ui.copyright = '2013 Denys Vuika';
 
 config.ui.sidebar = {
-	categories: []
+  // custom sidebar categories with number or links per each
+	categories: [],
+  // links for special 'Administration' category
+  // available for users assigned to 'administrator' role
+  administration: []
 };
 
 config.ui.header = {
@@ -78,6 +82,23 @@ config.ui.sidebar.categories = [
 }];
 */
 
+/**
+ * Administration category example
+ */
+/*
+config.ui.sidebar.administration = [
+  {
+    text: 'Link 1',
+    icon: 'icon-wrench',
+    url: '/admin/sample1'
+  },
+  {
+    text: 'Link 2',
+    icon: 'icon-wrench',
+    url: '/admin/sample2'
+  }
+];
+*/
 
 //
 // header sample

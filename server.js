@@ -92,6 +92,7 @@ app.configure(function () {
   app.use(function (req, res, next) {
     res.locals.user = req.user;
     res.locals.isAuthenticated = req.isAuthenticated();
+    res.locals.isAdministrator = utils.isUserInRole(req.user, 'administrator');
     next();
   });
 
@@ -113,6 +114,7 @@ app.get('/', routes.index);
 
 require('./collabjs.web.js')(app);
 require('./collabjs.web.api.js')(app);
+require('./collabjs.admin.js')(app);
 
 app.listen(config.env.port, config.env.ipaddress);
 console.log("Express server listening on port %d in %s mode", config.env.port, app.settings.env);
