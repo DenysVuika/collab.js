@@ -8,3 +8,7 @@ var NullRecaptcha = exports.NullRecaptcha = function NullRecaptcha() {
 NullRecaptcha.prototype.verify = function (callback) {
   callback(true, null);
 };
+
+module.exports.isUserInRole = function(user, role) {
+  return user && user.roles && user.roles.split(',').indexOf(role) >= 0;
+};

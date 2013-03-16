@@ -10,7 +10,6 @@ exports.index = function (req, res) {
     res.redirect('/timeline');
   } else {
     res.render('core/index', {
-      settings: config.ui,
       title: config.ui.brand,
       user: req.user
     });

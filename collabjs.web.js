@@ -17,9 +17,7 @@ module.exports = function (app) {
 
   app.get('/login:returnUrl?', function (req, res) {
     res.render('core/login', {
-      settings: config.ui,
       title: 'Login',
-      user: req.user,
       formAction: req.url,
       message: req.flash('error')
     });
@@ -45,12 +43,8 @@ module.exports = function (app) {
   app.get('/register', function (req, res) {
     // define variables for the 'register' form
     var locals = {
-      settings: config.ui,
       title: 'Register',
-      user: req.user,
-      message: req.flash('error'),
-      invitation: config.invitation.enabled,
-      recaptcha: config.recaptcha.enabled
+      message: req.flash('error')
     };
     // generate appropriate html content if recaptcha is enabled
     if (config.recaptcha.enabled) {
@@ -130,9 +124,7 @@ module.exports = function (app) {
 
   app.get('/timeline/posts/:postId', ensureAuthenticated, function (req, res) {
     res.render('core/post', {
-      settings: config.ui,
       title: 'Post',
-      user: req.user,
       postId: req.params.postId,
       //error: 'Post not found'
       error: false,
@@ -142,9 +134,7 @@ module.exports = function (app) {
 
   app.get('/account', ensureAuthenticated, function (req, res) {
     res.render('core/account', {
-      settings: config.ui,
       title: 'Account Settings',
-      user: req.user,
       error: req.flash('error'),
       info: req.flash('info')
     });
@@ -161,9 +151,7 @@ module.exports = function (app) {
 
   app.get('/account/password', ensureAuthenticated, function (req, res) {
     res.render('core/password', {
-      settings: config.ui,
       title: 'Change password',
-      user: req.user,
       error: req.flash('error'),
       info: req.flash('info')
     });
@@ -228,9 +216,7 @@ module.exports = function (app) {
       if (err || !result) { res.send(400); }
       else {
         res.render('core/profile-partial', {
-          settings: config.ui,
           title: req.params.account,
-          user: req.user,
           profile: result,
           // TODO: move to the stored procedure?
           isOwnProfile: req.user.account === result.account
@@ -253,17 +239,13 @@ module.exports = function (app) {
 
   app.get('/people', ensureAuthenticated, function (req, res) {
     res.render('core/people', {
-      settings: config.ui,
-      title: 'People',
-      user: req.user
+      title: 'People'
     });
   });
 
   app.get('/people/:account/followers', ensureAuthenticated, function (req, res) {
     res.render('core/people-followers', {
-      settings: config.ui,
       title: req.params.account + ': followers',
-      user: req.user,
       account: req.params.account,
       requestPath: '/people' // keep 'People' selected at sidebar
     });
@@ -271,9 +253,7 @@ module.exports = function (app) {
 
   app.get('/people/:account/following', ensureAuthenticated, function (req, res) {
     res.render('core/people-following', {
-      settings: config.ui,
       title: req.params.account + ': following',
-      user: req.user,
       account: req.params.account,
       requestPath: '/people' // keep 'People' selected at sidebar
     });
@@ -281,9 +261,7 @@ module.exports = function (app) {
 
   app.get('/people/:account/timeline', ensureAuthenticated, function (req, res) {
     res.render('core/people-timeline', {
-      settings: config.ui,
       title: req.params.account,
-      user: req.user,
       account: req.params.account,
       requestPath: '/people' // keep 'People' selected at sidebar
     });
@@ -291,17 +269,13 @@ module.exports = function (app) {
 
   app.get('/mentions', ensureAuthenticated, function (req, res) {
     res.render('core/mentions', {
-      settings: config.ui,
-      title: 'Mentions',
-      user: req.user
+      title: 'Mentions'
     });
   });
 
   app.get('/timeline', ensureAuthenticated, function (req, res) {
     res.render('core/timeline', {
-      settings: config.ui,
       title: 'Timeline',
-      user: req.user,
       message: req.flash('error')
     });
   });
@@ -322,9 +296,7 @@ module.exports = function (app) {
     }
 
     return res.render('core/search-posts', {
-      settings: config.ui,
       title: 'Search',
-      user: req.user,
       search_q: encodeURIComponent(q),
       search_src: encodeURIComponent(req.query.src)
     });
@@ -337,18 +309,14 @@ function renderHelpArticle(fileName, req, res) {
 		if (err) {
 			console.log('Error reading file ' + fileName + '. ' + err);
 			res.render('core/help', {
-				settings: config.ui,
         title: 'Help',
-        user: req.user,
         message: req.flash('error'),
         content: 'Content not found.',
         requestPath: '/help' // keep 'Help' selected at sidebar
 			});
 		} else {
 			res.render('core/help', {
-				settings: config.ui,
         title: 'Help',
-        user: req.user,
         message: req.flash('error'),
         content: marked(data),
         requestPath: '/help' // keep 'Help' selected at sidebar
@@ -395,7 +363,6 @@ var ensureRole = function (role) {
     }
 		else {
 			return res.render('core/403', {
-				settings: config.ui,
 				user: req.user,
 				title: 'Forbidden'
 			});

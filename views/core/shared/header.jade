@@ -5,7 +5,7 @@ div.navbar.navbar-fixed-top
           //-span.icon-bar
           //-span.icon-bar
           //-span.icon-bar
-        a.brand(href='/')= settings.brand
+        a.brand(href='/')= config.ui.brand
         ul.nav.pull-right
           li.dropdown
             a.dropdown-toggle(href='#', data-toggle='dropdown', style='padding-bottom:5px')
@@ -13,7 +13,7 @@ div.navbar.navbar-fixed-top
                 style='margin:0;padding:0;max-height:24px;max-width:24px')
               b.caret
             ul.dropdown-menu
-              if (user)
+              if (isAuthenticated)
                 li
                   a.profile-link(href='/account')
                     div
@@ -43,6 +43,6 @@ div.navbar.navbar-fixed-top
               li
                 a(href='/timeline') Home
               //- dynamic links
-              each link in settings.header.links
+              each link in config.ui.header.links
                 li
                   a(href='#{link.url}')= link.text

@@ -16,7 +16,8 @@ var express = require('express')
   , LocalStrategy = require('passport-local').Strategy
   , passwordHash = require('password-hash')
   , db = require('./data')
-  , config = require('./config');
+  , config = require('./config')
+  , utils = require('./collabjs.utils.js');
 
 /*
  * Authentication Layer
@@ -84,6 +85,16 @@ app.configure(function () {
   // Use connect-flash middleware. This will add a 'req.flash()' function to
   // all requests, matching the functionality offered in Express 2.x.
   app.use(flash());
+
+  // Initialize variables that are provided to all templates rendered within the application
+  app.locals.config = config;
+  app.locals.isUserInRole = utils.isUserInRole;
+  app.use(function (req, res, next) {
+    res.locals.user = req.user;
+    res.locals.isAuthenticated = req.isAuthenticated();
+    next();
+  });
+
   app.use(app.router);
   app.use(express.static(__dirname + '/public', { maxAge: 86400000})); // one day
 });
