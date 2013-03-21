@@ -96,7 +96,7 @@ app.configure(function () {
     res.locals.isAdministrator = auth.isUserInRole(req.user, 'administrator');
     next();
   });
-
+  app.use(utils.detectMobileBrowser);
   app.use(app.router);
   app.use(express.static(__dirname + '/public', { maxAge: 86400000})); // one day
 });
