@@ -53,7 +53,7 @@ div.well.sidebar-nav.sidebar-nav-fixed
     //-
     //- 'Administration' category
     //-
-    if (isAdministrator)
+    if (isAdministrator && config.ui.sidebar.administration.length > 0)
       li.divider
       li.nav-header Administration
       each link in config.ui.sidebar.administration
