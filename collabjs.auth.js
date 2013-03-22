@@ -33,11 +33,9 @@ module.exports.ensureRole = function (role) {
   return function (req, res, next) {
     if (!req.isAuthenticated()) {
       return res.redirect('/login?returnUrl=' + req.url);
-    }
-    else if (req.user.roles && req.user.roles.split(',').indexOf(role) >= 0) {
+    } else if (req.user && req.user.roles && req.user.roles.split(',').indexOf(role) >= 0) {
       return next();
-    }
-    else {
+    } else {
       return res.render('core/403', {
         user: req.user,
         title: 'Forbidden'
@@ -50,7 +48,7 @@ module.exports.requireRole = function (role) {
   return function (req, res, next) {
     if (!req.isAuthenticated()) {
       return res.redirect('/login?returnUrl=' + req.url);
-    } else if (req.user.roles && req.user.roles.split(',').indexOf(role) >= 0) {
+    } else if (req.user && req.user.roles && req.user.roles.split(',').indexOf(role) >= 0) {
       return next();
     } else {
       return res.send(403);
@@ -59,5 +57,9 @@ module.exports.requireRole = function (role) {
 };
 
 module.exports.isUserInRole = function(user, role) {
-  return user && user.roles && user.roles.split(',').indexOf(role) >= 0;
+  if (user && user.roles && user.roles.split(',').indexOf(role) >= 0) {
+    return true;
+  } else {
+    return false;
+  }
 };

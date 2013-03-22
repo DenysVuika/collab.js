@@ -37,7 +37,8 @@
   },
   "devDependencies" : {
     "mocha" : "*",
-    "supertest": "*"
+    "supertest": "*",
+    "should" : "*"
   },
   "analyze": false,
   "license": "MIT",
