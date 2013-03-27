@@ -1,10 +1,6 @@
 div.navbar.navbar-fixed-top
     div.navbar-inner
-      div.container-fluid
-        //-a.btn.btn-navbar(data-toggle="collapse", data-target=".nav-collapse")
-          //-span.icon-bar
-          //-span.icon-bar
-          //-span.icon-bar
+      div.container-fluid(style='padding-right: 0')
         a.brand(href='/')= config.ui.brand
         ul.nav.pull-right
           li.dropdown
@@ -39,15 +35,24 @@ div.navbar.navbar-fixed-top
                 li.divider
                 li
                   a(href='/register') Register
-        div.nav-collapse.collapse
-          //- former 'Settings' area
-          //-ul.nav.pull-right
+        div
           ul.nav
-            li.divider-vertical
+            li.divider-vertical(style='margin:0')
             if (user)  
               li
-                a(href='/timeline') Home
+                a(href='/timeline', title='Home')
+                  span
+                    i.icon-home.icon-large
+                    if (!isMobile)
+                      span.visible-desktop
+                        | &nbsp;Home
               //- dynamic links
               each link in config.ui.header.links
                 li
-                  a(href='#{link.url}')= link.text
+                  a(href='#{link.url}', title='People')
+                    span
+                      if (link.icon)
+                        i(class='#{link.icon}')
+                      if (!isMobile)
+                        span.visible-desktop
+                          | &nbsp;#{link.text}

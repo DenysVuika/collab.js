@@ -58,7 +58,8 @@ config.ui.header = {
 	links: [
 	{
 		text: 'People',
-		url: '/people'
+		url: '/people',
+    icon: 'icon-group'
 	}]
 };
 
@@ -106,6 +107,7 @@ config.ui.sidebar.administration = [
 config.ui.header.links = [
 {
 	text: 'People',
-	url: '/people'
+	url: '/people',
+	icon: 'icon-group'
 }];
 */

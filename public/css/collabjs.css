@@ -229,6 +229,10 @@ div.collapse.comments {
   .sidebar-nav-fixed {
     top: 70px;
   }
+
+  .navbar-fixed-top .navbar-inner {
+    padding: 0 !important;
+  }
 }
 
 /* Twitter Bootstrap patches */

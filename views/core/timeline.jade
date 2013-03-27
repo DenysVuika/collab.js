@@ -1,11 +1,5 @@
 extends layout
 
-block styles
-  style(type='text/css')
-    .popover .content {
-      margin: 0;
-    }
-
 block content
   include ko-timeline
   form(id='frmUpdateStatus', name='frmUpdateStatus', method='post', action='', onSubmit='doUpdateStatus(); return false;')
