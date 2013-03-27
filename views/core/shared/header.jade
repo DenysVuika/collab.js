@@ -8,9 +8,8 @@ div.navbar.navbar-fixed-top
         a.brand(href='/')= config.ui.brand
         ul.nav.pull-right
           li.dropdown
-            a.dropdown-toggle(href='#', data-toggle='dropdown', style='padding-bottom:5px')
-              img(src='/images/icon-settings.png',
-                style='margin:0;padding:0;max-height:24px;max-width:24px')
+            a.dropdown-toggle(href='#', data-toggle='dropdown', style='padding-bottom: 5px; padding-top: 6px; margin-bottom: 0px;')
+              i.icon-cogs.icon-2x
               b.caret
             ul.dropdown-menu
               if (isAuthenticated)
@@ -20,14 +19,20 @@ div.navbar.navbar-fixed-top
                       img(src='https://www.gravatar.com/avatar/#{user.pictureId}?s=32')
                       strong #{user.name}
                       small Edit profile
-                li.divider
+                li.divider(style='margin-top: 0;')
                 li
-                  a(href='/help') Help
+                  a(href='/help')
+                    i.icon.icon-flag
+                    | &nbsp;Help
                 li
-                  a(href='#') About
-                li.divider
+                  a(href='#')
+                    i.icon-question-sign
+                    | &nbsp;About
+                li.divider(style='margin-bottom:0')
                 li
-                  a(href='/logout') Logout
+                  a(href='/logout')
+                    i.icon-signout
+                    | &nbsp;Logout
               else
                 li
                   a(href='/login') Sign in

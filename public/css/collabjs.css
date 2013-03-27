@@ -139,6 +139,7 @@ li.media.post {
 
 li.media.post:first-child {
   border-top: none;
+  padding-top: 0;
 }
 
 li.media.post .media-heading {
@@ -162,7 +163,7 @@ li.media.comment blockquote {
 }
 
 li.media.comment blockquote p {
-  font-size: 13px;
+  font-size: 14px;
   line-height: 1.38;
 }
 
