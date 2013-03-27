@@ -57,9 +57,5 @@ module.exports.requireRole = function (role) {
 };
 
 module.exports.isUserInRole = function(user, role) {
-  if (user && user.roles && user.roles.split(',').indexOf(role) >= 0) {
-    return true;
-  } else {
-    return false;
-  }
+  return (user && user.roles && user.roles.split(',').indexOf(role) >= 0) ? true : false;
 };

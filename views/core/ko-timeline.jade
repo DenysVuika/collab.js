@@ -30,9 +30,9 @@ script(type='text/html', id='timeline-template')
 script(type='text/html', id='comments-section-template')
   div
     a(data-toggle='collapse', data-bind="attr: { 'data-target': '#comments_' + id }", style='cursor: pointer')
-      i.icon-comment
+      i.icon-comment(style='color:#333')
       | &nbsp;Comments
-      span(data-bind="visible: commentsCount() > 0, text: '(' + commentsCount() + ')'")
+      span(data-bind="visible: commentsCount() > 0, text: ' (' + commentsCount() + ')'")
   div.collapse.comments(data-link-type='comment', data-bind="attr: { id: 'comments_' + id }")
     ul.media-list(data-bind="visible: comments().length > 0, template: { name: 'post-comment-template', foreach: comments }")
     div(data-bind="template: { name: 'post-commentbox-template' }")
@@ -59,5 +59,5 @@ script(type='text/html', id='post-commentbox-template')
 script(type='text/html', id='view-all-comments-template')
   div
     a(data-bind='attr: { href: postUrl }')
-      i.icon-comment
+      i.icon-comment(style='color:#333;')
       span(data-bind="text: ' View all {0} comments'.formatString(commentsCount())")
