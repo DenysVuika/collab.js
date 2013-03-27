@@ -19,7 +19,9 @@ script(type='text/html', id='timeline-template')
           i.icon-tags
           | &nbsp
           span(data-bind='foreach: hashtags')
-            span.label(data-bind='text: $data')
+            //-span.label(data-bind='text: $data')
+            a.label(data-bind="text: $data, attr: { href: '/search?q=' + $data + '&src=hash' }",
+              style='margin-right: 5px; font-weight: normal;')
         // ko if: openBlank
         div(data-bind="template: { name: 'view-all-comments-template' }")
         // /ko
