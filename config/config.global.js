@@ -2,7 +2,7 @@ var config = module.exports = {};
 
 config.env = {};
 config.env.port = process.env.PORT || 3000;
-config.env.ipaddress = '127.0.0.1';
+config.env.ipaddress = '0.0.0.0';
 // used to generate 'back' urls in emails, 
 // helps solving issues with load balancers and proxies
 config.hostname = 'http://localhost:3000';
