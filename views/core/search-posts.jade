@@ -9,7 +9,7 @@ block content
   div(style='display: none;', data-bind="visible: posts().length > 0, template: { name: 'timeline-template' }")
   // Loading progress indicator
   div(id='page-data-loading', style='text-align: center; display: none;')
-    img(src='/images/progress-loading.gif', alt='Loading...')
+    i.icon-spinner.icon-spin.icon-4x
 
   div.alert.alert-error(id='content-loading-error', style='text-align: center; display: none;').
 

@@ -469,7 +469,7 @@ function onAccountPopupClick(e) {
 
     sender.data("data-popover-data", {
       isLoading: false,
-      html: "<div style='text-align:center;'><img src='/images/progress-loading.gif'/></div>"
+      html: "<div style='text-align:center;'><i class='icon-spinner icon-spin icon-4x'></i></div>"
     });
 
     sender.popover("show");

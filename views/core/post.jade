@@ -11,7 +11,7 @@ block content
     
   // Loading progress indicator
   div#progress(style='text-align: center;')
-    img(src='/images/progress-loading.gif', alt='Loading...')
+    i.icon-spinner.icon-spin.icon-4x
 
   div(style='display: none;', data-bind="visible: posts().length > 0, template: { name: 'timeline-template' }")
 
