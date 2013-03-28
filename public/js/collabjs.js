@@ -1,7 +1,7 @@
 /* global ko, moment */
 /// <reference path="jquery-1.8.3.js" />
 /// <reference path="bootstrap.js" />
-/// <reference path="knockout-2.2.0.js" />
+/// <reference path="knockout.js" />
 /// <reference path="moment.js" />
 
 var _currentUser = null;
@@ -197,13 +197,13 @@ function FeedViewModel(account, data) {
     self.posts.unshift(viewmodel);
   };
 
-  self.addPost = function (post) {
-    var viewmodel = new PostViewModel(post);
-    viewmodel.canDismiss = (post.account === account);
+  self.createPost = function (data) {
+    var viewmodel = new PostViewModel(data);
+    viewmodel.canDismiss = (data.account === account);
 
-    if (post.comments && post.comments.length > 0) {
-      $(post.comments).each(function (index, entry) {
-        viewmodel.comments.push(new PostViewModel({
+    if (data.comments && data.comments.length > 0) {
+      var entries = ko.utils.arrayMap(data.comments, function (entry) {
+        return new PostViewModel({
           id: entry.id,
           account: entry.account,
           name: entry.name,
@@ -211,20 +211,25 @@ function FeedViewModel(account, data) {
           created: entry.created,
           pictureSize: 32,
           pictureId: entry.pictureId
-        }));
+        });
       });
-
+      viewmodel.comments(entries);
       viewmodel.commentsLoaded = true;
     }
-
     viewmodel.openBlank = viewmodel.commentsLoaded === false && viewmodel.commentsCount() > 9;
+    return viewmodel;
+  };
+
+  self.addPost = function (data) {
+    var viewmodel = self.createPost(data);
     self.posts.push(viewmodel);
   };
 
   self.appendPosts = function (posts) {
-    $(posts).each(function (index, entry) {
-      self.addPost(entry);
+    var newItems = ko.utils.arrayMap(posts, function (entry) {
+      return self.createPost(entry);
     });
+    self.posts.push.apply(self.posts, newItems);
   };
 
   self.appendPosts(data);
@@ -256,10 +261,10 @@ function PeopleViewModel(data) {
   self.profiles = ko.observableArray([]);
 
   self.appendItems = function (items) {
-    $(items).each(function (index, entry) {
-      var viewmodel = new UserProfileViewModel(entry);
-      self.profiles.push(viewmodel);
+    var newItems = ko.utils.arrayMap(items, function (entry) {
+      return new UserProfileViewModel(entry);
     });
+    self.profiles.push.apply(self.profiles, newItems);
   };
 
   self.appendItems(data);
@@ -273,8 +278,7 @@ function onPeopleDataLoaded(data) {
   if (!window.peopleFeed) {
     window.peopleFeed = new PeopleViewModel(data);
     ko.applyBindings(window.peopleFeed);
-  }
-  else {
+  } else {
     window.peopleFeed.appendItems(data);
   }
 }
@@ -372,12 +376,11 @@ function comments_complete(jqXHR, status) {
 function onCommentsLoaded(post, data) {
   post.commentsLoading(false);
   // TODO: provide latest comment date/id in order for server returning only delta 
-  post.comments.removeAll();
+  //post.comments.removeAll();
   if (data) {
     post.commentsCount(data.length);
-    // turn comments into PostViewModel instances (as per current design)
-    $(data).each(function(index, entry) {
-      post.comments.push(new PostViewModel({
+    var newItems = ko.utils.arrayMap(data, function (entry) {
+      return new PostViewModel({
         id: entry.id,
         account: entry.account,
         name: entry.name,
@@ -385,12 +388,13 @@ function onCommentsLoaded(post, data) {
         created: entry.created,
         pictureSize: 32,
         pictureId: entry.pictureId
-      }));
+      });
     });
-
-    // TODO: temp
+    post.comments(newItems);
     enableAccountPopups();
     enableAccountTooltips();
+  } else {
+    post.comments([]);
   }
 }
 
@@ -533,9 +537,12 @@ function initLazyLoading(url, onSuccess) {
       if (_page > -1 && !_inCallback) {
         _inCallback = true;
         _page++;
+
+        var spinner = $('#page-data-loading');
+        var msg = $("#content-loading-error");
         
-        $("#page-data-loading").show();
-        $("#content-loading-error").hide();
+        spinner.show();
+        msg.hide();
 
         $.ajax({
           type: "GET",
@@ -545,7 +552,7 @@ function initLazyLoading(url, onSuccess) {
           success: function (data, textStatus) {
             // check whether any posts are loaded
             if (data.length > 0) {
-              if (onSuccess && (typeof onSuccess == "function")) {
+              if (onSuccess && (typeof onSuccess === "function")) {
                 onSuccess(data);
               }
             }
@@ -555,13 +562,13 @@ function initLazyLoading(url, onSuccess) {
             }
           },
           error: function (request, status, error) {
-            $("#content-loading-error").text("Error getting data. There seems to be a server problem, please try again later.");
-            $("#content-loading-error").show();
+            msg.text("Error getting data. There seems to be a server problem, please try again later.");
+            msg.show();
             _page--;
           },
           complete: function (request, status) {
             _inCallback = false;
-            $("#page-data-loading").hide();
+            spinner.hide();
           }
         });
       }

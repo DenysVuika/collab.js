@@ -16,7 +16,7 @@ block content
   div(style='display: none;', data-bind="visible: posts().length > 0, template: { name: 'timeline-template' }")
 
 block scripts
-  script(src='/js/knockout-2.2.0.js', type='text/javascript')
+  script(src='/js/knockout.min.js', type='text/javascript')
   script(src='/js/moment.min.js', type='text/javascript')
   script(src='/js/collabjs.js', type='text/javascript')
   script(type='text/javascript')
@@ -40,7 +40,7 @@ block scripts
       });
     });
     function onPostLoaded(data) {
-      window.viewmodel = new FeedViewModel(_currentUser, data);
+      window.viewmodel = new FeedViewModel(_currentUser, [data]);
       ko.applyBindings(window.viewmodel);
       enableAccountPopups();
       enableAccountTooltips();
