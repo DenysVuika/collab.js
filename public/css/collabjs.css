@@ -211,10 +211,10 @@ div.collapse.comments {
 }
 
 /* Fixed sidebar */
+/*
 .sidebar-nav-fixed {
   position: fixed;
   top: 60px;
-  /*width: 21.97%;*/
   width: 14.3646408839779%;
 }
 
@@ -234,14 +234,27 @@ div.collapse.comments {
     padding: 0 !important;
   }
 }
-
+*/
 /* Twitter Bootstrap patches */
+
+/*@media (max-width: 979px) {*/
+  /*.navbar-fixed-top {*/
+    /*position: fixed !important;*/
+  /*}*/
+/*}*/
+
+@media (max-width: 979px) {
+  .navbar-fixed-top .navbar-inner {
+    padding: 0 !important;
+  }
+}
 
 .media a {
   text-decoration: none;
 }
 
 /* iOS tweaks */
+
 input[type=submit] {
   -webkit-appearance: none;
   -webkit-border-radius:0;
