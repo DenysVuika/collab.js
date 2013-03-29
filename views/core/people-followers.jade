@@ -1,9 +1,10 @@
 extends layout
 
 block content
+  include shared/profile
   h3
     i.icon-user
-    | &nbsp;#{title}
+    | &nbsp;Followers
   include ko-people
 
   script(type='text/javascript')

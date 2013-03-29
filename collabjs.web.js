@@ -249,26 +249,53 @@ module.exports = function (app) {
   });
 
   app.get('/people/:account/followers', ensureAuthenticated, function (req, res) {
-    res.render('core/people-followers', {
-      title: req.params.account + ': followers',
-      account: req.params.account,
-      requestPath: '/people' // keep 'People' selected at sidebar
+    repository.getPublicProfile(req.user.account, req.params.account, function (err, result) {
+      if (err || !result) {
+        // TODO: redirect to some special error page
+        res.send(400);
+      } else {
+        res.render('core/people-followers', {
+          title: req.params.account + ': followers',
+          account: req.params.account,
+          profile: result,
+          isOwnProfile: req.user.account === result.account,
+          requestPath: '/people' // keep 'People' selected at sidebar
+        });
+      }
     });
   });
 
   app.get('/people/:account/following', ensureAuthenticated, function (req, res) {
-    res.render('core/people-following', {
-      title: req.params.account + ': following',
-      account: req.params.account,
-      requestPath: '/people' // keep 'People' selected at sidebar
+    repository.getPublicProfile(req.user.account, req.params.account, function (err, result) {
+      if (err || !result) {
+        // TODO: redirect to some special error page
+        res.send(400);
+      } else {
+        res.render('core/people-following', {
+          title: req.params.account + ': following',
+          account: req.params.account,
+          profile: result,
+          isOwnProfile: req.user.account === result.account,
+          requestPath: '/people' // keep 'People' selected at sidebar
+        });
+      }
     });
   });
 
   app.get('/people/:account/timeline', ensureAuthenticated, function (req, res) {
-    res.render('core/people-timeline', {
-      title: req.params.account,
-      account: req.params.account,
-      requestPath: '/people' // keep 'People' selected at sidebar
+    repository.getPublicProfile(req.user.account, req.params.account, function (err, result) {
+      if (err || !result) {
+        // TODO: redirect to some special error page
+        res.send(400);
+      } else {
+        res.render('core/people-timeline', {
+          title: req.params.account,
+          account: req.params.account,
+          profile: result,
+          isOwnProfile: req.user.account === result.account,
+          requestPath: '/people' // keep 'People' selected at sidebar
+        });
+      }
     });
   });
 

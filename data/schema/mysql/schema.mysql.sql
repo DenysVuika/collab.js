@@ -257,7 +257,7 @@ DELIMITER //
 CREATE PROCEDURE `get_public_profile`(IN `originator` VARCHAR(50), IN `target` VARCHAR(50))
 BEGIN
 
-select u.id, u.account, u.name, u.website, u.bio, u.emailHash as pictureId,
+select u.id, u.account, u.name, u.website, u.bio, u.emailHash as pictureId, u.location,
 		count(p.id) as posts,
 		(select count(id) from subscriptions where userId = u.id) as following,
 		(select count(id) from subscriptions where targetUserId = u.id) as followers,

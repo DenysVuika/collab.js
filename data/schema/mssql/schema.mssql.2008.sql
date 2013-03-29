@@ -437,7 +437,7 @@ AS
 BEGIN
 	SET NOCOUNT ON;
 
-  select u.id, u.account, u.name, u.website, u.bio, u.emailHash as pictureId,
+  select u.id, u.account, u.name, u.website, u.bio, u.emailHash as pictureId, u.location,
       dbo.count_user_posts(u.id) as posts,
 		  (select count(id) from subscriptions where userId = u.id) as following,
 		  (select count(id) from subscriptions where targetUserId = u.id) as followers,
