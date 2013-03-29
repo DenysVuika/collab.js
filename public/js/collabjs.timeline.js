@@ -77,8 +77,6 @@ function onUpdatesLoaded(data) {
       window.timelineFeed.addNewPost(post);
     });
     // TODO: temp
-    //enableAccountPopups();
     enableCommentExpanders();
-    enableAccountPopups();
   }
 }

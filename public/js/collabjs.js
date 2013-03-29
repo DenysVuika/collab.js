@@ -165,8 +165,7 @@ function PostViewModel(data) {
   // sorts comments by creation date in descending order
   self.sortComments = function () {
     self.comments.sort(function (left, right) {
-      var result = left.created === right.created ? 0 : (left.created < right.created ? -1 : 1);
-      return result;
+      return left.created === right.created ? 0 : (left.created < right.created ? -1 : 1);
     });
   };
 }
@@ -292,14 +291,12 @@ function onFeedDataLoaded(data, account) {
     window.timelineFeed.appendPosts(data);
   }
   enableCommentExpanders();
-  enableAccountPopups();
 }
 
 $(document).bind("collabjs.onStatusUpdated", function (event, data) {
   var feed = window.timelineFeed;
   if (data && feed && data.account === feed.account) {
     window.timelineFeed.addNewPost(data);
-    enableAccountPopups();
   }
 });
 
@@ -328,25 +325,12 @@ function loadComments(post) {
     $.ajax({
       url: '/api/timeline/posts/' + post.id + '/comments',
       dataType: "json",
-      //ifModified: true,
-      //error: comments_error,
-      success: function (data, status, jqXHR) {
-        //comments_success(data, status, jqXHR);
+      success: function (data) {
         onCommentsLoaded(post, data);
-      }//,
-      //complete: comments_complete
+      }
     });
   }
 }
-
-/*
-function comments_success(data, status, jqXHR) {
-}
-function comments_error(jqXHR, status, error) {
-}
-function comments_complete(jqXHR, status) {
-}
-*/
 
 function onCommentsLoaded(post, data) {
   post.commentsLoading(false);
@@ -366,7 +350,6 @@ function onCommentsLoaded(post, data) {
       });
     });
     post.comments(newItems);
-    enableAccountPopups();
   } else {
     post.comments([]);
   }
@@ -379,7 +362,7 @@ function doPostComment(form) {
   });
 }
 
-function onCommentPosted(data, status, response) {
+function onCommentPosted(data) {
   var editor = $("#comment-box-" + data.postId);
   var post = ko.dataFor(editor[0]);
 
@@ -394,103 +377,8 @@ function onCommentPosted(data, status, response) {
     pictureSize: 32,
     pictureId: data.pictureId
   }));
-
-  enableAccountPopups();
-
   post.sortComments();
   editor.val("");
-}
-
-// ========================================================================================
-// Account image popovers
-// ========================================================================================
-
-var isPopupVisible = false;
-var clickedAway = false;
-var openedPopup;
-
-function enableAccountPopups() {
-
-  // rebind clickaway subscribers
-  $(document)
-    .unbind("click touchend", onAccountPopupClickedAway)
-    .bind("click touchend", onAccountPopupClickedAway);
-
-  var elements = $("img[data-link-type='account']");
-
-  elements.each(function () {
-    var img = $(this);
-
-    var imgId = img.attr("id");
-    img.popover({
-      html: true,
-      title: function () { return $("#" + imgId).attr("data-link-value"); },
-      content: function () { return $(this).data("data-popover-data").html; },
-      trigger: 'manual'
-    }).unbind("click touchend", onAccountPopupClick)
-      .bind("click touchend", onAccountPopupClick);
-  });
-}
-
-function onAccountPopupClick(e) {
-  e.preventDefault();
-  var sender = $(this);
-  var senderId = sender.attr("id");
-
-  if (openedPopup !== senderId) {
-    $("#" + openedPopup).popover("hide");
-
-    sender.data("data-popover-data", {
-      isLoading: false,
-      html: "<div style='text-align:center;'><i class='icon-spinner icon-spin icon-4x'></i></div>"
-    });
-
-    sender.popover("show");
-    openedPopup = senderId;
-    isPopupVisible = true;
-
-    var account = sender.attr("data-link-value");
-    var profile = sender.data("data-popover-data");
-
-    if (!profile.isLoading) {
-      profile.isLoading = true;
-      requestProfile(senderId, account, profile, onUserProfileFetched);
-    }
-  }
-
-  clickedAway = false;
-}
-
-function requestProfile(senderId, account, profile, success) {
-  $.ajax({
-    url: '/accounts/' + account + '/profile',
-    contentType: 'application/html; charset=utf-8',
-    dataType: 'html',
-    success: function (data) { success(senderId, data, profile); }
-  });
-}
-
-function onUserProfileFetched(senderId, data, profile) {
-  profile.isLoading = false;
-  profile.html = data;
-
-  // this is async invoke so we need to ensure that this particular popup is still opened
-  if (openedPopup === senderId) {
-    $('#' + senderId).popover('show'); // rebind opened view
-  }
-}
-
-function onAccountPopupClickedAway() {
-  if (isPopupVisible && clickedAway) {
-    if (openedPopup) {
-      $("#" + openedPopup).popover('hide');
-      openedPopup = null;
-    }
-    isPopupVisible = clickedAway = false;
-  }
-  else {
-    clickedAway = true;
-  }
 }
 
 // ========================================================================================
@@ -518,7 +406,7 @@ function initLazyLoading(url, onSuccess) {
           dataType: "json",
           url: url(_page),
           timeout: 5000,
-          success: function (data, textStatus) {
+          success: function (data) {
             // check whether any posts are loaded
             if (data.length > 0) {
               if (onSuccess && (typeof onSuccess === "function")) {
@@ -530,12 +418,12 @@ function initLazyLoading(url, onSuccess) {
               _page = -1;
             }
           },
-          error: function (request, status, error) {
+          error: function () {
             msg.text("Error getting data. There seems to be a server problem, please try again later.");
             msg.show();
             _page--;
           },
-          complete: function (request, status) {
+          complete: function () {
             _inCallback = false;
             spinner.hide();
           }

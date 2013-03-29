@@ -2,9 +2,8 @@ script(type='text/html', id='timeline-template')
   ul.media-list(data-bind='foreach: posts')
     li.media.post
       button.close(data-bind='visible: canDismiss, click: $parent.removePost') &times;
-      a.pull-left(href='#')
-        img.media-object(data-link-type='account',
-          data-bind="attr: { id: 'prof_' + id, 'data-link-value': account, src: picture }")
+      a.pull-left(data-bind="attr: { href: feed }")
+        img.media-object(data-bind="attr: { src: picture }")
       div.media-body
         div.media-heading
           span
@@ -19,7 +18,6 @@ script(type='text/html', id='timeline-template')
           i.icon-tags
           | &nbsp
           span(data-bind='foreach: hashtags')
-            //-span.label(data-bind='text: $data')
             a.label(data-bind="text: $data, attr: { href: '/search?q=' + $data + '&src=hash' }",
               style='margin-right: 5px; font-weight: normal;')
         // ko if: openBlank
@@ -41,9 +39,8 @@ script(type='text/html', id='comments-section-template')
 
 script(type='text/html', id='post-comment-template')
   li.media.comment
-    a.pull-left(href='#')
-      img.media-object(data-link-type='account',
-        data-bind="attr: { id: 'cprof_' + id, 'data-link-value': account, src: picture }")
+    a.pull-left(data-bind='attr: { href: feed }')
+      img.media-object(data-bind="attr: { src: picture }")
     div.media-body
       blockquote
         p

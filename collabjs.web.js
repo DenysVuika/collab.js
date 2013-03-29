@@ -216,20 +216,6 @@ module.exports = function (app) {
 //    });
 //  });
 
-  app.get('/accounts/:account/profile', requireAuthenticated, function (req, res) {
-    repository.getPublicProfile(req.user.account, req.params.account, function (err, result) {
-      if (err || !result) { res.send(400); }
-      else {
-        res.render('core/profile-partial', {
-          title: req.params.account,
-          profile: result,
-          // TODO: move to the stored procedure?
-          isOwnProfile: req.user.account === result.account
-        });
-      }
-    });
-  });
-
   app.get('/people/:account/follow', ensureAuthenticated, function (req, res) {
     repository.followAccount(req.user.id, req.params.account, function (err, result) {
       res.redirect('/timeline');

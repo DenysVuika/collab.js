@@ -42,6 +42,5 @@ block scripts
     function onPostLoaded(data) {
       window.viewmodel = new FeedViewModel(_currentUser, [data]);
       ko.applyBindings(window.viewmodel);
-      enableAccountPopups();
       $('div[data-link-type="comment"]').collapse('show');
     }
