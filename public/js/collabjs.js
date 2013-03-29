@@ -123,7 +123,7 @@ String.prototype.parseAccountTags = function () {
   return this.replace(/[@]+[A-Za-z0-9-_]+/g, function (u) {
     var username = u.replace("@", "");
     //return u.link("http://twitter.com/" + username);
-    return "<a href='/people/" + username + "/timeline' data-link-type='account' data-link-value='" + username + "'>" + u + "</a>";
+    return "<a href='/people/" + username + "/timeline'>" + u + "</a>";
   });
 };
 
@@ -293,7 +293,6 @@ function onFeedDataLoaded(data, account) {
   }
   enableCommentExpanders();
   enableAccountPopups();
-  enableAccountTooltips();
 }
 
 $(document).bind("collabjs.onStatusUpdated", function (event, data) {
@@ -301,26 +300,8 @@ $(document).bind("collabjs.onStatusUpdated", function (event, data) {
   if (data && feed && data.account === feed.account) {
     window.timelineFeed.addNewPost(data);
     enableAccountPopups();
-    enableAccountTooltips();
   }
 });
-
-// ========================================================================================
-// Account link tooltips
-// ========================================================================================
-
-function enableAccountTooltips() {
-  $('a[data-link-type="account"]').each(function () {
-    var link = $(this);
-    link.popover({
-      placement: 'right',
-      trigger: 'hover',
-      title: '@' + link.attr("data-link-value"),
-      delay: 600,
-      content: 'Show status updates posted by this user.'
-    });
-  });
-}
 
 // ========================================================================================
 // Comment expanders
@@ -348,30 +329,24 @@ function loadComments(post) {
       url: '/api/timeline/posts/' + post.id + '/comments',
       dataType: "json",
       //ifModified: true,
-      //success: comments_success,
-      error: comments_error,
+      //error: comments_error,
       success: function (data, status, jqXHR) {
-        comments_success(data, status, jqXHR);
+        //comments_success(data, status, jqXHR);
         onCommentsLoaded(post, data);
-      },
-      complete: comments_complete
-      // error: function (jqXHR, status, error) {
-      // }
+      }//,
+      //complete: comments_complete
     });
   }
 }
 
+/*
 function comments_success(data, status, jqXHR) {
-
 }
-
 function comments_error(jqXHR, status, error) {
-
 }
-
 function comments_complete(jqXHR, status) {
-
 }
+*/
 
 function onCommentsLoaded(post, data) {
   post.commentsLoading(false);
@@ -392,7 +367,6 @@ function onCommentsLoaded(post, data) {
     });
     post.comments(newItems);
     enableAccountPopups();
-    enableAccountTooltips();
   } else {
     post.comments([]);
   }
@@ -422,7 +396,6 @@ function onCommentPosted(data, status, response) {
   }));
 
   enableAccountPopups();
-  enableAccountTooltips();
 
   post.sortComments();
   editor.val("");
@@ -442,10 +415,6 @@ function enableAccountPopups() {
   $(document)
     .unbind("click touchend", onAccountPopupClickedAway)
     .bind("click touchend", onAccountPopupClickedAway);
-
-  //var elements = (!target)
-  //  ? $("img[data-link-type='account']")
-  //  : $(target).find("img[data-link-type='account']");
 
   var elements = $("img[data-link-type='account']");
 

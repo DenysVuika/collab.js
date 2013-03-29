@@ -80,6 +80,5 @@ function onUpdatesLoaded(data) {
     //enableAccountPopups();
     enableCommentExpanders();
     enableAccountPopups();
-    enableAccountTooltips();
   }
 }
