@@ -1,10 +1,7 @@
 body {
   position: relative;
   padding-bottom: 40px;
-  background-color: #fff;
-  background-image: url("/images/grid-18px-masked.png");
-  background-repeat: repeat-x;
-  background-position: 0 40px;
+  background: #fff url('../images/grid-18px-masked.png') repeat-x 0 40px;
 }
 
 .jumbotron {
@@ -22,20 +19,6 @@ body {
 .jumbotron p {
   margin-bottom: 18px;
   font-weight: 300;
-}
-
-.jumbotron .btn-large {
-  font-size: 20px;
-  font-weight: normal;
-  padding: 14px 24px;
-  margin-right: 10px;
-  -webkit-border-radius: 6px;
-  -moz-border-radius: 6px;
-  border-radius: 6px;
-}
-
-.jumbotron .btn-large small {
-  font-size: 14px;
 }
 
 .masthead {

@@ -4,7 +4,7 @@ div.navbar.navbar-fixed-top
         a.brand(href='/')= config.ui.brand
         ul.nav.pull-right
           li.dropdown
-            a.dropdown-toggle(href='#', data-toggle='dropdown', style='padding-bottom: 5px; padding-top: 6px; margin-bottom: 0px;')
+            a.dropdown-toggle(href='#', data-toggle='dropdown')
               i.icon-cogs.icon-2x
               b.caret
             ul.dropdown-menu
@@ -37,7 +37,7 @@ div.navbar.navbar-fixed-top
                   a(href='/register') Register
         div
           ul.nav
-            li.divider-vertical(style='margin:0')
+            li.divider-vertical
             if (user)  
               li
                 a(href='/timeline', title='Home')
