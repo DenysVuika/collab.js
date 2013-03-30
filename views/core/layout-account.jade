@@ -1,66 +1,23 @@
-!!! 5
-html
-  head
-    title= title
-    
-    meta(name='viewport', content='width=device-width, initial-scale=1.0, maximum-scale=1.0')
-    meta(name='description', content='')
-    meta(name='author', content='')
+extends layout
 
-    link(rel='stylesheet', href='/lib/bootstrap/css/bootstrap.min.css')
-    link(rel='stylesheet', href='/css/font-awesome.min.css')
-    link(rel='stylesheet', href='/lib/bootstrap/css/m-styles.min.css')
-    link(rel='stylesheet', href='/css/collabjs.css')
-    link(rel='stylesheet', href='/lib/bootstrap/css/bootstrap-responsive.min.css')
-    link(rel='stylesheet', href='/css/collabjs-responsive.css')
-
-    block styles
-
-    script(type='text/javascript', src='/js/jquery.min.js')
-  
-  body
-    include shared/header
-
-    div.container-fluid
-      div.row-fluid
-        div.span3
-          //- SIDEBAR
-          div.well.sidebar-nav
-            ul.nav.nav-list#sidebar
-              li.nav-header Profile
-              li
-                a(href='/account')
-                  i.icon-user
-                  | &nbsp;Account
-              li.disabled
-                a(href='#')
-                  i.icon-envelope
-                  | &nbsp;Email settings
-              li
-                a(href='/account/password')
-                  i.icon-key
-                  | &nbsp;Change password
-              li.divider
-              li
-                a(href='/help')
-                  i.icon-flag
-                  | &nbsp;Help
-        div.span9
-          //- MAIN CONTENT
-          block content
-      include shared/footer
-
-  script(type='text/javascript', src='/lib/bootstrap/js/bootstrap.min.js')
-  block scripts
-  script(type='text/javascript')
-    $(function() {
-      // Synchronize sidebar/header selection with current request path
-      var path = window.location.pathname;
-      $('.nav li a[href="' + path + '"]').parents('li').addClass('active');
-    });
-
-  // assign user-related variables
-  if (user && user.account && user._id)
-    script(type='text/javascript')
-      _currentUser = '#{user.account}';
-      _currentUserId = '#{user._id}';
+block sidebar
+  div.well.sidebar-nav
+    ul.nav.nav-list#sidebar
+      li.nav-header Profile
+      li
+        a(href='/account')
+          i.icon-user
+          | &nbsp;Account
+      li.disabled
+        a(href='#')
+          i.icon-envelope
+          | &nbsp;Email settings
+      li
+        a(href='/account/password')
+          i.icon-key
+          | &nbsp;Change password
+      li.divider
+      li
+        a(href='/help')
+          i.icon-flag
+          | &nbsp;Help
