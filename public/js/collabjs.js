@@ -179,7 +179,6 @@ function FeedViewModel(account, data) {
 
   self.removePost = function (post) {
     $.ajax({
-      dataType: 'json',
       url: '/api/timeline/posts/' + post.id,
       type: 'DELETE',
       success: function () {

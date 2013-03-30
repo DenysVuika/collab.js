@@ -12,7 +12,7 @@ script(type='text/html', id='timeline-template')
             a(data-bind="text: '@' + account, attr: { href: feed }",
               style='color: grey; font-weight: normal; font-size: 90%; padding-left: 5px;')
         blockquote
-          p(data-bind='html: content')
+          div(data-bind='html: content')
           small(data-bind="text: created.calendar(), attr: { title : created.format('LLLL') }")
         div(data-bind='visible: hashtags.length > 0')
           i.icon-tags
@@ -43,7 +43,7 @@ script(type='text/html', id='post-comment-template')
       img.media-object(data-bind="attr: { src: picture }")
     div.media-body
       blockquote
-        p
+        div
           a(data-bind='attr: { href: feed }')
             strong(data-bind='text: name', style='font-size: 14px;')
           span(data-bind='html: content', style='margin-left: 5px;')
