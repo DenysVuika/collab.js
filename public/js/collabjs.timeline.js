@@ -1,5 +1,5 @@
 /* global _currentUser */
-/// <reference path="jquery-1.8.3.js" />
+/// <reference path="jquery.min.js" />
 /// <reference path="knockout.js" />
 /// <reference path="collabjs.js" />
 
@@ -58,7 +58,7 @@ function checkNewPosts() {
 }
 
 // Clicking to download new posts
-$("#new-msg-link").live("click", function(e) {
+$("#new-msg-link").on("click", function(e) {
   e.preventDefault();
   $("#msg-new-posts").hide();
   clearTimeout(updateChecker);

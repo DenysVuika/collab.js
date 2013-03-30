@@ -1,8 +1,8 @@
 /* global ko, moment */
-/// <reference path="jquery-1.8.3.js" />
+/// <reference path="jquery.min.js" />
 /// <reference path="bootstrap.js" />
-/// <reference path="knockout.js" />
-/// <reference path="moment.js" />
+/// <reference path="knockout.min.js" />
+/// <reference path="moment.min.js" />
 
 var _currentUser = null;
 var _currentUserId = null;
