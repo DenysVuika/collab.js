@@ -114,9 +114,6 @@ h3 > i {
   background-color: #ececec;
   border-bottom: 1px solid #ddd;
 }
-    /*.modal-header.draggable {
-        cursor: move;
-    }*/
 
 .modal-header .modal-title {
   width: 75%;
@@ -210,44 +207,7 @@ div.collapse.comments {
   overflow: visible !important;
 }
 
-/* Fixed sidebar */
-/*
-.sidebar-nav-fixed {
-  position: fixed;
-  top: 60px;
-  width: 14.3646408839779%;
-}
-
-@media (max-width: 767px) {
-  .sidebar-nav-fixed {
-    position: static;
-    width: auto;
-  }
-}
-
-@media (max-width: 979px) {
-  .sidebar-nav-fixed {
-    top: 70px;
-  }
-
-  .navbar-fixed-top .navbar-inner {
-    padding: 0 !important;
-  }
-}
-*/
 /* Twitter Bootstrap patches */
-
-/*@media (max-width: 979px) {*/
-  /*.navbar-fixed-top {*/
-    /*position: fixed !important;*/
-  /*}*/
-/*}*/
-
-@media (max-width: 979px) {
-  .navbar-fixed-top .navbar-inner {
-    padding: 0 !important;
-  }
-}
 
 .media a {
   text-decoration: none;
