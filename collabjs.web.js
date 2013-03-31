@@ -278,8 +278,7 @@ module.exports = function (app) {
           title: req.params.account,
           account: req.params.account,
           profile: result,
-          isOwnProfile: req.user.account === result.account,
-          requestPath: '/people' // keep 'People' selected at sidebar
+          isOwnProfile: req.user.account === result.account
         });
       }
     });
