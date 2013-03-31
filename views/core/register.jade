@@ -16,24 +16,24 @@ block content
       if (config.invitation.enabled)
         div.control-group
           div.control-label
-            label(for='invite') Invitation code
+            label(for='code') Invitation code
           div.controls
-            input(type='text', required, id='invite', name='invite', placeholder='Your invitation code')
+            input(type='text', required, id='code', name='code', placeholder='Your invitation code', value='#{data.code}')
       div.control-group
         div.control-label
           label(for='account') Account
         div.controls
-          input(type='text', required, id='account', name='account', placeholder='e.g. johndoe')
+          input(type='text', required, id='account', name='account', placeholder='e.g. johndoe', value='#{data.account}')
       div.control-group
         div.control-label
           label(for='name') Name
         div.controls
-          input(type='text', required, id='name', name='name', placeholder='e.g. John Doe')
+          input(type='text', required, id='name', name='name', placeholder='e.g. John Doe', value='#{data.name}')
       div.control-group
         div.control-label
           label(for='email') Email
         div.controls
-          input(type='email', required, id='email', name='email', placeholder='e.g. jdoe@mail.com')
+          input(type='email', required, id='email', name='email', placeholder='e.g. jdoe@mail.com', value='#{data.email}')
       div.control-group
         div.control-label
           label(for='password') Password

@@ -49,25 +49,43 @@ module.exports = function (app) {
     // define variables for the 'register' form
     var locals = {
       title: 'Register',
-      message: req.flash('error')
+      message: req.flash('error'),
+      recaptcha_form: getRecaptchaForm(),
+      data: {
+        code: '',
+        account: '',
+        name: '',
+        email: ''
+      }
     };
     // generate appropriate html content if recaptcha is enabled
+    /*
     if (config.recaptcha.enabled) {
       var recaptcha = new Recaptcha(config.recaptcha.publicKey, config.recaptcha.privateKey);
       locals.recaptcha_form = recaptcha.toHTML();
     }
+    */
+
 
     res.render('core/register', locals);
   });
 
   app.post('/register', function (req, res) {
     var body = req.body;
+
+    var locals = {
+      title: 'Register',
+      data: body
+    };
+
     // check whether invitation codes are enabled
     if (config.invitation.enabled) {
       // validate invitation code
-      if (!body.invite || body.invite.length === 0 || body.invite !== config.invitation.code) {
-        req.flash('error', 'Wrong invitation code.');
-        return res.redirect('/register');
+      if (!body.code || body.code.length === 0 || body.code !== config.invitation.code) {
+        locals.data.code = '';
+        locals.message = 'Wrong invitation code.';
+        locals.recaptcha_form = getRecaptchaForm();
+        return res.render('core/register', locals);
       }
     }
     // instantiate a stub in case reCaptcha feature is disabled
@@ -86,10 +104,10 @@ module.exports = function (app) {
     // verify recaptcha
     recaptcha.verify(function (success, err) {
       if (!success) {
-        console.log(err);
         // redisplay the form in case of error
-        req.flash('error', 'Error in verification code.');
-        return res.redirect('/register');
+        locals.message = 'Wrong verification code.';
+        locals.recaptcha_form = getRecaptchaForm();
+        return res.render('core/register', locals);
       }
 
       // TODO: introduce better validation
@@ -105,14 +123,16 @@ module.exports = function (app) {
 
         repository.createAccount(user, function (err, result) {
           if (err) {
-            req.flash('error', err);
-            return res.redirect('/register');
+            locals.message = err;
+            locals.recaptcha_form = getRecaptchaForm();
+            return res.render('core/register', locals);
           } else {
             req.login({ id: result.id, username: user.account, password: hashedPassword }, function (err) {
               if (err) {
                 console.log('Error logging in with newly created account. ' + err);
-                req.flash('error', 'Error authenticating user.');
-                return res.redirect('/register');
+                locals.message = 'Error authenticating user.';
+                locals.recaptcha_form = getRecaptchaForm();
+                return res.render('core/register', locals);
               } else {
                 return res.redirect('/timeline');
               }
@@ -121,8 +141,9 @@ module.exports = function (app) {
         });
       }
       else {
-        req.flash('error', 'Error creating account.');
-        return res.redirect('/register');
+        locals.message = 'Error creating account.';
+        locals.recaptcha_form = getRecaptchaForm();
+        return res.render('core/register', locals);
       }
     });
   });
@@ -350,4 +371,14 @@ function isUrlLocalToHost(url) {
 
 function isStringEmpty(str) {
   return !(str && str !== '');
+}
+
+function getRecaptchaForm() {
+  // generate appropriate html content if recaptcha is enabled
+  if (config.recaptcha.enabled) {
+    var recaptcha = new Recaptcha(config.recaptcha.publicKey, config.recaptcha.privateKey);
+    return recaptcha.toHTML();
+  } else {
+    return '';
+  }
 }
