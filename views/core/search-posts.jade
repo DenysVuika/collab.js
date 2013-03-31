@@ -1,5 +1,11 @@
 extends layout
 
+append sidebar-main
+  li.active
+    a(href='/search?q=#{search_q}&src=#{search_src}')
+      i.icon-search
+      | &nbsp;Search
+
 block content
   include shared/ko-timeline
   h3

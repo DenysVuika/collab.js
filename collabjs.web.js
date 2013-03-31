@@ -314,7 +314,7 @@ module.exports = function (app) {
     }
 
     return res.render('core/search-posts', {
-      title: 'Search',
+      title: 'Results for ' + q,
       search_q: encodeURIComponent(q),
       search_src: encodeURIComponent(req.query.src)
     });
