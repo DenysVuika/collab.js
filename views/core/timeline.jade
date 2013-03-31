@@ -1,7 +1,7 @@
 extends layout
 
 block content
-  include ko-timeline
+  include shared/ko-timeline
   form(id='frmUpdateStatus', name='frmUpdateStatus', method='post', action='', onSubmit='doUpdateStatus(); return false;')
     textarea.input-block-level(id='new-post-dialog-inline', 
       name='content', rows='3', 
