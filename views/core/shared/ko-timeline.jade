@@ -51,6 +51,7 @@ script(type='text/html', id='post-comment-template')
 
 script(type='text/html', id='post-commentbox-template')
   form(method='post', action='', onSubmit='doPostComment(this); return false;')
+    input(type='hidden', name='_csrf', value=token)
     input(name='postId', type='hidden', data-bind='value: id')
     input.input-block-level(name='content', type='text', placeholder='Write a comment...', autocomplete='off'
       data-bind="attr: { id: 'comment-box-' + id }")

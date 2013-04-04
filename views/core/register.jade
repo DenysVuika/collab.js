@@ -11,6 +11,7 @@ block content
       lang: 'en'
     }
   form(method='post').form-horizontal
+    input(type='hidden', name='_csrf', value=token)
     fieldset
       legend Account Information
       if (config.invitation.enabled)

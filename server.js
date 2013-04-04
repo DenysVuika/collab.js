@@ -79,6 +79,7 @@ app.configure(function () {
   app.use(express.methodOverride());
   // app.use(express.session({ secret: 'keyboard cat', cookie: { maxAge: 60000 } }));
   app.use(express.session({ secret: 'keyboard cat'}));
+  app.use(express.csrf());
   // Initialize Passport! Also use passport.session() middleware, to support
   // persistent Login sessions (recommended).
   app.use(passport.initialize());
@@ -91,6 +92,7 @@ app.configure(function () {
   app.locals.config = config;
   //app.locals.isUserInRole = auth.isUserInRole;
   app.use(function (req, res, next) {
+    res.locals.token = req.session._csrf;
     res.locals.user = req.user;
     res.locals.isAuthenticated = req.isAuthenticated();
     res.locals.isAdministrator = auth.isUserInRole(req.user, 'administrator');
