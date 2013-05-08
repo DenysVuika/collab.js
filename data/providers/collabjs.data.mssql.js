@@ -220,8 +220,7 @@ Provider.prototype = {
     });
   },
   deletePost: function (postId, userId, callback) {
-    var command = 'DELETE FROM posts WHERE id = ? AND userId = ?';
-    sql.query(this.connection, command, [postId, userId], function (err) {
+    sql.query(this.connection, 'exec delete_post ?,?', [userId, postId], function (err) {
       if (err) {
         console.log('Error removing post. ' + err);
         callback(err, false);

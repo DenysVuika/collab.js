@@ -22,6 +22,7 @@ html
     script(type='text/javascript', src='/js/jquery.min.js')
 
   body
+    input(type='hidden', id='csrf_token', value=token)
     include shared/header
 
     div.container-fluid

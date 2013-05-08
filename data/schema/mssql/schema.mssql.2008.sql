@@ -3,7 +3,7 @@ GO
 
 USE [collabjs]
 GO
-/****** Object:  StoredProcedure [dbo].[add_comment]    Script Date: 2/25/2013 8:19:50 PM ******/
+
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -23,33 +23,6 @@ BEGIN
 
   SELECT SCOPE_IDENTITY() AS insertId;
 END
-
-GO
-/****** Object:  StoredProcedure [dbo].[add_post]    Script Date: 2/25/2013 8:19:50 PM ******/
-SET ANSI_NULLS ON
-GO
-SET QUOTED_IDENTIFIER ON
-GO
-
-CREATE PROCEDURE [dbo].[add_post]
-	@userId int,
-  @content nvarchar(max),
-  @created datetime
-AS
-BEGIN
-	SET NOCOUNT ON;
-
-  INSERT INTO posts (userId, content, created) 
-    values (@userId, @content, @created);
-
-  SELECT SCOPE_IDENTITY() AS insertId;
-END
-
-GO
-/****** Object:  StoredProcedure [dbo].[create_account]    Script Date: 2/25/2013 8:19:50 PM ******/
-SET ANSI_NULLS ON
-GO
-SET QUOTED_IDENTIFIER ON
 GO
 
 CREATE PROCEDURE [dbo].[create_account]
@@ -67,37 +40,27 @@ BEGIN
 
   SELECT SCOPE_IDENTITY() AS insertId;
 END
-
-GO
-/****** Object:  StoredProcedure [dbo].[follow_account]    Script Date: 2/25/2013 8:19:50 PM ******/
-SET ANSI_NULLS ON
-GO
-SET QUOTED_IDENTIFIER ON
 GO
 
-CREATE PROCEDURE [dbo].[follow_account] 
+CREATE PROCEDURE [dbo].[follow_account]
 	@originatorId int,
   @targetAccount varchar(50)
 AS
 BEGIN
 	SET NOCOUNT ON;
 
-DECLARE @targetId INT;
-SELECT @targetId = u.id FROM users AS u  WHERE u.account = @targetAccount;
+  DECLARE @targetId INT;
+  SELECT @targetId = u.id FROM users AS u  WHERE u.account = @targetAccount;
 
-IF NOT EXISTS(
-	SELECT s.id FROM subscriptions AS s
-	  WHERE s.userId = @originatorId AND s.targetUserId = @targetId)
-  BEGIN
-    INSERT INTO subscriptions (userId, targetUserId) VALUES (@originatorId, @targetId)
+  IF NOT EXISTS
+    (
+      SELECT s.id FROM subscriptions AS s
+        WHERE s.userId = @originatorId AND s.targetUserId = @targetId
+    )
+    BEGIN
+      INSERT INTO subscriptions (userId, targetUserId) VALUES (@originatorId, @targetId)
+    END
   END
-END
-
-GO
-/****** Object:  StoredProcedure [dbo].[get_account]    Script Date: 2/25/2013 8:19:50 PM ******/
-SET ANSI_NULLS ON
-GO
-SET QUOTED_IDENTIFIER ON
 GO
 
 CREATE PROCEDURE [dbo].[get_account]
@@ -109,12 +72,6 @@ BEGIN
     FROM users
   WHERE account = @account
 END
-
-GO
-/****** Object:  StoredProcedure [dbo].[get_account_by_id]    Script Date: 2/25/2013 8:19:50 PM ******/
-SET ANSI_NULLS ON
-GO
-SET QUOTED_IDENTIFIER ON
 GO
 
 CREATE PROCEDURE [dbo].[get_account_by_id]
@@ -126,12 +83,6 @@ BEGIN
     FROM users
   WHERE id = @id
 END
-
-GO
-/****** Object:  StoredProcedure [dbo].[get_comments]    Script Date: 2/25/2013 8:19:50 PM ******/
-SET ANSI_NULLS ON
-GO
-SET QUOTED_IDENTIFIER ON
 GO
 
 CREATE PROCEDURE [dbo].[get_comments]
@@ -145,12 +96,6 @@ BEGIN
   WHERE c.postId = @postId
   ORDER BY created ASC;
 END
-
-GO
-/****** Object:  StoredProcedure [dbo].[get_followers]    Script Date: 2/25/2013 8:19:50 PM ******/
-SET ANSI_NULLS ON
-GO
-SET QUOTED_IDENTIFIER ON
 GO
 
 CREATE PROCEDURE [dbo].[get_followers]
@@ -168,8 +113,7 @@ BEGIN
   SELECT TOP (@limit) result.* FROM
   (
     SELECT
-	    u.id, u.account, u.name, u.website, u.location, u.bio, u.emailHash as pictureId,
-      dbo.count_user_posts(u.id) as posts,
+	    u.id, u.account, u.name, u.website, u.location, u.bio, u.emailHash as pictureId, u.posts,
 	    (SELECT COUNT(id) FROM subscriptions WHERE userId = u.id) AS following,
 	    (SELECT COUNT(id) FROM subscriptions WHERE targetUserId = u.id) AS followers,
       --SQL:2012
@@ -204,12 +148,6 @@ BEGIN
   ) AS result
   WHERE (@topId <= 0 OR result.id > @topId);
 END
-
-GO
-/****** Object:  StoredProcedure [dbo].[get_following]    Script Date: 2/25/2013 8:19:50 PM ******/
-SET ANSI_NULLS ON
-GO
-SET QUOTED_IDENTIFIER ON
 GO
 
 CREATE PROCEDURE [dbo].[get_following]
@@ -227,8 +165,7 @@ BEGIN
   SELECT TOP (@limit) result.* FROM
   (
     SELECT
-	    u.id, u.account, u.name, u.website, u.location, u.bio, u.emailHash as pictureId,
-      dbo.count_user_posts(u.id) as posts,
+	    u.id, u.account, u.name, u.website, u.location, u.bio, u.emailHash as pictureId, u.posts,
 	    (SELECT COUNT(id) FROM subscriptions WHERE userId = u.id) AS following,
 	    (SELECT COUNT(id) FROM subscriptions WHERE targetUserId = u.id) AS followers,
       --SQL2012
@@ -263,12 +200,6 @@ BEGIN
   ) AS result
   WHERE (@topId <= 0 OR result.id > @topId);
 END
-
-GO
-/****** Object:  StoredProcedure [dbo].[get_main_timeline]    Script Date: 2/25/2013 8:19:50 PM ******/
-SET ANSI_NULLS ON
-GO
-SET QUOTED_IDENTIFIER ON
 GO
 
 CREATE PROCEDURE [dbo].[get_main_timeline]
@@ -296,12 +227,6 @@ BEGIN
   WHERE (@topId <= 0 OR result.id < @topId)
   ORDER BY result.created DESC
 END
-
-GO
-/****** Object:  StoredProcedure [dbo].[get_mentions]    Script Date: 2/25/2013 8:19:50 PM ******/
-SET ANSI_NULLS ON
-GO
-SET QUOTED_IDENTIFIER ON
 GO
 
 CREATE PROCEDURE [dbo].[get_mentions]
@@ -330,12 +255,6 @@ BEGIN
   WHERE (@topId <= 0 OR result.id < @topId)
   ORDER BY result.created DESC
 END
-
-GO
-/****** Object:  StoredProcedure [dbo].[get_people]    Script Date: 2/25/2013 8:19:50 PM ******/
-SET ANSI_NULLS ON
-GO
-SET QUOTED_IDENTIFIER ON
 GO
 
 CREATE PROCEDURE [dbo].[get_people]
@@ -349,8 +268,7 @@ BEGIN
   SELECT TOP (@limit) result.* FROM
   (
     SELECT u.id, u.account, u.name, u.website, u.location, u.bio,
-      u.created, u.emailHash as pictureId,
-      dbo.count_user_posts(u.id) as posts,
+      u.created, u.emailHash as pictureId, u.posts,
 	    (SELECT COUNT(id) FROM subscriptions WHERE userId = u.id) AS following,
 	    (SELECT COUNT(id) FROM subscriptions WHERE targetUserId = u.id) AS followers,
       --SQL2012
@@ -385,12 +303,6 @@ BEGIN
   WHERE (@topId <= 0 OR result.id > @topId)
   ORDER BY result.created
 END
-
-GO
-/****** Object:  StoredProcedure [dbo].[get_post]    Script Date: 2/25/2013 8:19:50 PM ******/
-SET ANSI_NULLS ON
-GO
-SET QUOTED_IDENTIFIER ON
 GO
 
 CREATE PROCEDURE [dbo].[get_post] 
@@ -403,12 +315,6 @@ BEGIN
 	  LEFT JOIN users AS u ON u.id = p.userId
   WHERE p.id = @postId;
 END
-
-GO
-/****** Object:  StoredProcedure [dbo].[get_post_author]    Script Date: 2/25/2013 8:19:50 PM ******/
-SET ANSI_NULLS ON
-GO
-SET QUOTED_IDENTIFIER ON
 GO
 
 CREATE PROCEDURE [dbo].[get_post_author]
@@ -417,17 +323,11 @@ AS
 BEGIN
 	SET NOCOUNT ON;
 
-  select TOP (1) u.id, u.account, u.name, u.email, u.emailHash as pictureId
-  from posts as p 
-    left join users as u on u.id = p.userId 
-  where p.id = @postId
+  SELECT TOP (1) u.id, u.account, u.name, u.email, u.emailHash AS pictureId
+  FROM posts AS p
+    LEFT JOIN users AS u ON u.id = p.userId
+  WHERE p.id = @postId
 END
-
-GO
-/****** Object:  StoredProcedure [dbo].[get_public_profile]    Script Date: 2/25/2013 8:19:50 PM ******/
-SET ANSI_NULLS ON
-GO
-SET QUOTED_IDENTIFIER ON
 GO
 
 CREATE PROCEDURE [dbo].[get_public_profile]
@@ -437,10 +337,9 @@ AS
 BEGIN
 	SET NOCOUNT ON;
 
-  select u.id, u.account, u.name, u.website, u.bio, u.emailHash as pictureId, u.location,
-      dbo.count_user_posts(u.id) as posts,
-		  (select count(id) from subscriptions where userId = u.id) as following,
-		  (select count(id) from subscriptions where targetUserId = u.id) as followers,
+  SELECT u.id, u.account, u.name, u.website, u.bio, u.emailHash AS pictureId, u.location, u.posts,
+		  (SELECT COUNT(id) FROM subscriptions WHERE userId = u.id) AS following,
+		  (SELECT COUNT(id) FROM subscriptions WHERE targetUserId = u.id) AS followers,
       -- SQL: 2012
 		  --iif ( 
 			 -- (
@@ -461,14 +360,9 @@ BEGIN
 			LEFT JOIN users AS utarget ON utarget.id = sub.targetUserId 
 			WHERE usource.Id = @caller AND utarget.account = u.account
 			GROUP BY sub.id) AS isFollowed
-  from users as u
-  where u.account = @target
+  FROM users AS u
+  WHERE u.account = @target
 END
-GO
-/****** Object:  StoredProcedure [dbo].[get_timeline]    Script Date: 2/25/2013 8:19:50 PM ******/
-SET ANSI_NULLS ON
-GO
-SET QUOTED_IDENTIFIER ON
 GO
 
 CREATE PROCEDURE [dbo].[get_timeline] 
@@ -492,11 +386,6 @@ BEGIN
   WHERE (@topId <= 0 OR result.id < @topId)
   ORDER BY result.created DESC
 END
-GO
-/****** Object:  StoredProcedure [dbo].[get_timeline_updates]    Script Date: 2/25/2013 8:19:50 PM ******/
-SET ANSI_NULLS ON
-GO
-SET QUOTED_IDENTIFIER ON
 GO
 
 CREATE PROCEDURE [dbo].[get_timeline_updates] 
@@ -523,11 +412,6 @@ BEGIN
   ORDER BY result.created ASC;
 END
 GO
-/****** Object:  StoredProcedure [dbo].[get_timeline_updates_count]    Script Date: 2/25/2013 8:19:50 PM ******/
-SET ANSI_NULLS ON
-GO
-SET QUOTED_IDENTIFIER ON
-GO
 
 CREATE PROCEDURE [dbo].[get_timeline_updates_count]
 	@originatorId int,
@@ -548,11 +432,6 @@ BEGIN
   WHERE id > @topId AND @topId > 0
 END
 GO
-/****** Object:  StoredProcedure [dbo].[unfollow_account]    Script Date: 2/25/2013 8:19:50 PM ******/
-SET ANSI_NULLS ON
-GO
-SET QUOTED_IDENTIFIER ON
-GO
 
 CREATE PROCEDURE [dbo].[unfollow_account] 
 	@originatorId int,
@@ -567,11 +446,6 @@ BEGIN
   DELETE FROM subscriptions WHERE userId = @originatorId AND targetUserId = @targetId;
 END
 GO
-/****** Object:  UserDefinedFunction [dbo].[count_post_comments]    Script Date: 2/25/2013 8:19:50 PM ******/
-SET ANSI_NULLS ON
-GO
-SET QUOTED_IDENTIFIER ON
-GO
 
 CREATE FUNCTION [dbo].[count_post_comments]
 (
@@ -584,11 +458,6 @@ BEGIN
   SELECT @result = COUNT(id) FROM comments WHERE postId = @postId;
 	RETURN @result;
 END
-GO
-/****** Object:  UserDefinedFunction [dbo].[count_subscriptions_user]    Script Date: 2/25/2013 8:19:50 PM ******/
-SET ANSI_NULLS ON
-GO
-SET QUOTED_IDENTIFIER ON
 GO
 
 CREATE FUNCTION [dbo].[count_subscriptions_user] 
@@ -603,11 +472,6 @@ BEGIN
 	RETURN @result;
 END
 GO
-/****** Object:  UserDefinedFunction [dbo].[count_user_posts]    Script Date: 2/25/2013 8:19:50 PM ******/
-SET ANSI_NULLS ON
-GO
-SET QUOTED_IDENTIFIER ON
-GO
 
 CREATE FUNCTION [dbo].[count_user_posts] 
 (
@@ -620,11 +484,6 @@ BEGIN
   SELECT @result = COUNT(id) FROM posts WHERE userId = @userId
 	RETURN @result;
 END
-GO
-/****** Object:  UserDefinedFunction [dbo].[get_user_roles]    Script Date: 2/25/2013 8:19:50 PM ******/
-SET ANSI_NULLS ON
-GO
-SET QUOTED_IDENTIFIER ON
 GO
 
 CREATE FUNCTION [dbo].[get_user_roles] 
@@ -644,11 +503,7 @@ BEGIN
 	RETURN COALESCE(@result, '');
 END
 GO
-/****** Object:  Table [dbo].[comments]    Script Date: 2/25/2013 8:19:50 PM ******/
-SET ANSI_NULLS ON
-GO
-SET QUOTED_IDENTIFIER ON
-GO
+
 CREATE TABLE [dbo].[comments](
 	[id] [int] IDENTITY(1,1) NOT NULL,
 	[userId] [int] NOT NULL,
@@ -661,11 +516,7 @@ CREATE TABLE [dbo].[comments](
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 ) ON [PRIMARY] TEXTIMAGE_ON [PRIMARY]
 GO
-/****** Object:  Table [dbo].[posts]    Script Date: 2/25/2013 8:19:50 PM ******/
-SET ANSI_NULLS ON
-GO
-SET QUOTED_IDENTIFIER ON
-GO
+
 CREATE TABLE [dbo].[posts](
 	[id] [int] IDENTITY(1,1) NOT NULL,
 	[userId] [int] NOT NULL,
@@ -678,11 +529,7 @@ CREATE TABLE [dbo].[posts](
 ) ON [PRIMARY] TEXTIMAGE_ON [PRIMARY]
 
 GO
-/****** Object:  Table [dbo].[roles]    Script Date: 2/25/2013 8:19:50 PM ******/
-SET ANSI_NULLS ON
-GO
-SET QUOTED_IDENTIFIER ON
-GO
+
 CREATE TABLE [dbo].[roles](
 	[id] [int] IDENTITY(1,1) NOT NULL,
 	[name] [nvarchar](256) NOT NULL,
@@ -693,11 +540,7 @@ CREATE TABLE [dbo].[roles](
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 ) ON [PRIMARY]
 GO
-/****** Object:  Table [dbo].[subscriptions]    Script Date: 2/25/2013 8:19:50 PM ******/
-SET ANSI_NULLS ON
-GO
-SET QUOTED_IDENTIFIER ON
-GO
+
 CREATE TABLE [dbo].[subscriptions](
 	[id] [int] IDENTITY(1,1) NOT NULL,
 	[userId] [int] NOT NULL,
@@ -710,11 +553,7 @@ CREATE TABLE [dbo].[subscriptions](
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 ) ON [PRIMARY]
 GO
-/****** Object:  Table [dbo].[user_roles]    Script Date: 2/25/2013 8:19:50 PM ******/
-SET ANSI_NULLS ON
-GO
-SET QUOTED_IDENTIFIER ON
-GO
+
 CREATE TABLE [dbo].[user_roles](
 	[userId] [int] NOT NULL,
 	[roleId] [int] NOT NULL,
@@ -726,13 +565,7 @@ CREATE TABLE [dbo].[user_roles](
 ) ON [PRIMARY]
 
 GO
-/****** Object:  Table [dbo].[users]    Script Date: 2/25/2013 8:19:50 PM ******/
-SET ANSI_NULLS ON
-GO
-SET QUOTED_IDENTIFIER ON
-GO
-SET ANSI_PADDING ON
-GO
+
 CREATE TABLE [dbo].[users](
 	[id] [int] IDENTITY(1,1) NOT NULL,
 	[account] [varchar](50) NOT NULL,
@@ -744,6 +577,8 @@ CREATE TABLE [dbo].[users](
 	[location] [nvarchar](50) NULL,
 	[website] [nvarchar](256) NULL,
 	[bio] [nvarchar](160) NULL,
+	[posts] [int] NOT NULL,
+	[comments] [int] NOT NULL,
  CONSTRAINT [PK_id] PRIMARY KEY CLUSTERED 
 (
 	[id] ASC
@@ -751,28 +586,21 @@ CREATE TABLE [dbo].[users](
 ) ON [PRIMARY]
 
 GO
-SET ANSI_PADDING OFF
-GO
-/****** Object:  Index [IX_subscriptions_id]    Script Date: 2/25/2013 8:19:50 PM ******/
+
 CREATE UNIQUE NONCLUSTERED INDEX [IX_subscriptions_id] ON [dbo].[subscriptions]
 (
 	[id] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, IGNORE_DUP_KEY = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 GO
-/****** Object:  Index [ix_role]    Script Date: 2/25/2013 8:19:50 PM ******/
+
 CREATE NONCLUSTERED INDEX [ix_role] ON [dbo].[user_roles]
 (
 	[roleId] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 GO
-SET ANSI_PADDING ON
 
-GO
-/****** Object:  Index [IX_account]    Script Date: 2/25/2013 8:19:50 PM ******/
-CREATE UNIQUE NONCLUSTERED INDEX [IX_account] ON [dbo].[users]
-(
-	[account] ASC
-)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, IGNORE_DUP_KEY = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
+CREATE UNIQUE NONCLUSTERED INDEX [IX_account] ON [dbo].[users] ([account] ASC)
+  WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, IGNORE_DUP_KEY = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 GO
 ALTER TABLE [dbo].[comments] ADD  CONSTRAINT [DF_comments_created]  DEFAULT (getutcdate()) FOR [created]
 GO
@@ -783,6 +611,10 @@ GO
 ALTER TABLE [dbo].[users] ADD  CONSTRAINT [DF_users_created] DEFAULT (getutcdate()) FOR [created]
 GO
 ALTER TABLE [dbo].[users] ADD  CONSTRAINT [DF_users_emailHash] DEFAULT ('00000000000000000000000000000000') FOR [emailHash]
+GO
+ALTER TABLE [dbo].[users] ADD  CONSTRAINT [DF_users_posts]  DEFAULT ((0)) FOR [posts]
+GO
+ALTER TABLE [dbo].[users] ADD  CONSTRAINT [DF_users_comments]  DEFAULT ((0)) FOR [comments]
 GO
 ALTER TABLE [dbo].[comments]  WITH CHECK ADD  CONSTRAINT [FK_comments_post] FOREIGN KEY([postId])
 REFERENCES [dbo].[posts] ([id])
@@ -855,3 +687,46 @@ BEGIN
 END
 GO
 
+-- v.0.3.0
+
+CREATE PROCEDURE [dbo].[add_post]
+  @userId int,
+  @content nvarchar(max),
+  @created datetime
+AS
+BEGIN
+  DECLARE @ID INT;
+  SET NOCOUNT ON;
+  BEGIN TRANSACTION
+
+  INSERT INTO posts (userId, content, created)
+    VALUES (@userId, @content, @created);
+
+  SELECT @ID = SCOPE_IDENTITY();
+  UPDATE [users] SET posts = posts + 1 WHERE id = @userId;
+
+  IF @@ERROR <> 0
+    BEGIN
+      ROLLBACK TRANSACTION
+      SET @ID = 0;
+    END
+  ELSE
+    COMMIT TRANSACTION
+
+  SELECT @ID AS insertId;
+END
+GO
+
+CREATE PROCEDURE delete_post
+  @userId INT,
+	@postId INT
+AS
+BEGIN
+	SET NOCOUNT ON;
+  DELETE FROM [posts] WHERE id = @postId AND userId = @userId;
+  IF @@ROWCOUNT > 0
+  BEGIN
+    UPDATE [users] SET posts = posts - 1 WHERE id = @userId;
+  END
+END
+GO

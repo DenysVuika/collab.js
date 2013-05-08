@@ -3,6 +3,7 @@ extends layout
 block content
   include shared/ko-timeline
   form(id='frmUpdateStatus', name='frmUpdateStatus', method='post', action='', onSubmit='doUpdateStatus(); return false;')
+    input(type='hidden', name='_csrf', value=token)
     textarea.input-block-level(id='new-post-dialog-inline', 
       name='content', rows='3', 
       placeholder="What's on your mind?",

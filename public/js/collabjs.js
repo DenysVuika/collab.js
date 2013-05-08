@@ -178,9 +178,11 @@ function FeedViewModel(account, data) {
   self.posts = ko.observableArray([]);
 
   self.removePost = function (post) {
+    var token = $('#csrf_token').val();
     $.ajax({
       url: '/api/timeline/posts/' + post.id,
       type: 'DELETE',
+      headers: { 'x-csrf-token': token },
       success: function () {
         self.posts.remove(post);
         // Raise event to notify external components

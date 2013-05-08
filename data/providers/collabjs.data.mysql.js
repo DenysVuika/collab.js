@@ -165,12 +165,13 @@ Provider.prototype = {
     });
   },
   addPost: function (json, callback) {
-    this.connection.query('INSERT INTO posts SET ?', json, function (err, result) {
+    this.connection.query('CALL add_post(?,?,?)', [json.userId, json.content, json.created], function (err, result) {
       if (err) {
-        console.log('Erro creating post. ' + err);
+        console.log('Error creating post. ' + err);
         callback(err, null);
       } else {
-        callback(err, { id: result.insertId });
+        var rows = result[0];
+        callback(err, rows[0]);
       }
     });
   },
@@ -186,9 +187,9 @@ Provider.prototype = {
     });
   },
   deletePost: function (postId, userId, callback) {
-    var query = 'DELETE FROM posts WHERE id = ? AND userId = ?';
-    this.connection.query(query, [postId, userId], function (err, result) {
-      if (err || !result || result.affectedRows === 0) {
+    var query = 'CALL delete_post (?,?)';
+    this.connection.query(query, [userId, postId], function (err, result) {
+      if (err || !result) {
         console.log('Error removing post. ' + err);
         callback(err, false);
       } else { callback(err, true); }
