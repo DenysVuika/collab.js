@@ -19,7 +19,7 @@ BEGIN
 	SET NOCOUNT ON;
 
   INSERT INTO comments (userId, postId, created, content) 
-    values (@userId, @postId, @created, @content);
+    VALUES (@userId, @postId, @created, @content);
 
   SELECT SCOPE_IDENTITY() AS insertId;
 END
@@ -36,7 +36,7 @@ BEGIN
   SET NOCOUNT ON;
 
   INSERT INTO users (account, name, password, email, emailHash)
-    values (@account, @name, @password, @email, @emailHash);
+    VALUES (@account, @name, @password, @email, @emailHash);
 
   SELECT SCOPE_IDENTITY() AS insertId;
 END
@@ -58,7 +58,9 @@ BEGIN
         WHERE s.userId = @originatorId AND s.targetUserId = @targetId
     )
     BEGIN
-      INSERT INTO subscriptions (userId, targetUserId) VALUES (@originatorId, @targetId)
+      INSERT INTO subscriptions (userId, targetUserId) VALUES (@originatorId, @targetId);
+      UPDATE users SET following = following + 1 WHERE id = @originatorId;
+      UPDATE users SET followers = followers + 1 WHERE id = @targetId;
     END
   END
 GO
@@ -113,9 +115,8 @@ BEGIN
   SELECT TOP (@limit) result.* FROM
   (
     SELECT
-	    u.id, u.account, u.name, u.website, u.location, u.bio, u.emailHash as pictureId, u.posts,
-	    (SELECT COUNT(id) FROM subscriptions WHERE userId = u.id) AS following,
-	    (SELECT COUNT(id) FROM subscriptions WHERE targetUserId = u.id) AS followers,
+	    u.id, u.account, u.name, u.website, u.location, u.bio, u.emailHash as pictureId,
+	    u.posts, u.following, u.followers,
       --SQL:2012
 	    --IIF(u.id = @originatorId, CAST(1 as bit), CAST(0 as bit)) AS isOwnProfile,
       (CASE @originatorId 
@@ -165,9 +166,8 @@ BEGIN
   SELECT TOP (@limit) result.* FROM
   (
     SELECT
-	    u.id, u.account, u.name, u.website, u.location, u.bio, u.emailHash as pictureId, u.posts,
-	    (SELECT COUNT(id) FROM subscriptions WHERE userId = u.id) AS following,
-	    (SELECT COUNT(id) FROM subscriptions WHERE targetUserId = u.id) AS followers,
+	    u.id, u.account, u.name, u.website, u.location, u.bio, u.emailHash as pictureId,
+	    u.posts, u.following, u.followers,
       --SQL2012
 	    --IIF(u.id = @originatorId, CAST(1 as bit), CAST(0 as bit)) AS isOwnProfile,
       (CASE @originatorId 
@@ -268,9 +268,8 @@ BEGIN
   SELECT TOP (@limit) result.* FROM
   (
     SELECT u.id, u.account, u.name, u.website, u.location, u.bio,
-      u.created, u.emailHash as pictureId, u.posts,
-	    (SELECT COUNT(id) FROM subscriptions WHERE userId = u.id) AS following,
-	    (SELECT COUNT(id) FROM subscriptions WHERE targetUserId = u.id) AS followers,
+      u.created, u.emailHash as pictureId,
+      u.posts, u.following, u.followers,
       --SQL2012
 	    --IIF ( 
 		   -- (
@@ -287,8 +286,8 @@ BEGIN
 					ELSE CAST(0 as bit)
 				END
 			FROM subscriptions AS sub
-			LEFT JOIN users AS usource ON usource.id = sub.userId
-			LEFT JOIN users AS utarget ON utarget.id = sub.targetUserId 
+			  LEFT JOIN users AS usource ON usource.id = sub.userId
+			  LEFT JOIN users AS utarget ON utarget.id = sub.targetUserId
 			WHERE usource.Id = @originatorId AND utarget.account = u.account
 			GROUP BY sub.id) AS isFollowed,	
 	    --SQL2012
@@ -337,9 +336,8 @@ AS
 BEGIN
 	SET NOCOUNT ON;
 
-  SELECT u.id, u.account, u.name, u.website, u.bio, u.emailHash AS pictureId, u.location, u.posts,
-		  (SELECT COUNT(id) FROM subscriptions WHERE userId = u.id) AS following,
-		  (SELECT COUNT(id) FROM subscriptions WHERE targetUserId = u.id) AS followers,
+  SELECT u.id, u.account, u.name, u.website, u.bio, u.emailHash AS pictureId, u.location,
+    u.posts, u.following, u.followers,
       -- SQL: 2012
 		  --iif ( 
 			 -- (
@@ -356,8 +354,8 @@ BEGIN
 					ELSE CAST(0 as bit)
 				END
 			FROM subscriptions AS sub
-			LEFT JOIN users AS usource ON usource.id = sub.userId
-			LEFT JOIN users AS utarget ON utarget.id = sub.targetUserId 
+			  LEFT JOIN users AS usource ON usource.id = sub.userId
+			  LEFT JOIN users AS utarget ON utarget.id = sub.targetUserId
 			WHERE usource.Id = @caller AND utarget.account = u.account
 			GROUP BY sub.id) AS isFollowed
   FROM users AS u
@@ -444,6 +442,11 @@ BEGIN
   SELECT @targetId = u.id FROM users AS u  WHERE u.account = @targetAccount;
 
   DELETE FROM subscriptions WHERE userId = @originatorId AND targetUserId = @targetId;
+  IF @@ROWCOUNT > 0
+  BEGIN
+    UPDATE users SET following = following - 1 WHERE id = @originatorId;
+    UPDATE users SET followers = followers - 1 WHERE id = @targetId;
+  END
 END
 GO
 
@@ -579,6 +582,8 @@ CREATE TABLE [dbo].[users](
 	[bio] [nvarchar](160) NULL,
 	[posts] [int] NOT NULL,
 	[comments] [int] NOT NULL,
+	[following] [int] NOT NULL,
+  [followers] [int] NOT NULL,
  CONSTRAINT [PK_id] PRIMARY KEY CLUSTERED 
 (
 	[id] ASC
@@ -602,12 +607,14 @@ GO
 CREATE UNIQUE NONCLUSTERED INDEX [IX_account] ON [dbo].[users] ([account] ASC)
   WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, IGNORE_DUP_KEY = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 GO
+
 ALTER TABLE [dbo].[comments] ADD  CONSTRAINT [DF_comments_created]  DEFAULT (getutcdate()) FOR [created]
 GO
 ALTER TABLE [dbo].[posts] ADD  CONSTRAINT [DF_posts_created]  DEFAULT (getutcdate()) FOR [created]
 GO
 ALTER TABLE [dbo].[subscriptions] ADD  CONSTRAINT [DF_subscriptions_isBlocked]  DEFAULT ((0)) FOR [isBlocked]
 GO
+
 ALTER TABLE [dbo].[users] ADD  CONSTRAINT [DF_users_created] DEFAULT (getutcdate()) FOR [created]
 GO
 ALTER TABLE [dbo].[users] ADD  CONSTRAINT [DF_users_emailHash] DEFAULT ('00000000000000000000000000000000') FOR [emailHash]
@@ -616,9 +623,13 @@ ALTER TABLE [dbo].[users] ADD  CONSTRAINT [DF_users_posts]  DEFAULT ((0)) FOR [p
 GO
 ALTER TABLE [dbo].[users] ADD  CONSTRAINT [DF_users_comments]  DEFAULT ((0)) FOR [comments]
 GO
+ALTER TABLE [dbo].[users] ADD  CONSTRAINT [DF_users_following]  DEFAULT ((0)) FOR [following]
+GO
+ALTER TABLE [dbo].[users] ADD  CONSTRAINT [DF_users_followers]  DEFAULT ((0)) FOR [followers]
+GO
+
 ALTER TABLE [dbo].[comments]  WITH CHECK ADD  CONSTRAINT [FK_comments_post] FOREIGN KEY([postId])
-REFERENCES [dbo].[posts] ([id])
-ON DELETE CASCADE
+REFERENCES [dbo].[posts] ([id]) ON DELETE CASCADE
 GO
 ALTER TABLE [dbo].[comments] CHECK CONSTRAINT [FK_comments_post]
 GO
@@ -627,12 +638,13 @@ REFERENCES [dbo].[users] ([id])
 GO
 ALTER TABLE [dbo].[comments] CHECK CONSTRAINT [FK_comments_user]
 GO
+
 ALTER TABLE [dbo].[posts]  WITH CHECK ADD  CONSTRAINT [FK_posts_user] FOREIGN KEY([userId])
-REFERENCES [dbo].[users] ([id])
-ON DELETE CASCADE
+REFERENCES [dbo].[users] ([id]) ON DELETE CASCADE
 GO
 ALTER TABLE [dbo].[posts] CHECK CONSTRAINT [FK_posts_user]
 GO
+
 ALTER TABLE [dbo].[subscriptions]  WITH CHECK ADD  CONSTRAINT [FK_subscriptions_targetUserId] FOREIGN KEY([targetUserId])
 REFERENCES [dbo].[users] ([id])
 GO
@@ -643,6 +655,7 @@ REFERENCES [dbo].[users] ([id])
 GO
 ALTER TABLE [dbo].[subscriptions] CHECK CONSTRAINT [FK_subscriptions_userId]
 GO
+
 ALTER TABLE [dbo].[user_roles]  WITH CHECK ADD  CONSTRAINT [FK_ur_role] FOREIGN KEY([roleId])
 REFERENCES [dbo].[roles] ([id])
 GO
