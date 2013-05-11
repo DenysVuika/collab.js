@@ -50,7 +50,10 @@ BEGIN
 	SET NOCOUNT ON;
 
   DECLARE @targetId INT;
+  DECLARE @userAccount varchar(50);
+
   SELECT @targetId = u.id FROM users AS u  WHERE u.account = @targetAccount;
+  SELECT @userAccount = account FROM users WHERE id = @originatorId;
 
   IF NOT EXISTS
     (
@@ -58,7 +61,8 @@ BEGIN
         WHERE s.userId = @originatorId AND s.targetUserId = @targetId
     )
     BEGIN
-      INSERT INTO subscriptions (userId, targetUserId) VALUES (@originatorId, @targetId);
+      INSERT INTO subscriptions (userId, userAccount, targetUserId, targetAccount)
+        VALUES (@originatorId, @userAccount, @targetId, @targetAccount);
       UPDATE users SET following = following + 1 WHERE id = @originatorId;
       UPDATE users SET followers = followers + 1 WHERE id = @targetId;
     END
@@ -120,16 +124,14 @@ BEGIN
       --SQL:2012
 	    --IIF(u.id = @originatorId, CAST(1 as bit), CAST(0 as bit)) AS isOwnProfile,
       (CASE @originatorId 
-			WHEN u.id THEN CAST(1 as bit) 
-			ELSE CAST(0 as bit) 
-			END) AS isOwnProfile,
+			  WHEN u.id THEN CAST(1 as bit)
+			  ELSE CAST(0 as bit)
+			  END) AS isOwnProfile,
       -- SQL:2012
 	    --IIF ( 
 		   -- (
 			  --  SELECT COUNT(sub.id) FROM subscriptions AS sub
-				 --   LEFT JOIN users AS usource ON usource.id = sub.userId
-				 --   LEFT JOIN users AS utarget ON utarget.id = sub.targetUserId 
-			  --  WHERE usource.Id = @originatorId AND utarget.account = u.account
+			  --  WHERE sub.userId = @originatorId AND targetAccount = u.account
 			  --  GROUP BY sub.id
 			  --) > 0, CAST(1 as bit), CAST(0 as bit)) AS isFollowed
       (SELECT 
@@ -137,11 +139,9 @@ BEGIN
 					WHEN COUNT(sub.id) >0 THEN CAST(1 as bit)
 					ELSE CAST(0 as bit)
 				END
-			FROM subscriptions AS sub
-			LEFT JOIN users AS usource ON usource.id = sub.userId
-			LEFT JOIN users AS utarget ON utarget.id = sub.targetUserId 
-			WHERE usource.Id = @originatorId AND utarget.account = u.account
-			GROUP BY sub.id) AS isFollowed
+			  FROM subscriptions AS sub
+			  WHERE sub.userId = @originatorId AND targetAccount = u.account
+			  GROUP BY sub.id) AS isFollowed
     FROM subscriptions AS s
 	    LEFT JOIN users AS u ON u.id = s.userId
     WHERE s.targetUserId = @targetId 
@@ -171,9 +171,9 @@ BEGIN
       --SQL2012
 	    --IIF(u.id = @originatorId, CAST(1 as bit), CAST(0 as bit)) AS isOwnProfile,
       (CASE @originatorId 
-			WHEN u.id THEN CAST(1 as bit) 
-			ELSE CAST(0 as bit) 
-			END) AS isOwnProfile,	   
+			  WHEN u.id THEN CAST(1 as bit)
+			  ELSE CAST(0 as bit)
+			  END) AS isOwnProfile,
       --SQL2012
 	    --IIF ( 
 		   -- (
@@ -188,11 +188,9 @@ BEGIN
 					WHEN COUNT(sub.id) >0 THEN CAST(1 as bit)
 					ELSE CAST(0 as bit)
 				END
-			FROM subscriptions AS sub
-			LEFT JOIN users AS usource ON usource.id = sub.userId
-			LEFT JOIN users AS utarget ON utarget.id = sub.targetUserId 
-			WHERE usource.Id = @originatorId AND utarget.account = u.account
-			GROUP BY sub.id) AS isFollowed		
+			  FROM subscriptions AS sub
+			  WHERE sub.userId = @originatorId AND targetAccount = u.account
+			  GROUP BY sub.id) AS isFollowed
     FROM subscriptions AS s
 	    LEFT JOIN users AS u ON u.id = s.targetUserId
     WHERE s.userId = @targetId 
@@ -273,29 +271,25 @@ BEGIN
       --SQL2012
 	    --IIF ( 
 		   -- (
-			  --  SELECT COUNT(*) FROM subscriptions AS sub
-				 --   LEFT JOIN users AS usource ON usource.id = sub.userId
-				 --   LEFT JOIN users AS utarget ON utarget.id = sub.targetUserId 
-			  --  WHERE usource.Id = @originatorId AND utarget.account = u.account
+			  --  SELECT COUNT(sub.id) FROM subscriptions AS sub
+			  --  WHERE sub.userId = @originatorId AND targetAccount = u.account
 			  --  GROUP BY sub.id
 			  --  ) > 0, CAST(1 as bit), CAST(0 as bit)
 	    --) AS isFollowed,
-      (SELECT 
+      (SELECT
 				CASE 
 					WHEN COUNT(sub.id) >0 THEN CAST(1 as bit)
 					ELSE CAST(0 as bit)
 				END
-			FROM subscriptions AS sub
-			  LEFT JOIN users AS usource ON usource.id = sub.userId
-			  LEFT JOIN users AS utarget ON utarget.id = sub.targetUserId
-			WHERE usource.Id = @originatorId AND utarget.account = u.account
-			GROUP BY sub.id) AS isFollowed,	
+			  FROM subscriptions AS sub
+			  WHERE sub.userId = @originatorId AND targetAccount = u.account
+			  GROUP BY sub.id) AS isFollowed,
 	    --SQL2012
 	    --IIF(u.id = @originatorId, CAST(1 as bit), CAST(0 as bit)) AS isOwnProfile
-		(CASE @originatorId 
-			WHEN u.id THEN CAST(1 as bit) 
-			ELSE CAST(0 as bit) 
-			END) AS isOwnProfile
+		  (CASE @originatorId
+			  WHEN u.id THEN CAST(1 as bit)
+			  ELSE CAST(0 as bit)
+			  END) AS isOwnProfile
     FROM users AS u
     WHERE EXISTS (select id from users where id = @topId OR @topId = 0)
     ) AS result
@@ -338,25 +332,13 @@ BEGIN
 
   SELECT u.id, u.account, u.name, u.website, u.bio, u.emailHash AS pictureId, u.location,
     u.posts, u.following, u.followers,
-      -- SQL: 2012
-		  --iif ( 
-			 -- (
-				--  select count(*) 
-				--	  from subscriptions as sub
-				--		  left join users as usource on usource.id = sub.userId
-				--		  left join users as utarget on utarget.id = sub.targetUserId 
-				--	  where usource.account = @caller and utarget.account = u.account
-				--  group by sub.id
-			 -- ) > 0, CAST(1 as bit), CAST(0 as bit)) as isFollowed
-       (SELECT 
-				CASE 
-					WHEN COUNT(sub.id) >0 THEN CAST(1 as bit)
-					ELSE CAST(0 as bit)
-				END
+    (SELECT
+	    CASE
+			  WHEN COUNT(sub.id) >0 THEN CAST(1 as bit)
+				ELSE CAST(0 as bit)
+			END
 			FROM subscriptions AS sub
-			  LEFT JOIN users AS usource ON usource.id = sub.userId
-			  LEFT JOIN users AS utarget ON utarget.id = sub.targetUserId
-			WHERE usource.Id = @caller AND utarget.account = u.account
+			WHERE sub.userAccount = @caller AND targetAccount = u.account
 			GROUP BY sub.id) AS isFollowed
   FROM users AS u
   WHERE u.account = @target
@@ -547,9 +529,11 @@ GO
 CREATE TABLE [dbo].[subscriptions](
 	[id] [int] IDENTITY(1,1) NOT NULL,
 	[userId] [int] NOT NULL,
+	[userAccount] [varchar](50) NOT NULL,
 	[targetUserId] [int] NOT NULL,
+	[targetAccount] [varchar](50) NOT NULL,
 	[isBlocked] [bit] NOT NULL,
- CONSTRAINT [PK_subscriptions] PRIMARY KEY CLUSTERED 
+ CONSTRAINT [PK_subscriptions] PRIMARY KEY CLUSTERED
 (
 	[userId] ASC,
 	[targetUserId] ASC
