@@ -16,12 +16,25 @@ CREATE PROCEDURE [dbo].[add_comment]
   @content nvarchar(max)
 AS
 BEGIN
+  DECLARE @ID int;
 	SET NOCOUNT ON;
 
   INSERT INTO comments (userId, postId, created, content) 
     VALUES (@userId, @postId, @created, @content);
 
-  SELECT SCOPE_IDENTITY() AS insertId;
+  SELECT @ID = SCOPE_IDENTITY();
+
+  UPDATE [posts] SET commentsCount = commentsCount + 1 WHERE id = @postId;
+
+  IF @@ERROR <> 0
+    BEGIN
+      ROLLBACK TRANSACTION
+      SET @ID = 0;
+    END
+  ELSE
+    COMMIT TRANSACTION
+
+  SELECT @ID AS insertId;
 END
 GO
 
@@ -49,7 +62,7 @@ AS
 BEGIN
 	SET NOCOUNT ON;
 
-  DECLARE @targetId INT;
+  DECLARE @targetId int;
   DECLARE @userAccount varchar(50);
 
   SELECT @targetId = u.id FROM users AS u  WHERE u.account = @targetAccount;
@@ -121,20 +134,11 @@ BEGIN
     SELECT
 	    u.id, u.account, u.name, u.website, u.location, u.bio, u.emailHash as pictureId,
 	    u.posts, u.following, u.followers,
-      --SQL:2012
-	    --IIF(u.id = @originatorId, CAST(1 as bit), CAST(0 as bit)) AS isOwnProfile,
-      (CASE @originatorId 
+      (CASE @originatorId
 			  WHEN u.id THEN CAST(1 as bit)
 			  ELSE CAST(0 as bit)
 			  END) AS isOwnProfile,
-      -- SQL:2012
-	    --IIF ( 
-		   -- (
-			  --  SELECT COUNT(sub.id) FROM subscriptions AS sub
-			  --  WHERE sub.userId = @originatorId AND targetAccount = u.account
-			  --  GROUP BY sub.id
-			  --) > 0, CAST(1 as bit), CAST(0 as bit)) AS isFollowed
-      (SELECT 
+      (SELECT
 				CASE 
 					WHEN COUNT(sub.id) >0 THEN CAST(1 as bit)
 					ELSE CAST(0 as bit)
@@ -168,25 +172,14 @@ BEGIN
     SELECT
 	    u.id, u.account, u.name, u.website, u.location, u.bio, u.emailHash as pictureId,
 	    u.posts, u.following, u.followers,
-      --SQL2012
-	    --IIF(u.id = @originatorId, CAST(1 as bit), CAST(0 as bit)) AS isOwnProfile,
-      (CASE @originatorId 
-			  WHEN u.id THEN CAST(1 as bit)
-			  ELSE CAST(0 as bit)
+      (CASE @originatorId
+			  WHEN u.id THEN CAST(1 AS BIT)
+			  ELSE CAST(0 AS BIT)
 			  END) AS isOwnProfile,
-      --SQL2012
-	    --IIF ( 
-		   -- (
-			  --  SELECT COUNT(sub.id) FROM subscriptions AS sub
-				 --   LEFT JOIN users AS usource ON usource.id = sub.userId
-				 --   LEFT JOIN users AS utarget ON utarget.id = sub.targetUserId 
-			  --  WHERE usource.Id = @originatorId AND utarget.account = u.account
-			  --  GROUP BY sub.id
-			  --) > 0, CAST(1 as bit), CAST(0 as bit)) AS isFollowed
-      (SELECT 
+      (SELECT
 				CASE 
-					WHEN COUNT(sub.id) >0 THEN CAST(1 as bit)
-					ELSE CAST(0 as bit)
+					WHEN COUNT(sub.id) > 0 THEN CAST(1 AS BIT)
+					ELSE CAST(0 AS BIT)
 				END
 			  FROM subscriptions AS sub
 			  WHERE sub.userId = @originatorId AND targetAccount = u.account
@@ -194,7 +187,7 @@ BEGIN
     FROM subscriptions AS s
 	    LEFT JOIN users AS u ON u.id = s.targetUserId
     WHERE s.userId = @targetId 
-	    AND EXISTS (select id from users where id = @topId OR @topId = 0)
+	    AND EXISTS (SELECT id FROM users WHERE id = @topId OR @topId = 0)
   ) AS result
   WHERE (@topId <= 0 OR result.id > @topId);
 END
@@ -210,9 +203,7 @@ BEGIN
 
   SELECT TOP (@limit) result.* FROM
   (
-    SELECT 
-      p.*, u.name, u.account, u.emailHash as pictureId,
-      dbo.count_post_comments(p.id) as commentsCount
+    SELECT p.*, u.name, u.account, u.emailHash as pictureId
     FROM posts AS p
 	    LEFT JOIN users AS u ON u.id = p.userId
     WHERE p.userId IN (
@@ -220,8 +211,8 @@ BEGIN
 	    WHERE s.userId = @originatorId AND s.isBlocked = 0
 	    UNION SELECT @originatorId
     )
-    AND EXISTS (select id from posts where id = @topId OR @topId = 0)
-  ) as result
+    AND EXISTS (SELECT id FROM posts WHERE id = @topId OR @topId = 0)
+  ) AS result
   WHERE (@topId <= 0 OR result.id < @topId)
   ORDER BY result.created DESC
 END
@@ -235,20 +226,16 @@ AS
 BEGIN
 	SET NOCOUNT ON;
 
-  DECLARE @term VARCHAR(51);
-  -- SQL: 2012
-  -- SET @term = CONCAT('%@', @originatorAccount, '%');
+  DECLARE @term varchar(51);
   SET @term = '%@' + @originatorAccount + '%';
 
   SELECT TOP (@limit) result.* FROM
   (
-    SELECT 
-      p.*, u.name, u.account, u.emailHash as pictureId,
-      dbo.count_post_comments(p.id) as commentsCount
+    SELECT p.*, u.name, u.account, u.emailHash AS pictureId
     FROM posts AS p
 	    LEFT JOIN users AS u ON u.id = p.userId
     WHERE u.account != @originatorAccount AND p.content LIKE @term
-    AND EXISTS (select id from posts where id = @topId OR @topId = 0)
+    AND EXISTS (SELECT id FROM posts WHERE id = @topId OR @topId = 0)
   ) AS result
   WHERE (@topId <= 0 OR result.id < @topId)
   ORDER BY result.created DESC
@@ -266,32 +253,22 @@ BEGIN
   SELECT TOP (@limit) result.* FROM
   (
     SELECT u.id, u.account, u.name, u.website, u.location, u.bio,
-      u.created, u.emailHash as pictureId,
+      u.created, u.emailHash AS pictureId,
       u.posts, u.following, u.followers,
-      --SQL2012
-	    --IIF ( 
-		   -- (
-			  --  SELECT COUNT(sub.id) FROM subscriptions AS sub
-			  --  WHERE sub.userId = @originatorId AND targetAccount = u.account
-			  --  GROUP BY sub.id
-			  --  ) > 0, CAST(1 as bit), CAST(0 as bit)
-	    --) AS isFollowed,
       (SELECT
 				CASE 
-					WHEN COUNT(sub.id) >0 THEN CAST(1 as bit)
-					ELSE CAST(0 as bit)
+					WHEN COUNT(sub.id) >0 THEN CAST(1 AS bit)
+					ELSE CAST(0 AS bit)
 				END
 			  FROM subscriptions AS sub
 			  WHERE sub.userId = @originatorId AND targetAccount = u.account
 			  GROUP BY sub.id) AS isFollowed,
-	    --SQL2012
-	    --IIF(u.id = @originatorId, CAST(1 as bit), CAST(0 as bit)) AS isOwnProfile
 		  (CASE @originatorId
-			  WHEN u.id THEN CAST(1 as bit)
-			  ELSE CAST(0 as bit)
+			  WHEN u.id THEN CAST(1 AS BIT)
+			  ELSE CAST(0 AS BIT)
 			  END) AS isOwnProfile
     FROM users AS u
-    WHERE EXISTS (select id from users where id = @topId OR @topId = 0)
+    WHERE EXISTS (SELECT id FROM users WHERE id = @topId OR @topId = 0)
     ) AS result
   WHERE (@topId <= 0 OR result.id > @topId)
   ORDER BY result.created
@@ -303,7 +280,7 @@ CREATE PROCEDURE [dbo].[get_post]
 AS
 BEGIN
 	SET NOCOUNT ON;
-  SELECT TOP (1) p.*, u.name, u.account, u.emailHash as pictureId
+  SELECT TOP (1) p.*, u.name, u.account, u.emailHash AS pictureId
   FROM posts AS p
 	  LEFT JOIN users AS u ON u.id = p.userId
   WHERE p.id = @postId;
@@ -334,8 +311,8 @@ BEGIN
     u.posts, u.following, u.followers,
     (SELECT
 	    CASE
-			  WHEN COUNT(sub.id) >0 THEN CAST(1 as bit)
-				ELSE CAST(0 as bit)
+			  WHEN COUNT(sub.id) >0 THEN CAST(1 AS bit)
+				ELSE CAST(0 AS bit)
 			END
 			FROM subscriptions AS sub
 			WHERE sub.userAccount = @caller AND targetAccount = u.account
@@ -355,13 +332,11 @@ BEGIN
 
   SELECT TOP (@limit) result.* FROM
   (
-    SELECT 
-      p.*, u.name, u.account, u.emailHash as pictureId,
-      dbo.count_post_comments(p.id) as commentsCount
+    SELECT p.*, u.name, u.account, u.emailHash AS pictureId
     FROM posts AS p
 	    LEFT JOIN users AS u ON u.id = p.userId
     WHERE u.account = @targetAccount
-      AND EXISTS (select id from posts where userId = p.userId AND (id = @topId OR @topId = 0))
+      AND EXISTS (SELECT id FROM posts WHERE userId = p.userId AND (id = @topId OR @topId = 0))
   ) AS result
   WHERE (@topId <= 0 OR result.id < @topId)
   ORDER BY result.created DESC
@@ -377,9 +352,7 @@ BEGIN
 
   SELECT result.* FROM
   (
-    SELECT 
-      p.*, u.name, u.account, u.emailHash as pictureId,
-      dbo.count_post_comments(p.id) as commentsCount
+    SELECT p.*, u.name, u.account, u.emailHash AS pictureId
     FROM posts AS p
 	    LEFT JOIN users AS u ON u.id = p.userId
     WHERE p.userId IN (
@@ -387,7 +360,7 @@ BEGIN
 	    WHERE s.userId = @originatorId AND s.isBlocked = 0
 	    UNION SELECT @originatorId
     )
-  ) as result
+  ) AS result
   WHERE result.id > @topId AND @topId > 0
   ORDER BY result.created ASC;
 END
@@ -402,13 +375,13 @@ BEGIN
 
   SELECT COUNT(id) AS posts FROM (
     SELECT p.id
-    FROM posts as p
+    FROM posts AS p
     WHERE p.userId IN (
-      SELECT s.targetUserId FROM subscriptions as s
+      SELECT s.targetUserId FROM subscriptions AS s
       WHERE s.userId = @originatorId AND s.isBlocked = 0
       UNION SELECT @originatorId
       )
-  ) as result
+  ) AS result
   WHERE id > @topId AND @topId > 0
 END
 GO
@@ -432,45 +405,6 @@ BEGIN
 END
 GO
 
-CREATE FUNCTION [dbo].[count_post_comments]
-(
-	@postId int
-)
-RETURNS int
-AS
-BEGIN
-	DECLARE @result int;
-  SELECT @result = COUNT(id) FROM comments WHERE postId = @postId;
-	RETURN @result;
-END
-GO
-
-CREATE FUNCTION [dbo].[count_subscriptions_user] 
-(
-	@userId int
-)
-RETURNS int
-AS
-BEGIN
-	DECLARE @result int;
-	SELECT @result = COUNT(id) FROM subscriptions WHERE userId = @userId;
-	RETURN @result;
-END
-GO
-
-CREATE FUNCTION [dbo].[count_user_posts] 
-(
-	@userId int
-)
-RETURNS int
-AS
-BEGIN
-  DECLARE @result int
-  SELECT @result = COUNT(id) FROM posts WHERE userId = @userId
-	RETURN @result;
-END
-GO
-
 CREATE FUNCTION [dbo].[get_user_roles] 
 (
 	@userId int
@@ -481,7 +415,7 @@ BEGIN
   DECLARE @result nvarchar(max)
 
   SELECT @result = COALESCE(@result + ',','') + r.loweredName
-  FROM roles as r, user_roles as ur
+  FROM roles AS r, user_roles AS ur
   WHERE r.id = ur.roleId AND ur.userId = @userId
   ORDER BY r.loweredName;
 
@@ -507,6 +441,7 @@ CREATE TABLE [dbo].[posts](
 	[userId] [int] NOT NULL,
 	[content] [nvarchar](max) NOT NULL,
 	[created] [datetime] NOT NULL,
+	[commentsCount] [int] NOT NULL,
  CONSTRAINT [PK_posts] PRIMARY KEY CLUSTERED 
 (
 	[id] ASC
@@ -628,6 +563,8 @@ REFERENCES [dbo].[users] ([id]) ON DELETE CASCADE
 GO
 ALTER TABLE [dbo].[posts] CHECK CONSTRAINT [FK_posts_user]
 GO
+ALTER TABLE [dbo].[posts] ADD  CONSTRAINT [DF_posts_commentsCount]  DEFAULT ((0)) FOR [commentsCount]
+GO
 
 ALTER TABLE [dbo].[subscriptions]  WITH CHECK ADD  CONSTRAINT [FK_subscriptions_targetUserId] FOREIGN KEY([targetUserId])
 REFERENCES [dbo].[users] ([id])
@@ -665,9 +602,7 @@ BEGIN
 
   SELECT TOP (@limit) result.* FROM
   (
-    SELECT
-      p.*, u.name, u.account, u.emailHash as pictureId,
-      dbo.count_post_comments(p.id) as commentsCount
+    SELECT p.*, u.name, u.account, u.emailHash as pictureId
     FROM posts AS p
 	    LEFT JOIN users AS u ON u.id = p.userId
     WHERE p.content LIKE @hashtag
