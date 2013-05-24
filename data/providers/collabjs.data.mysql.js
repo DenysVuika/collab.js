@@ -233,7 +233,13 @@ Provider.prototype = {
     });
   },
   addComment: function (json, callback) {
-    this.connection.query('INSERT INTO comments SET ?', json, function (err, result) {
+    /*var comment = {
+     userId: req.user.id,
+     postId: req.body.postId,
+     created: created,
+     content: req.body.content
+     };*/
+    this.connection.query('CALL add_comment (?,?,?,?)', [json.userId, json.postId, json.created, json.content], function (err, result) {
       if (err) {
         console.log('Error inserting comment. ' + err);
         callback(err, null);

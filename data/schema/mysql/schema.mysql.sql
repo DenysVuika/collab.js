@@ -20,7 +20,8 @@ CREATE TABLE IF NOT EXISTS `comments` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 
 DELIMITER //
-CREATE PROCEDURE `get_account`(IN account VARCHAR(50))
+CREATE PROCEDURE `get_account`(
+  IN account VARCHAR(50))
 BEGIN
   SELECT u.*, emailHash as pictureId, get_user_roles(u.id) AS roles
   FROM users AS u
@@ -30,7 +31,8 @@ END//
 DELIMITER ;
 
 DELIMITER //
-CREATE PROCEDURE `get_account_by_id`(IN uid INT)
+CREATE PROCEDURE `get_account_by_id`(
+  IN uid INT)
 BEGIN
   SELECT u.*, emailHash as pictureId, get_user_roles(u.id) AS roles
   FROM users AS u
@@ -40,7 +42,8 @@ END//
 DELIMITER ;
 
 DELIMITER //
-CREATE PROCEDURE `get_comments`(IN `postId` INT)
+CREATE PROCEDURE `get_comments`(
+  IN `postId` INT)
 BEGIN
   SELECT c.*, u.account, u.name, u.emailHash as pictureId
   FROM comments AS c
@@ -51,27 +54,27 @@ END//
 DELIMITER ;
 
 DELIMITER //
-CREATE PROCEDURE `get_followers`(IN `originatorId` INT, IN `targetAccount` VARCHAR(50), IN topId INT)
+CREATE PROCEDURE `get_followers`(
+  IN `originatorId` INT,
+  IN `targetAccount` VARCHAR(50),
+  IN topId INT)
 BEGIN
   DECLARE targetId INT;
   SELECT u.id INTO targetId FROM users AS u  WHERE u.account = targetAccount;
 
   SELECT result.* FROM
   (
-  SELECT
-    u.id, u.account, u.name, u.website, u.location, u.bio, u.emailHash as pictureId, u.posts,
-    (SELECT COUNT(id) FROM subscriptions WHERE userId = u.id) AS following,
-    (SELECT COUNT(id) FROM subscriptions WHERE targetUserId = u.id) AS followers,
-    (SELECT IF(u.id = originatorId, TRUE, FALSE)) AS isOwnProfile,
-    (SELECT IF (
-      (
-        SELECT COUNT(*) FROM subscriptions AS sub
-          LEFT JOIN users AS usource ON usource.id = sub.userId
-          LEFT JOIN users AS utarget ON utarget.id = sub.targetUserId
-        WHERE usource.Id = originatorId AND utarget.account = u.account
-        GROUP BY sub.id
-        ) > 0, TRUE, FALSE
-    )) AS isFollowed
+    SELECT
+      u.id, u.account, u.name, u.website, u.location, u.bio, u.emailHash as pictureId, u.posts,
+      u.following, u.followers,
+      (SELECT IF(u.id = originatorId, TRUE, FALSE)) AS isOwnProfile,
+      (SELECT IF (
+        (
+          SELECT COUNT(*) FROM subscriptions AS sub
+          WHERE sub.userId = originatorId AND sub.targetAccount = u.account
+          GROUP BY sub.id
+          ) > 0, TRUE, FALSE
+      )) AS isFollowed
   FROM subscriptions AS s
     LEFT JOIN users AS u ON u.id = s.userId
   WHERE s.targetUserId = targetId
@@ -84,27 +87,27 @@ END//
 DELIMITER ;
 
 DELIMITER //
-CREATE PROCEDURE `get_following`(IN `originatorId` INT, IN `targetAccount` VARCHAR(50), IN topId INT)
+CREATE PROCEDURE `get_following`(
+  IN `originatorId` INT,
+  IN `targetAccount` VARCHAR(50),
+  IN topId INT)
 BEGIN
   DECLARE targetId INT;
   SELECT u.id INTO targetId FROM users AS u  WHERE u.account = targetAccount;
 
   SELECT result.* FROM
   (
-  SELECT
-    u.id, u.account, u.name, u.website, u.location, u.bio, u.emailHash as pictureId, u.posts,
-    (SELECT COUNT(id) FROM subscriptions WHERE userId = u.id) AS following,
-    (SELECT COUNT(id) FROM subscriptions WHERE targetUserId = u.id) AS followers,
-    (SELECT IF(u.id = originatorId, TRUE, FALSE)) AS isOwnProfile,
-    (SELECT IF (
-      (
-        SELECT COUNT(*) FROM subscriptions AS sub
-          LEFT JOIN users AS usource ON usource.id = sub.userId
-          LEFT JOIN users AS utarget ON utarget.id = sub.targetUserId
-        WHERE usource.Id = originatorId AND utarget.account = u.account
-        GROUP BY sub.id
-        ) > 0, TRUE, FALSE
-    )) AS isFollowed
+    SELECT
+      u.id, u.account, u.name, u.website, u.location, u.bio, u.emailHash as pictureId, u.posts,
+      u.following, u.followers,
+      (SELECT IF(u.id = originatorId, TRUE, FALSE)) AS isOwnProfile,
+      (SELECT IF (
+        (
+          SELECT COUNT(sub.id) FROM subscriptions AS sub
+          WHERE sub.userId = originatorId AND sub.targetAccount = u.account
+          GROUP BY sub.id
+          ) > 0, TRUE, FALSE
+      )) AS isFollowed
   FROM subscriptions AS s
     LEFT JOIN users AS u ON u.id = s.targetUserId
   WHERE s.userId = targetId
@@ -117,15 +120,15 @@ END//
 DELIMITER ;
 
 DELIMITER //
-CREATE PROCEDURE `get_main_timeline`(IN `originatorId` INT, IN topId INT)
+CREATE PROCEDURE `get_main_timeline`(
+  IN `originatorId` INT,
+  IN topId INT)
 BEGIN
   SELECT result.* FROM
   (
-  SELECT p.*, u.name, u.account, u.emailHash as pictureId,
-      COUNT(c.id) AS commentsCount
+  SELECT p.*, u.name, u.account, u.emailHash as pictureId
   FROM posts AS p
     LEFT JOIN users AS u ON u.id = p.userId
-    LEFT JOIN comments AS c ON c.postId = p.id
   WHERE p.userId IN (
     SELECT s.targetUserId FROM subscriptions AS s
     WHERE s.userId = originatorId AND s.isBlocked = FALSE
@@ -141,17 +144,17 @@ END//
 DELIMITER ;
 
 DELIMITER //
-CREATE PROCEDURE `get_mentions`(IN `originatorAccount` VARCHAR(50), IN topId INT)
+CREATE PROCEDURE `get_mentions`(
+  IN `originatorAccount` VARCHAR(50),
+  IN topId INT)
 BEGIN
   DECLARE term VARCHAR(51);
   SET term = CONCAT('%@', originatorAccount, '%');
   SELECT result.* FROM
   (
-  SELECT p.*, u.name, u.account, u.emailHash as pictureId,
-      COUNT(c.id) AS commentsCount
+  SELECT p.*, u.name, u.account, u.emailHash as pictureId
   FROM posts AS p
     LEFT JOIN users AS u ON u.id = p.userId
-    LEFT JOIN comments AS c ON c.postId = p.id
   WHERE u.account != originatorAccount AND p.content LIKE term
   AND EXISTS (select id from posts where id = topId OR topId = 0)
   GROUP BY p.id
@@ -163,19 +166,18 @@ END//
 DELIMITER ;
 
 DELIMITER //
-CREATE PROCEDURE `get_people`(IN `originatorId` INT, IN topId INT)
+CREATE PROCEDURE `get_people`(
+  IN `originatorId` INT,
+  IN topId INT)
 BEGIN
   SELECT result.* FROM
   (
   SELECT u.id, u.account, u.name, u.website, u.location, u.bio, u.emailHash as pictureId, u.posts,
-    (SELECT COUNT(id) FROM subscriptions WHERE userId = u.id) AS following,
-    (SELECT COUNT(id) FROM subscriptions WHERE targetUserId = u.id) AS followers,
+    u.following, u.followers,
     (SELECT IF (
       (
-        SELECT COUNT(*) FROM subscriptions AS sub
-          LEFT JOIN users AS usource ON usource.id = sub.userId
-          LEFT JOIN users AS utarget ON utarget.id = sub.targetUserId
-        WHERE usource.Id = originatorId AND utarget.account = u.account
+        SELECT COUNT(sub.id) FROM subscriptions AS sub
+        WHERE sub.userId AND sub.targetAccount = u.account
         GROUP BY sub.id
         ) > 0, TRUE, FALSE
     )) AS isFollowed,
@@ -191,18 +193,20 @@ END//
 DELIMITER ;
 
 DELIMITER //
-CREATE PROCEDURE `get_post_author`(IN postId INT)
+CREATE PROCEDURE `get_post_author`(
+  IN postId INT)
 BEGIN
   SELECT u.id, u.account, u.name, u.email, u.emailHash AS pictureId
   FROM posts AS p
-  LEFT JOIN users AS u ON u.id = p.userId
+    LEFT JOIN users AS u ON u.id = p.userId
   WHERE p.id = postId
   LIMIT 1;
 END//
 DELIMITER ;
 
 DELIMITER //
-CREATE PROCEDURE `get_post_full`(IN `postId` INT)
+CREATE PROCEDURE `get_post_full`(
+  IN `postId` INT)
 BEGIN
   SELECT p.*, u.name, u.account, u.emailHash as pictureId
   FROM posts AS p
@@ -220,19 +224,16 @@ END//
 DELIMITER ;
 
 DELIMITER //
-CREATE PROCEDURE `get_public_profile`(IN `originator` VARCHAR(50), IN `target` VARCHAR(50))
+CREATE PROCEDURE `get_public_profile`(
+  IN `originator` VARCHAR(50),
+  IN `target` VARCHAR(50))
 BEGIN
   SELECT u.id, u.account, u.name, u.website, u.bio, u.emailHash AS pictureId, u.location,
-      COUNT(p.id) AS posts,
-      (SELECT COUNT(id) FROM subscriptions WHERE userId = u.id) AS following,
-      (SELECT COUNT(id) FROM subscriptions WHERE targetUserId = u.id) AS followers,
+      u.posts, u.following, u.followers,
       (SELECT IF (
         (
-          SELECT COUNT(*)
-            FROM subscriptions AS sub
-              LEFT JOIN users AS usource ON usource.id = sub.userId
-              LEFT JOIN users AS utarget ON utarget.id = sub.targetUserId
-            WHERE usource.account = originator AND utarget.account = u.account
+          SELECT COUNT(sub.id) FROM subscriptions AS sub
+          WHERE sub.userAccount = originator AND sub.targetAccount = u.account
           GROUP BY sub.id
         ) > 0, TRUE, FALSE
       )) AS isFollowed
@@ -245,15 +246,15 @@ END//
 DELIMITER ;
 
 DELIMITER //
-CREATE PROCEDURE `get_timeline`(IN `targetAccount` VARCHAR(50), IN topId INT)
+CREATE PROCEDURE `get_timeline`(
+  IN `targetAccount` VARCHAR(50),
+  IN topId INT)
 BEGIN
   SELECT result.* FROM
   (
-    SELECT p.*, u.name, u.account, u.emailHash as pictureId,
-        COUNT(c.id) AS commentsCount
+    SELECT p.*, u.name, u.account, u.emailHash as pictureId
     FROM posts AS p
       LEFT JOIN users AS u ON u.id = p.userId
-      LEFT JOIN comments AS c ON c.postId = p.id
     WHERE u.account = targetAccount
     AND EXISTS (select id from posts where userId = p.userId AND (id = topId OR topId = 0))
     GROUP BY p.id
@@ -265,15 +266,15 @@ END//
 DELIMITER ;
 
 DELIMITER //
-CREATE PROCEDURE `get_timeline_updates`(IN `originatorId` INT, IN topId INT)
+CREATE PROCEDURE `get_timeline_updates`(
+  IN `originatorId` INT,
+  IN topId INT)
 BEGIN
   SELECT result.* FROM
   (
-    SELECT p.*, u.name, u.account, u.emailHash as pictureId,
-        COUNT(c.id) AS commentsCount
+    SELECT p.*, u.name, u.account, u.emailHash as pictureId
     FROM posts AS p
       LEFT JOIN users AS u ON u.id = p.userId
-      LEFT JOIN comments AS c ON c.postId = p.id
     WHERE p.userId IN (
       SELECT s.targetUserId FROM subscriptions AS s
       WHERE s.userId = originatorId AND s.isBlocked = FALSE
@@ -287,14 +288,15 @@ END//
 DELIMITER ;
 
 DELIMITER //
-CREATE PROCEDURE `get_timeline_updates_count`(IN `originatorId` INT, IN topId INT)
+CREATE PROCEDURE `get_timeline_updates_count`(
+  IN `originatorId` INT,
+  IN topId INT)
 BEGIN
   SELECT COUNT(result.id) as posts FROM
   (
-    SELECT p.*, u.name, u.account, COUNT(c.id) AS commentsCount
+    SELECT p.*, u.name, u.account
     FROM posts AS p
       LEFT JOIN users AS u ON u.id = p.userId
-      LEFT JOIN comments AS c ON c.postId = p.id
     WHERE p.userId IN (
       SELECT s.targetUserId FROM subscriptions AS s
       WHERE s.userId = originatorId AND s.isBlocked = FALSE
@@ -327,6 +329,7 @@ CREATE TABLE IF NOT EXISTS `posts` (
   `userId` int(11) NOT NULL,
   `content` text COLLATE utf8_unicode_ci NOT NULL,
   `created` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `commentsCount` int(11) NOT NULL DEFAULT '0',
   PRIMARY KEY (`id`),
   KEY `FK_Posts_Users_idx` (`userId`),
   CONSTRAINT `FK_Posts_Users` FOREIGN KEY (`userId`) REFERENCES `users` (`Id`) ON DELETE CASCADE ON UPDATE NO ACTION
@@ -340,27 +343,38 @@ CREATE TABLE IF NOT EXISTS `roles` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 
 DELIMITER //
-CREATE PROCEDURE `subscribe_account`(IN `originatorId` INT, IN `targetAccount` VARCHAR(50))
+CREATE PROCEDURE `subscribe_account`(
+  IN `originatorId` INT,
+  IN `targetAccount` VARCHAR(50))
 BEGIN
-  DECLARE targetId INT;
-  SELECT u.id INTO targetId FROM users AS u  WHERE u.account = targetAccount;
+  DECLARE targetId int;
+  DECLARE userAccount varchar(50);
+  DECLARE subscribed int;
+  SET subscribed = 0;
 
-  INSERT INTO subscriptions (userId, targetUserId)
-    SELECT * FROM (SELECT originatorId, targetId) as tmp
-    WHERE NOT EXISTS(
-      SELECT s.id FROM subscriptions AS s
-        LEFT JOIN users AS usource ON usource.id = s.userId
-        LEFT JOIN users AS utarget ON utarget.id = s.targetUserId
-      WHERE usource.id = originatorId AND utarget.id = targetId
-      ORDER BY s.id
-    ) LIMIT 1;
+  SELECT u.id INTO targetId FROM users AS u  WHERE u.account = targetAccount;
+  SELECT account INTO userAccount FROM users WHERE id = originatorId;
+
+  SELECT 1 INTO subscribed FROM subscriptions
+  WHERE userId = originatorId AND targetUserId = targetId
+  LIMIT 1;
+
+  IF (subscribed = 0) THEN
+    INSERT INTO subscriptions (userId, userAccount, targetUserId, targetAccount)
+      VALUES (originatorId, userAccount, targetId, targetAccount);
+    UPDATE users SET following = following + 1 WHERE id = originatorId;
+    UPDATE users SET followers = followers + 1 WHERE id = targetId;
+  END IF;
+
 END//
 DELIMITER ;
 
 CREATE TABLE IF NOT EXISTS `subscriptions` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `userId` int(11) NOT NULL,
+  `userAccount` varchar(50) NOT NULL,
   `targetUserId` int(11) NOT NULL,
+  `targetAccount` varchar(50) NOT NULL,
   `isBlocked` bit(1) NOT NULL DEFAULT b'0',
   PRIMARY KEY (`id`),
   KEY `FK_Subscriptions_Users_Left_idx` (`userId`),
@@ -370,11 +384,18 @@ CREATE TABLE IF NOT EXISTS `subscriptions` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 
 DELIMITER //
-CREATE PROCEDURE `unsubscribe_account`(IN `originatorId` INT, IN `targetAccount` VARCHAR(50))
+CREATE PROCEDURE `unsubscribe_account`(
+  IN `originatorId` INT,
+  IN `targetAccount` VARCHAR(50))
 BEGIN
   DECLARE targetId INT;
-  SELECT u.id INTO targetId FROM users AS u  WHERE u.account = targetAccount;
+  SELECT id INTO targetId FROM users WHERE account = targetAccount;
+
   DELETE FROM subscriptions WHERE userId = originatorId AND targetUserId = targetId;
+  IF (ROW_COUNT() > 0) THEN
+    UPDATE users SET following = following - 1 WHERE id = originatorId;
+    UPDATE users SET followers = followers - 1 WHERE id = targetId;
+  END IF;
 END//
 DELIMITER ;
 
@@ -391,6 +412,8 @@ CREATE TABLE IF NOT EXISTS `users` (
   `bio` varchar(160) COLLATE utf8_unicode_ci DEFAULT NULL,
   `posts` int(11) NOT NULL DEFAULT '0',
   `comments` varchar(45) NOT NULL DEFAULT '0',
+  `following` int(11) NOT NULL DEFAULT '0',
+  `followers` int(11) NOT NULL DEFAULT '0',
   PRIMARY KEY (`id`),
   UNIQUE KEY `account` (`account`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
@@ -417,12 +440,11 @@ BEGIN
   SET term = CONCAT('%', `tag`, '%');
   SELECT result.* FROM
   (
-    SELECT p.*, u.name, u.account, COUNT(c.id) AS commentsCount
+    SELECT p.*, u.name, u.account
     FROM posts AS p
       LEFT JOIN users AS u ON u.id = p.userId
-      LEFT JOIN comments AS c ON c.postId = p.id
     WHERE p.content LIKE term
-    AND EXISTS (select id from posts where id = topId OR topId = 0)
+    AND EXISTS (SELECT id FROM posts WHERE id = topId OR topId = 0)
     GROUP BY p.id
     ORDER BY p.created DESC
   ) AS result
@@ -465,6 +487,25 @@ BEGIN
   IF (ROW_COUNT() > 0) THEN
     UPDATE users SET posts = posts - 1 WHERE users.id = userId;
   END IF;
+END//
+DELIMITER ;
+
+DELIMITER //
+CREATE PROCEDURE `add_comment` (
+	IN userId INT,
+	IN postId INT,
+	IN created TIMESTAMP,
+	IN content TEXT)
+BEGIN
+	DECLARE result INT default 0;
+	INSERT INTO comments (userId, postId, created, content)
+		VALUES (userId, postId, created, content);
+	SET result = last_insert_id();
+	IF (result > 0) THEN
+		UPDATE posts SET commentsCount = commentsCount + 1 WHERE id = postId;
+	END IF;
+
+	SELECT result AS `id`;
 END//
 DELIMITER ;
 

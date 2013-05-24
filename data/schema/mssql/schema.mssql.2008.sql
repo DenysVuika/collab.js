@@ -144,7 +144,7 @@ BEGIN
 					ELSE CAST(0 as bit)
 				END
 			  FROM subscriptions AS sub
-			  WHERE sub.userId = @originatorId AND targetAccount = u.account
+			  WHERE sub.userId = @originatorId AND sub.targetAccount = u.account
 			  GROUP BY sub.id) AS isFollowed
     FROM subscriptions AS s
 	    LEFT JOIN users AS u ON u.id = s.userId
@@ -182,7 +182,7 @@ BEGIN
 					ELSE CAST(0 AS BIT)
 				END
 			  FROM subscriptions AS sub
-			  WHERE sub.userId = @originatorId AND targetAccount = u.account
+			  WHERE sub.userId = @originatorId AND sub.targetAccount = u.account
 			  GROUP BY sub.id) AS isFollowed
     FROM subscriptions AS s
 	    LEFT JOIN users AS u ON u.id = s.targetUserId
@@ -261,7 +261,7 @@ BEGIN
 					ELSE CAST(0 AS bit)
 				END
 			  FROM subscriptions AS sub
-			  WHERE sub.userId = @originatorId AND targetAccount = u.account
+			  WHERE sub.userId = @originatorId AND sub.targetAccount = u.account
 			  GROUP BY sub.id) AS isFollowed,
 		  (CASE @originatorId
 			  WHEN u.id THEN CAST(1 AS BIT)
@@ -315,7 +315,7 @@ BEGIN
 				ELSE CAST(0 AS bit)
 			END
 			FROM subscriptions AS sub
-			WHERE sub.userAccount = @caller AND targetAccount = u.account
+			WHERE sub.userAccount = @caller AND sub.targetAccount = u.account
 			GROUP BY sub.id) AS isFollowed
   FROM users AS u
   WHERE u.account = @target
