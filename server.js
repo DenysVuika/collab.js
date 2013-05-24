@@ -119,5 +119,9 @@ require('./collabjs.web.js')(app);
 require('./collabjs.web.api.js')(app);
 require('./collabjs.admin.js')(app);
 
+// Modules
+
+require('./modules')(app);
+
 app.listen(config.env.port, config.env.ipaddress);
 console.log("Express server listening on port %d in %s mode", config.env.port, app.settings.env);
