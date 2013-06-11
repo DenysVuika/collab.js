@@ -31,6 +31,7 @@ block content
   mixin showError(error)
   hr
   form.form-horizontal(id='frmAccount', name='frmAccount', method='post', action='/account', enctype='multipart/form-data')
+    input(type='hidden', name='_csrf', value=token)
     div.control-group
       div.control-label Picture
       div.controls
