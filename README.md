@@ -177,8 +177,8 @@ It should take just several minutes if you follow the steps below.
 *'RedHat OpenShift Configuration (with MySQL cartridge)'*. The content of the section may look like the following:
 
 ```javascript
-config.env.ipaddress = process.env.OPENSHIFT_INTERNAL_IP || '127.0.0.1';
-config.env.port = process.env.OPENSHIFT_INTERNAL_PORT || 8080;
+config.env.ipaddress = process.env.OPENSHIFT_NODEJS_IP || '127.0.0.1';
+config.env.port = process.env.OPENSHIFT_NODEJS_PORT || 8080;
 config.data.provider = 'collabjs.data.mysql';
 config.data.host = process.env.OPENSHIFT_MYSQL_DB_HOST;
 config.data.database = 'collabjs';
