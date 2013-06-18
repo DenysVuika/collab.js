@@ -18,7 +18,8 @@ var express = require('express')
   , db = require('./data')
   , config = require('./config')
   , auth = require('./collabjs.auth')
-  , utils = require('./collabjs.utils');
+  , utils = require('./collabjs.utils')
+  , http = require('http');
 
 /*
  * Authentication Layer
@@ -66,6 +67,9 @@ passport.use(new LocalStrategy(
 // Create server
 var app = express();
 
+var MemoryStore = express.session.MemoryStore;
+var sessionStore = new MemoryStore();
+
 // Configuration
 app.configure(function () {
   app.set('port', config.env.port);
@@ -77,8 +81,7 @@ app.configure(function () {
   app.use(express.cookieParser('keyboard cat'));
   app.use(express.bodyParser());
   app.use(express.methodOverride());
-  // app.use(express.session({ secret: 'keyboard cat', cookie: { maxAge: 60000 } }));
-  app.use(express.session({ secret: 'keyboard cat'}));
+  app.use(express.session({ secret: 'keyboard cat', cookie: { maxAge: 60 * 60 * 1000 }, store: sessionStore }));
   app.use(express.csrf());
   // Initialize Passport! Also use passport.session() middleware, to support
   // persistent Login sessions (recommended).
@@ -119,9 +122,38 @@ require('./collabjs.web.js')(app);
 require('./collabjs.web.api.js')(app);
 require('./collabjs.admin.js')(app);
 
+
+var server = http.createServer(app);
+var io = require('socket.io').listen(server);
+var passportSocketIo = require('passport.socketio');
+
+io.set('authorization', passportSocketIo.authorize({
+  cookieParser: express.cookieParser, // or connect.cookieParser
+  secret: 'keyboard cat',
+  store: sessionStore,
+  fail: function (data, accept) {
+    accept(null, false);
+  },
+  success: function (data, accept) {
+    accept(null, true);
+  }
+}));
+
+/*
+ io.sockets.on('connection', function (socket) {
+ console.log('user connected: ', socket.handshake.user);
+ });
+*/
+
 // Modules
+var runtimeContext = {
+  server: server,
+  app: app,
+  io: io
+};
+require('./modules')(runtimeContext);
 
-require('./modules')(app);
+// Server startup
 
-app.listen(config.env.port, config.env.ipaddress);
+server.listen(config.env.port, config.env.ipaddress);
 console.log("Express server listening on port %d in %s mode", config.env.port, app.settings.env);

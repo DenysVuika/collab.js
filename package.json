@@ -29,11 +29,13 @@
     "passport": ">= 0.0.0",
     "passport-local": ">= 0.0.0",
     "connect-flash": ">= 0.1.0",
-    "password-hash": "~1.2.1",
-    "mysql": "~2.0.0-alpha5",
-    "marked": "~0.2.8",
-    "nodemailer": "~0.3.42",
-    "recaptcha": "~1.2.0"
+    "password-hash": "1.2.1",
+    "mysql": "2.0.0-alpha5",
+    "marked": "0.2.8",
+    "nodemailer": "0.3.42",
+    "recaptcha": "1.2.0",
+    "socket.io": "0.9.15",
+    "passport.socketio": "1.2.0"
   },
   "devDependencies" : {
     "mocha" : "*",
