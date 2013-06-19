@@ -154,6 +154,11 @@ It is possible exporting environment variables right from the command line like 
 
 ####Running on Windows
 
+```
+set NODE_CFG=debug
+node server.js
+```
+
 If you are using [WebStorm](http://www.jetbrains.com/webstorm/) for node.js development on Windows then you can edit your project settings to define 
 ```NODE_CFG=debug``` environment variable so that every time you run/debug your project the custom configuration
 file is used.
