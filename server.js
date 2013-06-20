@@ -120,8 +120,6 @@ app.get('/', routes.index);
 
 require('./collabjs.web.js')(app);
 require('./collabjs.web.api.js')(app);
-require('./collabjs.admin.js')(app);
-
 
 var server = http.createServer(app);
 var io = require('socket.io').listen(server);

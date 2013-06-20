@@ -1,0 +1,31 @@
+'use strict';
+
+// import middleware
+var config = require('../config')
+  , auth = require('../collabjs.auth')
+  , ensureRole = auth.ensureRole;
+
+// extend sidebar
+config.ui.sidebar.administration.push({
+  text: 'Link 1',
+  icon: 'icon-wrench',
+  url: '/admin/sample1'
+});
+config.ui.sidebar.administration.push({
+  text: 'Link 2',
+  icon: 'icon-wrench',
+  url: '/admin/sample2'
+});
+
+module.exports = function (context) {
+  console.log('collab.js: initializing admin module...');
+  var app = context.app;
+
+  app.get('/admin/sample1', ensureRole('administrator'), function (req, res) {
+    res.render('admin/sample1', { title: 'admin 1' });
+  });
+
+  app.get('/admin/sample2', ensureRole('administrator'), function (req, res) {
+    res.render('admin/sample2', { title: 'admin 2' });
+  });
+};
