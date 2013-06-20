@@ -78,10 +78,13 @@ app.configure(function () {
   //app.use(express.favicon());
   app.use(express.favicon(__dirname + '/favicon.ico'));
   app.use(express.logger('dev'));
-  app.use(express.cookieParser('keyboard cat'));
+  app.use(express.cookieParser());
   app.use(express.bodyParser());
   app.use(express.methodOverride());
-  app.use(express.session({ secret: 'keyboard cat', cookie: { maxAge: 60 * 60 * 1000 }, store: sessionStore }));
+  app.use(express.session({
+    secret: config.env.sessionSecret,
+    cookie: { maxAge: 60 * 60 * 1000 },
+    store: sessionStore }));
   app.use(express.csrf());
   // Initialize Passport! Also use passport.session() middleware, to support
   // persistent Login sessions (recommended).
@@ -127,7 +130,7 @@ var passportSocketIo = require('passport.socketio');
 
 io.set('authorization', passportSocketIo.authorize({
   cookieParser: express.cookieParser, // or connect.cookieParser
-  secret: 'keyboard cat',
+  secret: config.env.sessionSecret,
   store: sessionStore,
   fail: function (data, accept) {
     accept(null, false);
