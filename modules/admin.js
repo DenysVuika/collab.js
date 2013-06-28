@@ -1,9 +1,11 @@
 'use strict';
 
-// import middleware
 var config = require('../config')
   , auth = require('../collabjs.auth')
   , ensureRole = auth.ensureRole;
+
+// define path to module-specific 'views' folder
+var __views = __dirname + '/admin/views/';
 
 // extend sidebar
 config.ui.sidebar.administration.push({
@@ -22,10 +24,10 @@ module.exports = function (context) {
   var app = context.app;
 
   app.get('/admin/sample1', ensureRole('administrator'), function (req, res) {
-    res.render('admin/sample1', { title: 'admin 1' });
+    res.render(__views + 'sample1', { title: 'admin 1' });
   });
 
   app.get('/admin/sample2', ensureRole('administrator'), function (req, res) {
-    res.render('admin/sample2', { title: 'admin 2' });
+    res.render(__views + 'sample2', { title: 'admin 2' });
   });
 };
