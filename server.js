@@ -78,14 +78,25 @@ app.configure(function () {
   //app.use(express.favicon());
   app.use(express.favicon(__dirname + '/favicon.ico'));
   app.use(express.logger('dev'));
+
+  // use content compression middleware if enabled
+  if (config.server.compression) {
+    app.use(express.compress());
+  }
+
   app.use(express.cookieParser());
   app.use(express.bodyParser());
   app.use(express.methodOverride());
   app.use(express.session({
-    secret: config.env.sessionSecret,
+    secret: config.server.sessionSecret,
     cookie: { maxAge: 60 * 60 * 1000 },
     store: sessionStore }));
-  app.use(express.csrf());
+
+  // use CSRF protection middlware if enabled
+  if (config.server.csrf) {
+    app.use(express.csrf());
+  }
+
   // Initialize Passport! Also use passport.session() middleware, to support
   // persistent Login sessions (recommended).
   app.use(passport.initialize());
@@ -130,7 +141,7 @@ var passportSocketIo = require('passport.socketio');
 
 io.set('authorization', passportSocketIo.authorize({
   cookieParser: express.cookieParser, // or connect.cookieParser
-  secret: config.env.sessionSecret,
+  secret: config.server.sessionSecret,
   store: sessionStore,
   fail: function (data, accept) {
     accept(null, false);

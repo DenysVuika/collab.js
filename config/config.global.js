@@ -5,8 +5,13 @@ config.env = {
   ipaddress: '0.0.0.0',
   // used by web sockets and to generate 'back' urls in emails,
   // helps solving issues with load balancers and proxies
-  hostname: 'http://localhost:3000',
-  sessionSecret: 'keyboard cat'
+  hostname: 'http://localhost:3000'
+};
+
+config.server = {
+  sessionSecret: 'keyboard cat',
+  csrf: true,
+  compression: true
 };
 
 // simple invitation code
