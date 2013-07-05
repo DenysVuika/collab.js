@@ -1,11 +1,11 @@
 'use strict';
 
-var config = require('../config')
-  , auth = require('../collabjs.auth')
+var config = require('../../config')
+  , auth = require('../../collabjs.auth')
   , ensureRole = auth.ensureRole;
 
 // define path to module-specific 'views' folder
-var __views = __dirname + '/admin/views/';
+var __views = __dirname + '/views/';
 
 // extend sidebar
 config.ui.sidebar.administration.push({
