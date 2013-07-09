@@ -42,18 +42,6 @@ html
                   a(href='/mentions')
                     i.icon-globe
                     | &nbsp;Mentions
-                li.disabled
-                  a(href='#')
-                    i.icon-calendar
-                    | &nbsp;Archive
-                li.disabled
-                  a(href='#')
-                    i.icon-star
-                    | &nbsp;Favorites
-                li.disabled
-                  a(href='#')
-                    i.icon-tasks
-                    | &nbsp;Tasks
                 block sidebar-main
                 //- Dynamic categories
                 each category in config.ui.sidebar.categories
@@ -69,14 +57,6 @@ html
                   a(href='/people')
                     i.icon-group
                     | &nbsp;People
-                li.disabled
-                  a(href='#')
-                    i.icon-envelope
-                    | &nbsp;Messages
-                li.disabled
-                  a(href='#')
-                    i.icon-plus-sign
-                    | &nbsp;Invite Friends
                 block sidebar-connect
                 //- 'Administration' section
                 if (isAdministrator && config.ui.sidebar.administration.length > 0)
