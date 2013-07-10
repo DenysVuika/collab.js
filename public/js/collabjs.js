@@ -6,6 +6,7 @@
 
 var _currentUser = null;
 var _currentUserId = null;
+var _currentUserPictureId = null;
 
 function isNullOrWhiteSpace(str) {
   return str === null || str.match(/^ *$/) !== null;
@@ -209,7 +210,8 @@ function FeedViewModel(account, data) {
           name: entry.name,
           content: entry.content,
           created: entry.created,
-          pictureSize: 32,
+          //pictureSize: 32,
+          pictureSize: 48,
           pictureId: entry.pictureId
         });
       });

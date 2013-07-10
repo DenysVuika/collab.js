@@ -1,0 +1,134 @@
+.timeline-feed {
+  ul {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+
+    li {
+      position: relative;
+      border-radius: 2px;
+      box-shadow: 0 1px 0 1px #e4e6eb;
+      background: #fff;
+      padding-left: 70px;
+      padding-right: 40px;
+      box-sizing: border-box;
+      margin-bottom: 20px;
+      margin-left: 80px;
+      margin-right: 40px;
+      padding: 10px;
+
+      &:before {
+        content: '';
+        width: 20px;
+        height: 20px;
+        top: 15px;
+        left: -20px;
+        position: absolute;
+        background: url("../img/disc-arrow.png");
+        background-size: 20px 20px;
+      }
+
+      .author {
+        position: absolute;
+        z-index: 1;
+        width: 60px;
+        float: left;
+        left: -70px;
+        top: 0;
+
+        img {
+          height: 50px;
+          border-radius: 50em;
+          //box-shadow: 0 1px 0 1px #e4e6eb;
+        }
+      }
+
+      .name {
+        position: absolute;
+        top: 10px;
+        left: 10px;
+        width: 100%;
+        background: #fbfcfc;
+        padding: 5px 10px 5px 10px;
+        border-radius: 2px 0 0 2px;
+      }
+
+      .date {
+        position: absolute;
+        top: 10px;
+        right: 0;
+        z-index: 1;
+        background: #f3f4f6;
+        padding: 5px 20px 5px 10px;
+        border-radius: 2px 0 0 2px;
+      }
+
+      .delete {
+        position: absolute;
+        border-radius: 0 2px 2px 0;
+        background: #e4e6eb;
+        top: 10px;
+        right: -30px;
+        padding: 5px 10px;
+        display: inline-block;
+        cursor: pointer;
+      }
+
+      .message {
+        border-bottom: 1px solid #e4e6eb;
+        margin: 20px -10px 0 -10px;
+        padding: 20px;
+      }
+
+      ul {
+        overflow: hidden;
+
+        li {
+          box-shadow: none;
+          border-bottom: 1px solid #e4e6eb;
+          margin: 0 -10px;
+          padding-left: 70px;
+
+          &:before {
+            display: none;
+          }
+
+          &:last-child {
+            border-bottom: 0;
+          }
+
+          .author {
+            top: 10px;
+            left: 10px;
+          }
+
+          .name {
+            left: 70px;
+          }
+
+          .date {
+            background: transparent;
+            right: 30px;
+          }
+
+          .delete {
+            background: transparent;
+            right: 10px;
+          }
+
+          .message {
+            border-bottom: 0;
+          }
+
+          textarea {
+            //border: 0;
+            //background: #c7cbd5;
+            border: 1px solid #e4e6eb;
+            box-shadow: none;
+            width: 97%;
+          }
+        }
+      }
+    }
+  }
+}
