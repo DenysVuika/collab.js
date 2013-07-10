@@ -1,7 +1,7 @@
 body {
   position: relative;
   padding-bottom: 40px;
-  background: #fff url('../images/grid-18px-masked.png') repeat-x 0 40px;
+  background: #fff url('../img/grid-18px-masked.png') repeat-x 0 40px;
 }
 
 .jumbotron {
