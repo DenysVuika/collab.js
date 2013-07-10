@@ -1,26 +1,36 @@
-div.well(style='padding-top: 10px; padding-bottom: 10px;')
-  div.media
-    a.pull-left(href='/people/#{profile.account}/timeline')
-      img.media-object(src='https://www.gravatar.com/avatar/#{profile.pictureId}')
-    div.media-body
-      h4.media-heading
-        | #{profile.name}
-        small
-          | @#{profile.account}
-      if (profile.bio)
-        span
-          i.icon-pencil
-          | &nbsp;
-          em #{profile.bio}
-      if (profile.website)
-        div
-          span
-            i.icon-globe
-            | &nbsp;
-            a(href='#{profile.website}') #{profile.website}
-      if (profile.location)
-        div
-          span.bfh-countries(data-flags='true', data-country='#{profile.location}')
+div.row-fluid
+  div.span12.profilebox.blue
+    div.header Denis Vuyka @dvuyka
+    div.content
+      div.media
+        div.pull-left
+          img.media-object(src='https://www.gravatar.com/avatar/#{profile.pictureId}', alt='').avatar
+        div.media-body
+          h4.media-heading
+            | #{profile.name}
+            small
+              | @#{profile.account}
+          if (profile.bio)
+            span
+              i.icon-pencil
+              | &nbsp;
+              em #{profile.bio}
+          if (profile.website)
+            div
+              span
+                i.icon-globe
+                | &nbsp;
+                a(href='#{profile.website}') #{profile.website}
+          if (profile.location)
+            div
+              span.bfh-countries(data-flags='true', data-country='#{profile.location}')
+          if (isOwnProfile)
+            a.m-btn.green.pull-right(href='/account', style='min-width: 80px;') Edit profile
+          else if (profile.isFollowed)
+            a.m-btn.black.pull-right(href='/people/#{profile.account}/unfollow', style='min-width: 80px;') Unfollow
+          else
+            a.m-btn.blue.pull-right(href='/people/#{profile.account}/follow', style='min-width: 80px;') Follow
+    div.footer
       ul.profile-stats-list(style='padding-top:10px;')
         li.profile-stats
           a(href='/people/#{profile.account}/timeline', style='color: #08c;')
@@ -31,9 +41,3 @@ div.well(style='padding-top: 10px; padding-bottom: 10px;')
         li.profile-stats
           a(href='/people/#{profile.account}/followers', style='color: #08c;')
             | #{profile.followers} followers
-      if (isOwnProfile)
-        a.m-btn.green.pull-right(href='/account', style='min-width: 80px;') Edit profile
-      else if (profile.isFollowed)
-        a.m-btn.black.pull-right(href='/people/#{profile.account}/unfollow', style='min-width: 80px;') Unfollow
-      else
-        a.m-btn.blue.pull-right(href='/people/#{profile.account}/follow', style='min-width: 80px;') Follow

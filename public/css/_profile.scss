@@ -1,0 +1,43 @@
+/*
+  User profile
+*/
+
+.profilebox {
+  border-radius: 2px;
+  box-shadow: 0 1px 0 1px #e4e6eb;
+  overflow: hidden;
+  margin: 0 0 28px 0;
+  background: #fff;
+  text-align: center;
+
+  &.blue {
+    .header {
+      background: #36a9e1;
+    }
+  }
+
+  .header {
+    padding: 10px;
+    color: #fff;
+    background: #eaebef;
+  }
+
+  .content {
+    padding: 5px 0;
+    background-color: #e4e6eb;
+    text-align: left;
+    color:#383e4b;
+
+    img.avatar {
+      height: 50px;
+      border-radius: 50em;
+      box-shadow: 0 1px 0 1px #e4e6eb;
+      margin-left: 10px;
+    }
+  }
+
+  .footer {
+    color: #383e4b;
+    padding: 10px;
+  }
+}

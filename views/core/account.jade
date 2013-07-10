@@ -1,8 +1,6 @@
 extends layout-account
 
 block styles
-  link(rel='stylesheet', href='/lib/bootstrap-formhelpers/css/bootstrap-formhelpers.css')
-  link(rel='stylesheet', href='/lib/bootstrap-formhelpers/css/bootstrap-formhelpers-countries.flags.css')
   style(type='text/css')
     .form-horizontal .control-group {
       margin-bottom: 10px;
@@ -50,7 +48,7 @@ block content
       div.control-label
         label(for='location') Location
       div.controls
-        //input(type='text', id='location', name='location', value=user.location)
+        //- input(type='text', id='location', name='location', value=user.location)
         div.bfh-selectbox.bfh-countries(data-country='#{user.location}', data-flags='true')
           input(type='hidden', name='location', value='')
           a.bfh-selectbox-toggle(role='button', data-toggle='bfh-selectbox', href='#')
@@ -77,7 +75,7 @@ block content
           | About yourself in 160 characters or less.
           span.bio-counter-label(id='bio_counter') 160
     hr
-    div.form-actions(style='background-color: white; border-top: none;padding-top:0;')
+    div.form-actions(style='border-top: none;padding-top:0;')
       input.m-btn.blue(type='submit', value='Save Changes')
       a.m-btn.black(href='/timeline', style='vertical-align: middle;')
         i.m-icon-swapleft.m-icon-white
@@ -87,6 +85,3 @@ block scripts
   script(src='/js/knockout.min.js', type='text/javascript')
   script(src='/js/collabjs.js', type='text/javascript')
   script(src='/js/collabjs.account.js', type='text/javascript')
-  script(type='text/javascript', src='/lib/bootstrap-formhelpers/js/bootstrap-formhelpers-selectbox.js')
-  script(type='text/javascript', src='/lib/bootstrap-formhelpers/js/bootstrap-formhelpers-countries.js')
-  script(type='text/javascript', src='/lib/bootstrap-formhelpers/js/bootstrap-formhelpers-countries.en_US.js')

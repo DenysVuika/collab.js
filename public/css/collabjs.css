@@ -76,7 +76,7 @@ input[type=submit] {
 */
 [class^="icon-flag-"],
 [class*=" icon-flag-"] {
-  display: inline-block;
+  display: inline-block !important;
   vertical-align: text-top;
   width: 16px;
   height: 16px;
@@ -84,6 +84,42 @@ input[type=submit] {
 
 div.media-body span.bfh-countries > i {
   margin-right: 0;
+}
+
+/*
+  User profile
+*/
+.profilebox {
+  border-radius: 2px;
+  box-shadow: 0 1px 0 1px #e4e6eb;
+  overflow: hidden;
+  margin: 0 0 28px 0;
+  background: #fff;
+  text-align: center;
+}
+.profilebox.blue .header {
+  background: #36a9e1;
+}
+.profilebox .header {
+  padding: 10px;
+  color: #fff;
+  background: #eaebef;
+}
+.profilebox .content {
+  padding: 5px 0;
+  background-color: #e4e6eb;
+  text-align: left;
+  color: #383e4b;
+}
+.profilebox .content img.avatar {
+  height: 50px;
+  border-radius: 50em;
+  box-shadow: 0 1px 0 1px #e4e6eb;
+  margin-left: 10px;
+}
+.profilebox .footer {
+  color: #383e4b;
+  padding: 10px;
 }
 
 /*

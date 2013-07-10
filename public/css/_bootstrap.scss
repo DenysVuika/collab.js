@@ -88,7 +88,7 @@ input[type=submit] {
 
 [class^="icon-flag-"],
 [class*=" icon-flag-"] {
-  display: inline-block;
+  display: inline-block !important;
   vertical-align: text-top;
   width: 16px;
   height: 16px;
