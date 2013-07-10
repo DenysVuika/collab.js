@@ -78,27 +78,27 @@ html
           block content
       include shared/footer
 
-  script(type='text/javascript', src='/lib/bootstrap/js/bootstrap.min.js')
-  script(type='text/javascript', src='/lib/bootstrap-formhelpers/js/bootstrap-formhelpers-selectbox.js')
-  script(type='text/javascript', src='/lib/bootstrap-formhelpers/js/bootstrap-formhelpers-countries.js')
-  script(type='text/javascript', src='/lib/bootstrap-formhelpers/js/bootstrap-formhelpers-countries.en_US.js')
+    script(src='/lib/bootstrap/js/bootstrap.min.js')
+    script(src='/lib/bootstrap-formhelpers/js/bootstrap-formhelpers-selectbox.js')
+    script(src='/lib/bootstrap-formhelpers/js/bootstrap-formhelpers-countries.js')
+    script(src='/lib/bootstrap-formhelpers/js/bootstrap-formhelpers-countries.en_US.js')
 
-  block scripts
+    block scripts
 
-  // initialize request path variable if not defined
-  if (typeof(requestPath) === 'undefined')
-    requestPath = '';
+    // initialize request path variable if not defined
+    if (typeof(requestPath) === 'undefined')
+      requestPath = '';
 
-  script(type='text/javascript')
-    $(function() {
-      // Synchronize sidebar/header selection with current request path
-      var path = '#{requestPath}' || window.location.pathname;
-      $('.nav li a[href="' + path + '"]').parents('li').addClass('active');
-    });
+    script.
+      $(function() {
+        // Synchronize sidebar/header selection with current request path
+        var path = '#{requestPath}' || window.location.pathname;
+        $('.nav li a[href="' + path + '"]').parents('li').addClass('active');
+      });
 
-  // assign user-related variables
-  if (user && user.account && user.id)
-    script(type='text/javascript').
-      _currentUser = '#{user.account}';
-      _currentUserId = '#{user.id}';
-      _currentUserPictureId = '#{user.emailHash}';
+    // assign user-related variables
+    if (user && user.account && user.id)
+      script(type='text/javascript').
+        _currentUser = '#{user.account}';
+        _currentUserId = '#{user.id}';
+        _currentUserPictureId = '#{user.emailHash}';
