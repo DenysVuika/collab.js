@@ -5,13 +5,7 @@ block content
 
   script.
     $(document).ready(function () {
-      $.get('/api/people', function (data) {
-        if (data && data.length > 0) {
-          onPeopleDataLoaded(data);
-        } else {
-          onPeopleDataLoaded([]);
-        }
-       });
+      getPeople();
       initLazyLoading(getDataUrl, onPeopleDataLoaded);
     });
     // smooth infinite scrolling

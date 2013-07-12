@@ -34,10 +34,7 @@ ul.media-list(style='display: none', data-bind='visible: profiles().length > 0, 
             |  followers
 
 // Progress indicator
-div(id='page-data-loading', style='text-align: center; display: none;')
+div.page-spinner
   i.icon-spinner.icon-spin.icon-4x
 
-div.alert.alert-error(id='content-loading-error', style='text-align: center; display: none')
-
-block scripts
-  script(src='/js/collabjs.js')
+div.alert.alert-error.page-error

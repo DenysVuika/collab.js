@@ -243,6 +243,14 @@ h3 > i {
 .field-validation-error {
   color: #B94A48;
 }
+div.page-spinner {
+  text-align: center;
+  display: none;
+}
+.page-error {
+  text-align: center;
+  display: none;
+}
 .profile-stats {
   line-height: 16px;
 }

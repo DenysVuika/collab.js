@@ -7,23 +7,17 @@ block content
     | &nbsp;#{title}
   p.lead(style='display: none', data-bind='visible: posts().length == 0') No mentions found...
   div(style='display: none;', data-bind="visible: posts().length > 0, template: { name: 'timeline-template' }")
+
   // Loading progress indicator
-  div(id='page-data-loading', style='text-align: center; display: none;')
+  div.page-spinner
     i.icon-spinner.icon-spin.icon-4x
 
-  div.alert.alert-error(id='content-loading-error', style='text-align: center; display: none;')
+  div.alert.alert-error.page-error
 
 block scripts
-  script(src='/js/collabjs.js')
   script.
     $(document).ready(function () {
-      $.get('/api/mentions', function (data) {
-          if (data && data.length > 0) {
-            onFeedDataLoaded(data, _currentUser);
-          } else {
-            onFeedDataLoaded([], _currentUser);
-          }
-       });
+      getMentions();
       initLazyLoading(getDataUrl, onFeedDataLoaded);
     });
     // smooth infinite scrolling

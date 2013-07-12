@@ -9,13 +9,7 @@ block content
 
   script.
     $(document).ready(function () {
-      $.get('/api/people/#{account}/following', function (data) {
-        if (data && data.length > 0) {
-          onPeopleDataLoaded(data);
-        } else {
-          onPeopleDataLoaded([]);
-        }
-       });
+      getFollowing('#{account}');
       initLazyLoading(getDataUrl, onPeopleDataLoaded);
     });
     // smooth infinite scrolling

@@ -76,29 +76,33 @@ function isNullOrWhiteSpace(str) {
   };
 })(jQuery);
 
-/* Knockout extensions */
 
-ko.bindingHandlers.country = {
-  init: function(element, valueAccessor, allBindingsAccessor, viewModel, bindingContext) {
-    // This will be called when the binding is first applied to an element
-    // Set up any initial state, event handlers, etc. here
-  },
-  update: function(element, valueAccessor, allBindingsAccessor, viewModel, bindingContext) {
-    // This will be called once when the binding is first applied to an element,
-    // and again whenever the associated observable changes value.
-    // Update the DOM element based on the supplied values here.
-    var $element = $(element);
-    var valueUnwrapped = ko.utils.unwrapObservable(valueAccessor());
-    // show only when value is provided
-    if (valueUnwrapped && valueUnwrapped.length > 0) {
-      $element.css('display', 'block');
-      $element.attr('data-country', valueUnwrapped);
-      $element.bfhcountries($element.data());
-    } else {
-      $element.css('display', 'none');
+$(function () {
+  /* Knockout extensions */
+  ko.bindingHandlers.country = {
+    init: function(element, valueAccessor, allBindingsAccessor, viewModel, bindingContext) {
+      // This will be called when the binding is first applied to an element
+      // Set up any initial state, event handlers, etc. here
+    },
+    update: function(element, valueAccessor, allBindingsAccessor, viewModel, bindingContext) {
+      // This will be called once when the binding is first applied to an element,
+      // and again whenever the associated observable changes value.
+      // Update the DOM element based on the supplied values here.
+      var $element = $(element);
+      var valueUnwrapped = ko.utils.unwrapObservable(valueAccessor());
+      // show only when value is provided
+      if (valueUnwrapped && valueUnwrapped.length > 0) {
+        $element.css('display', 'block');
+        $element.attr('data-country', valueUnwrapped);
+        $element.bfhcountries($element.data());
+      } else {
+        $element.css('display', 'none');
+      }
     }
-  }
-};
+  };
+});
+
+
 
 /* String extensions */
 String.prototype.formatString = function() {
@@ -281,30 +285,95 @@ function PeopleViewModel(data) {
 // ========================================================================================
 
 function loadPost(id) {
+  var spinner = $('.page-spinner');
+  spinner.show();
   $.ajax({
     type: 'GET',
     url: '/api/timeline/posts/' + id,
-    success: function (data, status) {
+    success: function (data) {
       onPostLoaded(data);
     },
-    error: function (request, status, error) {
-      $('#error').text('Post not found.').show();
+    error: function () {
+      $('.page-error').text('Post not found.').show();
     },
     complete: function() {
-      $('#progress').hide();
+      spinner.hide();
     }
   });
 }
 
 function onPostLoaded(data) {
-  window.viewmodel = new FeedViewModel(_currentUser, [data]);
-  ko.applyBindings(window.viewmodel);
-  $('div[data-link-type="comment"]').collapse('show');
+  if (data) {
+    window.viewmodel = new FeedViewModel(_currentUser, [data]);
+    ko.applyBindings(window.viewmodel);
+  } else {
+    $('.page-error').text('Post not found.').show();
+  }
 }
 
 // ========================================================================================
 // Functions
 // ========================================================================================
+
+function getPeople() {
+  $.get('/api/people', function (data) {
+    if (data && data.length > 0) {
+      onPeopleDataLoaded(data);
+    } else {
+      onPeopleDataLoaded([]);
+    }
+  });
+}
+
+function getFollowers(account) {
+  $.get('/api/people/' + account + '/followers', function (data) {
+    if (data && data.length > 0) {
+      onPeopleDataLoaded(data);
+    } else {
+      onPeopleDataLoaded([]);
+    }
+  });
+}
+
+function getFollowing(account) {
+  $.get('/api/people/' + account + '/following', function (data) {
+    if (data && data.length > 0) {
+      onPeopleDataLoaded(data);
+    } else {
+      onPeopleDataLoaded([]);
+    }
+  });
+}
+
+function getMentions() {
+  $.get('/api/mentions', function (data) {
+    if (data && data.length > 0) {
+      onFeedDataLoaded(data, _currentUser);
+    } else {
+      onFeedDataLoaded([], _currentUser);
+    }
+  });
+}
+
+function getPersonalTimeline(account) {
+  $.get('/api/people/' + account + '/timeline', function (data) {
+    if (data && data.length > 0) {
+      onFeedDataLoaded(data, _currentUser);
+    } else {
+      onFeedDataLoaded([], _currentUser);
+    }
+  });
+}
+
+function searchPosts(q, src) {
+  $.get('/api/search?q=' + q + '&src=' + src, function (data) {
+    if (data && data.length > 0) {
+      onFeedDataLoaded(data, _currentUser);
+    } else {
+      onFeedDataLoaded([], _currentUser);
+    }
+  });
+}
 
 function onPeopleDataLoaded(data) {
   if (!window.peopleFeed) {
@@ -429,10 +498,14 @@ function initLazyLoading(url, onSuccess) {
         _page++;
 
         var spinner = $('#page-data-loading');
+        var pageSpinner = $('.page-spinner');
         var msg = $("#content-loading-error");
+        var pageError = $('.page-error');
         
         spinner.show();
+        pageSpinner.show();
         msg.hide();
+        pageError.hide();
 
         $.ajax({
           type: "GET",
@@ -454,11 +527,14 @@ function initLazyLoading(url, onSuccess) {
           error: function () {
             msg.text("Error getting data. There seems to be a server problem, please try again later.");
             msg.show();
+            pageError.text("Error getting data. There seems to be a server problem, please try again later.");
+            pageError.show();
             _page--;
           },
           complete: function () {
             _inCallback = false;
             spinner.hide();
+            pageSpinner.hide();
           }
         });
       }
