@@ -14,12 +14,6 @@ script(type='text/html', id='timeline-template')
         blockquote
           div(data-bind='html: content')
           small(data-bind="text: created.calendar(), attr: { title : created.format('LLLL') }")
-        div(data-bind='visible: hashtags.length > 0')
-          i.icon-tags
-          | &nbsp
-          span(data-bind='foreach: hashtags')
-            a.label(data-bind="text: $data, attr: { href: '/search?q=' + $data + '&src=hash' }",
-              style='margin-right: 5px; font-weight: normal;')
         // ko if: openBlank
         div(data-bind="template: { name: 'view-all-comments-template' }")
         // /ko
