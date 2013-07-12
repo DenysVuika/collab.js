@@ -4,6 +4,10 @@
 /// <reference path="knockout.min.js" />
 /// <reference path="moment.min.js" />
 
+var collabjs = collabjs || {};
+// value may be assigned based on server-side settings
+collabjs.avatarServer = 'https://www.gravatar.com';
+
 var _currentUser = null;
 var _currentUserId = null;
 var _currentUserPictureId = null;
@@ -152,7 +156,7 @@ function PostViewModel(data) {
   self.content = data.content.twitterize();
   self.created = moment(data.created);
   self.hashtags = data.content.getHashTags();
-  self.picture = 'https://www.gravatar.com/avatar/' + data.pictureId + '?s=' + (data.pictureSize || '48');
+  self.picture = collabjs.avatarServer + '/avatar/' + data.pictureId + '?s=' + (data.pictureSize || '48');
   self.feed = '/people/' + data.account + '/timeline';
   self.canDismiss = false;
   self.postUrl = '/timeline/posts/' + data.id;
@@ -251,7 +255,7 @@ function UserProfileViewModel(data) {
   self.following = data.following;
   self.followingUrl = '/people/' + data.account + '/following';
   self.isFollowed = data.isFollowed;
-  self.picture = 'https://www.gravatar.com/avatar/' + data.pictureId + '?s=48';
+  self.picture = collabjs.avatarServer + '/avatar/' + data.pictureId + '?s=48';
   self.feed = '/people/' + data.account + '/timeline';
   self.followAction = '/people/' + data.account + '/follow';
   self.unfollowAction = '/people/' + data.account + '/unfollow';

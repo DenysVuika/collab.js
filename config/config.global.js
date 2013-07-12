@@ -5,7 +5,8 @@ config.env = {
   ipaddress: '0.0.0.0',
   // used by web sockets and to generate 'back' urls in emails,
   // helps solving issues with load balancers and proxies
-  hostname: 'http://localhost:3000'
+  hostname: 'http://localhost:3000',
+  avatarServer: 'https://www.gravatar.com'
 };
 
 config.server = {
