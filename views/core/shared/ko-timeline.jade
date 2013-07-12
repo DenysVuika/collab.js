@@ -3,7 +3,7 @@ script(type='text/html', id='timeline-template')
     li.media.post
       button.close(data-bind='visible: canDismiss, click: $parent.removePost') &times;
       a.pull-left(data-bind="attr: { href: feed }")
-        img.media-object(data-bind="attr: { src: picture }")
+        img.media-object.avatar(data-bind="attr: { src: picture }")
       div.media-body
         div.media-heading
           span
@@ -40,7 +40,7 @@ script(type='text/html', id='comments-section-template')
 script(type='text/html', id='post-comment-template')
   li.media.comment
     a.pull-left(data-bind='attr: { href: feed }')
-      img.media-object(data-bind="attr: { src: picture }")
+      img.media-object.avatar(data-bind="attr: { src: picture }")
     div.media-body
       blockquote
         div
