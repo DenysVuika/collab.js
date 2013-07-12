@@ -25,21 +25,25 @@ html
       block content
       include shared/footer
 
-  script(type='text/javascript', src='/lib/bootstrap/js/bootstrap.min.js')
-  block scripts
-  // initialize request path variable if not defined
-  if (typeof(requestPath) === 'undefined')
-    requestPath = '';
+    script(type='text/javascript', src='/lib/bootstrap/js/bootstrap.min.js')
 
-  script(type='text/javascript')
-    $(function() {
-      // Synchronize sidebar/header selection with current request path
-      var path = '#{requestPath}' || window.location.pathname;
-      $('.nav li a[href="' + path + '"]').parents('li').addClass('active');
-    });
+    block scripts
 
-  // assign user-related variables
-  if (user && user.account && user._id)
+    // initialize request path variable if not defined
+    if (typeof(requestPath) === 'undefined')
+      requestPath = '';
+
     script(type='text/javascript')
-      _currentUser = '#{user.account}';
-      _currentUserId = '#{user._id}';
+      $(function() {
+        // Synchronize sidebar/header selection with current request path
+        var path = '#{requestPath}' || window.location.pathname;
+        $('.nav li a[href="' + path + '"]').parents('li').addClass('active');
+      });
+
+    // assign user-related variables
+    if (user && user.account && user._id)
+      script(type='text/javascript').
+        _currentUser = '#{user.account}';
+        _currentUserId = '#{user._id}';
+        _currentUserPictureId = '#{user.emailHash}';
+        collabjs.avatarServer = '#{config.env.avatarServer}';
