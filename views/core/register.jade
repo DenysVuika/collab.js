@@ -56,6 +56,5 @@ block content
         input.m-btn.blue(type='submit', value='Submit')
 
 block scripts
-  script(src='/js/jqBootstrapValidation.js')
-  script(type='text/javascript')
+  script.
     $(function() { $("input").not(["type=submit"]).jqBootstrapValidation(); });

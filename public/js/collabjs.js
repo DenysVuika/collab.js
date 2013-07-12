@@ -1,7 +1,7 @@
 /* global ko, moment */
 /// <reference path="jquery.min.js" />
-/// <reference path="bootstrap.js" />
-/// <reference path="knockout.min.js" />
+/// <reference path="lib/bootstrap/js/bootstrap.js" />
+/// <reference path="lib/knockout/js/knockout.min.js" />
 /// <reference path="moment.min.js" />
 
 var collabjs = collabjs || {};

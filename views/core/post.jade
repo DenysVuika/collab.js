@@ -42,8 +42,6 @@ block content
   div(style='display: none;', data-bind="visible: posts().length > 0, template: { name: 'timeline-post' }")
 
 block scripts
-  script(src='/js/knockout.min.js')
-  script(src='/js/moment.min.js')
   script(src='/js/collabjs.js')
   script.
     $(document).ready(function () {

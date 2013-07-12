@@ -16,8 +16,8 @@ html
 
     block styles
 
-    script(type='text/javascript', src='/js/jquery.min.js')
-  
+    script(src='/lib/jQuery/js/jquery.min.js')
+
   body
     include shared/header
 
@@ -25,7 +25,8 @@ html
       block content
       include shared/footer
 
-    script(type='text/javascript', src='/lib/bootstrap/js/bootstrap.min.js')
+    script(src='/lib/bootstrap/js/bootstrap.min.js')
+    script(src='/lib/jqBootstrapValidation/js/jqBootstrapValidation.js')
 
     block scripts
 
@@ -33,7 +34,7 @@ html
     if (typeof(requestPath) === 'undefined')
       requestPath = '';
 
-    script(type='text/javascript')
+    script.
       $(function() {
         // Synchronize sidebar/header selection with current request path
         var path = '#{requestPath}' || window.location.pathname;
