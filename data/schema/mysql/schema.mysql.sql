@@ -419,12 +419,12 @@ CREATE TABLE IF NOT EXISTS `users` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 
 CREATE TABLE IF NOT EXISTS `user_roles` (
-  `userId` varchar(45) COLLATE utf8_unicode_ci NOT NULL,
+  `userId` int(11) NOT NULL,
   `roleId` int(11) NOT NULL,
   PRIMARY KEY (`userId`,`roleId`),
   KEY `FK_ur_user_idx` (`userId`),
   KEY `FK_ur_role_idx` (`roleId`),
-  CONSTRAINT `FK_ur_user` FOREIGN KEY (`userId`) REFERENCES `users` (`account`) ON DELETE NO ACTION ON UPDATE NO ACTION,
+  CONSTRAINT `FK_ur_user` FOREIGN KEY (`userId`) REFERENCES `users` (`id`) ON DELETE NO ACTION ON UPDATE NO ACTION,
   CONSTRAINT `FK_ur_role` FOREIGN KEY (`roleId`) REFERENCES `roles` (`id`) ON DELETE NO ACTION ON UPDATE NO ACTION
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 
