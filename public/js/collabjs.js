@@ -277,6 +277,32 @@ function PeopleViewModel(data) {
 }
 
 // ========================================================================================
+// Post Viewer
+// ========================================================================================
+
+function loadPost(id) {
+  $.ajax({
+    type: 'GET',
+    url: '/api/timeline/posts/' + id,
+    success: function (data, status) {
+      onPostLoaded(data);
+    },
+    error: function (request, status, error) {
+      $('#error').text('Post not found.').show();
+    },
+    complete: function() {
+      $('#progress').hide();
+    }
+  });
+}
+
+function onPostLoaded(data) {
+  window.viewmodel = new FeedViewModel(_currentUser, [data]);
+  ko.applyBindings(window.viewmodel);
+  $('div[data-link-type="comment"]').collapse('show');
+}
+
+// ========================================================================================
 // Functions
 // ========================================================================================
 

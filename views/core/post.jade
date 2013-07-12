@@ -47,23 +47,5 @@ block scripts
   script(src='/js/collabjs.js', type='text/javascript')
   script(type='text/javascript').
     $(document).ready(function () {
-      $.ajax({
-        type: 'GET',
-        dataType: 'json',
-        url: '/api/timeline/posts/#{postId}',
-        success: function (data, status) {
-          onPostLoaded(data);
-        },
-        error: function (request, status, error) {
-          $('#error').text('Post not found.').show();
-        },
-        complete: function () {
-          $('#progress').hide();
-        }
-      });
+      loadPost(#{postId});
     });
-    function onPostLoaded(data) {
-      window.viewmodel = new FeedViewModel(_currentUser, [data]);
-      ko.applyBindings(window.viewmodel);
-      $('div[data-link-type="comment"]').collapse('show');
-    }
