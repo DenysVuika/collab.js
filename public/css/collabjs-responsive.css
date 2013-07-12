@@ -5,27 +5,23 @@
   padding-right: 0;
   padding-left: 0;
 }
-
 .navbar .brand {
   padding-left: 10px;
   padding-right: 10px;
   margin-left: 0;
 }
-
 @media (max-width: 979px) {
   body {
     padding-top: 60px;
   }
-
-  .navbar-fixed-top, .navbar-fixed-bottom {
+  .navbar-fixed-top,
+  .navbar-fixed-bottom {
     position: fixed;
     margin: 0;
   }
-
   .navbar-fixed-top .navbar-inner {
     padding: 0;
   }
-
   .navbar .brand {
     margin-left: 0;
     padding-left: 10px;

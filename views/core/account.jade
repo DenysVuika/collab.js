@@ -34,7 +34,7 @@ block content
       div.control-label Picture
       div.controls
         a(href='http://www.gravatar.com', target='_blank')
-          img(src='https://www.gravatar.com/avatar/#{user.pictureId}', alt='Gravatar')
+          img(src='#{config.env.avatarServer}/avatar/#{user.pictureId}', alt='Gravatar')
         p.controls-hint
           | Click the picture to configure your Gravatar
     div.control-group

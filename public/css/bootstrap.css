@@ -1,0 +1,76 @@
+/*
+  Twitter Bootstrap customization and fixes
+*/
+.sidebar-nav {
+  padding: 9px 0;
+}
+.navbar .nav > li > a.dropdown-toggle {
+  padding: 6px 5px 5px;
+  margin-bottom: 0;
+}
+.navbar .divider-vertical {
+  margin: 0;
+}
+.nav-list > li > a > i {
+  color: #000;
+}
+.nav-list > li.active > a > i {
+  color: #fff;
+}
+.nav > .disabled > a > i {
+  color: #999;
+}
+img.media-object {
+  border-radius: 4px;
+}
+li.media.post {
+  border-top: solid 1px lightgray;
+  padding-top: 15px;
+}
+li.media.post:first-child {
+  border-top: none;
+  padding-top: 0;
+}
+li.media.post .media-heading {
+  margin-bottom: 0;
+}
+li.media.post .media-body blockquote {
+  border-left: none;
+  padding: 0;
+}
+li.media.comment {
+  margin-top: 0;
+  margin-bottom: 0;
+}
+li.media.comment blockquote {
+  border-left: none;
+  padding: 0;
+  margin-bottom: 5px;
+}
+li.media.comment blockquote p {
+  font-size: 14px;
+  line-height: 1.38;
+}
+.media a {
+  text-decoration: none;
+}
+/*
+  iOS tweaks
+*/
+input[type=submit] {
+  -webkit-appearance: none;
+  -webkit-border-radius: 0;
+}
+/*
+  Twitter Bootstrap Form Helpers
+*/
+[class^="icon-flag-"],
+[class*=" icon-flag-"] {
+  display: inline-block !important;
+  vertical-align: text-top;
+  width: 16px;
+  height: 16px;
+}
+div.media-body span.bfh-countries > i {
+  margin-right: 0;
+}

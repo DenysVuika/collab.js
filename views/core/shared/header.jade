@@ -12,7 +12,7 @@ div.navbar.navbar-fixed-top
                 li
                   a.profile-link(href='/account')
                     div
-                      img(src='https://www.gravatar.com/avatar/#{user.pictureId}?s=32')
+                      img(src='#{config.env.avatarServer}/avatar/#{user.pictureId}?s=32')
                       strong #{user.name}
                       small Edit profile
                 li.divider(style='margin-top: 0;')

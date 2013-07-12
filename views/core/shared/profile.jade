@@ -4,7 +4,7 @@ div.row-fluid
     div.content
       div.media
         div.pull-left
-          img.media-object(src='https://www.gravatar.com/avatar/#{profile.pictureId}', alt='').avatar
+          img.media-object(src='#{config.env.avatarServer}/avatar/#{profile.pictureId}', alt='').avatar
         div.media-body
           h4.media-heading
             | #{profile.name}
