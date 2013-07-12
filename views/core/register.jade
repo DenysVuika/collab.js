@@ -5,7 +5,7 @@ block content
   h2= title
   p Use the form below to create a new account.
   mixin showError(message)
-  script(type='text/javascript')
+  script.
     var RecaptchaOptions = {
       theme: 'clean',
       lang: 'en'
@@ -56,6 +56,6 @@ block content
         input.m-btn.blue(type='submit', value='Submit')
 
 block scripts
-  script(src='/js/jqBootstrapValidation.js', type='text/javascript')
+  script(src='/js/jqBootstrapValidation.js')
   script(type='text/javascript')
     $(function() { $("input").not(["type=submit"]).jqBootstrapValidation(); });

@@ -42,7 +42,7 @@ html
 
     // assign user-related variables
     if (user && user.account && user._id)
-      script(type='text/javascript').
+      script.
         _currentUser = '#{user.account}';
         _currentUserId = '#{user._id}';
         _currentUserPictureId = '#{user.emailHash}';

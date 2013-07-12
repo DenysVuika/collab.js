@@ -3,7 +3,7 @@ extends layout
 block content
   include shared/ko-people
 
-  script(type='text/javascript')
+  script.
     $(document).ready(function () {
       $.get('/api/people', function (data) {
         if (data && data.length > 0) {

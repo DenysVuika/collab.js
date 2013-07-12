@@ -7,7 +7,7 @@ block content
     | &nbsp;Followers
   include shared/ko-people
 
-  script(type='text/javascript')
+  script.
     $(document).ready(function () {
       $.get('/api/people/#{account}/followers', function (data) {
         if (data && data.length > 0) {

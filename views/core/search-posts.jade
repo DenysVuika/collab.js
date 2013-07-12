@@ -20,10 +20,10 @@ block content
   div.alert.alert-error(id='content-loading-error', style='text-align: center; display: none;').
 
 block scripts
-  script(src='/js/knockout.min.js', type='text/javascript')
-  script(src='/js/moment.min.js', type='text/javascript')
-  script(src='/js/collabjs.js', type='text/javascript')
-  script(type='text/javascript')
+  script(src='/js/knockout.min.js')
+  script(src='/js/moment.min.js')
+  script(src='/js/collabjs.js')
+  script.
     $(document).ready(function(){
       $.get('/api/search?q=#{search_q}&src=#{search_src}', function (data) {
         if (data && data.length > 0) {
