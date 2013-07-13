@@ -9,8 +9,7 @@ script(type='text/html', id='timeline-template')
           span
             a(data-bind='attr: { href: postUrl }')
               strong(data-bind='text: name')
-            a(data-bind="text: '@' + account, attr: { href: feed }",
-              style='color: grey; font-weight: normal; font-size: 90%; padding-left: 5px;')
+            a.account(data-bind="text: '@' + account, attr: { href: feed }")
         blockquote
           div(data-bind='html: content')
           small(data-bind="text: created.calendar(), attr: { title : created.format('LLLL') }")

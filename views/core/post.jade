@@ -10,7 +10,9 @@ block content
           li
             div.author
               img(data-bind="attr: { src: picture }", alt='avatar')
-            div.name(data-bind='text: name', style='width:94%')
+            div.name(style='width:94%')
+              span(data-bind='text: name')
+              a.account(data-bind="text: '@' + account, attr: { href: feed }")
             div.date(data-bind="text: created.calendar(), attr: { title : created.format('LLLL') }")
             //- div.delete
             //-  i.icon-remove
@@ -20,7 +22,9 @@ block content
               li
                 div.author
                   img(data-bind="attr: { src: picture }", alt='avatar')
-                div.name(data-bind='text: name')
+                div.name
+                  span(data-bind='text: name')
+                  a.account(data-bind="text: '@' + account, attr: { href: feed }")
                 div.date(data-bind="text: created.calendar(), attr: { title : created.format('LLLL') }")
                 div.message(data-bind='html: content')
               // /ko
