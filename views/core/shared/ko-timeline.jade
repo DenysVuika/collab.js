@@ -1,56 +1,47 @@
 script(type='text/html', id='timeline-template')
-  ul.media-list(data-bind='foreach: posts')
-    li.media.post
-      button.close(data-bind='visible: canDismiss, click: $parent.removePost') &times;
-      a.pull-left(data-bind="attr: { href: feed }")
-        img.media-object.avatar(data-bind="attr: { src: picture }")
-      div.media-body
-        div.media-heading
-          span
-            a(data-bind='attr: { href: postUrl }')
-              strong(data-bind='text: name')
+  div.row-fluid
+    div.span12.timeline-feed
+      ul(data-bind='foreach: posts')
+        li
+          div.author
+            a.account(data-bind="attr: { href: feed }")
+              img(data-bind="attr: { src: picture }", alt='avatar')
+          div.name(style='width:94%')
+            a(data-bind='text: name, attr: { href: postUrl }', style='font-weight: bold;')
             a.account(data-bind="text: '@' + account, attr: { href: feed }")
-        blockquote
-          div(data-bind='html: content')
-          small(data-bind="text: created.calendar(), attr: { title : created.format('LLLL') }")
-        // ko if: openBlank
-        div(data-bind="template: { name: 'view-all-comments-template' }")
-        // /ko
-        // ko ifnot: openBlank
-        div(data-bind="template: { name: 'comments-section-template' }")
-        // /ko
+          div.date(data-bind="text: created.calendar(), attr: { title : created.format('LLLL') }")
+          div.delete(data-bind='visible: canDismiss, click: $parent.removePost')
+            i.icon-remove
+          div.message
+            div(data-bind='html: content')
+            // ko if: openBlank
+            a(data-bind='attr: { href: postUrl }')
+              i.icon-comment(style='color:#333;')
+              span(data-bind="text: ' View all {0} comments'.formatString(commentsCount())")
+            // /ko
+            // ko ifnot: openBlank
+            a(href='#', data-link-type='comment')
+              i.icon-comment(style='color:#333')
+              | &nbsp;Comments
+              span(data-bind="visible: commentsCount() > 0, text: ' (' + commentsCount() + ')'")
+            // /ko
 
-script(type='text/html', id='comments-section-template')
-  div
-    a(data-toggle='collapse', data-bind="attr: { 'data-target': '#comments_' + id }", style='cursor: pointer')
-      i.icon-comment(style='color:#333')
-      | &nbsp;Comments
-      span(data-bind="visible: commentsCount() > 0, text: ' (' + commentsCount() + ')'")
-  div.collapse.comments(data-link-type='comment', data-bind="attr: { id: 'comments_' + id }")
-    ul.media-list(data-bind="visible: comments().length > 0, template: { name: 'post-comment-template', foreach: comments }")
-    div(data-bind="template: { name: 'post-commentbox-template' }")
-
-script(type='text/html', id='post-comment-template')
-  li.media.comment
-    a.pull-left(data-bind='attr: { href: feed }')
-      img.media-object.avatar(data-bind="attr: { src: picture }")
-    div.media-body
-      blockquote
-        div
-          a(data-bind='attr: { href: feed }')
-            strong(data-bind='text: name', style='font-size: 14px;')
-          span(data-bind='html: content', style='margin-left: 5px;')
-        small(data-bind="text: created.calendar(), attr: { title : created.format('LLLL') }")
-
-script(type='text/html', id='post-commentbox-template')
-  form(method='post', action='', onSubmit='doPostComment(this); return false;')
-    input(type='hidden', name='_csrf', value=token)
-    input(name='postId', type='hidden', data-bind='value: id')
-    input.input-block-level(name='content', type='text', placeholder='Write a comment...', autocomplete='off'
-      data-bind="attr: { id: 'comment-box-' + id }")
-
-script(type='text/html', id='view-all-comments-template')
-  div
-    a(data-bind='attr: { href: postUrl }')
-      i.icon-comment(style='color:#333;')
-      span(data-bind="text: ' View all {0} comments'.formatString(commentsCount())")
+          ul
+            // ko foreach: comments
+            li
+              div.author
+                img(data-bind="attr: { src: picture }", alt='avatar')
+              div.name(style='width:94%')
+                span(data-bind='text: name', style='font-weight: bold;')
+                a.account(data-bind="text: '@' + account, attr: { href: feed }")
+              div.date(data-bind="text: created.calendar(), attr: { title : created.format('LLLL') }")
+              div.message(data-bind='html: content')
+            // /ko
+            li
+              div.author
+                img(data-bind="attr: { src: collabjs.avatarServer + '/avatar/' + _currentUserPictureId + '?s=48' }", alt='avatar')
+              form(method='post', action='', onSubmit='doPostComment(this); return false;')
+                input(type='hidden', name='_csrf', value=token)
+                input(name='postId', type='hidden', data-bind='value: id')
+                input.input-block-level(name='content', type='text', placeholder='Write a comment...', autocomplete='off'
+                  data-bind="attr: { id: 'comment-box-' + id }")

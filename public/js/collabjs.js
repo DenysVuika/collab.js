@@ -1,8 +1,8 @@
 /* global ko, moment */
-/// <reference path="jquery.min.js" />
+/// <reference path="lib/jQuery/js/jquery.min.js" />
 /// <reference path="lib/bootstrap/js/bootstrap.js" />
 /// <reference path="lib/knockout/js/knockout.min.js" />
-/// <reference path="moment.min.js" />
+/// <reference path="lib/moment/js/moment.min.js" />
 
 var collabjs = collabjs || {};
 // value may be assigned based on server-side settings
@@ -407,15 +407,16 @@ $(document).bind("collabjs.onStatusUpdated", function (event, data) {
 // ========================================================================================
 
 function enableCommentExpanders() {
-  $('div[data-link-type="comment"]').each(function () {
+  $('a[data-link-type="comment"]').each(function() {
     var link = $(this);
     link
-      .unbind("shown", onCommentsExpanded)
-      .bind("shown", onCommentsExpanded);
+      .unbind("click", onCommentsExpanded)
+      .bind("click", onCommentsExpanded);
   });
 }
 
-function onCommentsExpanded() {
+function onCommentsExpanded(e) {
+  e.preventDefault();
   var sender = $(this);
   var post = ko.dataFor(sender[0]);
   loadComments(post);
