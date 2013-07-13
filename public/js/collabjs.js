@@ -287,12 +287,11 @@ function PeopleViewModel(data) {
 function loadPost(id) {
   var spinner = $('.page-spinner');
   spinner.show();
+
   $.ajax({
     type: 'GET',
     url: '/api/timeline/posts/' + id,
-    success: function (data) {
-      onPostLoaded(data);
-    },
+    success: onPostLoaded,
     error: function () {
       $('.page-error').text('Post not found.').show();
     },
@@ -316,66 +315,39 @@ function onPostLoaded(data) {
 // ========================================================================================
 
 function getPeople() {
-  $.get('/api/people', function (data) {
-    if (data && data.length > 0) {
-      onPeopleDataLoaded(data);
-    } else {
-      onPeopleDataLoaded([]);
-    }
-  });
+  $.get('/api/people', onPeopleDataLoaded);
 }
 
 function getFollowers(account) {
-  $.get('/api/people/' + account + '/followers', function (data) {
-    if (data && data.length > 0) {
-      onPeopleDataLoaded(data);
-    } else {
-      onPeopleDataLoaded([]);
-    }
-  });
+  $.get('/api/people/' + account + '/followers', onPeopleDataLoaded);
 }
 
 function getFollowing(account) {
-  $.get('/api/people/' + account + '/following', function (data) {
-    if (data && data.length > 0) {
-      onPeopleDataLoaded(data);
-    } else {
-      onPeopleDataLoaded([]);
-    }
-  });
+  $.get('/api/people/' + account + '/following', onPeopleDataLoaded);
 }
 
 function getMentions() {
   $.get('/api/mentions', function (data) {
-    if (data && data.length > 0) {
-      onFeedDataLoaded(data, _currentUser);
-    } else {
-      onFeedDataLoaded([], _currentUser);
-    }
+    onFeedDataLoaded(data, _currentUser);
   });
 }
 
 function getPersonalTimeline(account) {
   $.get('/api/people/' + account + '/timeline', function (data) {
-    if (data && data.length > 0) {
-      onFeedDataLoaded(data, _currentUser);
-    } else {
-      onFeedDataLoaded([], _currentUser);
-    }
+    onFeedDataLoaded(data, _currentUser);
   });
 }
 
 function searchPosts(q, src) {
   $.get('/api/search?q=' + q + '&src=' + src, function (data) {
-    if (data && data.length > 0) {
-      onFeedDataLoaded(data, _currentUser);
-    } else {
-      onFeedDataLoaded([], _currentUser);
-    }
+    onFeedDataLoaded(data, _currentUser);
   });
 }
 
 function onPeopleDataLoaded(data) {
+  if (!data) {
+    data = [];
+  }
   if (!window.peopleFeed) {
     window.peopleFeed = new PeopleViewModel(data);
     ko.applyBindings(window.peopleFeed);
@@ -385,7 +357,9 @@ function onPeopleDataLoaded(data) {
 }
 
 function onFeedDataLoaded(data, account) {
-  if (!data) { return; }
+  if (!data) {
+    data = [];
+  }
   if (!window.timelineFeed) {
     window.timelineFeed = new FeedViewModel(account, data);
     ko.applyBindings(window.timelineFeed);
@@ -407,12 +381,9 @@ $(document).bind("collabjs.onStatusUpdated", function (event, data) {
 // ========================================================================================
 
 function enableCommentExpanders() {
-  $('a[data-link-type="comment"]').each(function() {
-    var link = $(this);
-    link
-      .unbind("click", onCommentsExpanded)
-      .bind("click", onCommentsExpanded);
-  });
+  var comments = $('a[data-link-type="comment"]');
+  comments.unbind('click', onCommentsExpanded);
+  comments.bind('click', onCommentsExpanded);
 }
 
 function onCommentsExpanded(e) {
@@ -460,9 +431,7 @@ function onCommentsLoaded(post, data) {
 
 function doPostComment(form) {
   var formData = $(form).serialize();
-  $.post('/api/timeline/comments', formData, function (result) {
-    onCommentPosted(result);
-  });
+  $.post('/api/timeline/comments', formData, onCommentPosted);
 }
 
 function onCommentPosted(data) {
