@@ -43,9 +43,9 @@ html
       });
 
     // assign user-related variables
-    if (user && user.account && user._id)
+    if (user && user.account && user.id)
       script.
-        _currentUser = '#{user.account}';
-        _currentUserId = '#{user._id}';
-        _currentUserPictureId = '#{user.emailHash}';
         collabjs.avatarServer = '#{config.env.avatarServer}';
+        collabjs.currentUser.id = '#{user.id}';
+        collabjs.currentUser.account = '#{user.account}';
+        collabjs.currentUser.pictureId = '#{user.emailHash}';

@@ -4,13 +4,18 @@
 /// <reference path="lib/knockout/js/knockout.min.js" />
 /// <reference path="lib/moment/js/moment.min.js" />
 
-var collabjs = collabjs || {};
-// value may be assigned based on server-side settings
-collabjs.avatarServer = 'https://www.gravatar.com';
-
-var _currentUser = null;
-var _currentUserId = null;
-var _currentUserPictureId = null;
+var collabjs = collabjs || {
+  // value may be assigned based on server-side settings
+  avatarServer: 'https://www.gravatar.com',
+  currentUser: {
+    id: null,
+    account: null,
+    pictureId: null,
+    getPictureUrl: function () {
+      return collabjs.avatarServer + '/avatar/' + collabjs.currentUser.pictureId + '?s=48';
+    }
+  }
+};
 
 function isNullOrWhiteSpace(str) {
   return str === null || str.match(/^ *$/) !== null;
@@ -179,7 +184,7 @@ function PostViewModel(data) {
   };
 }
 
-// Passing account is no longer relevant, use _currentUser instead
+// Passing account is no longer relevant, use collabjs.currentUser.account instead
 function FeedViewModel(account, data) {
   var self = this;
 
@@ -303,7 +308,7 @@ function loadPost(id) {
 
 function onPostLoaded(data) {
   if (data) {
-    window.viewmodel = new FeedViewModel(_currentUser, [data]);
+    window.viewmodel = new FeedViewModel(collabjs.currentUser.account, [data]);
     ko.applyBindings(window.viewmodel);
   } else {
     $('.page-error').text('Post not found.').show();
@@ -328,19 +333,19 @@ function getFollowing(account) {
 
 function getMentions() {
   $.get('/api/mentions', function (data) {
-    onFeedDataLoaded(data, _currentUser);
+    onFeedDataLoaded(data, collabjs.currentUser.account);
   });
 }
 
 function getPersonalTimeline(account) {
   $.get('/api/people/' + account + '/timeline', function (data) {
-    onFeedDataLoaded(data, _currentUser);
+    onFeedDataLoaded(data, collabjs.currentUser.account);
   });
 }
 
 function searchPosts(q, src) {
   $.get('/api/search?q=' + q + '&src=' + src, function (data) {
-    onFeedDataLoaded(data, _currentUser);
+    onFeedDataLoaded(data, collabjs.currentUser.account);
   });
 }
 

@@ -1,4 +1,3 @@
-/* global _currentUser */
 /// <reference path="jquery.min.js" />
 /// <reference path="knockout.js" />
 /// <reference path="collabjs.js" />
@@ -6,9 +5,9 @@
 $(document).ready(function () {
   $.get('/api/timeline/posts', function (data) {
       if (data && data.length > 0) {
-        onFeedDataLoaded(data, _currentUser);
+        onFeedDataLoaded(data, collabjs.currentUser.account);
       } else {
-        onFeedDataLoaded([], _currentUser);
+        onFeedDataLoaded([], collabjs.currentUser.account);
       }
     });
     initLazyLoading(getDataUrl, onFeedDataLoaded);

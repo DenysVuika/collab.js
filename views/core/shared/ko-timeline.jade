@@ -39,7 +39,7 @@ script(type='text/html', id='timeline-template')
             // /ko
             li
               div.author
-                img(data-bind="attr: { src: collabjs.avatarServer + '/avatar/' + _currentUserPictureId + '?s=48' }", alt='avatar')
+                img(data-bind="attr: { src: collabjs.currentUser.getPictureUrl() }", alt='avatar')
               form(method='post', action='', onSubmit='doPostComment(this); return false;')
                 input(type='hidden', name='_csrf', value=token)
                 input(name='postId', type='hidden', data-bind='value: id')
