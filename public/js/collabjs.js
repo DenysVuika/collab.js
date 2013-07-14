@@ -1,3 +1,4 @@
+/* global ko, moment */
 /// <reference path="../lib/jQuery/js/jquery.min.js" />
 /// <reference path="../lib/bootstrap/js/bootstrap.js" />
 /// <reference path="../lib/knockout/js/knockout.min.js" />
@@ -11,19 +12,23 @@ var collabjs = collabjs || {
     account: null,
     pictureId: null,
     getPictureUrl: function () {
+      'use strict';
       return collabjs.getUserPicture(collabjs.currentUser.pictureId, 48);
     }
   },
   getUserPicture: function(pictureId, pictureSize) {
+    'use strict';
     return collabjs.avatarServer + '/avatar/' + pictureId + '?s=' + (pictureSize || '48');
   },
   // ui-related members
-  ui: {}
+  ui: {},
+  utils: {
+    isNullOrWhiteSpace: function (str) {
+      'use strict';
+      return str === null || str.match(/^ *$/) !== null;
+    }
+  }
 };
-
-function isNullOrWhiteSpace(str) {
-  return str === null || str.match(/^ *$/) !== null;
-}
 
 /*
   jQuery plugin: Twitter-like dynamic character countdown for textareas
@@ -48,6 +53,7 @@ function isNullOrWhiteSpace(str) {
 */
 
 (function($) {
+  'use strict';
   $.fn.countdown = function(config) {
     var options = $.extend($.fn.countdown.defaults, config);
     
@@ -87,6 +93,7 @@ function isNullOrWhiteSpace(str) {
 
 
 $(function () {
+  'use strict';
   /* Knockout extensions */
   ko.bindingHandlers.country = {
     init: function(element, valueAccessor, allBindingsAccessor, viewModel, bindingContext) {
@@ -115,6 +122,7 @@ $(function () {
 
 /* String extensions */
 String.prototype.formatString = function() {
+  'use strict';
   var formatted = this;
   for (var i = 0; i < arguments.length; i++) {
     var regexp = new RegExp('\\{' + i + '\\}', 'gi');
@@ -124,12 +132,14 @@ String.prototype.formatString = function() {
 };
 
 String.prototype.parseUrls = function () {
+  'use strict';
   return this.replace(/[A-Za-z]+:\/\/[A-Za-z0-9-_]+\.[A-Za-z0-9-_:%&~\?\/.=]+/g, function (url) {
     return url.link(url);
   });
 };
 
 String.prototype.parseHashTags = function () {
+  'use strict';
   return this.replace(/[#]+[A-Za-z0-9-_]+/g, function (t) {
     var tag = t.replace("#", "%23");
     //return t.link("http://search.twitter.com/search?q=" + tag);
@@ -138,6 +148,7 @@ String.prototype.parseHashTags = function () {
 };
 
 String.prototype.parseAccountTags = function () {
+  'use strict';
   return this.replace(/[@]+[A-Za-z0-9-_]+/g, function (u) {
     var username = u.replace("@", "");
     //return u.link("http://twitter.com/" + username);
@@ -146,11 +157,13 @@ String.prototype.parseAccountTags = function () {
 };
 
 String.prototype.getHashTags = function () {
+  'use strict';
   var result = this.match(/[#]+[A-Za-z0-9-_]+/g);
   return result ? result : [];
 };
 
 String.prototype.twitterize = function () {
+  'use strict';
   return this
     .parseUrls()
     .parseAccountTags()
@@ -162,6 +175,7 @@ String.prototype.twitterize = function () {
 // ========================================================================================
 
 function PostViewModel(data) {
+  'use strict';
   var self = this;
   self.id = data.id;
   self.account = data.account;
@@ -190,6 +204,7 @@ function PostViewModel(data) {
 
 // Passing account is no longer relevant, use collabjs.currentUser.account instead
 function FeedViewModel(account, data) {
+  'use strict';
   var self = this;
 
   self.account = account;
@@ -255,6 +270,7 @@ function FeedViewModel(account, data) {
 }
 
 function UserProfileViewModel(data) {
+  'use strict';
   var self = this;
   self.id = data.id;
   self.account = data.account;
@@ -276,6 +292,7 @@ function UserProfileViewModel(data) {
 }
 
 function PeopleViewModel(data) {
+  'use strict';
   var self = this;
   self.profiles = ko.observableArray([]);
 
@@ -294,6 +311,7 @@ function PeopleViewModel(data) {
 // ========================================================================================
 
 collabjs.ui.onPeopleDataLoaded = function (data) {
+  'use strict';
   if (!data) {
     data = [];
   }
@@ -306,6 +324,7 @@ collabjs.ui.onPeopleDataLoaded = function (data) {
 };
 
 collabjs.ui.onFeedDataLoaded = function (data, account) {
+  'use strict';
   if (!data) {
     data = [];
   }
@@ -319,6 +338,7 @@ collabjs.ui.onFeedDataLoaded = function (data, account) {
 };
 
 $(document).bind("collabjs.onStatusUpdated", function (event, data) {
+  'use strict';
   var feed = window.timelineFeed;
   if (data && feed && data.account === feed.account) {
     window.timelineFeed.addNewPost(data);
@@ -330,13 +350,14 @@ $(document).bind("collabjs.onStatusUpdated", function (event, data) {
 // ========================================================================================
 
 collabjs.ui.enableCommentExpanders = function () {
+  'use strict';
   var comments = $('a[data-link-type="comment"]');
   comments.unbind('click', onCommentsExpanded);
   comments.bind('click', onCommentsExpanded);
 
   function onCommentsExpanded(e) {
     e.preventDefault();
-    var sender = $(this);
+    var sender = $(e.target);
     var post = ko.dataFor(sender[0]);
 
     if (!post.commentsLoading()) {
@@ -376,6 +397,7 @@ collabjs.ui.enableCommentExpanders = function () {
 };
 
 collabjs.ui.doPostComment = function (form) {
+  'use strict';
   var formData = $(form).serialize();
   $.post('/api/timeline/comments', formData, function (data) {
     var editor = $("#comment-box-" + data.postId);
@@ -402,6 +424,7 @@ collabjs.ui.doPostComment = function (form) {
 // ========================================================================================
 
 collabjs.ui.initPostView = function (id) {
+  'use strict';
   $(document).ready(function () {
     var spinner = $('.page-spinner');
     spinner.show();
@@ -434,6 +457,7 @@ collabjs.ui.initPostView = function (id) {
 // ========================================================================================
 
 collabjs.ui.initTimeline = function () {
+  'use strict';
   $(document).ready(function () {
     // load first page of posts
     $.get('/api/timeline/posts', function (data) {
@@ -499,9 +523,10 @@ collabjs.ui.initTimeline = function () {
 };
 
 collabjs.ui.doUpdateStatus = function (form) {
+  'use strict';
   var f = $(form);
   var data = f.serialize();
-  var input = f.find(':input')
+  var input = f.find(':input');
   input.attr('disabled', true);
   $.post('/api/timeline/posts', data, function (result) {
     input.removeAttr('disabled');
@@ -514,6 +539,7 @@ collabjs.ui.doUpdateStatus = function (form) {
 // Mentions
 // ========================================================================================
 collabjs.ui.initMentions = function () {
+  'use strict';
   $(document).ready(function () {
     // get first page for mentions
     $.get('/api/mentions', function (data) {
@@ -521,7 +547,7 @@ collabjs.ui.initMentions = function () {
     });
     // init smooth infinite scrolling
     //  (downloads additional posts as soon as user scrolls to the bottom)
-    initLazyLoading(function (page) {
+    initLazyLoading(function () {
       var bottomPostId = Math.min.apply(this, $.map(window.timelineFeed.posts(), function (p) {
         return p.id;
       }));
@@ -535,12 +561,13 @@ collabjs.ui.initMentions = function () {
 // ========================================================================================
 
 collabjs.ui.initPeople = function () {
+  'use strict';
   $(document).ready(function () {
     // get first page for people hub
     $.get('/api/people', collabjs.ui.onPeopleDataLoaded);
     // smooth infinite scrolling
     // (downloads additional posts as soon as user scrolls to bottom)
-    initLazyLoading(function (page) {
+    initLazyLoading(function () {
       var bottomUserId = Math.max.apply(this, $.map(window.peopleFeed.profiles(), function (u) {
         return u.id;
       }));
@@ -554,13 +581,14 @@ collabjs.ui.initPeople = function () {
 // ========================================================================================
 
 collabjs.ui.initFollowers = function (account) {
+  'use strict';
   $(document).ready(function () {
     // get first page of followers for the given account
     $.get('/api/people/' + account + '/followers', collabjs.ui.onPeopleDataLoaded);
 
     // smooth infinite scrolling
     // (downloads additional posts as soon as user scrolls to bottom)
-    initLazyLoading(function (page) {
+    initLazyLoading(function () {
       var bottomUserId = Math.max.apply(this, $.map(window.peopleFeed.profiles(), function (u) {
         return u.id;
       }));
@@ -574,12 +602,13 @@ collabjs.ui.initFollowers = function (account) {
 // ========================================================================================
 
 collabjs.ui.initFollowing = function (account) {
+  'use strict';
   $(document).ready(function () {
     // get first page of followings for the given account
     $.get('/api/people/' + account + '/following', collabjs.ui.onPeopleDataLoaded);
     // smooth infinite scrolling
     // (downloads additional posts as soon as user scrolls to bottom)
-    initLazyLoading(function (page) {
+    initLazyLoading(function () {
       var bottomUserId = Math.max.apply(this, $.map(window.peopleFeed.profiles(), function (u) {
         return u.id;
       }));
@@ -593,6 +622,7 @@ collabjs.ui.initFollowing = function (account) {
 // ========================================================================================
 
 collabjs.ui.initPersonalTimeline = function (account) {
+  'use strict';
   $(document).ready(function () {
     // get first page of people for the given account
     $.get('/api/people/' + account + '/timeline', function (data) {
@@ -600,7 +630,7 @@ collabjs.ui.initPersonalTimeline = function (account) {
     });
     // smooth infinite scrolling
     //  (downloads additional posts as soon as user scrolls to the bottom)
-    initLazyLoading(function (page) {
+    initLazyLoading(function () {
       var bottomPostId = Math.min.apply(this, $.map(window.timelineFeed.posts(), function (p) {
         return p.id;
       }));
@@ -614,6 +644,7 @@ collabjs.ui.initPersonalTimeline = function (account) {
 // ========================================================================================
 
 collabjs.ui.initAccountView = function () {
+  'use strict';
   $(document).ready(function () {
     // init bio editor
 
@@ -639,6 +670,7 @@ collabjs.ui.initAccountView = function () {
 // ========================================================================================
 
 collabjs.ui.initSearchPosts = function (q, src) {
+  'use strict';
   $(document).ready(function () {
     // search posts
     $.get('/api/search?q=' + q + '&src=' + src, function (data) {
@@ -647,7 +679,7 @@ collabjs.ui.initSearchPosts = function (q, src) {
 
     // smooth infinite scrolling
     //  (downloads additional posts as soon as user scrolls to the bottom)
-    initLazyLoading(function (page) {
+    initLazyLoading(function () {
       var bottomPostId = Math.min.apply(this, $.map(window.timelineFeed.posts(), function (p) {
         return p.id;
       }));
@@ -664,6 +696,7 @@ var _page = 0;
 var _inCallback = false;
 
 function initLazyLoading(url, onSuccess) {
+  'use strict';
   $(window).scroll(function () {
     if ($(window).scrollTop() === $(document).height() - $(window).height()) {
       if (_page > -1 && !_inCallback) {
