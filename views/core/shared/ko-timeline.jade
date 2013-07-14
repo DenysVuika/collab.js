@@ -40,7 +40,7 @@ script(type='text/html', id='timeline-template')
             li
               div.author
                 img(data-bind="attr: { src: collabjs.currentUser.getPictureUrl() }", alt='avatar')
-              form(method='post', action='', onSubmit='doPostComment(this); return false;')
+              form(method='post', action='', onSubmit='collabjs.ui.doPostComment(this); return false;')
                 input(type='hidden', name='_csrf', value=token)
                 input(name='postId', type='hidden', data-bind='value: id')
                 input.input-block-level.border-sharp(name='content', type='text', placeholder='Write a comment...', autocomplete='off'

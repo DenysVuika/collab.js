@@ -2,10 +2,10 @@ extends layout
 
 block content
   include shared/ko-timeline
-  form(id='frmUpdateStatus', name='frmUpdateStatus', method='post', action='', onSubmit='doUpdateStatus(); return false;')
+  form(id='frmUpdateStatus', name='frmUpdateStatus', method='post', action='', onSubmit='collabjs.ui.doUpdateStatus(this); return false;')
     input(type='hidden', name='_csrf', value=token)
-    textarea.input-block-level(id='new-post-dialog-inline', 
-      name='content', rows='3', 
+    textarea.input-block-level(
+      name='content', rows='3',
       placeholder="What's on your mind?",
       style='resize: vertical; max-height: 300px;')
     div(style='padding-bottom: 30px')
@@ -30,4 +30,4 @@ block content
 
 block scripts
   script.
-    initTimeline();
+    collabjs.ui.initTimeline();

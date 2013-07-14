@@ -1,8 +1,7 @@
-/* global ko, moment */
-/// <reference path="lib/jQuery/js/jquery.min.js" />
-/// <reference path="lib/bootstrap/js/bootstrap.js" />
-/// <reference path="lib/knockout/js/knockout.min.js" />
-/// <reference path="lib/moment/js/moment.min.js" />
+/// <reference path="../lib/jQuery/js/jquery.min.js" />
+/// <reference path="../lib/bootstrap/js/bootstrap.js" />
+/// <reference path="../lib/knockout/js/knockout.min.js" />
+/// <reference path="../lib/moment/js/moment.min.js" />
 
 var collabjs = collabjs || {
   // value may be assigned based on server-side settings
@@ -17,7 +16,9 @@ var collabjs = collabjs || {
   },
   getUserPicture: function(pictureId, pictureSize) {
     return collabjs.avatarServer + '/avatar/' + pictureId + '?s=' + (pictureSize || '48');
-  }
+  },
+  // ui-related members
+  ui: {}
 };
 
 function isNullOrWhiteSpace(str) {
@@ -289,10 +290,118 @@ function PeopleViewModel(data) {
 }
 
 // ========================================================================================
+// Common Functions
+// ========================================================================================
+
+collabjs.ui.onPeopleDataLoaded = function (data) {
+  if (!data) {
+    data = [];
+  }
+  if (!window.peopleFeed) {
+    window.peopleFeed = new PeopleViewModel(data);
+    ko.applyBindings(window.peopleFeed);
+  } else {
+    window.peopleFeed.appendItems(data);
+  }
+};
+
+collabjs.ui.onFeedDataLoaded = function (data, account) {
+  if (!data) {
+    data = [];
+  }
+  if (!window.timelineFeed) {
+    window.timelineFeed = new FeedViewModel(account, data);
+    ko.applyBindings(window.timelineFeed);
+  } else {
+    window.timelineFeed.appendPosts(data);
+  }
+  collabjs.ui.enableCommentExpanders();
+};
+
+$(document).bind("collabjs.onStatusUpdated", function (event, data) {
+  var feed = window.timelineFeed;
+  if (data && feed && data.account === feed.account) {
+    window.timelineFeed.addNewPost(data);
+  }
+});
+
+// ========================================================================================
+// Comment expanders
+// ========================================================================================
+
+collabjs.ui.enableCommentExpanders = function () {
+  var comments = $('a[data-link-type="comment"]');
+  comments.unbind('click', onCommentsExpanded);
+  comments.bind('click', onCommentsExpanded);
+
+  function onCommentsExpanded(e) {
+    e.preventDefault();
+    var sender = $(this);
+    var post = ko.dataFor(sender[0]);
+
+    if (!post.commentsLoading()) {
+      post.commentsLoading(true);
+      $.ajax({
+        url: '/api/timeline/posts/' + post.id + '/comments',
+        dataType: "json",
+        success: function (data) {
+          onCommentsLoaded(post, data);
+        }
+      });
+    }
+  }
+
+  function onCommentsLoaded(post, data) {
+    post.commentsLoading(false);
+    // TODO: provide latest comment date/id in order for server returning only delta
+    //post.comments.removeAll();
+    if (data) {
+      post.commentsCount(data.length);
+      var newItems = ko.utils.arrayMap(data, function (entry) {
+        return new PostViewModel({
+          id: entry.id,
+          account: entry.account,
+          name: entry.name,
+          content: entry.content,
+          created: entry.created,
+          pictureSize: 32,
+          pictureId: entry.pictureId
+        });
+      });
+      post.comments(newItems);
+    } else {
+      post.comments([]);
+    }
+  }
+};
+
+collabjs.ui.doPostComment = function (form) {
+  var formData = $(form).serialize();
+  $.post('/api/timeline/comments', formData, function (data) {
+    var editor = $("#comment-box-" + data.postId);
+    var post = ko.dataFor(editor[0]);
+
+    post.commentsCount(post.commentsCount() + 1);
+    // turn comments into PostViewModel instances (as per current design)
+    post.comments.push(new PostViewModel({
+      id: data.id,
+      account: data.account,
+      name: data.name,
+      content: data.content,
+      created: data.created,
+      pictureSize: 32,
+      pictureId: data.pictureId
+    }));
+    post.sortComments();
+    editor.val("");
+  });
+};
+
+// ========================================================================================
 // Post Viewer
 // ========================================================================================
 
-function initPostView(id) {
+collabjs.ui.initPostView = function (id) {
   $(document).ready(function () {
     var spinner = $('.page-spinner');
     spinner.show();
@@ -309,139 +418,26 @@ function initPostView(id) {
       }
     });
   });
-}
 
-function onPostLoaded(data) {
-  if (data) {
-    window.viewmodel = new FeedViewModel(collabjs.currentUser.account, [data]);
-    ko.applyBindings(window.viewmodel);
-  } else {
-    $('.page-error').text('Post not found.').show();
+  function onPostLoaded(data) {
+    if (data) {
+      window.viewmodel = new FeedViewModel(collabjs.currentUser.account, [data]);
+      ko.applyBindings(window.viewmodel);
+    } else {
+      $('.page-error').text('Post not found.').show();
+    }
   }
-}
-
-// ========================================================================================
-// Common Functions
-// ========================================================================================
-
-function onPeopleDataLoaded(data) {
-  if (!data) {
-    data = [];
-  }
-  if (!window.peopleFeed) {
-    window.peopleFeed = new PeopleViewModel(data);
-    ko.applyBindings(window.peopleFeed);
-  } else {
-    window.peopleFeed.appendItems(data);
-  }
-}
-
-function onFeedDataLoaded(data, account) {
-  if (!data) {
-    data = [];
-  }
-  if (!window.timelineFeed) {
-    window.timelineFeed = new FeedViewModel(account, data);
-    ko.applyBindings(window.timelineFeed);
-  } else {
-    window.timelineFeed.appendPosts(data);
-  }
-  enableCommentExpanders();
-}
-
-$(document).bind("collabjs.onStatusUpdated", function (event, data) {
-  var feed = window.timelineFeed;
-  if (data && feed && data.account === feed.account) {
-    window.timelineFeed.addNewPost(data);
-  }
-});
-
-// ========================================================================================
-// Comment expanders
-// ========================================================================================
-
-function enableCommentExpanders() {
-  var comments = $('a[data-link-type="comment"]');
-  comments.unbind('click', onCommentsExpanded);
-  comments.bind('click', onCommentsExpanded);
-}
-
-function onCommentsExpanded(e) {
-  e.preventDefault();
-  var sender = $(this);
-  var post = ko.dataFor(sender[0]);
-  loadComments(post);
-}
-
-function loadComments(post) {
-  if (!post.commentsLoading()) {
-    post.commentsLoading(true);
-    $.ajax({
-      url: '/api/timeline/posts/' + post.id + '/comments',
-      dataType: "json",
-      success: function (data) {
-        onCommentsLoaded(post, data);
-      }
-    });
-  }
-}
-
-function onCommentsLoaded(post, data) {
-  post.commentsLoading(false);
-  // TODO: provide latest comment date/id in order for server returning only delta 
-  //post.comments.removeAll();
-  if (data) {
-    post.commentsCount(data.length);
-    var newItems = ko.utils.arrayMap(data, function (entry) {
-      return new PostViewModel({
-        id: entry.id,
-        account: entry.account,
-        name: entry.name,
-        content: entry.content,
-        created: entry.created,
-        pictureSize: 32,
-        pictureId: entry.pictureId
-      });
-    });
-    post.comments(newItems);
-  } else {
-    post.comments([]);
-  }
-}
-
-function doPostComment(form) {
-  var formData = $(form).serialize();
-  $.post('/api/timeline/comments', formData, onCommentPosted);
-}
-
-function onCommentPosted(data) {
-  var editor = $("#comment-box-" + data.postId);
-  var post = ko.dataFor(editor[0]);
-
-  post.commentsCount(post.commentsCount() + 1);
-  // turn comments into PostViewModel instances (as per current design)
-  post.comments.push(new PostViewModel({
-    id: data.id,
-    account: data.account,
-    name: data.name,
-    content: data.content,
-    created: data.created,
-    pictureSize: 32,
-    pictureId: data.pictureId
-  }));
-  post.sortComments();
-  editor.val("");
-}
+};
 
 // ========================================================================================
 // Timeline
 // ========================================================================================
 
-function initTimeline() {
+collabjs.ui.initTimeline = function () {
   $(document).ready(function () {
     // load first page of posts
     $.get('/api/timeline/posts', function (data) {
-      onFeedDataLoaded(data, collabjs.currentUser.account);
+      collabjs.ui.onFeedDataLoaded(data, collabjs.currentUser.account);
     });
     // init smooth infinite scrolling
     // (downloads additional posts as soon as user scrolls to the bottom)
@@ -450,79 +446,78 @@ function initTimeline() {
         return p.id;
       }));
       return '/api/timeline/posts?topId=' + bottomPostId;
-    }, onFeedDataLoaded);
+    }, collabjs.ui.onFeedDataLoaded);
     // start polling timer
     checkNewPosts();
   });
-}
 
-function doUpdateStatus()
-{
-  var data = $('#frmUpdateStatus').serialize();
-  var input = $('#frmUpdateStatus :input');
-  input.attr('disabled', true);
-  $.post('/api/timeline/posts', data, function (result) {
-    input.removeAttr('disabled');
-    $('#new-post-dialog-inline').val('');
-    $(document).trigger("collabjs.onStatusUpdated", result);
-  });
-}
-
-function onUpdatesLoaded(data) {
-  if (data && window.timelineFeed) {
-    $(data).each(function(index, post) {
-      window.timelineFeed.addNewPost(post);
-    });
-    enableCommentExpanders();
+  function onUpdatesLoaded(data) {
+    if (data && window.timelineFeed) {
+      $(data).each(function(index, post) {
+        window.timelineFeed.addNewPost(post);
+      });
+      collabjs.ui.enableCommentExpanders();
+    }
   }
-}
 
-// update polling
-var updateChecker;
+  // update polling
+  var updateChecker;
 
-function checkNewPosts() {
-  clearTimeout(updateChecker);
-  updateChecker = setTimeout(function() {
+  function checkNewPosts() {
+    clearTimeout(updateChecker);
+    updateChecker = setTimeout(function() {
+      var topId = Math.max.apply(this, $.map(window.timelineFeed.posts(), function(o) { return o.id; }));
+      var notifier = $("#msg-new-posts");
+      $.get('/api/timeline/updates/count?topId=' + topId, function(data) {
+        if (data && data.posts && data.posts > 0) {
+          $("#new-msg-counter").text(data.posts);
+          notifier.show();
+        }
+        else {
+          notifier.hide();
+        }
+      }, "json")
+        .always(function() {
+          checkNewPosts();
+        });
+    }, 60000); // once per minute
+  }
+
+  // Clicking to download new posts
+  $("#new-msg-link").on("click", function(e) {
+    e.preventDefault();
+    $("#msg-new-posts").hide();
+    clearTimeout(updateChecker);
     var topId = Math.max.apply(this, $.map(window.timelineFeed.posts(), function(o) { return o.id; }));
-    var notifier = $("#msg-new-posts");
-    $.get('/api/timeline/updates/count?topId=' + topId, function(data) {
-      if (data && data.posts && data.posts > 0) {
-        $("#new-msg-counter").text(data.posts);
-        notifier.show();
-      }
-      else {
-        notifier.hide();
-      }
+    $.get('/api/timeline/updates?topId=' + topId, function(data) {
+      onUpdatesLoaded(data);
     }, "json")
       .always(function() {
         checkNewPosts();
       });
-  }, 60000); // once per minute
-}
+  });
+};
 
-// Clicking to download new posts
-$("#new-msg-link").on("click", function(e) {
-  e.preventDefault();
-  $("#msg-new-posts").hide();
-  clearTimeout(updateChecker);
-  var topId = Math.max.apply(this, $.map(window.timelineFeed.posts(), function(o) { return o.id; }));
-  $.get('/api/timeline/updates?topId=' + topId, function(data) {
-    onUpdatesLoaded(data);
-  }, "json")
-    .always(function() {
-      checkNewPosts();
-    });
-});
+collabjs.ui.doUpdateStatus = function (form) {
+  var f = $(form);
+  var data = f.serialize();
+  var input = f.find(':input')
+  input.attr('disabled', true);
+  $.post('/api/timeline/posts', data, function (result) {
+    input.removeAttr('disabled');
+    f.find('textarea').val('');
+    $(document).trigger("collabjs.onStatusUpdated", result);
+  });
+};
 
 // ========================================================================================
 // Mentions
 // ========================================================================================
-
-function initMentions() {
+collabjs.ui.initMentions = function () {
   $(document).ready(function () {
     // get first page for mentions
     $.get('/api/mentions', function (data) {
-      onFeedDataLoaded(data, collabjs.currentUser.account);
+      collabjs.ui.onFeedDataLoaded(data, collabjs.currentUser.account);
     });
     // init smooth infinite scrolling
     //  (downloads additional posts as soon as user scrolls to the bottom)
@@ -531,18 +526,18 @@ function initMentions() {
         return p.id;
       }));
       return '/api/mentions?topId=' + bottomPostId;
-    }, onFeedDataLoaded);
+    }, collabjs.ui.onFeedDataLoaded);
   });
-}
+};
 
 // ========================================================================================
 // People
 // ========================================================================================
 
-function initPeople() {
+collabjs.ui.initPeople = function () {
   $(document).ready(function () {
     // get first page for people hub
-    $.get('/api/people', onPeopleDataLoaded);
+    $.get('/api/people', collabjs.ui.onPeopleDataLoaded);
     // smooth infinite scrolling
     // (downloads additional posts as soon as user scrolls to bottom)
     initLazyLoading(function (page) {
@@ -550,18 +545,18 @@ function initPeople() {
         return u.id;
       }));
       return '/api/people?topId=' + bottomUserId;
-    }, onPeopleDataLoaded);
+    }, collabjs.ui.onPeopleDataLoaded);
   });
-}
+};
 
 // ========================================================================================
 // Followers
 // ========================================================================================
 
-function initFollowers(account) {
+collabjs.ui.initFollowers = function (account) {
   $(document).ready(function () {
     // get first page of followers for the given account
-    $.get('/api/people/' + account + '/followers', onPeopleDataLoaded);
+    $.get('/api/people/' + account + '/followers', collabjs.ui.onPeopleDataLoaded);
 
     // smooth infinite scrolling
     // (downloads additional posts as soon as user scrolls to bottom)
@@ -570,18 +565,18 @@ function initFollowers(account) {
         return u.id;
       }));
       return '/api/people/' + account + '/followers?topId=' + bottomUserId;
-    }, onPeopleDataLoaded);
+    }, collabjs.ui.onPeopleDataLoaded);
   });
-}
+};
 
 // ========================================================================================
 // Following
 // ========================================================================================
 
-function initFollowing(account) {
+collabjs.ui.initFollowing = function (account) {
   $(document).ready(function () {
     // get first page of followings for the given account
-    $.get('/api/people/' + account + '/following', onPeopleDataLoaded);
+    $.get('/api/people/' + account + '/following', collabjs.ui.onPeopleDataLoaded);
     // smooth infinite scrolling
     // (downloads additional posts as soon as user scrolls to bottom)
     initLazyLoading(function (page) {
@@ -589,19 +584,19 @@ function initFollowing(account) {
         return u.id;
       }));
       return '/api/people/' + account + '/following?topId=' + bottomUserId;
-    }, onPeopleDataLoaded);
+    }, collabjs.ui.onPeopleDataLoaded);
   });
-}
+};
 
 // ========================================================================================
 // Personal Timeline
 // ========================================================================================
 
-function initPersonalTimeline(account) {
+collabjs.ui.initPersonalTimeline = function (account) {
   $(document).ready(function () {
     // get first page of people for the given account
     $.get('/api/people/' + account + '/timeline', function (data) {
-      onFeedDataLoaded(data, collabjs.currentUser.account);
+      collabjs.ui.onFeedDataLoaded(data, collabjs.currentUser.account);
     });
     // smooth infinite scrolling
     //  (downloads additional posts as soon as user scrolls to the bottom)
@@ -610,15 +605,15 @@ function initPersonalTimeline(account) {
         return p.id;
       }));
       return '/api/people/' + account + '/timeline?topId=' + bottomPostId;
-    }, onFeedDataLoaded);
+    }, collabjs.ui.onFeedDataLoaded);
   });
-}
+};
 
 // ========================================================================================
 // Account
 // ========================================================================================
 
-function initAccountView() {
+collabjs.ui.initAccountView = function () {
   $(document).ready(function () {
     // init bio editor
 
@@ -637,17 +632,17 @@ function initAccountView() {
       }
     });
   });
-}
+};
 
 // ========================================================================================
 // Search Posts
 // ========================================================================================
 
-function initSearchPosts(q, src) {
+collabjs.ui.initSearchPosts = function (q, src) {
   $(document).ready(function () {
     // search posts
     $.get('/api/search?q=' + q + '&src=' + src, function (data) {
-      onFeedDataLoaded(data, collabjs.currentUser.account);
+      collabjs.ui.onFeedDataLoaded(data, collabjs.currentUser.account);
     });
 
     // smooth infinite scrolling
@@ -657,9 +652,9 @@ function initSearchPosts(q, src) {
         return p.id;
       }));
       return '/api/search?q=' + q + '&src=' + src + '&topId=' + bottomPostId;
-    }, onFeedDataLoaded);
+    }, collabjs.ui.onFeedDataLoaded);
   });
-}
+};
 
 // ========================================================================================
 // Smooth/infinite loading
