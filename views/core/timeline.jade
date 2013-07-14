@@ -2,7 +2,7 @@ extends layout
 
 block content
   include shared/ko-timeline
-  form(id='frmUpdateStatus', name='frmUpdateStatus', method='post', action='', onSubmit='collabjs.ui.doUpdateStatus(this); return false;')
+  form(method='post', action='', onSubmit='collabjs.ui.doUpdateStatus(this); return false;')
     input(type='hidden', name='_csrf', value=token)
     textarea.input-block-level(
       name='content', rows='3',

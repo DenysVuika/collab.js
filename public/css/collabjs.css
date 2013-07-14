@@ -339,3 +339,17 @@ a.account {
 input[type="text"].border-sharp {
   border-radius: 0;
 }
+.bio-counter {
+  width: 530px;
+}
+.bio-counter-label {
+  color: #999;
+  float: right;
+  font-weight: bold;
+}
+.form-horizontal.account-form .control-group {
+  margin-bottom: 10px;
+}
+.form-horizontal.account-form .controls-hint {
+  color: #999;
+}

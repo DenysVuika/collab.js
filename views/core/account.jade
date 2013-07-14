@@ -1,25 +1,5 @@
 extends layout-account
 
-block styles
-  style(type='text/css')
-    .form-horizontal .control-group {
-      margin-bottom: 10px;
-    }
-
-    .controls-hint {
-      color: #999;
-    }
-
-    .bio-counter {
-      width: 530px;
-    }
-
-    .bio-counter-label {
-      color: #999;
-      float: right;
-      font-weight: bold;
-    }
-
 block content
   include shared/tb-mixins
   h3
@@ -28,7 +8,7 @@ block content
   mixin showInfo(info, true)
   mixin showError(error)
   hr
-  form.form-horizontal(id='frmAccount', name='frmAccount', method='post', action='/account', enctype='multipart/form-data')
+  form.form-horizontal.account-form(method='post', action='/account', enctype='multipart/form-data')
     input(type='hidden', name='_csrf', value=token)
     div.control-group
       div.control-label Picture
@@ -48,7 +28,6 @@ block content
       div.control-label
         label(for='location') Location
       div.controls
-        //- input(type='text', id='location', name='location', value=user.location)
         div.bfh-selectbox.bfh-countries(data-country='#{user.location}', data-flags='true')
           input(type='hidden', name='location', value='')
           a.bfh-selectbox-toggle(role='button', data-toggle='bfh-selectbox', href='#')

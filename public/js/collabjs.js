@@ -420,10 +420,21 @@ collabjs.ui.doPostComment = function (form) {
 };
 
 // ========================================================================================
+// Register
+// ========================================================================================
+
+collabjs.ui.initRegisterView = function () {
+  'use strict';
+  $(function() {
+    $("input").not(["type=submit"]).jqBootstrapValidation();
+  });
+};
+
+// ========================================================================================
 // Change Password
 // ========================================================================================
 
-collabjs.ui.initChangePassword = function () {
+collabjs.ui.initChangePasswordView = function () {
   'use strict';
   $(function() {
     $("input").not(["type=submit"]).jqBootstrapValidation();
