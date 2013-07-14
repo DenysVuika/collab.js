@@ -18,6 +18,7 @@ block content
       | You got 
       span(id='new-msg-counter')
       |  new posts for your timeline.
+
   // timeline
   div(style='display: none;', data-bind="visible: posts().length > 0, template: { name: 'timeline-template' }")
 
@@ -28,4 +29,5 @@ block content
   div.alert.alert-error.page-error
 
 block scripts
-  script(src='/js/collabjs.timeline.js')
+  script.
+    initTimeline();

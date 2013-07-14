@@ -289,20 +289,22 @@ function PeopleViewModel(data) {
 // Post Viewer
 // ========================================================================================
 
-function loadPost(id) {
-  var spinner = $('.page-spinner');
-  spinner.show();
+function initPostView(id) {
+  $(document).ready(function () {
+    var spinner = $('.page-spinner');
+    spinner.show();
 
-  $.ajax({
-    type: 'GET',
-    url: '/api/timeline/posts/' + id,
-    success: onPostLoaded,
-    error: function () {
-      $('.page-error').text('Post not found.').show();
-    },
-    complete: function() {
-      spinner.hide();
-    }
+    $.ajax({
+      type: 'GET',
+      url: '/api/timeline/posts/' + id,
+      success: onPostLoaded,
+      error: function () {
+        $('.page-error').text('Post not found.').show();
+      },
+      complete: function() {
+        spinner.hide();
+      }
+    });
   });
 }
 
@@ -316,38 +318,8 @@ function onPostLoaded(data) {
 }
 
 // ========================================================================================
-// Functions
+// Common Functions
 // ========================================================================================
-
-function getPeople() {
-  $.get('/api/people', onPeopleDataLoaded);
-}
-
-function getFollowers(account) {
-  $.get('/api/people/' + account + '/followers', onPeopleDataLoaded);
-}
-
-function getFollowing(account) {
-  $.get('/api/people/' + account + '/following', onPeopleDataLoaded);
-}
-
-function getMentions() {
-  $.get('/api/mentions', function (data) {
-    onFeedDataLoaded(data, collabjs.currentUser.account);
-  });
-}
-
-function getPersonalTimeline(account) {
-  $.get('/api/people/' + account + '/timeline', function (data) {
-    onFeedDataLoaded(data, collabjs.currentUser.account);
-  });
-}
-
-function searchPosts(q, src) {
-  $.get('/api/search?q=' + q + '&src=' + src, function (data) {
-    onFeedDataLoaded(data, collabjs.currentUser.account);
-  });
-}
 
 function onPeopleDataLoaded(data) {
   if (!data) {
@@ -456,6 +428,234 @@ function onCommentPosted(data) {
   }));
   post.sortComments();
   editor.val("");
+}
+
+// ========================================================================================
+// Timeline
+// ========================================================================================
+
+function initTimeline() {
+  $(document).ready(function () {
+    // load first page of posts
+    $.get('/api/timeline/posts', function (data) {
+      onFeedDataLoaded(data, collabjs.currentUser.account);
+    });
+    // init smooth infinite scrolling
+    // (downloads additional posts as soon as user scrolls to the bottom)
+    initLazyLoading(function (posts) {
+      var bottomPostId = Math.min.apply(this, $.map(window.timelineFeed.posts(), function (p) {
+        return p.id;
+      }));
+      return '/api/timeline/posts?topId=' + bottomPostId;
+    }, onFeedDataLoaded);
+    // start polling timer
+    checkNewPosts();
+  });
+}
+
+function doUpdateStatus()
+{
+  var data = $('#frmUpdateStatus').serialize();
+  var input = $('#frmUpdateStatus :input');
+  input.attr('disabled', true);
+  $.post('/api/timeline/posts', data, function (result) {
+    input.removeAttr('disabled');
+    $('#new-post-dialog-inline').val('');
+    $(document).trigger("collabjs.onStatusUpdated", result);
+  });
+}
+
+function onUpdatesLoaded(data) {
+  if (data && window.timelineFeed) {
+    $(data).each(function(index, post) {
+      window.timelineFeed.addNewPost(post);
+    });
+    enableCommentExpanders();
+  }
+}
+
+// update polling
+var updateChecker;
+
+function checkNewPosts() {
+  clearTimeout(updateChecker);
+  updateChecker = setTimeout(function() {
+    var topId = Math.max.apply(this, $.map(window.timelineFeed.posts(), function(o) { return o.id; }));
+    var notifier = $("#msg-new-posts");
+    $.get('/api/timeline/updates/count?topId=' + topId, function(data) {
+      if (data && data.posts && data.posts > 0) {
+        $("#new-msg-counter").text(data.posts);
+        notifier.show();
+      }
+      else {
+        notifier.hide();
+      }
+    }, "json")
+      .always(function() {
+        checkNewPosts();
+      });
+  }, 60000); // once per minute
+}
+
+// Clicking to download new posts
+$("#new-msg-link").on("click", function(e) {
+  e.preventDefault();
+  $("#msg-new-posts").hide();
+  clearTimeout(updateChecker);
+  var topId = Math.max.apply(this, $.map(window.timelineFeed.posts(), function(o) { return o.id; }));
+  $.get('/api/timeline/updates?topId=' + topId, function(data) {
+    onUpdatesLoaded(data);
+  }, "json")
+    .always(function() {
+      checkNewPosts();
+    });
+});
+
+// ========================================================================================
+// Mentions
+// ========================================================================================
+
+function initMentions() {
+  $(document).ready(function () {
+    // get first page for mentions
+    $.get('/api/mentions', function (data) {
+      onFeedDataLoaded(data, collabjs.currentUser.account);
+    });
+    // init smooth infinite scrolling
+    //  (downloads additional posts as soon as user scrolls to the bottom)
+    initLazyLoading(function (page) {
+      var bottomPostId = Math.min.apply(this, $.map(window.timelineFeed.posts(), function (p) {
+        return p.id;
+      }));
+      return '/api/mentions?topId=' + bottomPostId;
+    }, onFeedDataLoaded);
+  });
+}
+
+// ========================================================================================
+// People
+// ========================================================================================
+
+function initPeople() {
+  $(document).ready(function () {
+    // get first page for people hub
+    $.get('/api/people', onPeopleDataLoaded);
+    // smooth infinite scrolling
+    // (downloads additional posts as soon as user scrolls to bottom)
+    initLazyLoading(function (page) {
+      var bottomUserId = Math.max.apply(this, $.map(window.peopleFeed.profiles(), function (u) {
+        return u.id;
+      }));
+      return '/api/people?topId=' + bottomUserId;
+    }, onPeopleDataLoaded);
+  });
+}
+
+// ========================================================================================
+// Followers
+// ========================================================================================
+
+function initFollowers(account) {
+  $(document).ready(function () {
+    // get first page of followers for the given account
+    $.get('/api/people/' + account + '/followers', onPeopleDataLoaded);
+
+    // smooth infinite scrolling
+    // (downloads additional posts as soon as user scrolls to bottom)
+    initLazyLoading(function (page) {
+      var bottomUserId = Math.max.apply(this, $.map(window.peopleFeed.profiles(), function (u) {
+        return u.id;
+      }));
+      return '/api/people/' + account + '/followers?topId=' + bottomUserId;
+    }, onPeopleDataLoaded);
+  });
+}
+
+// ========================================================================================
+// Following
+// ========================================================================================
+
+function initFollowing(account) {
+  $(document).ready(function () {
+    // get first page of followings for the given account
+    $.get('/api/people/' + account + '/following', onPeopleDataLoaded);
+    // smooth infinite scrolling
+    // (downloads additional posts as soon as user scrolls to bottom)
+    initLazyLoading(function (page) {
+      var bottomUserId = Math.max.apply(this, $.map(window.peopleFeed.profiles(), function (u) {
+        return u.id;
+      }));
+      return '/api/people/' + account + '/following?topId=' + bottomUserId;
+    }, onPeopleDataLoaded);
+  });
+}
+
+// ========================================================================================
+// Personal Timeline
+// ========================================================================================
+
+function initPersonalTimeline(account) {
+  $(document).ready(function () {
+    // get first page of people for the given account
+    $.get('/api/people/' + account + '/timeline', function (data) {
+      onFeedDataLoaded(data, collabjs.currentUser.account);
+    });
+    // smooth infinite scrolling
+    //  (downloads additional posts as soon as user scrolls to the bottom)
+    initLazyLoading(function (page) {
+      var bottomPostId = Math.min.apply(this, $.map(window.timelineFeed.posts(), function (p) {
+        return p.id;
+      }));
+      return '/api/people/' + account + '/timeline?topId=' + bottomPostId;
+    }, onFeedDataLoaded);
+  });
+}
+
+// ========================================================================================
+// Account
+// ========================================================================================
+
+function initAccountView() {
+  $(document).ready(function () {
+    // init bio editor
+
+    $('#bio').countdown({
+      limit: 160,
+      init: function (counter) {
+        $('#bio_counter').css('color', '#999').text(counter);
+      },
+      plus: function (counter) {
+        $('#bio_counter').css('color', '#999').text(counter);
+        $('#submit').removeAttr('disabled');
+      },
+      minus: function (counter) {
+        $('#bio_counter').css('color', 'red').text(counter);
+        $('#submit').attr('disabled', 'disabled');
+      }
+    });
+  });
+}
+
+// ========================================================================================
+// Search Posts
+// ========================================================================================
+
+function initSearchPosts(q, src) {
+  $(document).ready(function () {
+    // search posts
+    $.get('/api/search?q=' + q + '&src=' + src, function (data) {
+      onFeedDataLoaded(data, collabjs.currentUser.account);
+    });
+
+    // smooth infinite scrolling
+    //  (downloads additional posts as soon as user scrolls to the bottom)
+    initLazyLoading(function (page) {
+      var bottomPostId = Math.min.apply(this, $.map(window.timelineFeed.posts(), function (p) {
+        return p.id;
+      }));
+      return '/api/search?q=' + q + '&src=' + src + '&topId=' + bottomPostId;
+    }, onFeedDataLoaded);
+  });
 }
 
 // ========================================================================================

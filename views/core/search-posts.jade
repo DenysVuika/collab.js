@@ -22,15 +22,4 @@ block content
 
 block scripts
   script.
-    $(document).ready(function(){
-      searchPosts('#{search_q}', '#{search_src}');
-      initLazyLoading(getDataUrl, onFeedDataLoaded);
-    });
-    // smooth infinite scrolling
-    //  (downloads additional posts as soon as user scrolls to the bottom)
-    function getDataUrl() {
-      var bottomPostId = Math.min.apply(this, $.map(window.timelineFeed.posts(), function (p) {
-        return p.id;
-      }));
-      return '/api/search?q=#{search_q}&src=#{search_src}&topId=' + bottomPostId;
-    }
+    initSearchPosts('#{search_q}', '#{search_src}');

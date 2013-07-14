@@ -7,16 +7,6 @@ block content
     | &nbsp;Following
   include shared/ko-people
 
+block scripts
   script.
-    $(document).ready(function () {
-      getFollowing('#{account}');
-      initLazyLoading(getDataUrl, onPeopleDataLoaded);
-    });
-    // smooth infinite scrolling
-    // (downloads additional posts as soon as user scrolls to bottom)
-    function getDataUrl(page) {
-      var bottomUserId = Math.max.apply(this, $.map(window.peopleFeed.profiles(), function (u) {
-        return u.id;
-      }));
-      return '/api/people/#{account}/following?topId=' + bottomUserId;
-    }
+    initFollowing('#{account}');

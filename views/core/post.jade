@@ -3,52 +3,47 @@ extends layout
 block content
   include shared/tb-mixins
 
-  script(type='text/html', id='timeline-post')
-    div.row-fluid
-      div.span12.timeline-feed
-        ul(data-bind='foreach: posts')
-          li
-            div.author
-              a.account(data-bind="attr: { href: feed }")
-                img(data-bind="attr: { src: picture }", alt='avatar')
-            div.name(style='width:94%')
-              span(data-bind='text: name', style='font-weight: bold;')
-              a.account(data-bind="text: '@' + account, attr: { href: feed }")
-            div.date(data-bind="text: created.calendar(), attr: { title : created.format('LLLL') }")
-            //- div.delete
-            //-  i.icon-remove
-            div.message(data-bind='html: content')
-            ul
-              // ko foreach: comments
-              li
-                div.author
-                  a.account(data-bind="attr: { href: feed }")
-                    img(data-bind="attr: { src: picture }", alt='avatar')
-                div.name
-                  span(data-bind='text: name', style='font-weight: bold;')
-                  a.account(data-bind="text: '@' + account, attr: { href: feed }")
-                div.date(data-bind="text: created.calendar(), attr: { title : created.format('LLLL') }")
-                div.message(data-bind='html: content')
-              // /ko
-              li
-                div.author
-                  img(data-bind="attr: { src: collabjs.currentUser.getPictureUrl() }", alt='avatar')
-                form(method='post', action='', onSubmit='doPostComment(this); return false;')
-                  input(type='hidden', name='_csrf', value=token)
-                  input(name='postId', type='hidden', data-bind='value: id')
-                  input.input-block-level.border-sharp(name='content', type='text', placeholder='Write a comment...', autocomplete='off'
-                    data-bind="attr: { id: 'comment-box-' + id }")
-  
   p.lead.page-error
 
   // Loading progress indicator
   div.page-spinner
     i.icon-spinner.icon-spin.icon-4x
 
-  div(style='display: none;', data-bind="visible: posts().length > 0, template: { name: 'timeline-post' }")
+  div.row-fluid(style='display: none;', data-bind='visible: posts().length > 0')
+    div.span12.timeline-feed
+      ul(data-bind='foreach: posts')
+        li
+          div.author
+            a.account(data-bind="attr: { href: feed }")
+              img(data-bind="attr: { src: picture }", alt='avatar')
+          div.name(style='width:94%')
+            span(data-bind='text: name', style='font-weight: bold;')
+            a.account(data-bind="text: '@' + account, attr: { href: feed }")
+          div.date(data-bind="text: created.calendar(), attr: { title : created.format('LLLL') }")
+          //- div.delete
+          //-  i.icon-remove
+          div.message(data-bind='html: content')
+          ul
+            // ko foreach: comments
+            li
+              div.author
+                a.account(data-bind="attr: { href: feed }")
+                  img(data-bind="attr: { src: picture }", alt='avatar')
+              div.name
+                span(data-bind='text: name', style='font-weight: bold;')
+                a.account(data-bind="text: '@' + account, attr: { href: feed }")
+              div.date(data-bind="text: created.calendar(), attr: { title : created.format('LLLL') }")
+              div.message(data-bind='html: content')
+            // /ko
+            li
+              div.author
+                img(data-bind="attr: { src: collabjs.currentUser.getPictureUrl() }", alt='avatar')
+              form(method='post', action='', onSubmit='doPostComment(this); return false;')
+                input(type='hidden', name='_csrf', value=token)
+                input(name='postId', type='hidden', data-bind='value: id')
+                input.input-block-level.border-sharp(name='content', type='text', placeholder='Write a comment...', autocomplete='off'
+                  data-bind="attr: { id: 'comment-box-' + id }")
 
 block scripts
   script.
-    $(document).ready(function () {
-      loadPost(#{postId});
-    });
+    initPostView('#{postId}');

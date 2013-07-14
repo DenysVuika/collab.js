@@ -16,15 +16,4 @@ block content
 
 block scripts
   script.
-    $(document).ready(function () {
-      getMentions();
-      initLazyLoading(getDataUrl, onFeedDataLoaded);
-    });
-    // smooth infinite scrolling
-    //  (downloads additional posts as soon as user scrolls to the bottom)
-    function getDataUrl() {
-      var bottomPostId = Math.min.apply(this, $.map(window.timelineFeed.posts(), function (p) {
-        return p.id;
-      }));
-      return '/api/mentions?topId=' + bottomPostId;
-    }
+    initMentions();
