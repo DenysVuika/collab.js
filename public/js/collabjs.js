@@ -12,8 +12,11 @@ var collabjs = collabjs || {
     account: null,
     pictureId: null,
     getPictureUrl: function () {
-      return collabjs.avatarServer + '/avatar/' + collabjs.currentUser.pictureId + '?s=48';
+      return collabjs.getUserPicture(collabjs.currentUser.pictureId, 48);
     }
+  },
+  getUserPicture: function(pictureId, pictureSize) {
+    return collabjs.avatarServer + '/avatar/' + pictureId + '?s=' + (pictureSize || '48');
   }
 };
 
@@ -165,7 +168,7 @@ function PostViewModel(data) {
   self.content = data.content.twitterize();
   self.created = moment(data.created);
   self.hashtags = data.content.getHashTags();
-  self.picture = collabjs.avatarServer + '/avatar/' + data.pictureId + '?s=' + (data.pictureSize || '48');
+  self.picture = collabjs.getUserPicture(data.pictureId, data.pictureSize);
   self.feed = '/people/' + data.account + '/timeline';
   self.canDismiss = false;
   self.postUrl = '/timeline/posts/' + data.id;
@@ -264,7 +267,7 @@ function UserProfileViewModel(data) {
   self.following = data.following;
   self.followingUrl = '/people/' + data.account + '/following';
   self.isFollowed = data.isFollowed;
-  self.picture = collabjs.avatarServer + '/avatar/' + data.pictureId + '?s=48';
+  self.picture = collabjs.getUserPicture(data.pictureId);
   self.feed = '/people/' + data.account + '/timeline';
   self.followAction = '/people/' + data.account + '/follow';
   self.unfollowAction = '/people/' + data.account + '/unfollow';
@@ -672,14 +675,10 @@ function initLazyLoading(url, onSuccess) {
         _inCallback = true;
         _page++;
 
-        var spinner = $('#page-data-loading');
         var pageSpinner = $('.page-spinner');
-        var msg = $("#content-loading-error");
         var pageError = $('.page-error');
         
-        spinner.show();
         pageSpinner.show();
-        msg.hide();
         pageError.hide();
 
         $.ajax({
@@ -700,15 +699,12 @@ function initLazyLoading(url, onSuccess) {
             }
           },
           error: function () {
-            msg.text("Error getting data. There seems to be a server problem, please try again later.");
-            msg.show();
             pageError.text("Error getting data. There seems to be a server problem, please try again later.");
             pageError.show();
             _page--;
           },
           complete: function () {
             _inCallback = false;
-            spinner.hide();
             pageSpinner.hide();
           }
         });
