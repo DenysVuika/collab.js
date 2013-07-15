@@ -116,3 +116,15 @@ module.exports.getComments = function (postId, callback) {
 module.exports.getPostAuthor = function (postId, callback) {
 	provider.getPostAuthor(postId, callback);
 };
+
+module.exports.addSavedSearch = function (json, callback) {
+  provider.addSavedSearch(json, callback);
+};
+
+module.exports.getSavedSearches = function (userId, callback) {
+  provider.getSavedSearches(userId, callback);
+};
+
+module.exports.deleteSavedSearch = function (userId, name, callback) {
+  provider.deleteSavedSearch(userId, name, callback);
+};

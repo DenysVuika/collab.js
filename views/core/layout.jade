@@ -51,6 +51,14 @@ html
                       a(href='#{entry.url}')
                         i(class='#{entry.icon}')
                         | &nbsp; #{entry.text}
+                if (savedSearches && savedSearches.length > 0)
+                  li.nav-header Search Lists
+                  block sidebar-search
+                  each list in savedSearches
+                    li
+                      a(href='/search?q=#{list.query}&src=#{list.source}')
+                        i.icon-filter
+                        | &nbsp;#{list.name}
                 //- 'Connect' section
                 li.nav-header Connect
                 li
@@ -96,7 +104,7 @@ html
     script.
       $(function() {
         // Synchronize sidebar/header selection with current request path
-        var path = '#{requestPath}' || window.location.pathname;
+        var path = '#{requestPath}' || window.location.pathname + window.location.search;
         $('.nav li a[href="' + path + '"]').parents('li').addClass('active');
       });
 

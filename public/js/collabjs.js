@@ -208,6 +208,7 @@ function FeedViewModel(data) {
 
   self.posts = ko.observableArray([]);
 
+
   // if post belongs to current user then post is removed
   // otherwise, post is marked as hidden
   self.dismissPost = function (post) {
@@ -687,14 +688,14 @@ collabjs.ui.initSearchPosts = function (q, src) {
   'use strict';
   $(document).ready(function () {
     // search posts
-    $.get('/api/search?q=' + q + '&src=' + src, collabjs.ui.onFeedDataLoaded);
+    $.get('/api/search?q=' + encodeURIComponent(q) + '&src=' + src, collabjs.ui.onFeedDataLoaded);
     // smooth infinite scrolling
     //  (downloads additional posts as soon as user scrolls to the bottom)
     initLazyLoading(function () {
       var bottomPostId = Math.min.apply(this, $.map(window.timelineFeed.posts(), function (p) {
         return p.id;
       }));
-      return '/api/search?q=' + q + '&src=' + src + '&topId=' + bottomPostId;
+      return '/api/search?q=' + encodeURIComponent(q) + '&src=' + src + '&topId=' + bottomPostId;
     }, collabjs.ui.onFeedDataLoaded);
   });
 };

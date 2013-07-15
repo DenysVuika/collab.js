@@ -296,6 +296,38 @@ Provider.prototype = {
         callback(err, rows[0]);
       }
     });
+  },
+  getSavedSearches: function (userId, callback) {
+    this.connection.query('CALL get_search_lists(?)', [userId], function (err, result) {
+      if (err) {
+        console.log(err);
+        callback(err, null);
+      } else {
+        callback(null, result[0]);
+      }
+    });
+  },
+  addSavedSearch: function (json, callback) {
+    var command = 'CALL add_search_list(?,?,?,?)';
+    var params = [json.name, json.userId, json.q, json.src];
+    this.connection.query(command, params, function (err, result) {
+      if (err) {
+        console.log(err);
+        callback(err);
+      } else {
+        callback(false);
+      }
+    });
+  },
+  deleteSavedSearch: function (userId, name, callback) {
+    this.connection.query('CALL delete_search_list(?,?)', [userId, name], function (err, result) {
+      if (err) {
+        console.log(err);
+        callback(err);
+      } else {
+        callback(false);
+      }
+    });
   }
 };
 

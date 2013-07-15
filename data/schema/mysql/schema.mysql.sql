@@ -529,11 +529,61 @@ SELECT 'Administrator', 'administrator' FROM DUAL
 WHERE NOT EXISTS (SELECT * FROM `roles` WHERE `loweredName` = 'administrator')
 LIMIT 1;
 
-CREATE  TABLE `collabjs`.`hidden_posts` (
+CREATE  TABLE `hidden_posts` (
   `id` INT NOT NULL AUTO_INCREMENT ,
   `userId` INT NOT NULL ,
   `postId` INT NOT NULL ,
   PRIMARY KEY (`id`) );
+
+CREATE  TABLE `search_lists` (
+  `id` INT NOT NULL AUTO_INCREMENT ,
+  `name` VARCHAR(45) NOT NULL ,
+  `userId` INT NOT NULL ,
+  `query` TEXT NOT NULL ,
+  `source` VARCHAR(45) NOT NULL ,
+  PRIMARY KEY (`id`) );
+
+DELIMITER //
+CREATE PROCEDURE `add_search_list` (
+	IN `name` varchar(45),
+	IN `userId` int,
+	IN `query` text,
+	IN `source` varchar(45)
+)
+BEGIN
+	DECLARE saved int DEFAULT 0;
+
+	SELECT 1 into saved FROM search_lists AS s
+	  WHERE s.name = name
+		  AND s.userId = userId
+	  LIMIT 1;
+
+	IF (saved = 0) THEN
+	  INSERT INTO search_lists (`name`, `userId`, `query`, `source`)
+		  VALUES (name, userId, query, source);
+	END IF;
+END//
+DELIMITER ;
+
+DELIMITER //
+CREATE PROCEDURE `get_search_lists` (
+	IN `userId` int
+)
+BEGIN
+	SELECT s.name, s.query, s.source FROM search_lists AS s
+	  WHERE s.userId = userId;
+END//
+DELIMITER ;
+
+DELIMITER //
+CREATE PROCEDURE `delete_search_list` (
+	IN `listOwnerId` INT,
+	IN `listName` varchar(45)
+)
+BEGIN
+	DELETE FROM search_lists WHERE `userId` = listOwnerId AND `name` = listName;
+END//
+DELIMITER ;
 
 /*!40101 SET SQL_MODE=IFNULL(@OLD_SQL_MODE, '') */;
 /*!40014 SET FOREIGN_KEY_CHECKS=IF(@OLD_FOREIGN_KEY_CHECKS IS NULL, 1, @OLD_FOREIGN_KEY_CHECKS) */;

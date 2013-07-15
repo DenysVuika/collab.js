@@ -459,13 +459,27 @@ GO
 CREATE TABLE [dbo].[hidden_posts](
   [id] [int] IDENTITY(1,1) NOT NULL,
   [userId] [int] NOT NULL,
-  [postId] [int] NOT NULL
+  [postId] [int] NOT NULL,
   CONSTRAINT [PK_hidden_posts] PRIMARY KEY CLUSTERED
 (
   [id] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 ) ON [PRIMARY] TEXTIMAGE_ON [PRIMARY]
 GO
+
+CREATE TABLE [dbo].[search_lists](
+  [id] [int] IDENTITY(1,1) NOT NULL,
+  [name] [nvarchar](45) NOT NULL,
+  [userId] [int] NOT NULL,
+  [query] [nvarchar](max) NOT NULL,
+  [source] [nvarchar](45) NOT NULL,
+CONSTRAINT [PK_search_lists] PRIMARY KEY CLUSTERED
+(
+  [id] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
+) ON [PRIMARY] TEXTIMAGE_ON [PRIMARY]
+GO
+
 
 CREATE TABLE [dbo].[roles](
 	[id] [int] IDENTITY(1,1) NOT NULL,
@@ -664,7 +678,7 @@ BEGIN
 END
 GO
 
-CREATE PROCEDURE delete_post
+CREATE PROCEDURE [dbo].[delete_post]
   @userId INT,
 	@postId INT
 AS
@@ -682,5 +696,37 @@ BEGIN
           INSERT INTO hidden_posts (userId, postId) VALUES (@userId, @postId)
         END
     END
+END
+GO
+
+CREATE PROCEDURE [dbo].[add_search_list]
+  @name nvarchar(45),
+  @userId int,
+  @query nvarchar(max),
+  @source nvarchar(45)
+AS
+BEGIN
+  IF NOT EXISTS (SELECT id FROM search_lists WHERE name = @name AND userId = @userId)
+    BEGIN
+      INSERT INTO search_lists (name, userId, query, source)
+        VALUES (@name, @userId, @query, @source)
+    END
+END
+GO
+
+CREATE PROCEDURE [dbo].[get_search_lists]
+  @userId int
+AS
+BEGIN
+  SELECT name, query, source FROM search_lists WHERE userId = @userId
+END
+GO
+
+CREATE PROCEDURE [dbo].[delete_search_list]
+  @userId int,
+  @name nvarchar(45)
+AS
+BEGIN
+  DELETE FROM search_lists WHERE userId = @userId AND name = @name
 END
 GO

@@ -335,9 +335,35 @@ module.exports = function (app) {
 
     return res.render('core/search-posts', {
       title: 'Results for ' + q,
-      search_q: encodeURIComponent(q),
+      navigationUri: '/search?q=' + encodeURIComponent(q) + '&src=' + req.query.src,
+      search_q: q,
+      search_q_enc: encodeURIComponent(q),
       search_src: encodeURIComponent(req.query.src)
     });
+  });
+
+  app.post('/search', ensureAuthenticated, function (req, res) {
+    var body = req.body;
+    var action = body.action;
+    var redirectUri = '/search?q=' + encodeURIComponent(body.q) + '&src=' + req.query.src;
+    if (action === 'save') {
+      repository.addSavedSearch({
+        name: body.q,
+        userId: req.user.id,
+        q: encodeURIComponent(body.q),
+        src: body.src
+      }, function (err) {
+        // TODO: generate error message for UI alert
+        res.redirect(redirectUri);
+      });
+    } else if (action === 'delete') {
+      repository.deleteSavedSearch(req.user.id, body.q, function (err) {
+        // TODO: generate error message for UI alert
+        res.redirect(redirectUri);
+      });
+    } else {
+      res.redirect(redirectUri);
+    }
   });
 
 }; // module.exports

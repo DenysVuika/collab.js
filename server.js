@@ -115,6 +115,30 @@ app.configure(function () {
     res.locals.isAdministrator = auth.isUserInRole(req.user, 'administrator');
     next();
   });
+  // middleware that gets saved search lists for current user
+  app.use(function (req, res, next) {
+    res.locals.hasSavedSearch = function (name) {
+      var decodedName = decodeURIComponent(name);
+      var searches = res.locals.savedSearches;
+      if (searches && searches.length > 0) {
+        for (var i = 0; i < searches.length; i++) {
+          if (searches[i].name === decodedName) {
+            return true;
+          }
+        }
+      }
+      return false;
+    };
+    if (req.isAuthenticated()) {
+      db.getSavedSearches(req.user.id, function (err, result) {
+        res.locals.savedSearches = result;
+        next();
+      });
+    } else {
+      res.locals.savedSearches = [];
+      next();
+    }
+  });
   app.use(utils.detectMobileBrowser);
   app.use(app.router);
   app.use(express.static(__dirname + '/public', { maxAge: 86400000})); // one day
