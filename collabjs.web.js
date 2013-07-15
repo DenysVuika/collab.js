@@ -22,7 +22,7 @@ module.exports = function (app) {
 
   app.get('/login:returnUrl?', function (req, res) {
     res.render('core/login', {
-      title: 'Login',
+      title: 'Sign In',
       formAction: req.url,
       message: req.flash('error')
     });
