@@ -373,3 +373,6 @@ form.account-form textarea.v-resize {
 .bold {
   font-weight: bold;
 }
+i.black {
+  color: #333;
+}

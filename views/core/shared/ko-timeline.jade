@@ -16,12 +16,12 @@ script(type='text/html', id='timeline-template')
             div(data-bind='html: content')
             // ko if: openBlank
             a(data-bind='attr: { href: postUrl }')
-              i.icon-comment(style='color:#333;')
+              i.icon-comment.black
               span(data-bind="text: ' View all {0} comments'.formatString(commentsCount())")
             // /ko
             // ko ifnot: openBlank
             a(href='#', data-link-type='comment')
-              i.icon-comment(style='color:#333')
+              i.icon-comment.black
               | &nbsp;Comments
               span(data-bind="visible: commentsCount() > 0, text: ' (' + commentsCount() + ')'")
             // /ko
