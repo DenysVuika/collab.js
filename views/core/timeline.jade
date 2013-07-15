@@ -2,13 +2,10 @@ extends layout
 
 block content
   include shared/ko-timeline
-  form(method='post', action='', onSubmit='collabjs.ui.doUpdateStatus(this); return false;')
+  form.status-form(method='post', onSubmit='collabjs.ui.doUpdateStatus(this); return false;')
     input(type='hidden', name='_csrf', value=token)
-    textarea.input-block-level(
-      name='content', rows='3',
-      placeholder="What's on your mind?",
-      style='resize: vertical; max-height: 300px;')
-    div(style='padding-bottom: 30px')
+    textarea.input-block-level(name='content', rows='3', placeholder="What's on your mind?")
+    div.footer
       input.m-btn.green.pull-right(type='submit', value='Post')
 
   p.lead(style='display: none', data-bind='visible: posts().length == 0') No posts found...

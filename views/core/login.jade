@@ -9,7 +9,7 @@ block content
     | Please enter your user name and password. 
     a(href='/register') Register
     |  if you don't have an account.
-  form(method='post', action=formAction).form-horizontal
+  form.form-horizontal(method='post', action=formAction)
     input(type='hidden', name='_csrf', value=token)
     fieldset
       legend Account Information
@@ -33,6 +33,7 @@ block content
           label(for='rememberme') Remember me
         div.controls
           input(type='checkbox', id='rememberme', name='rememberme')
-      div.form-actions(style='background-color: inherit;')
+      hr
+      div.form-actions
         input.m-btn.blue(type='submit', value='Submit')
   

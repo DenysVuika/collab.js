@@ -17,7 +17,7 @@ block content
             a.account(data-bind="attr: { href: feed }")
               img(data-bind="attr: { src: picture }", alt='avatar')
           div.name(style='width:94%')
-            span(data-bind='text: name', style='font-weight: bold;')
+            span.bold(data-bind='text: name')
             a.account(data-bind="text: '@' + account, attr: { href: feed }")
           div.date(data-bind="text: created.calendar(), attr: { title : created.format('LLLL') }")
           //- div.delete
@@ -30,7 +30,7 @@ block content
                 a.account(data-bind="attr: { href: feed }")
                   img(data-bind="attr: { src: picture }", alt='avatar')
               div.name
-                span(data-bind='text: name', style='font-weight: bold;')
+                span.bold(data-bind='text: name')
                 a.account(data-bind="text: '@' + account, attr: { href: feed }")
               div.date(data-bind="text: created.calendar(), attr: { title : created.format('LLLL') }")
               div.message(data-bind='html: content')

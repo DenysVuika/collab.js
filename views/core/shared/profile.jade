@@ -4,7 +4,7 @@ div.row-fluid
     div.content
       div.media
         div.pull-left
-          img.media-object(src='#{config.env.avatarServer}/avatar/#{profile.pictureId}', alt='').avatar
+          img.media-object.avatar(src='#{config.env.avatarServer}/avatar/#{profile.pictureId}', alt='')
         div.media-body
           h4.media-heading
             | #{profile.name}
@@ -25,19 +25,19 @@ div.row-fluid
             div
               span.bfh-countries(data-flags='true', data-country='#{profile.location}')
           if (isOwnProfile)
-            a.m-btn.green.pull-right(href='/account', style='min-width: 80px;') Edit profile
+            a.m-btn.green.pull-right.profile-btn(href='/account') Edit profile
           else if (profile.isFollowed)
-            a.m-btn.black.pull-right(href='/people/#{profile.account}/unfollow', style='min-width: 80px;') Unfollow
+            a.m-btn.black.pull-right.profile-btn(href='/people/#{profile.account}/unfollow') Unfollow
           else
-            a.m-btn.blue.pull-right(href='/people/#{profile.account}/follow', style='min-width: 80px;') Follow
+            a.m-btn.blue.pull-right.profile-btn(href='/people/#{profile.account}/follow') Follow
     div.footer
       ul.profile-stats-list(style='padding-top:10px;')
         li.profile-stats
-          a(href='/people/#{profile.account}/timeline', style='color: #08c;')
+          a.blue(href='/people/#{profile.account}/timeline')
             | #{profile.posts} posts
         li.profile-stats
-          a(href='/people/#{profile.account}/following', style='color: #08c;')
+          a.blue(href='/people/#{profile.account}/following')
             | #{profile.following} following
         li.profile-stats
-          a(href='/people/#{profile.account}/followers', style='color: #08c;')
+          a.blue(href='/people/#{profile.account}/followers')
             | #{profile.followers} followers

@@ -285,6 +285,9 @@ div.page-spinner {
   margin-left: 0;
   padding-left: 0;
 }
+.profile-stats-list li.profile-stats a.blue {
+  color: #08c;
+}
 a.profile-link {
   padding-bottom: 7px !important;
 }
@@ -318,12 +321,9 @@ a.profile-link small {
   padding-left: 40px;
   font-size: 11px;
 }
-/*
-div.collapse.comments {
-  margin-top: 10px;
-  overflow: visible !important;
+a.profile-btn {
+  min-width: 80px;
 }
-*/
 .no-top-margin {
   margin-top: 0;
 }
@@ -347,9 +347,29 @@ input[type="text"].border-sharp {
   float: right;
   font-weight: bold;
 }
-.form-horizontal.account-form .control-group {
+form .form-actions {
+  border-top: none;
+  padding-top: 0;
+}
+form .form-actions a.m-btn {
+  vertical-align: middle;
+}
+form.status-form textarea {
+  resize: vertical;
+  max-height: 300px;
+}
+form.status-form div.footer {
+  padding-bottom: 30px;
+}
+form.account-form .control-group {
   margin-bottom: 10px;
 }
-.form-horizontal.account-form .controls-hint {
+form.account-form .controls-hint {
   color: #999;
+}
+form.account-form textarea.v-resize {
+  resize: vertical;
+}
+.bold {
+  font-weight: bold;
 }

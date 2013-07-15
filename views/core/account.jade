@@ -49,14 +49,14 @@ block content
       div.control-label
         label(for='bio') Bio
       div.controls
-        textarea.input-xxlarge(id='bio', name='bio', rows='3', style='resize: vertical')= user.bio
+        textarea.input-xxlarge.v-resize(id='bio', name='bio', rows='3')= user.bio
         p.controls-hint.bio-counter
           | About yourself in 160 characters or less.
           span.bio-counter-label(id='bio_counter') 160
     hr
-    div.form-actions(style='border-top: none;padding-top:0;')
+    div.form-actions
       input.m-btn.blue(type='submit', value='Save Changes')
-      a.m-btn.black(href='/timeline', style='vertical-align: middle;')
+      a.m-btn.black(href='/timeline')
         i.m-icon-swapleft.m-icon-white
         | &nbsp;Cancel
 

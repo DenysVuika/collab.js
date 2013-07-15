@@ -72,6 +72,10 @@ div.page-spinner {
         padding-left: 0;
       }
     }
+
+    &.profile-stats a.blue {
+      color: #08c;
+    }
   }
 }
 
@@ -113,12 +117,9 @@ a.profile-link {
   }
 }
 
-/*
-div.collapse.comments {
-  margin-top: 10px;
-  overflow: visible !important;
+a.profile-btn {
+  min-width: 80px;
 }
-*/
 
 .no-top-margin {
   margin-top: 0;
@@ -149,12 +150,44 @@ input[type="text"].border-sharp {
   font-weight: bold;
 }
 
-.form-horizontal.account-form {
-  .control-group {
-    margin-bottom: 10px;
+form {
+
+  .form-actions {
+
+    border-top: none;
+    padding-top: 0;
+
+    a.m-btn {
+      vertical-align: middle;
+    }
   }
 
-  .controls-hint {
-    color: #999;
+  &.status-form {
+    textarea {
+      resize: vertical;
+      max-height: 300px;
+    }
+
+    div.footer {
+      padding-bottom: 30px;
+    }
   }
+
+  &.account-form {
+    .control-group {
+      margin-bottom: 10px;
+    }
+
+    .controls-hint {
+      color: #999;
+    }
+
+    textarea.v-resize {
+      resize: vertical;
+    }
+  }
+}
+
+.bold {
+  font-weight: bold;
 }

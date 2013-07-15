@@ -10,7 +10,7 @@ block content
       theme: 'clean',
       lang: 'en'
     }
-  form(method='post').form-horizontal
+  form.form-horizontal(method='post')
     input(type='hidden', name='_csrf', value=token)
     fieldset
       legend Account Information
@@ -52,7 +52,8 @@ block content
         div.control-group
           div.controls
             != recaptcha_form
-      div.form-actions(style='background-color:inherit;')
+      hr
+      div.form-actions
         input.m-btn.blue(type='submit', value='Submit')
 
 block scripts

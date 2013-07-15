@@ -10,9 +10,9 @@ ul.media-list(style='display: none', data-bind='visible: profiles().length > 0, 
           a(data-bind='attr: { href: feed }')
             strong(data-bind='text: name')
           a(data-bind="text: '@' + account, attr: { href: feed }", style='color: grey; font-weight: normal; font-size: 90%; padding-left: 5px')
-        a.m-btn.blue.pull-right(data-bind='visible: !isFollowed && !isOwnProfile, attr: { href: followAction }', style='min-width:80px') Follow
-        a.m-btn.black.pull-right(data-bind='visible: isFollowed && !isOwnProfile, attr: { href: unfollowAction }', style='min-width:80px') Unfollow
-        a.m-btn.green.pull-right(data-bind='visible: isOwnProfile', href='/account', style='min-width:80px') Edit profile
+        a.m-btn.blue.pull-right.profile-btn(data-bind='visible: !isFollowed && !isOwnProfile, attr: { href: followAction }') Follow
+        a.m-btn.black.pull-right.profile-btn(data-bind='visible: isFollowed && !isOwnProfile, attr: { href: unfollowAction }') Unfollow
+        a.m-btn.green.pull-right.profile-btn(data-bind='visible: isOwnProfile', href='/account') Edit profile
       p(style='padding: 0; margin: 0;')
         span.bfh-countries(data-bind='country: location', data-flags='true')
       p(style='padding: 0; margin: 0;')
