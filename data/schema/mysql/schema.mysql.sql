@@ -1,3 +1,5 @@
+-- v.0.3.1
+
 /*!40101 SET @OLD_CHARACTER_SET_CLIENT=@@CHARACTER_SET_CLIENT */;
 /*!40101 SET NAMES utf8 */;
 /*!40014 SET @OLD_FOREIGN_KEY_CHECKS=@@FOREIGN_KEY_CHECKS, FOREIGN_KEY_CHECKS=0 */;
@@ -126,15 +128,16 @@ CREATE PROCEDURE `get_main_timeline`(
 BEGIN
   SELECT result.* FROM
   (
-  SELECT p.*, u.name, u.account, u.emailHash as pictureId
-  FROM posts AS p
-    LEFT JOIN users AS u ON u.id = p.userId
-  WHERE p.userId IN (
-    SELECT s.targetUserId FROM subscriptions AS s
-    WHERE s.userId = originatorId AND s.isBlocked = FALSE
-    UNION SELECT originatorId
+    SELECT p.*, u.name, u.account, u.emailHash as pictureId
+    FROM posts AS p
+      LEFT JOIN users AS u ON u.id = p.userId
+    WHERE p.userId IN (
+      SELECT s.targetUserId FROM subscriptions AS s
+      WHERE s.userId = originatorId AND s.isBlocked = FALSE
+      UNION SELECT originatorId
   )
-  AND EXISTS (select id from posts where id = topId OR topId = 0)
+  AND NOT EXISTS (SELECT id FROM hidden_posts AS hp WHERE hp.userId = originatorId AND hp.postId = p.id)
+  AND EXISTS (SELECT id FROM posts WHERE id = topId OR topId = 0)
   GROUP BY p.id
   ORDER BY p.created DESC
   ) as result
@@ -145,6 +148,7 @@ DELIMITER ;
 
 DELIMITER //
 CREATE PROCEDURE `get_mentions`(
+  IN `originatorId` INT,
   IN `originatorAccount` VARCHAR(50),
   IN topId INT)
 BEGIN
@@ -152,13 +156,14 @@ BEGIN
   SET term = CONCAT('%@', originatorAccount, '%');
   SELECT result.* FROM
   (
-  SELECT p.*, u.name, u.account, u.emailHash as pictureId
-  FROM posts AS p
-    LEFT JOIN users AS u ON u.id = p.userId
-  WHERE u.account != originatorAccount AND p.content LIKE term
-  AND EXISTS (select id from posts where id = topId OR topId = 0)
-  GROUP BY p.id
-  ORDER BY p.created DESC
+    SELECT p.*, u.name, u.account, u.emailHash as pictureId
+    FROM posts AS p
+      LEFT JOIN users AS u ON u.id = p.userId
+    WHERE u.account != originatorAccount AND p.content LIKE term
+    AND NOT EXISTS (SELECT id FROM hidden_posts AS hp WHERE hp.userId = originatorId AND hp.postId = p.id)
+    AND EXISTS (select id from posts where id = topId OR topId = 0)
+    GROUP BY p.id
+    ORDER BY p.created DESC
   ) AS result
   WHERE (topId <= 0 || result.id < topId)
   LIMIT 20;
@@ -247,6 +252,7 @@ DELIMITER ;
 
 DELIMITER //
 CREATE PROCEDURE `get_timeline`(
+  IN `originatorId` INT,
   IN `targetAccount` VARCHAR(50),
   IN topId INT)
 BEGIN
@@ -256,6 +262,7 @@ BEGIN
     FROM posts AS p
       LEFT JOIN users AS u ON u.id = p.userId
     WHERE u.account = targetAccount
+    AND NOT EXISTS (SELECT id FROM hidden_posts AS hp WHERE hp.userId = originatorId AND hp.postId = p.id)
     AND EXISTS (select id from posts where userId = p.userId AND (id = topId OR topId = 0))
     GROUP BY p.id
     ORDER BY p.created DESC
@@ -428,10 +435,9 @@ CREATE TABLE IF NOT EXISTS `user_roles` (
   CONSTRAINT `FK_ur_role` FOREIGN KEY (`roleId`) REFERENCES `roles` (`id`) ON DELETE NO ACTION ON UPDATE NO ACTION
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 
--- v.0.2.0
-
 DELIMITER //
 CREATE PROCEDURE get_posts_by_hashtag (
+  IN `originatorId` INT,
 	IN `tag` VARCHAR(250),
 	IN `topId` INT
 )
@@ -444,6 +450,7 @@ BEGIN
     FROM posts AS p
       LEFT JOIN users AS u ON u.id = p.userId
     WHERE p.content LIKE term
+    AND NOT EXISTS (SELECT id FROM hidden_posts AS hp WHERE hp.userId = originatorId AND hp.postId = p.id)
     AND EXISTS (SELECT id FROM posts WHERE id = topId OR topId = 0)
     GROUP BY p.id
     ORDER BY p.created DESC
@@ -452,8 +459,6 @@ BEGIN
   LIMIT 20;
 END//
 DELIMITER ;
-
--- v.0.3.0
 
 DELIMITER //
 CREATE PROCEDURE `add_post`(
@@ -483,9 +488,17 @@ CREATE PROCEDURE `delete_post`(
   IN postId INT
 )
 BEGIN
+  DECLARE hidden int DEFAULT 0;
   DELETE FROM posts WHERE posts.id = postId AND posts.userId = userId;
   IF (ROW_COUNT() > 0) THEN
     UPDATE users SET posts = posts - 1 WHERE users.id = userId;
+  ELSE
+    SELECT 1 INTO hidden FROM hidden_posts AS hp
+      WHERE hp.userId = userId AND hp.postId = postId;
+    IF (hidden = 0) THEN
+      INSERT INTO hidden_posts (`userId`, `postId`)
+        VALUES (userId, postId);
+    END IF;
   END IF;
 END//
 DELIMITER ;
@@ -515,6 +528,12 @@ INSERT INTO roles (`name`, `loweredName`)
 SELECT 'Administrator', 'administrator' FROM DUAL
 WHERE NOT EXISTS (SELECT * FROM `roles` WHERE `loweredName` = 'administrator')
 LIMIT 1;
+
+CREATE  TABLE `collabjs`.`hidden_posts` (
+  `id` INT NOT NULL AUTO_INCREMENT ,
+  `userId` INT NOT NULL ,
+  `postId` INT NOT NULL ,
+  PRIMARY KEY (`id`) );
 
 /*!40101 SET SQL_MODE=IFNULL(@OLD_SQL_MODE, '') */;
 /*!40014 SET FOREIGN_KEY_CHECKS=IF(@OLD_FOREIGN_KEY_CHECKS IS NULL, 1, @OLD_FOREIGN_KEY_CHECKS) */;

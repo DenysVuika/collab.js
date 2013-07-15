@@ -18,7 +18,7 @@ module.exports = function (app) {
 
   app.get('/api/mentions:topId?', requireAuthenticated, function (req, res) {
     var _topId = (req.query.topId && req.query.topId > 0) ? req.query.topId : 0;
-    repository.getMentions(req.user.account, _topId, function (err, result) {
+    repository.getMentions(req.user.id, req.user.account, _topId, function (err, result) {
       if (err || !result) { res.send(400); }
       else { res.json(200, result); }
     });
@@ -50,7 +50,7 @@ module.exports = function (app) {
 
   app.get('/api/people/:account/timeline:topId?', requireAuthenticated, function (req, res) {
     var _topId = (req.query.topId && req.query.topId > 0) ? req.query.topId : 0;
-    repository.getTimeline(req.params.account, _topId, function (err, result) {
+    repository.getTimeline(req.user.id, req.params.account, _topId, function (err, result) {
       if (err || !result) { res.send(400); }
       else { res.json(200, result); }
     });
@@ -164,7 +164,7 @@ module.exports = function (app) {
       res.send(400);
     } else {
       var _topId = (req.query.topId && req.query.topId > 0) ? req.query.topId : 0;
-      repository.getPostsByHashTag(req.query.q, _topId, function (err, result) {
+      repository.getPostsByHashTag(req.user.id, req.query.q, _topId, function (err, result) {
         if (err) { res.send(400); }
         else { res.json(200, result); }
       });

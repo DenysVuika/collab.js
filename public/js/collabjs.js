@@ -185,7 +185,7 @@ function PostViewModel(data) {
   self.hashtags = data.content.getHashTags();
   self.picture = collabjs.getUserPicture(data.pictureId, data.pictureSize);
   self.feed = '/people/' + data.account + '/timeline';
-  self.canDismiss = false;
+  self.isOwnPost = (data.account === collabjs.currentUser.account);
   self.postUrl = '/timeline/posts/' + data.id;
 
   self.commentsCount = ko.observable(data.commentsCount ? data.commentsCount : 0);
@@ -202,15 +202,15 @@ function PostViewModel(data) {
   };
 }
 
-// Passing account is no longer relevant, use collabjs.currentUser.account instead
-function FeedViewModel(account, data) {
+function FeedViewModel(data) {
   'use strict';
   var self = this;
 
-  self.account = account;
   self.posts = ko.observableArray([]);
 
-  self.removePost = function (post) {
+  // if post belongs to current user then post is removed
+  // otherwise, post is marked as hidden
+  self.dismissPost = function (post) {
     var token = $('#csrf_token').val();
     $.ajax({
       url: '/api/timeline/posts/' + post.id,
@@ -226,13 +226,11 @@ function FeedViewModel(account, data) {
 
   self.addNewPost = function (post) {
     var viewmodel = new PostViewModel(post);
-    viewmodel.canDismiss = (post.account === account);
     self.posts.unshift(viewmodel);
   };
 
   self.createPost = function (data) {
     var viewmodel = new PostViewModel(data);
-    viewmodel.canDismiss = (data.account === account);
 
     if (data.comments && data.comments.length > 0) {
       var entries = ko.utils.arrayMap(data.comments, function (entry) {
@@ -323,13 +321,13 @@ collabjs.ui.onPeopleDataLoaded = function (data) {
   }
 };
 
-collabjs.ui.onFeedDataLoaded = function (data, account) {
+collabjs.ui.onFeedDataLoaded = function (data) {
   'use strict';
   if (!data) {
     data = [];
   }
   if (!window.timelineFeed) {
-    window.timelineFeed = new FeedViewModel(account, data);
+    window.timelineFeed = new FeedViewModel(data);
     ko.applyBindings(window.timelineFeed);
   } else {
     window.timelineFeed.appendPosts(data);
@@ -340,7 +338,7 @@ collabjs.ui.onFeedDataLoaded = function (data, account) {
 $(document).bind("collabjs.onStatusUpdated", function (event, data) {
   'use strict';
   var feed = window.timelineFeed;
-  if (data && feed && data.account === feed.account) {
+  if (data && feed && data.account === collabjs.currentUser.account) {
     window.timelineFeed.addNewPost(data);
   }
 });
@@ -466,7 +464,7 @@ collabjs.ui.initPostView = function (id) {
 
   function onPostLoaded(data) {
     if (data) {
-      window.viewmodel = new FeedViewModel(collabjs.currentUser.account, [data]);
+      window.viewmodel = new FeedViewModel([data]);
       ko.applyBindings(window.viewmodel);
     } else {
       $('.page-error').text('Post not found.').show();
@@ -482,9 +480,7 @@ collabjs.ui.initTimeline = function () {
   'use strict';
   $(document).ready(function () {
     // load first page of posts
-    $.get('/api/timeline/posts', function (data) {
-      collabjs.ui.onFeedDataLoaded(data, collabjs.currentUser.account);
-    });
+    $.get('/api/timeline/posts', collabjs.ui.onFeedDataLoaded);
     // init smooth infinite scrolling
     // (downloads additional posts as soon as user scrolls to the bottom)
     initLazyLoading(function (posts) {
@@ -564,9 +560,7 @@ collabjs.ui.initMentions = function () {
   'use strict';
   $(document).ready(function () {
     // get first page for mentions
-    $.get('/api/mentions', function (data) {
-      collabjs.ui.onFeedDataLoaded(data, collabjs.currentUser.account);
-    });
+    $.get('/api/mentions', collabjs.ui.onFeedDataLoaded);
     // init smooth infinite scrolling
     //  (downloads additional posts as soon as user scrolls to the bottom)
     initLazyLoading(function () {
@@ -647,9 +641,7 @@ collabjs.ui.initPersonalTimeline = function (account) {
   'use strict';
   $(document).ready(function () {
     // get first page of people for the given account
-    $.get('/api/people/' + account + '/timeline', function (data) {
-      collabjs.ui.onFeedDataLoaded(data, collabjs.currentUser.account);
-    });
+    $.get('/api/people/' + account + '/timeline', collabjs.ui.onFeedDataLoaded);
     // smooth infinite scrolling
     //  (downloads additional posts as soon as user scrolls to the bottom)
     initLazyLoading(function () {
@@ -695,10 +687,7 @@ collabjs.ui.initSearchPosts = function (q, src) {
   'use strict';
   $(document).ready(function () {
     // search posts
-    $.get('/api/search?q=' + q + '&src=' + src, function (data) {
-      collabjs.ui.onFeedDataLoaded(data, collabjs.currentUser.account);
-    });
-
+    $.get('/api/search?q=' + q + '&src=' + src, collabjs.ui.onFeedDataLoaded);
     // smooth infinite scrolling
     //  (downloads additional posts as soon as user scrolls to the bottom)
     initLazyLoading(function () {

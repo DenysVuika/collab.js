@@ -153,8 +153,8 @@ Provider.prototype = {
       callback(err, result);
     });
   },
-  getMentions: function (account, topId, callback) {
-    sql.query(this.connection, 'exec get_mentions ?,?', [account, topId], function (err, result) {
+  getMentions: function (callerId, account, topId, callback) {
+    sql.query(this.connection, 'exec get_mentions ?,?,?', [callerId, account, topId], function (err, result) {
       if (err) {
         console.log('Error getting mentions. ' + err);
         callback(err, null);
@@ -185,8 +185,8 @@ Provider.prototype = {
       } else { callback(err, result); }
     });
   },
-  getTimeline: function (targetAccount, topId, callback) {
-    sql.query(this.connection, 'exec get_timeline ?,?', [targetAccount, topId], function (err, result) {
+  getTimeline: function (callerId, targetAccount, topId, callback) {
+    sql.query(this.connection, 'exec get_timeline ?,?,?', [callerId, targetAccount, topId], function (err, result) {
       if (err) {
         console.log('Error getting timeline. ' + err);
         callback(err, null);
@@ -246,12 +246,12 @@ Provider.prototype = {
       } else { callback(err, result); }
     });
   },
-  getPostsByHashTag: function (hashtag, topId, callback) {
+  getPostsByHashTag: function (callerId, hashtag, topId, callback) {
     var tag = hashtag;
     if (tag.indexOf('#') !== 0) {
       tag = '#' + tag;
     }
-    sql.query(this.connection, 'exec get_posts_by_hashtag ?,?', [tag, topId], function (err, result) {
+    sql.query(this.connection, 'exec get_posts_by_hashtag ?,?,?', [callerId, tag, topId], function (err, result) {
       if (err) {
         console.log(err);
         callback(err, null);

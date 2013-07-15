@@ -6,11 +6,11 @@ script(type='text/html', id='timeline-template')
           div.author
             a.account(data-bind="attr: { href: feed }")
               img(data-bind="attr: { src: picture }", alt='avatar')
-          div.name(style='width:94%')
+          div.name
             a.bold(data-bind='text: name, attr: { href: postUrl }')
             a.account(data-bind="text: '@' + account, attr: { href: feed }")
           div.date(data-bind="text: created.calendar(), attr: { title : created.format('LLLL') }")
-          div.delete(data-bind='visible: canDismiss, click: $parent.removePost')
+          div.delete(data-bind='click: $parent.dismissPost')
             i.icon-remove
           div.message
             div(data-bind='html: content')

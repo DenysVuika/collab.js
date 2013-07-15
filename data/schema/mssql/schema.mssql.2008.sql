@@ -1,3 +1,5 @@
+-- v.0.3.1
+
 CREATE DATABASE [collabjs]
 GO
 
@@ -211,6 +213,7 @@ BEGIN
 	    WHERE s.userId = @originatorId AND s.isBlocked = 0
 	    UNION SELECT @originatorId
     )
+    AND NOT EXISTS (SELECT id FROM hidden_posts WHERE userId = @originatorId AND postId = p.id)
     AND EXISTS (SELECT id FROM posts WHERE id = @topId OR @topId = 0)
   ) AS result
   WHERE (@topId <= 0 OR result.id < @topId)
@@ -219,6 +222,7 @@ END
 GO
 
 CREATE PROCEDURE [dbo].[get_mentions]
+  @originatorId int,
 	@originatorAccount varchar(50),
   @topId int,
   @limit int = 20
@@ -235,6 +239,7 @@ BEGIN
     FROM posts AS p
 	    LEFT JOIN users AS u ON u.id = p.userId
     WHERE u.account != @originatorAccount AND p.content LIKE @term
+    AND NOT EXISTS (SELECT id FROM hidden_posts WHERE userId = @originatorId AND postId = p.id)
     AND EXISTS (SELECT id FROM posts WHERE id = @topId OR @topId = 0)
   ) AS result
   WHERE (@topId <= 0 OR result.id < @topId)
@@ -322,7 +327,8 @@ BEGIN
 END
 GO
 
-CREATE PROCEDURE [dbo].[get_timeline] 
+CREATE PROCEDURE [dbo].[get_timeline]
+  @originatorId int,
   @targetAccount varchar(50),
   @topId int,
   @limit int = 20
@@ -336,6 +342,7 @@ BEGIN
     FROM posts AS p
 	    LEFT JOIN users AS u ON u.id = p.userId
     WHERE u.account = @targetAccount
+      AND NOT EXISTS (SELECT id FROM hidden_posts WHERE userId = @originatorId AND postId = p.id)
       AND EXISTS (SELECT id FROM posts WHERE userId = p.userId AND (id = @topId OR @topId = 0))
   ) AS result
   WHERE (@topId <= 0 OR result.id < @topId)
@@ -447,7 +454,17 @@ CREATE TABLE [dbo].[posts](
 	[id] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 ) ON [PRIMARY] TEXTIMAGE_ON [PRIMARY]
+GO
 
+CREATE TABLE [dbo].[hidden_posts](
+  [id] [int] IDENTITY(1,1) NOT NULL,
+  [userId] [int] NOT NULL,
+  [postId] [int] NOT NULL
+  CONSTRAINT [PK_hidden_posts] PRIMARY KEY CLUSTERED
+(
+  [id] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
+) ON [PRIMARY] TEXTIMAGE_ON [PRIMARY]
 GO
 
 CREATE TABLE [dbo].[roles](
@@ -588,9 +605,8 @@ GO
 ALTER TABLE [dbo].[user_roles] CHECK CONSTRAINT [FK_ur_user]
 GO
 
--- v0.2.0
-
 CREATE PROCEDURE get_posts_by_hashtag
+  @originatorId int,
   @query nvarchar(256),
   @topId int,
   @limit int = 20
@@ -606,6 +622,7 @@ BEGIN
     FROM posts AS p
 	    LEFT JOIN users AS u ON u.id = p.userId
     WHERE p.content LIKE @hashtag
+    AND NOT EXISTS (SELECT id FROM hidden_posts WHERE userId = @originatorId AND postId = p.id)
     AND EXISTS (select id from posts where id = @topId OR @topId = 0)
   ) AS result
   WHERE (@topId <= 0 OR result.id < @topId)
@@ -618,8 +635,6 @@ BEGIN
   INSERT INTO roles (name, loweredName) VALUES ('Administrator', 'administrator')
 END
 GO
-
--- v.0.3.0
 
 CREATE PROCEDURE [dbo].[add_post]
   @userId int,
@@ -657,8 +672,15 @@ BEGIN
 	SET NOCOUNT ON;
   DELETE FROM [posts] WHERE id = @postId AND userId = @userId;
   IF @@ROWCOUNT > 0
-  BEGIN
-    UPDATE [users] SET posts = posts - 1 WHERE id = @userId;
-  END
+    BEGIN
+      UPDATE [users] SET posts = posts - 1 WHERE id = @userId;
+    END
+  ELSE
+    BEGIN
+      IF NOT EXISTS (SELECT TOP 1 FROM hidden_posts WHERE userId = @userId AND postId = @postId)
+        BEGIN
+          INSERT INTO hidden_posts (userId, postId) VALUES (@userId, @postId)
+        END
+    END
 END
 GO

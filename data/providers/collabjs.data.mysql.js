@@ -109,8 +109,8 @@ Provider.prototype = {
       callback(err, result);
     });
   },
-  getMentions: function (account, topId, callback) {
-    this.connection.query('CALL get_mentions(?,?)', [account, topId], function (err, result) {
+  getMentions: function (callerId, account, topId, callback) {
+    this.connection.query('CALL get_mentions(?,?,?)', [callerId, account, topId], function (err, result) {
       if (err) {
         console.log('Error getting mentions. ' + err);
         callback(err, null);
@@ -153,8 +153,8 @@ Provider.prototype = {
       }
     });
   },
-  getTimeline: function (targetAccount, topId, callback) {
-    this.connection.query('CALL get_timeline(?,?)', [targetAccount, topId], function (err, result) {
+  getTimeline: function (callerId, targetAccount, topId, callback) {
+    this.connection.query('CALL get_timeline(?,?,?)', [callerId, targetAccount, topId], function (err, result) {
       if (err) {
         console.log('Error getting timeline. ' + err);
         callback(err, null);
@@ -217,12 +217,12 @@ Provider.prototype = {
       }
     });
   },
-  getPostsByHashTag: function (hashtag, topId, callback) {
+  getPostsByHashTag: function (callerId, hashtag, topId, callback) {
     var tag = hashtag;
     if (tag.indexOf('#') !== 0) {
       tag = '#' + tag;
     }
-    this.connection.query('CALL get_posts_by_hashtag(?,?)', [tag, topId], function (err, result) {
+    this.connection.query('CALL get_posts_by_hashtag(?,?,?)', [callerId, tag, topId], function (err, result) {
       if (err) {
         console.log(err);
         callback(err, null);

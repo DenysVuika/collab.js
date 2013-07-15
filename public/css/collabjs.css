@@ -130,6 +130,19 @@ img.avatar {
   margin-left: 80px;
   margin-right: 40px;
   padding: 10px;
+  /* i.icon-ellipsis-vertical
+      .options {
+        position: absolute;
+        border-radius: 0 2px 2px 0;
+        background: #e4e6eb;
+        top: 10px;
+        right: -23px;
+        padding: 5px 10px;
+        display: inline-block;
+        cursor: pointer;
+      }
+      */
+
 }
 .timeline-feed ul li:before {
   content: '';
@@ -157,7 +170,9 @@ img.avatar {
   position: absolute;
   top: 10px;
   left: 10px;
-  width: 100%;
+  /*width: 100%;*/
+
+  width: 99%;
   background: #fbfcfc;
   padding: 5px 10px 5px 10px;
   border-radius: 2px 0 0 2px;
@@ -213,6 +228,10 @@ img.avatar {
   right: 30px;
 }
 .timeline-feed ul li ul li .delete {
+  background: transparent;
+  right: 10px;
+}
+.timeline-feed ul li ul li .options {
   background: transparent;
   right: 10px;
 }
