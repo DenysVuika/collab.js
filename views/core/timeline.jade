@@ -2,14 +2,11 @@ extends layout
 
 block content
   include shared/ko-timeline
-  form(id='frmUpdateStatus', name='frmUpdateStatus', method='post', action='', onSubmit='doUpdateStatus(); return false;')
+  form.status-form(method='post', onSubmit='collabjs.ui.doUpdateStatus(this); return false;')
     input(type='hidden', name='_csrf', value=token)
-    textarea.input-block-level(id='new-post-dialog-inline', 
-      name='content', rows='3', 
-      placeholder="What's on your mind?",
-      style='resize: vertical; max-height: 300px;')
-    div(style='padding-bottom: 30px')
-      input.m-btn.green.pull-right(type='submit', value='Submit')
+    textarea.input-block-level(name='content', rows='3', placeholder="What's on your mind?")
+    div.footer
+      input.m-btn.green.pull-right(type='submit', value='Post')
 
   p.lead(style='display: none', data-bind='visible: posts().length == 0') No posts found...
 
@@ -18,17 +15,16 @@ block content
       | You got 
       span(id='new-msg-counter')
       |  new posts for your timeline.
+
   // timeline
   div(style='display: none;', data-bind="visible: posts().length > 0, template: { name: 'timeline-template' }")
 
   // Loading progress indicator
-  div(id='page-data-loading', style='text-align: center; display: none;')
+  div.page-spinner
     i.icon-spinner.icon-spin.icon-4x
 
-  div.alert.alert-error(id='content-loading-error', style='text-align: center; display: none;')
+  div.alert.alert-error.page-error
 
 block scripts
-  script(src='/js/knockout.min.js', type='text/javascript')
-  script(src='/js/moment.min.js', type='text/javascript')
-  script(src='/js/collabjs.js', type='text/javascript')
-  script(src='/js/collabjs.timeline.js', type='text/javascript')
+  script.
+    collabjs.ui.initTimeline();

@@ -1,0 +1,130 @@
+.timeline-feed ul {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+.timeline-feed ul li {
+  position: relative;
+  border-radius: 2px;
+  box-shadow: 0 1px 0 1px #e4e6eb;
+  background: #fff;
+  padding-left: 70px;
+  padding-right: 40px;
+  box-sizing: border-box;
+  margin-bottom: 20px;
+  margin-left: 80px;
+  margin-right: 40px;
+  padding: 10px;
+  /* i.icon-ellipsis-vertical
+      .options {
+        position: absolute;
+        border-radius: 0 2px 2px 0;
+        background: #e4e6eb;
+        top: 10px;
+        right: -23px;
+        padding: 5px 10px;
+        display: inline-block;
+        cursor: pointer;
+      }
+      */
+
+}
+.timeline-feed ul li:before {
+  content: '';
+  width: 20px;
+  height: 20px;
+  top: 15px;
+  left: -20px;
+  position: absolute;
+  background: url("../img/disc-arrow.png");
+  background-size: 20px 20px;
+}
+.timeline-feed ul li .author {
+  position: absolute;
+  z-index: 1;
+  width: 60px;
+  float: left;
+  left: -70px;
+  top: 0;
+}
+.timeline-feed ul li .author img {
+  height: 50px;
+  border-radius: 50em;
+}
+.timeline-feed ul li .name {
+  position: absolute;
+  top: 10px;
+  left: 10px;
+  /*width: 100%;*/
+
+  width: 99%;
+  background: #fbfcfc;
+  padding: 5px 10px 5px 10px;
+  border-radius: 2px 0 0 2px;
+}
+.timeline-feed ul li .date {
+  position: absolute;
+  top: 10px;
+  right: 0;
+  z-index: 1;
+  background: #f3f4f6;
+  padding: 5px 20px 5px 10px;
+  border-radius: 2px 0 0 2px;
+}
+.timeline-feed ul li .delete {
+  position: absolute;
+  border-radius: 0 2px 2px 0;
+  background: #e4e6eb;
+  top: 10px;
+  right: -30px;
+  padding: 5px 10px;
+  display: inline-block;
+  cursor: pointer;
+}
+.timeline-feed ul li .message {
+  border-bottom: 1px solid #e4e6eb;
+  margin: 20px -10px 0 -10px;
+  padding: 20px;
+}
+.timeline-feed ul li ul {
+  overflow: hidden;
+}
+.timeline-feed ul li ul li {
+  box-shadow: none;
+  border-bottom: 1px solid #e4e6eb;
+  margin: 0 -10px;
+  padding-left: 70px;
+}
+.timeline-feed ul li ul li:before {
+  display: none;
+}
+.timeline-feed ul li ul li:last-child {
+  border-bottom: 0;
+}
+.timeline-feed ul li ul li .author {
+  top: 10px;
+  left: 10px;
+}
+.timeline-feed ul li ul li .name {
+  left: 70px;
+}
+.timeline-feed ul li ul li .date {
+  background: transparent;
+  right: 30px;
+}
+.timeline-feed ul li ul li .delete {
+  background: transparent;
+  right: 10px;
+}
+.timeline-feed ul li ul li .options {
+  background: transparent;
+  right: 10px;
+}
+.timeline-feed ul li ul li .message {
+  border-bottom: 0;
+}
+.timeline-feed ul li ul li textarea {
+  border: 1px solid #e4e6eb;
+  box-shadow: none;
+  width: 97%;
+}

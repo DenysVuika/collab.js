@@ -1,4 +1,6 @@
-@import "_bootstrap";
+@import "bootstrap";
+@import "profile";
+@import "timeline";
 
 /*
   Main collab.js stylesheet
@@ -7,6 +9,12 @@
 body {
   padding-top: 60px;
   padding-bottom: 40px;
+  color: #383e4b;
+  background: #f5f5f5;
+}
+
+.sidebar-left {
+  background: #fff;
 }
 
 h3 > i {
@@ -16,6 +24,16 @@ h3 > i {
 
 .field-validation-error {
   color: #B94A48;
+}
+
+div.page-spinner {
+  text-align: center;
+  display: none;
+}
+
+.page-error {
+  text-align: center;
+  display: none;
 }
 
 .profile-stats {
@@ -53,6 +71,10 @@ h3 > i {
         margin-left: 0;
         padding-left: 0;
       }
+    }
+
+    &.profile-stats a.blue {
+      color: #08c;
     }
   }
 }
@@ -95,8 +117,81 @@ a.profile-link {
   }
 }
 
-div.collapse.comments {
-  margin-top: 10px;
-  overflow: visible !important;
+a.profile-btn {
+  min-width: 80px;
 }
 
+.no-top-margin {
+  margin-top: 0;
+}
+
+.no-bottom-margin {
+  margin-bottom: 0;
+}
+
+a.account {
+  color: #808080;
+  font-weight: normal;
+  font-size: 90%;
+  padding-left: 5px;
+}
+
+input[type="text"].border-sharp {
+  border-radius: 0;
+}
+
+.bio-counter {
+  width: 530px;
+}
+
+.bio-counter-label {
+  color: #999;
+  float: right;
+  font-weight: bold;
+}
+
+form {
+
+  .form-actions {
+
+    border-top: none;
+    padding-top: 0;
+
+    a.m-btn {
+      vertical-align: middle;
+    }
+  }
+
+  &.status-form {
+    textarea {
+      resize: vertical;
+      max-height: 300px;
+    }
+
+    div.footer {
+      padding-bottom: 30px;
+    }
+  }
+
+  &.account-form {
+    .control-group {
+      margin-bottom: 10px;
+    }
+
+    .controls-hint {
+      color: #999;
+    }
+
+    textarea.v-resize {
+      resize: vertical;
+    }
+  }
+}
+
+.bold {
+  font-weight: bold;
+}
+
+i.black {
+  color: #333;
+}

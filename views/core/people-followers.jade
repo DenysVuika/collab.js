@@ -7,22 +7,6 @@ block content
     | &nbsp;Followers
   include shared/ko-people
 
-  script(type='text/javascript')
-    $(document).ready(function () {
-      $.get('/api/people/#{account}/followers', function (data) {
-        if (data && data.length > 0) {
-          onPeopleDataLoaded(data);
-        } else {
-          onPeopleDataLoaded([]);
-        }
-       });
-      initLazyLoading(getDataUrl, onPeopleDataLoaded);
-    });
-    // smooth infinite scrolling
-    // (downloads additional posts as soon as user scrolls to bottom)
-    function getDataUrl(page) {
-      var bottomUserId = Math.max.apply(this, $.map(window.peopleFeed.profiles(), function (u) {
-        return u.id;
-      }));
-      return '/api/people/#{account}/followers?topId=' + bottomUserId;
-    }
+block scripts
+  script.
+    collabjs.ui.initFollowers('#{account}');

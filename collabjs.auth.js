@@ -29,6 +29,14 @@ module.exports.requireAuthenticated = function (req, res, next) {
   return res.end();
 };
 
+/**
+ * Route middleware to ensure that current user is authenticated and assigned to a particular role.
+ * Use this route middleware on any resource that needs to be protected.
+ * If the request is authenticated and user is assigned expected role the request will proceed.
+ * Otherwise, the user will be redirected to standard (or custom) 403 (Forbidden) page.
+ * This middleware is typically used for web views.
+ * @param role Role name in lower case, eg. 'administrator'
+ */
 module.exports.ensureRole = function (role) {
   return function (req, res, next) {
     if (!req.isAuthenticated()) {
@@ -44,6 +52,14 @@ module.exports.ensureRole = function (role) {
   };
 };
 
+/**
+ * Route middleware that requires current user to be authenticated and assigned to a particular role.
+ * Use this route middleware on any resource that needs to be protected.
+ * If the request is authenticated and user is assigned expected role the request will proceed.
+ * Otherwise, the user will get 403 (Forbidden) HTTP response.
+ * This middleware is typically used for REST endpoints.
+ * @param role Role name in lower case, eg. 'administrator'
+ */
 module.exports.requireRole = function (role) {
   return function (req, res, next) {
     if (!req.isAuthenticated()) {
@@ -56,6 +72,12 @@ module.exports.requireRole = function (role) {
   };
 };
 
+/**
+ * Checks whether user is assigned to the given role.
+ * @param user User object
+ * @param role Role name
+ * @returns {boolean} True is user is assigned to the given role. Otherwise, false.
+ */
 module.exports.isUserInRole = function(user, role) {
   return (user && user.roles && user.roles.split(',').indexOf(role) >= 0) ? true : false;
 };

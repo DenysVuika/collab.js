@@ -1,45 +1,44 @@
 extends layout
 
-append sidebar-main
-  li.active
-    a(href='/search?q=#{search_q}&src=#{search_src}')
-      i.icon-search
-      | &nbsp;Search
+append sidebar-search
+  if (!hasSavedSearch('' + search_q))
+    li.active
+      a(href='#{navigationUri}')
+        i.icon-search
+        | &nbsp;#{search_q}
 
 block content
   include shared/ko-timeline
   h3
     i.icon-search
     | &nbsp;#{title}
+
+  if (!hasSavedSearch('' + search_q))
+    div(style='text-align:right')
+      form(method='post')
+        input(type='hidden', name='_csrf', value=token)
+        input(type='hidden', name='action', value='save')
+        input(type='hidden', name='q', value=search_q)
+        input(type='hidden', name='src', value=search_src)
+        input.m-btn.green(type='submit', value='Save search')
+  else
+    div(style='text-align:right')
+      form(method='post')
+        input(type='hidden', name='_csrf', value=token)
+        input(type='hidden', name='action', value='delete')
+        input(type='hidden', name='q', value=search_q)
+        input(type='hidden', name='src', value=search_src)
+        input.m-btn.red(type='submit', value='Remove saved search')
+
   p.lead(style='display: none', data-bind='visible: posts().length == 0') No entries found...
   div(style='display: none;', data-bind="visible: posts().length > 0, template: { name: 'timeline-template' }")
+
   // Loading progress indicator
-  div(id='page-data-loading', style='text-align: center; display: none;')
+  div.page-spinner
     i.icon-spinner.icon-spin.icon-4x
 
-  div.alert.alert-error(id='content-loading-error', style='text-align: center; display: none;').
+  div.alert.alert-error.page-error
 
 block scripts
-  script(src='/js/knockout.min.js', type='text/javascript')
-  script(src='/js/moment.min.js', type='text/javascript')
-  script(src='/js/collabjs.js', type='text/javascript')
-  script(type='text/javascript')
-    $(document).ready(function(){
-      $.get('/api/search?q=#{search_q}&src=#{search_src}', function (data) {
-        if (data && data.length > 0) {
-            onFeedDataLoaded(data, _currentUser);
-          } else {
-            onFeedDataLoaded([], _currentUser);
-          }
-      });
-      initLazyLoading(getDataUrl, onFeedDataLoaded);
-    });
-    // smooth infinite scrolling
-    // smooth infinite scrolling
-    //  (downloads additional posts as soon as user scrolls to the bottom)
-    function getDataUrl() {
-      var bottomPostId = Math.min.apply(this, $.map(window.timelineFeed.posts(), function (p) {
-        return p.id;
-      }));
-      return '/api/search?q=#{search_q}&src=#{search_src}&topId=' + bottomPostId;
-    }
+  script.
+    collabjs.ui.initSearchPosts('#{search_q}', '#{search_src}');

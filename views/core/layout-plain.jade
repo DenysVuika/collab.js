@@ -16,8 +16,8 @@ html
 
     block styles
 
-    script(type='text/javascript', src='/js/jquery.min.js')
-  
+    script(src='/lib/jQuery/js/jquery.min.js')
+
   body
     include shared/header
 
@@ -25,21 +25,27 @@ html
       block content
       include shared/footer
 
-  script(type='text/javascript', src='/lib/bootstrap/js/bootstrap.min.js')
-  block scripts
-  // initialize request path variable if not defined
-  if (typeof(requestPath) === 'undefined')
-    requestPath = '';
+    script(src='/lib/bootstrap/js/bootstrap.min.js')
+    script(src='/lib/jqBootstrapValidation/js/jqBootstrapValidation.js')
+    script(src='/js/collabjs.js')
 
-  script(type='text/javascript')
-    $(function() {
-      // Synchronize sidebar/header selection with current request path
-      var path = '#{requestPath}' || window.location.pathname;
-      $('.nav li a[href="' + path + '"]').parents('li').addClass('active');
-    });
+    block scripts
 
-  // assign user-related variables
-  if (user && user.account && user._id)
-    script(type='text/javascript')
-      _currentUser = '#{user.account}';
-      _currentUserId = '#{user._id}';
+    // initialize request path variable if not defined
+    if (typeof(requestPath) === 'undefined')
+      requestPath = '';
+
+    script.
+      $(function() {
+        // Synchronize sidebar/header selection with current request path
+        var path = '#{requestPath}' || window.location.pathname;
+        $('.nav li a[href="' + path + '"]').parents('li').addClass('active');
+      });
+
+    // assign user-related variables
+    if (user && user.account && user.id)
+      script.
+        collabjs.avatarServer = '#{config.env.avatarServer}';
+        collabjs.currentUser.id = '#{user.id}';
+        collabjs.currentUser.account = '#{user.account}';
+        collabjs.currentUser.pictureId = '#{user.emailHash}';

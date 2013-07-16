@@ -57,8 +57,8 @@ module.exports.unfollowAccount = function (callerId, targetAccount, callback) {
 	provider.unfollowAccount(callerId, targetAccount, callback);
 };
 
-module.exports.getMentions = function (account, topId, callback) {
-	provider.getMentions(account, topId, callback);
+module.exports.getMentions = function (callerId, account, topId, callback) {
+	provider.getMentions(callerId, account, topId, callback);
 };
 
 module.exports.getPeople = function (callerId, topId, callback) {
@@ -73,8 +73,8 @@ module.exports.getFollowing = function (callerId, targetAccount, topId, callback
 	provider.getFollowing(callerId, targetAccount, topId, callback);
 };
 
-module.exports.getTimeline = function (targetAccount, topId, callback) {
-	provider.getTimeline(targetAccount, topId, callback);
+module.exports.getTimeline = function (callerId, targetAccount, topId, callback) {
+	provider.getTimeline(callerId, targetAccount, topId, callback);
 };
 
 module.exports.addPost = function (json, callback) {
@@ -97,8 +97,8 @@ module.exports.getTimelineUpdates = function (userId, topId, callback) {
 	provider.getTimelineUpdates(userId, topId, callback);
 };
 
-module.exports.getPostsByHashTag = function (hashtag, topId, callback) {
-  provider.getPostsByHashTag(hashtag, topId, callback);
+module.exports.getPostsByHashTag = function (callerId, hashtag, topId, callback) {
+  provider.getPostsByHashTag(callerId, hashtag, topId, callback);
 };
 
 module.exports.addComment = function (json, callback) {
@@ -115,4 +115,16 @@ module.exports.getComments = function (postId, callback) {
 
 module.exports.getPostAuthor = function (postId, callback) {
 	provider.getPostAuthor(postId, callback);
+};
+
+module.exports.addSavedSearch = function (json, callback) {
+  provider.addSavedSearch(json, callback);
+};
+
+module.exports.getSavedSearches = function (userId, callback) {
+  provider.getSavedSearches(userId, callback);
+};
+
+module.exports.deleteSavedSearch = function (userId, name, callback) {
+  provider.deleteSavedSearch(userId, name, callback);
 };

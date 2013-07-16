@@ -1,46 +1,49 @@
 extends layout
 
 block content
-  include shared/ko-timeline
   include shared/tb-mixins
-  
-  p.lead#error(style='display: none;')
-  h3#header(style='display: none;')
-    i.icon-file-alt
-    span#title(style='padding-left: 5px')
-    
+
+  p.lead.page-error
+
   // Loading progress indicator
-  div#progress(style='text-align: center;')
+  div.page-spinner
     i.icon-spinner.icon-spin.icon-4x
 
-  div(style='display: none;', data-bind="visible: posts().length > 0, template: { name: 'timeline-template' }")
+  div.row-fluid(style='display: none;', data-bind='visible: posts().length > 0')
+    div.span12.timeline-feed
+      ul(data-bind='foreach: posts')
+        li
+          div.author
+            a.account(data-bind="attr: { href: feed }")
+              img(data-bind="attr: { src: picture }", alt='avatar')
+          div.name(style='width:94%')
+            span.bold(data-bind='text: name')
+            a.account(data-bind="text: '@' + account, attr: { href: feed }")
+          div.date(data-bind="text: created.calendar(), attr: { title : created.format('LLLL') }")
+          //- div.delete
+          //-  i.icon-remove
+          div.message(data-bind='html: content')
+          ul
+            // ko foreach: comments
+            li
+              div.author
+                a.account(data-bind="attr: { href: feed }")
+                  img(data-bind="attr: { src: picture }", alt='avatar')
+              div.name
+                span.bold(data-bind='text: name')
+                a.account(data-bind="text: '@' + account, attr: { href: feed }")
+              div.date(data-bind="text: created.calendar(), attr: { title : created.format('LLLL') }")
+              div.message(data-bind='html: content')
+            // /ko
+            li
+              div.author
+                img(data-bind="attr: { src: collabjs.currentUser.getPictureUrl() }", alt='avatar')
+              form(method='post', action='', onSubmit='doPostComment(this); return false;')
+                input(type='hidden', name='_csrf', value=token)
+                input(name='postId', type='hidden', data-bind='value: id')
+                input.input-block-level.border-sharp(name='content', type='text', placeholder='Write a comment...', autocomplete='off'
+                  data-bind="attr: { id: 'comment-box-' + id }")
 
 block scripts
-  script(src='/js/knockout.min.js', type='text/javascript')
-  script(src='/js/moment.min.js', type='text/javascript')
-  script(src='/js/collabjs.js', type='text/javascript')
-  script(type='text/javascript')
-    $(document).ready(function () {
-      $.ajax({
-        type: 'GET',
-        dataType: 'json',
-        url: '/api/timeline/posts/#{postId}',
-        success: function (data, status) {
-          $('#title').text(data.name);
-          $('#header').show();
-          onPostLoaded(data);
-        },
-        error: function (request, status, error) {
-          $('#header').hide();
-          $('#error').text('Post not found.').show();
-        },
-        complete: function () {
-          $('#progress').hide();
-        }
-      });
-    });
-    function onPostLoaded(data) {
-      window.viewmodel = new FeedViewModel(_currentUser, [data]);
-      ko.applyBindings(window.viewmodel);
-      $('div[data-link-type="comment"]').collapse('show');
-    }
+  script.
+    collabjs.ui.initPostView('#{postId}');

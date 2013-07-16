@@ -1,27 +1,5 @@
 extends layout-account
 
-block styles
-  link(rel='stylesheet', href='/lib/bootstrap-formhelpers/css/bootstrap-formhelpers.css')
-  link(rel='stylesheet', href='/lib/bootstrap-formhelpers/css/bootstrap-formhelpers-countries.flags.css')
-  style(type='text/css')
-    .form-horizontal .control-group {
-      margin-bottom: 10px;
-    }
-
-    .controls-hint {
-      color: #999;
-    }
-
-    .bio-counter {
-      width: 530px;
-    }
-
-    .bio-counter-label {
-      color: #999;
-      float: right;
-      font-weight: bold;
-    }
-
 block content
   include shared/tb-mixins
   h3
@@ -30,15 +8,15 @@ block content
   mixin showInfo(info, true)
   mixin showError(error)
   hr
-  form.form-horizontal(id='frmAccount', name='frmAccount', method='post', action='/account', enctype='multipart/form-data')
+  form.form-horizontal.account-form(method='post', action='/account', enctype='multipart/form-data')
     input(type='hidden', name='_csrf', value=token)
     div.control-group
       div.control-label Picture
       div.controls
-        a(href='http://www.gravatar.com', target='_blank')
-          img(src='https://www.gravatar.com/avatar/#{user.pictureId}', alt='Gravatar')
+        a(href='#{config.env.avatarServer}', target='_blank')
+          img(src='#{config.env.avatarServer}/avatar/#{user.pictureId}', alt='Gravatar')
         p.controls-hint
-          | Click the picture to configure your Gravatar
+          | Click the picture to configure your avatar
     div.control-group
       div.control-label
         label(for='name') Name
@@ -50,7 +28,6 @@ block content
       div.control-label
         label(for='location') Location
       div.controls
-        //input(type='text', id='location', name='location', value=user.location)
         div.bfh-selectbox.bfh-countries(data-country='#{user.location}', data-flags='true')
           input(type='hidden', name='location', value='')
           a.bfh-selectbox-toggle(role='button', data-toggle='bfh-selectbox', href='#')
@@ -72,21 +49,17 @@ block content
       div.control-label
         label(for='bio') Bio
       div.controls
-        textarea.input-xxlarge(id='bio', name='bio', rows='3', style='resize: vertical')= user.bio
+        textarea.input-xxlarge.v-resize(id='bio', name='bio', rows='3')= user.bio
         p.controls-hint.bio-counter
           | About yourself in 160 characters or less.
           span.bio-counter-label(id='bio_counter') 160
     hr
-    div.form-actions(style='background-color: white; border-top: none;padding-top:0;')
-      input.m-btn.blue(type='submit', value='Save Changes')
-      a.m-btn.black(href='/timeline', style='vertical-align: middle;')
+    div.form-actions
+      a.m-btn.black(href='/timeline')
         i.m-icon-swapleft.m-icon-white
         | &nbsp;Cancel
+      input.m-btn.blue(type='submit', value='Update')
 
 block scripts
-  script(src='/js/knockout.min.js', type='text/javascript')
-  script(src='/js/collabjs.js', type='text/javascript')
-  script(src='/js/collabjs.account.js', type='text/javascript')
-  script(type='text/javascript', src='/lib/bootstrap-formhelpers/js/bootstrap-formhelpers-selectbox.js')
-  script(type='text/javascript', src='/lib/bootstrap-formhelpers/js/bootstrap-formhelpers-countries.js')
-  script(type='text/javascript', src='/lib/bootstrap-formhelpers/js/bootstrap-formhelpers-countries.en_US.js')
+  script.
+    collabjs.ui.initAccountView();

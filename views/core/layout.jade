@@ -19,7 +19,7 @@ html
 
     block styles
 
-    script(type='text/javascript', src='/js/jquery.min.js')
+    script(src='/lib/jQuery/js/jquery.min.js')
 
   body
     input(type='hidden', id='csrf_token', value=token)
@@ -30,7 +30,7 @@ html
         div.span3
           //- SIDEBAR
           block sidebar
-            div.well.sidebar-nav
+            div.well.sidebar-nav.sidebar-left
               ul.nav.nav-list
                 //- 'Main' section
                 li.nav-header Main
@@ -51,6 +51,14 @@ html
                       a(href='#{entry.url}')
                         i(class='#{entry.icon}')
                         | &nbsp; #{entry.text}
+                if (savedSearches && savedSearches.length > 0)
+                  li.nav-header Search Lists
+                  block sidebar-search
+                  each list in savedSearches
+                    li
+                      a(href='/search?q=#{list.query}&src=#{list.source}')
+                        i.icon-filter
+                        | &nbsp;#{list.name}
                 //- 'Connect' section
                 li.nav-header Connect
                 li
@@ -78,25 +86,32 @@ html
           block content
       include shared/footer
 
-  script(type='text/javascript', src='/lib/bootstrap/js/bootstrap.min.js')
-  //script(type='text/javascript', src='/lib/bootstrap-formhelpers/js/bootstrap-formhelpers-selectbox.js')
-  script(type='text/javascript', src='/lib/bootstrap-formhelpers/js/bootstrap-formhelpers-countries.js')
-  script(type='text/javascript', src='/lib/bootstrap-formhelpers/js/bootstrap-formhelpers-countries.en_US.js')
-  block scripts
+    script(src='/lib/bootstrap/js/bootstrap.min.js')
+    script(src='/lib/bootstrap-formhelpers/js/bootstrap-formhelpers-selectbox.js')
+    script(src='/lib/bootstrap-formhelpers/js/bootstrap-formhelpers-countries.js')
+    script(src='/lib/bootstrap-formhelpers/js/bootstrap-formhelpers-countries.en_US.js')
+    script(src='/lib/knockout/js/knockout.min.js')
+    script(src='/lib/moment/js/moment.min.js')
+    script(src='/lib/jqBootstrapValidation/js/jqBootstrapValidation.js')
+    script(src='/js/collabjs.js')
 
-  // initialize request path variable if not defined
-  if (typeof(requestPath) === 'undefined')
-    requestPath = '';
+    block scripts
 
-  script(type='text/javascript')
-    $(function() {
-      // Synchronize sidebar/header selection with current request path
-      var path = '#{requestPath}' || window.location.pathname;
-      $('.nav li a[href="' + path + '"]').parents('li').addClass('active');
-    });
+    // initialize request path variable if not defined
+    if (typeof(requestPath) === 'undefined')
+      requestPath = '';
 
-  // assign user-related variables
-  if (user && user.account && user.id)
-    script(type='text/javascript')
-      _currentUser = '#{user.account}';
-      _currentUserId = '#{user.id}';
+    script.
+      $(function() {
+        // Synchronize sidebar/header selection with current request path
+        var path = '#{requestPath}' || window.location.pathname + window.location.search;
+        $('.nav li a[href="' + path + '"]').parents('li').addClass('active');
+      });
+
+    // assign user-related variables
+    if (user && user.account && user.id)
+      script.
+        collabjs.avatarServer = '#{config.env.avatarServer}';
+        collabjs.currentUser.id = '#{user.id}';
+        collabjs.currentUser.account = '#{user.account}';
+        collabjs.currentUser.pictureId = '#{user.emailHash}';
