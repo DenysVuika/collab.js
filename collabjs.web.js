@@ -24,6 +24,7 @@ module.exports = function (app) {
     res.render('core/login', {
       title: 'Sign In',
       formAction: req.url,
+      account: req.signedCookies.account || '',
       message: req.flash('error')
     });
   });
@@ -31,6 +32,10 @@ module.exports = function (app) {
   app.post('/login:returnUrl?',
     passport.authenticate('local', { failureRedirect: '/login', failureFlash: true }),
     function (req, res) {
+      // save account for future reuse
+      // (typically it will be used only to fill Login form)
+      res.cookie('account', req.user.account, { maxAge: 900000, httpOnly: true, signed: true });
+      // redirect if return url is provided
       var returnUrl = req.query.returnUrl;
       if (returnUrl && isUrlLocalToHost(returnUrl)) {
         res.redirect(returnUrl);

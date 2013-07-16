@@ -84,7 +84,7 @@ app.configure(function () {
     app.use(express.compress());
   }
 
-  app.use(express.cookieParser());
+  app.use(express.cookieParser(config.server.cookieSecret));
   app.use(express.bodyParser());
   app.use(express.methodOverride());
   app.use(express.session({

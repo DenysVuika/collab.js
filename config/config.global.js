@@ -11,6 +11,7 @@ config.env = {
 
 config.server = {
   sessionSecret: 'keyboard cat',
+  cookieSecret: 'keyboard cat',
   csrf: true,
   compression: true
 };
