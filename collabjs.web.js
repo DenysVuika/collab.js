@@ -243,13 +243,13 @@ module.exports = function (app) {
 //  });
 
   app.get('/people/:account/follow', ensureAuthenticated, function (req, res) {
-    repository.followAccount(req.user.id, req.params.account, function (err, result) {
+    repository.followAccount(req.user.id, req.params.account, function () {
       res.redirect('/timeline');
     });
   });
 
   app.get('/people/:account/unfollow', ensureAuthenticated, function (req, res) {
-    repository.unfollowAccount(req.user.id, req.params.account, function (err, result) {
+    repository.unfollowAccount(req.user.id, req.params.account, function () {
       res.redirect('/timeline');
     });
   });
