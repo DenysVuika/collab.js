@@ -22,7 +22,7 @@ module.exports.setProvider = function (instance) {
 
 /**
  * Get account by id.
- * @param id Account id.
+ * @param {string} id Account id.
  * @param {function(err, user)} callback Callback function.
  */
 module.exports.getAccountById = function (id, callback) {
@@ -31,7 +31,7 @@ module.exports.getAccountById = function (id, callback) {
 
 /**
  * Get account by name.
- * @param account Account name.
+ * @param {string} account Account name.
  * @param {function(err, result)} callback Callback function.
  */
 module.exports.getAccount = function (account, callback) {
@@ -47,7 +47,7 @@ module.exports.getAccount = function (account, callback) {
  * - password (user password)
  * - email (user email)
  *
- * @param json Parameters as json object.
+ * @param {Object} json Parameters as json object.
  * @param {function(err, result)} callback Callback function.
  */
 module.exports.createAccount = function (json, callback) {
@@ -63,8 +63,8 @@ module.exports.createAccount = function (json, callback) {
  * - website (user website or blog address)
  * - bio (short user bio or about information)
  *
- * @param id User account id.
- * @param json Parameters as json object.
+ * @param {number} id User account id.
+ * @param {Object} json Parameters as json object.
  * @param {function(err, result)} callback Callback function.
  */
 module.exports.updateAccount = function (id, json, callback) {
@@ -73,8 +73,8 @@ module.exports.updateAccount = function (id, json, callback) {
 
 /**
  * Set new password for the user account.
- * @param userId User id.
- * @param password New password.
+ * @param {number} userId User id.
+ * @param {string} password New password.
  * @param {function(err, result)} callback Callback function.
  */
 module.exports.setAccountPassword = function (userId, password, callback) {
@@ -83,8 +83,8 @@ module.exports.setAccountPassword = function (userId, password, callback) {
 
 /**
  * Get public profile.
- * @param callerAccount Originator account name.
- * @param targetAccount Target account name.
+ * @param {string} callerAccount Originator account name.
+ * @param {string} targetAccount Target account name.
  * @param {function(err, result)} callback Callback function.
  */
 module.exports.getPublicProfile = function (callerAccount, targetAccount, callback) {
@@ -93,8 +93,8 @@ module.exports.getPublicProfile = function (callerAccount, targetAccount, callba
 
 /**
  * Follow (subscribe) user account.
- * @param callerId Originator account id.
- * @param targetAccount Target account name.
+ * @param {number} callerId Originator account id.
+ * @param {string} targetAccount Target account name.
  * @param {function(err, result)} callback Callback function.
  */
 module.exports.followAccount = function (callerId, targetAccount, callback) {
@@ -103,8 +103,8 @@ module.exports.followAccount = function (callerId, targetAccount, callback) {
 
 /**
  * Unfollow (unsubscribe) user account.
- * @param callerId Originator account id.
- * @param targetAccount Target account name.
+ * @param {number} callerId Originator account id.
+ * @param {string} targetAccount Target account name.
  * @param {function(err, result)} callback Callback function.
  */
 module.exports.unfollowAccount = function (callerId, targetAccount, callback) {
@@ -113,9 +113,9 @@ module.exports.unfollowAccount = function (callerId, targetAccount, callback) {
 
 /**
  * Get a list of mentions for the given user.
- * @param callerId Originator account id.
- * @param account Target account name.
- * @param topId Position of the first entry from the top (used for paging).
+ * @param {number} callerId Originator account id.
+ * @param {string} account Target account name.
+ * @param {number} topId Position of the first entry from the top (used for paging).
  * @param {function(err, result)} callback Callback function.
  */
 module.exports.getMentions = function (callerId, account, topId, callback) {
@@ -124,8 +124,8 @@ module.exports.getMentions = function (callerId, account, topId, callback) {
 
 /**
  * Get a list of registered people for the given user id.
- * @param callerId Originator account id.
- * @param topId Position of the first entry from the top (used for paging).
+ * @param {number} callerId Originator account id.
+ * @param {number} topId Position of the first entry from the top (used for paging).
  * @param {function(err, result)} callback Callback function.
  */
 module.exports.getPeople = function (callerId, topId, callback) {
@@ -134,9 +134,9 @@ module.exports.getPeople = function (callerId, topId, callback) {
 
 /**
  * Get a list of followers (subscribers) for the given account name.
- * @param callerId Originator account id.
- * @param targetAccount Target account name.
- * @param topId Position of the first entry from the top (used for paging).
+ * @param {number} callerId Originator account id.
+ * @param {string} targetAccount Target account name.
+ * @param {number} topId Position of the first entry from the top (used for paging).
  * @param {function(err, result)} callback Callback function.
  */
 module.exports.getFollowers = function (callerId, targetAccount, topId, callback) {
@@ -145,9 +145,9 @@ module.exports.getFollowers = function (callerId, targetAccount, topId, callback
 
 /**
  * Get a list of people being followed (subscribed) by the given account id.
- * @param callerId Originator account id.
- * @param targetAccount Target account name.
- * @param topId Position of the first entry from the top (used for paging).
+ * @param {number} callerId Originator account id.
+ * @param {string} targetAccount Target account name.
+ * @param {number} topId Position of the first entry from the top (used for paging).
  * @param {function(err, result)} callback Callback function.
  */
 module.exports.getFollowing = function (callerId, targetAccount, topId, callback) {
@@ -156,9 +156,9 @@ module.exports.getFollowing = function (callerId, targetAccount, topId, callback
 
 /**
  * Get personal timeline feed for the given account name.
- * @param callerId Originator account id.
- * @param targetAccount Target account name.
- * @param topId Position of the first entry from the top (used for paging).
+ * @param {number} callerId Originator account id.
+ * @param {string} targetAccount Target account name.
+ * @param {number} topId Position of the first entry from the top (used for paging).
  * @param {function(err, result)} callback Callback function.
  */
 module.exports.getTimeline = function (callerId, targetAccount, topId, callback) {
@@ -167,7 +167,13 @@ module.exports.getTimeline = function (callerId, targetAccount, topId, callback)
 
 /**
  * Create a new user post.
- * @param json Parameters as json object.
+ *
+ * This function requires at least one of the following parameters (passed as a json object):
+ * - userId (user account id)
+ * - content (post content)
+ * - created (post creation date and time)
+ *
+ * @param {Object} json Parameters as json object.
  * @param {function(err, result)} callback Callback function.
  */
 module.exports.addPost = function (json, callback) {
@@ -176,8 +182,8 @@ module.exports.addPost = function (json, callback) {
 
 /**
  * Get main (home page) timeline feed for the given account id.
- * @param userId User account id.
- * @param topId Position of the first entry from the top (used for paging).
+ * @param {number} userId User account id.
+ * @param {number} topId Position of the first entry from the top (used for paging).
  * @param {function(err, callback)} callback Callback function.
  */
 module.exports.getMainTimeline = function (userId, topId, callback) {
@@ -196,8 +202,8 @@ module.exports.deletePost = function (postId, userId, callback) {
 
 /**
  * Get number of new posts that have appeared since last timeline fetch.
- * @param userId User account id.
- * @param topId Position of the first entry from the top (used for paging).
+ * @param {number} userId User account id.
+ * @param {number} topId Position of the first entry from the top (used for paging).
  * @param {function(err, result)} callback Callback function.
  */
 module.exports.getTimelineUpdatesCount = function (userId, topId, callback) {
@@ -206,8 +212,8 @@ module.exports.getTimelineUpdatesCount = function (userId, topId, callback) {
 
 /**
  * Get posts that have appeared since last timeline fetch.
- * @param userId User account id.
- * @param topId Position of the first entry from the top (used for paging).
+ * @param {number} userId User account id.
+ * @param {number} topId Position of the first entry from the top (used for paging).
  * @param {function(err, result)} callback Callback function.
  */
 module.exports.getTimelineUpdates = function (userId, topId, callback) {
@@ -216,9 +222,9 @@ module.exports.getTimelineUpdates = function (userId, topId, callback) {
 
 /**
  * Get all posts containing given hash tag in their content.
- * @param callerId Originator account id.
- * @param hashtag Hash tag to search.
- * @param topId Position of the first entry from the top (used for paging).
+ * @param {number} callerId Originator account id.
+ * @param {string} hashtag Hash tag to search.
+ * @param {number} topId Position of the first entry from the top (used for paging).
  * @param {function(err, result)} callback Callback function.
  */
 module.exports.getPostsByHashTag = function (callerId, hashtag, topId, callback) {
@@ -243,7 +249,7 @@ module.exports.addComment = function (json, callback) {
 
 /**
  * Get specific post with list of comments.
- * @param postId Post id.
+ * @param {number} postId Post id.
  * @param {function(err, result)} callback Callback function.
  */
 module.exports.getPostWithComments = function (postId, callback) {
@@ -252,7 +258,7 @@ module.exports.getPostWithComments = function (postId, callback) {
 
 /**
  * Get comments for the specific post.
- * @param postId Post id.
+ * @param {number} postId Post id.
  * @param {function(err, result)} callback Callback function.
  */
 module.exports.getComments = function (postId, callback) {
@@ -261,7 +267,7 @@ module.exports.getComments = function (postId, callback) {
 
 /**
  * Get user information based on the post.
- * @param postId Post id.
+ * @param {number} postId Post id.
  * @param {function(err, result)} callback Callback function.
  */
 module.exports.getPostAuthor = function (postId, callback) {
@@ -277,7 +283,7 @@ module.exports.getPostAuthor = function (postId, callback) {
  * - q (list query)
  * - src (list query source)
  *
- * @param json Parameters as json object.
+ * @param {Object} json Parameters as json object.
  * @param {function(err, result)} callback Callback function.
  */
 module.exports.addSavedSearch = function (json, callback) {
@@ -286,7 +292,7 @@ module.exports.addSavedSearch = function (json, callback) {
 
 /**
  * Get all saved searches from the personal collection
- * @param userId User account id.
+ * @param {number} userId User account id.
  * @param {function(err, result)} callback Callback function.
  */
 module.exports.getSavedSearches = function (userId, callback) {
@@ -295,8 +301,8 @@ module.exports.getSavedSearches = function (userId, callback) {
 
 /**
  * Remove saved search results from the personal collection.
- * @param userId User account id.
- * @param name Saved search list name.
+ * @param {number} userId User account id.
+ * @param {string} name Saved search list name.
  * @param {function(err, result)} callback Callback function.
  */
 module.exports.deleteSavedSearch = function (userId, name, callback) {
