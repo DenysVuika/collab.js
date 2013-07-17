@@ -7,7 +7,7 @@ collab.js is a starter kit for modern, extensible and social-enabled web applica
 
 sponsored by  [Raythos Interactive](http://raythos.com/)
 
-[![Raythos Interactive](public/images/raythos.png)](http://raythos.com)
+[![Raythos Interactive](public/img/raythos.png)](http://raythos.com)
 
 ## Table of Contents
 
