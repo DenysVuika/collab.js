@@ -17,29 +17,28 @@ function Provider() {
 
 Provider.prototype = {
   getAccountById: function (id, callback) {
-    sql.query(this.connection, 'exec get_account_by_id ?', [id], function (err, result) {
+    var command = 'exec get_account_by_id ?'
+      , params = [id];
+    sql.query(this.connection, command, params, function (err, result) {
       if (err) { return callback(err, null); }
-      if (result.length > 0) { callback(err, result[0]); }
-      else { callback(err, null); }
+      if (result.length > 0) { return callback(err, result[0]); }
+      else { return callback(err, null); }
     });
   },
   getAccount: function (account, callback) {
-    sql.query(this.connection, 'exec get_account ?', [account], function (err, result) {
+    var command = 'exec get_account ?'
+      , params = [account];
+    sql.query(this.connection, command, params, function (err, result) {
       if (err) { return callback(err, null); }
-      if (result.length > 0) { callback(err, result[0]); }
-      else { callback(err, null); }
+      if (result.length > 0) { return callback(err, result[0]); }
+      else { return callback(err, null); }
     });
   },
   createAccount: function (json, callback) {
-    // var user = {
-    //      account: body.account,
-    //      name: body.name,
-    //      password: hashedPassword,
-    //      email: body.email
-    //    };
-    var emailHash = crypto.createHash('md5').update(json.email.trim().toLowerCase()).digest('hex');
-    var command = 'exec create_account ?,?,?,?,?';
-    sql.query(this.connection, command, [json.account, json.name, json.password, json.email, emailHash], function (err, result) {
+    var emailHash = crypto.createHash('md5').update(json.email.trim().toLowerCase()).digest('hex')
+      , command = 'exec create_account ?,?,?,?,?'
+      , params = [json.account, json.name, json.password, json.email, emailHash];
+    sql.query(this.connection, command, params, function (err, result) {
       if (err) {
         console.log(err);
         var errorMessage = 'Error creating account.';
@@ -53,8 +52,8 @@ Provider.prototype = {
     });
   },
   updateAccount: function (id, json, callback) {
-    var command = 'UPDATE users SET ';
-    var params = [];
+    var command = 'UPDATE users SET '
+      , params = [];
     // update 'user.name'
     if (json.name && json.name.length > 0) {
       command = command + 'name = ?';
@@ -88,13 +87,16 @@ Provider.prototype = {
       command = command + 'bio = null';
     }
 
-    if (params.length === 0) { return callback(null, null); }
-    command = command + ' WHERE id = ?';
-    params.push(id);
+    if (params.length === 0) {
+      callback(null, null);
+    } else {
+      command = command + ' WHERE id = ?';
+      params.push(id);
 
-    sql.query(this.connection, command, params, function (err, result) {
-      callback(err, result);
-    });
+      sql.query(this.connection, command, params, function (err, result) {
+        callback(err, result);
+      });
+    }
   },
 //  validateAccountPassword: function (account, password, callback) {
 //    if (!account || account.length == 0)
@@ -112,28 +114,34 @@ Provider.prototype = {
   setAccountPassword: function (userId, password, callback) {
     var self = this;
     if (!userId || !password || password.length === 0) {
-      return callback('Error setting account password.', null);
-    }
-    self.getAccountById(userId, function (err, result) {
-      if (err) {
-        console.log(err);
-        return callback(err, result);
-      }
-      var hashedPassword = passwordHash.generate(password);
-      var command = 'UPDATE users SET password = ? WHERE id = ?';
-      sql.query(self.connection, command, [hashedPassword, userId], function (err, result) {
+      callback('Error setting account password.', null);
+    } else {
+      self.getAccountById(userId, function (err, result) {
         if (err) {
           console.log(err);
-          return callback(err, result);
+          callback(err, result);
+        } else {
+          var hashedPassword = passwordHash.generate(password)
+            , command = 'UPDATE users SET password = ? WHERE id = ?'
+            , params = [hashedPassword, userId];
+          sql.query(self.connection, command, params, function (err, result) {
+            if (err) {
+              console.log(err);
+              callback(err, result);
+            } else {
+              callback(null, hashedPassword);
+            }
+          });
         }
-        return callback(null, hashedPassword);
       });
-    });
+    }
   },
   getPublicProfile: function (callerAccount, targetAccount, callback) {
-    sql.query(this.connection, 'exec get_public_profile ?, ?', [callerAccount, targetAccount], function (err, result) {
+    var command = 'exec get_public_profile ?,?'
+      , params = [callerAccount, targetAccount];
+    sql.query(this.connection, command, params, function (err, result) {
       if (err || result.length === 0) {
-        console.log('Error getting public profile. ' + err);
+        console.log(err);
         callback(err, null);
       } else {
         callback(err, result[0]);
@@ -141,68 +149,77 @@ Provider.prototype = {
     });
   },
   followAccount: function (callerId, targetAccount, callback) {
-    sql.query(this.connection, 'exec follow_account ?,?', [callerId, targetAccount], function (err, result) {
-      console.log('callerId: ' + callerId + ', targetAccount: ' + targetAccount);
-      if (err) { console.log('Error following account. ' + err); }
+    var command = 'exec follow_account ?,?'
+      , params = [callerId, targetAccount];
+    sql.query(this.connection, command, params, function (err, result) {
+      if (err) { console.log(err); }
       callback(err, result);
     });
   },
   unfollowAccount: function (callerId, targetAccount, callback) {
-    sql.query(this.connection, 'exec unfollow_account ?,?', [callerId, targetAccount], function (err, result) {
-      if (err) { console.log('Error unfollowing account.' + err); }
+    var command = 'exec unfollow_account ?,?'
+      , params = [callerId, targetAccount];
+    sql.query(this.connection, command, params, function (err, result) {
+      if (err) { console.log(err); }
       callback(err, result);
     });
   },
   getMentions: function (callerId, account, topId, callback) {
-    sql.query(this.connection, 'exec get_mentions ?,?,?', [callerId, account, topId], function (err, result) {
+    var command = 'exec get_mentions ?,?,?'
+      , params = [callerId, account, topId];
+    sql.query(this.connection, command, params, function (err, result) {
       if (err) {
-        console.log('Error getting mentions. ' + err);
+        console.log(err);
         callback(err, null);
       } else { callback(err, result); }
     });
   },
   getPeople: function (callerId, topId, callback) {
-    sql.query(this.connection, 'exec get_people ?,?', [callerId, topId], function (err, result) {
+    var command = 'exec get_people ?,?'
+      , params = [callerId, topId];
+    sql.query(this.connection, command, params, function (err, result) {
       if (err) {
-        console.log('Error getting people. ' + err);
+        console.log(err);
         callback(err, null);
       } else { callback(err, result); }
     });
   },
   getFollowers: function (callerId, targetAccount, topId, callback) {
-    sql.query(this.connection, 'exec get_followers ?,?,?', [callerId, targetAccount, topId], function (err, result) {
+    var command = 'exec get_followers ?,?,?'
+      , params = [callerId, targetAccount, topId];
+    sql.query(this.connection, command, params, function (err, result) {
       if (err) {
-        console.log('Error getting followers. ' + err);
+        console.log(err);
         callback(err, null);
       } else { callback(err, result); }
     });
   },
   getFollowing: function (callerId, targetAccount, topId, callback) {
-    sql.query(this.connection, 'exec get_following ?,?,?', [callerId, targetAccount, topId], function (err, result) {
+    var command = 'exec get_following ?,?,?'
+      , params = [callerId, targetAccount, topId];
+    sql.query(this.connection, command, params, function (err, result) {
       if (err) {
-        console.log('Error getting following. ' + err);
+        console.log(err);
         callback(err, null);
       } else { callback(err, result); }
     });
   },
   getTimeline: function (callerId, targetAccount, topId, callback) {
-    sql.query(this.connection, 'exec get_timeline ?,?,?', [callerId, targetAccount, topId], function (err, result) {
+    var command = 'exec get_timeline ?,?,?'
+      , params = [callerId, targetAccount, topId];
+    sql.query(this.connection, command, params, function (err, result) {
       if (err) {
-        console.log('Error getting timeline. ' + err);
+        console.log(err);
         callback(err, null);
       } else { callback(err, result); }
     });
   },
   addPost: function (json, callback) {
-    /*var post = {
-     userId: req.user.id,
-     content: req.body.content,
-     created: date
-     };*/
-    var command = 'exec add_post ?,?,?';
-    sql.query(this.connection, command, [json.userId, json.content, json.created], function (err, result) {
+    var command = 'exec add_post ?,?,?'
+      , params = [json.userId, json.content, json.created];
+    sql.query(this.connection, command, params, function (err, result) {
       if (err) {
-        console.log('Error creating post. ' + err);
+        console.log(err);
         callback(err, null);
       } else {
         callback(err, { id: result[0].insertId });
@@ -210,9 +227,11 @@ Provider.prototype = {
     });
   },
   getMainTimeline: function (userId, topId, callback) {
-    sql.query(this.connection, 'exec get_main_timeline ?, ?', [userId, topId], function (err, result) {
+    var command = 'exec get_main_timeline ?,?'
+      , params = [userId, topId];
+    sql.query(this.connection, command, params, function (err, result) {
       if (err) {
-        console.log('Error getting posts. ' + err);
+        console.log(err);
         callback(err, null);
       } else {
         callback(err, result);
@@ -220,17 +239,21 @@ Provider.prototype = {
     });
   },
   deletePost: function (postId, userId, callback) {
-    sql.query(this.connection, 'exec delete_post ?,?', [userId, postId], function (err) {
+    var command = 'exec delete_post ?,?'
+      , params = [userId, postId];
+    sql.query(this.connection, command, params, function (err) {
       if (err) {
-        console.log('Error removing post. ' + err);
+        console.log(err);
         callback(err, false);
       } else { callback(err, true); }
     });
   },
   getTimelineUpdatesCount: function (userId, topId, callback) {
-    sql.query(this.connection, 'exec get_timeline_updates_count ?,?', [userId, topId], function (err, result) {
+    var command = 'exec get_timeline_updates_count ?,?'
+      , params = [userId, topId];
+    sql.query(this.connection, command, params, function (err, result) {
       if (err) {
-        console.log('Error getting timeline updates count. ' + err);
+        console.log(err);
         callback(err, null);
       } else {
         // returns a json object like { posts: 0 }
@@ -239,9 +262,11 @@ Provider.prototype = {
     });
   },
   getTimelineUpdates: function (userId, topId, callback) {
-    sql.query(this.connection, 'exec get_timeline_updates ?,?', [userId, topId], function (err, result) {
+    var command = 'exec get_timeline_updates ?,?'
+      , params = [userId, topId];
+    sql.query(this.connection, command, params, function (err, result) {
       if (err) {
-        console.log('Error getting timeline updates. ' + err);
+        console.log(err);
         callback(err, null);
       } else { callback(err, result); }
     });
@@ -251,7 +276,9 @@ Provider.prototype = {
     if (tag.indexOf('#') !== 0) {
       tag = '#' + tag;
     }
-    sql.query(this.connection, 'exec get_posts_by_hashtag ?,?,?', [callerId, tag, topId], function (err, result) {
+    var command = 'exec get_posts_by_hashtag ?,?,?'
+      , params = [callerId, tag, topId];
+    sql.query(this.connection, command, params, function (err, result) {
       if (err) {
         console.log(err);
         callback(err, null);
@@ -259,16 +286,11 @@ Provider.prototype = {
     });
   },
   addComment: function (json, callback) {
-    /*var comment = {
-     userId: req.user.id,
-     postId: req.body.postId,
-     created: created,
-     content: req.body.content
-     };*/
-    var command = 'exec add_comment ?,?,?,?';
-    sql.query(this.connection, command, [json.userId, json.postId, json.created, json.content], function (err, result) {
+    var command = 'exec add_comment ?,?,?,?'
+      , params = [json.userId, json.postId, json.created, json.content];
+    sql.query(this.connection, command, params, function (err, result) {
       if (err) {
-        console.log('Error inserting comment. ' + err);
+        console.log(err);
         callback(err, null);
       } else {
         callback(err, { id: result[0].insertId });
@@ -276,36 +298,44 @@ Provider.prototype = {
     });
   },
   getPostWithComments: function (postId, callback) {
-    var self = this;
-    sql.query(self.connection, 'exec get_post ?', [postId], function (err, result) {
+    var self = this
+      , command_post = 'exec get_post ?'
+      , command_comments = 'exec get_comments ?'
+      , params = [postId];
+    sql.query(self.connection, command_post, params, function (err, result) {
       if (err) {
-        console.log('Error getting post. ' + err);
+        console.log(err);
         callback(err, null);
       } else {
-        if (result.length === 0) { return callback(err, null); }
-        var post = result[0];
-        sql.query(self.connection, 'exec get_comments ?', [postId], function (err, result) {
-          if (err) {
-            console.log('Error getting comments for post. ' + err);
-            callback(err, null);
-          } else {
-            if (result.length > 0) {
-              post.commentsCount = result.length;
-              post.comments = result;
+        if (result.length === 0) {
+          callback(err, null);
+        } else {
+          var post = result[0];
+          sql.query(self.connection, command_comments, params, function (err, result) {
+            if (err) {
+              console.log(err);
+              callback(err, null);
             } else {
-              post.commentsCount = 0;
-              post.comments = [];
+              if (result.length > 0) {
+                post.commentsCount = result.length;
+                post.comments = result;
+              } else {
+                post.commentsCount = 0;
+                post.comments = [];
+              }
+              callback(err, post);
             }
-            callback(err, post);
-          }
-        });
+          });
+        }
       }
     });
   },
   getComments: function (postId, callback) {
-    sql.query(this.connection, 'exec get_comments ?', [postId], function (err, result) {
+    var command = 'exec get_comments ?'
+      , params = [postId];
+    sql.query(this.connection, command, params, function (err, result) {
       if (err) {
-        console.log('Error getting comments for post ' + postId + '. ' + err);
+        console.log(err);
         callback(err, null);
       } else {
         callback(err, result);
@@ -313,22 +343,26 @@ Provider.prototype = {
     });
   },
   getPostAuthor: function (postId, callback) {
-    sql.query(this.connection, 'exec get_post_author ?', [postId], function (err, result) {
+    var command = 'exec get_post_author ?'
+      , params = [postId];
+    sql.query(this.connection, command, params, function (err, result) {
       if (err) {
-        console.log('Error getting post author. ' + err);
-        callback(err, null);
+        console.log(err);
+        return callback(err, null);
       } else {
         if (result.length === 0) {
-          console.log('Post author not found. PostId: ' + postId);
+          console.log(postId);
           return callback(err, null);
         }
         console.log(result);
-        callback(err, result[0]);
+        return callback(err, result[0]);
       }
     });
   },
   getSavedSearches: function (userId, callback) {
-    sql.query(this.connection, 'exec get_search_lists ?', [userId], function (err, result) {
+    var command = 'exec get_search_lists ?'
+      , params = [userId];
+    sql.query(this.connection, command, params, function (err, result) {
       if (err) {
         console.log(err);
         callback(err, null);
@@ -338,8 +372,8 @@ Provider.prototype = {
     });
   },
   addSavedSearch: function (json, callback) {
-    var command = 'exec add_search_list ?,?,?,?';
-    var params = [json.name, json.userId, json.q, json.src];
+    var command = 'exec add_search_list ?,?,?,?'
+      , params = [json.name, json.userId, json.q, json.src];
     sql.query(this.connection, command, params, function (err) {
       if (err) {
         console.log(err);
@@ -350,8 +384,8 @@ Provider.prototype = {
     });
   },
   deleteSavedSearch: function (userId, name, callback) {
-    var command = 'exec delete_search_list ?,?';
-    var params = [userId, name];
+    var command = 'exec delete_search_list ?,?'
+      , params = [userId, name];
     sql.query(this.connection, command, params, function (err) {
       if (err) {
         console.log(err);

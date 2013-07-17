@@ -35,7 +35,7 @@ module.exports.requireAuthenticated = function (req, res, next) {
  * If the request is authenticated and user is assigned expected role the request will proceed.
  * Otherwise, the user will be redirected to standard (or custom) 403 (Forbidden) page.
  * This middleware is typically used for web views.
- * @param role Role name in lower case, eg. 'administrator'
+ * @param {string} role Role name in lower case, eg. 'administrator'
  */
 module.exports.ensureRole = function (role) {
   return function (req, res, next) {
@@ -58,7 +58,7 @@ module.exports.ensureRole = function (role) {
  * If the request is authenticated and user is assigned expected role the request will proceed.
  * Otherwise, the user will get 403 (Forbidden) HTTP response.
  * This middleware is typically used for REST endpoints.
- * @param role Role name in lower case, eg. 'administrator'
+ * @param {string} role Role name in lower case, eg. 'administrator'
  */
 module.exports.requireRole = function (role) {
   return function (req, res, next) {
@@ -74,8 +74,8 @@ module.exports.requireRole = function (role) {
 
 /**
  * Checks whether user is assigned to the given role.
- * @param user User object
- * @param role Role name
+ * @param {Object} user User object
+ * @param {string} role Role name
  * @returns {boolean} True is user is assigned to the given role. Otherwise, false.
  */
 module.exports.isUserInRole = function(user, role) {

@@ -210,5 +210,5 @@ function getTimelineUrl(account) {
 }
 
 function getGravatarUrl(pictureId) {
-  return 'https://www.gravatar.com/avatar/' + pictureId + '?s=48';
+  return config.env.avatarServer + '/avatar/' + pictureId + '?s=48';
 }
