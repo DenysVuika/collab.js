@@ -150,6 +150,11 @@ app.configure('development', function(){
 
 app.configure('production', function(){
   app.use(express.errorHandler());
+  app.use(function (req, res, next) {
+    // production settings for Jade
+    res.locals.compileDebug = false;
+    next();
+  });
 });
 
 // Routes
