@@ -97,9 +97,9 @@ html
 
     block scripts
 
-    // initialize request path variable if not defined
-    if (typeof(requestPath) === 'undefined')
-      requestPath = '';
+    //- initialize request path variable if not defined
+    - if (typeof(requestPath) === 'undefined')
+      - requestPath = '';
 
     script.
       $(function() {
@@ -108,8 +108,8 @@ html
         $('.nav li a[href="' + path + '"]').parents('li').addClass('active');
       });
 
-    // assign user-related variables
-    if (collabjs.user && collabjs.user.account && collabjs.user.id)
+    //- assign user-related variables
+    if (collabjs.user)
       script.
         collabjs.avatarServer = '#{collabjs.config.env.avatarServer}';
         collabjs.currentUser.id = '#{collabjs.user.id}';

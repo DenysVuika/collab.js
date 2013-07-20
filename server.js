@@ -166,8 +166,8 @@ io.set('authorization', passportSocketIo.authorize({
 // Default routes
 
 app.get('/', routes.index);
-require('./collabjs.web.js')(app);
-require('./collabjs.web.api.js')(app);
+require('./collabjs.web.js')(runtimeContext);
+require('./collabjs.web.api.js')(runtimeContext);
 
 // Notify external modules
 
