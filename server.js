@@ -67,23 +67,26 @@ passport.use(new LocalStrategy(
 // Create server
 var app = express();
 
-var MemoryStore = express.session.MemoryStore;
-var sessionStore = new MemoryStore();
+//var MemoryStore = express.session.MemoryStore;
+//var sessionStore = new MemoryStore();
+
+var sessionStore = new db.SessionStore();
 
 // Configuration
 app.configure(function () {
   app.set('port', config.env.port);
   app.set('views', __dirname + '/views');
   app.set('view engine', 'jade');
-  //app.use(express.favicon());
-  app.use(express.favicon(__dirname + '/favicon.ico'));
-  app.use(express.logger('dev'));
 
   // use content compression middleware if enabled
   if (config.server.compression) {
     app.use(express.compress());
   }
 
+  app.use(express.logger('dev'));
+  app.use(express.static(__dirname + '/public', { maxAge: 86400000})); // one day
+  //app.use(express.favicon());
+  app.use(express.favicon(__dirname + '/favicon.ico'));
   app.use(express.cookieParser(config.server.cookieSecret));
   app.use(express.bodyParser());
   app.use(express.methodOverride());
@@ -141,20 +144,21 @@ app.configure(function () {
   });
   app.use(utils.detectMobileBrowser);
   app.use(app.router);
-  app.use(express.static(__dirname + '/public', { maxAge: 86400000})); // one day
 });
 
 app.configure('development', function(){
   app.use(express.errorHandler({ dumpExceptions: true, showStack: true }));
-});
-
-app.configure('production', function(){
-  app.use(express.errorHandler());
+  /*
   app.use(function (req, res, next) {
     // production settings for Jade
     res.locals.compileDebug = false;
     next();
   });
+  */
+});
+
+app.configure('production', function(){
+  app.use(express.errorHandler());
 });
 
 // Routes
@@ -165,6 +169,7 @@ require('./collabjs.web.js')(app);
 require('./collabjs.web.api.js')(app);
 
 var server = http.createServer(app);
+
 var io = require('socket.io').listen(server);
 var passportSocketIo = require('passport.socketio');
 

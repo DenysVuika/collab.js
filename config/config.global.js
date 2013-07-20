@@ -11,6 +11,7 @@ config.env = {
 
 config.server = {
   sessionSecret: 'keyboard cat',
+  sessionCleanupTime: 60000, // one minute
   cookieSecret: 'keyboard cat',
   csrf: true,
   compression: true
@@ -25,6 +26,7 @@ config.invitation = {
 // data layer
 config.data = {
   provider: 'collabjs.data.mysql',
+  sessionStore: 'collabjs.session.mysql',
   //provider: 'collabjs.data.mssql',
   // Note: if defined, 'connectionString' value supersedes parameters host/database/user/password
   // this allows providing driver-specific connection strings like one the following samples:
