@@ -177,4 +177,4 @@ runtimeContext.emit(RuntimeEvents.app_start, app);
 // Server startup
 
 server.listen(config.env.port, config.env.ipaddress);
-console.log("Express server listening on port %d in %s mode", config.env.port, app.settings.env);
+console.log("collab.js server listening on port %d in %s mode", config.env.port, app.settings.env);
