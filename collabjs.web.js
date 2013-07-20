@@ -18,13 +18,17 @@ var auth = require('./collabjs.auth')
 
 module.exports = function (app) {
 
-  console.log('Initializing collabjs.web routes...');
-
   app.get('/login:returnUrl?', function (req, res) {
+
+    var account = '';
+    if (req.signedCookies && req.signedCookies.account) {
+      account = req.signedCookies.account;
+    }
+
     res.render('core/login', {
       title: 'Sign In',
       formAction: req.url,
-      account: req.signedCookies.account || '',
+      account: account,
       message: req.flash('error')
     });
   });

@@ -1,7 +1,11 @@
 'use strict';
 
 var config = require('../config')
-	, Provider = require('./providers/' + config.data.provider);
+	, Provider = require('./providers/' + config.data.provider)
+  , express = require('express')
+  , SessionStore = require('./providers/' + config.data.sessionStore)(express);
+
+module.exports.SessionStore = SessionStore;
 
 // Notes:
 // it is possible to just promote underlying provider like following:
