@@ -19,7 +19,18 @@ var express = require('express')
   , config = require('./config')
   , auth = require('./collabjs.auth')
   , utils = require('./collabjs.utils')
+  , runtime = require('./collabjs.runtime')
+  , RuntimeEvents = runtime.RuntimeEvents
+  , runtimeContext = new runtime.RuntimeContext()
   , http = require('http');
+
+// Create server
+
+var app = express()
+  , sessionStore = new db.SessionStore()
+  , server = http.createServer(app)
+  , io = require('socket.io').listen(server)
+  , passportSocketIo = require('passport.socketio');
 
 /*
  * Authentication Layer
@@ -64,13 +75,10 @@ passport.use(new LocalStrategy(
   }
 ));
 
-// Create server
-var app = express();
 
-//var MemoryStore = express.session.MemoryStore;
-//var sessionStore = new MemoryStore();
 
-var sessionStore = new db.SessionStore();
+// Load external modules
+require('./modules')(runtimeContext);
 
 // Configuration
 app.configure(function () {
@@ -85,6 +93,8 @@ app.configure(function () {
 
   app.use(express.logger('dev'));
   app.use(express.static(__dirname + '/public', { maxAge: 86400000})); // one day
+  runtimeContext.emit(RuntimeEvents.app_init_static, app);
+
   //app.use(express.favicon());
   app.use(express.favicon(__dirname + '/favicon.ico'));
   app.use(express.cookieParser(config.server.cookieSecret));
@@ -161,17 +171,7 @@ app.configure('production', function(){
   app.use(express.errorHandler());
 });
 
-// Routes
-
-app.get('/', routes.index);
-
-require('./collabjs.web.js')(app);
-require('./collabjs.web.api.js')(app);
-
-var server = http.createServer(app);
-
-var io = require('socket.io').listen(server);
-var passportSocketIo = require('passport.socketio');
+// Socket.io authorization
 
 io.set('authorization', passportSocketIo.authorize({
   cookieParser: express.cookieParser, // or connect.cookieParser
@@ -191,13 +191,16 @@ io.set('authorization', passportSocketIo.authorize({
  });
 */
 
-// Modules
-var runtimeContext = {
-  server: server,
-  app: app,
-  io: io
-};
-require('./modules')(runtimeContext);
+// Default routes
+
+app.get('/', routes.index);
+require('./collabjs.web.js')(app);
+require('./collabjs.web.api.js')(app);
+
+// Notify external modules
+
+runtimeContext.emit(RuntimeEvents.app_init_routes, app);
+runtimeContext.emit(RuntimeEvents.app_start, app);
 
 // Server startup
 

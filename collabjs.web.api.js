@@ -14,8 +14,6 @@ var template_comment = jade.compile(fs.readFileSync(__dirname + '/config/templat
 
 module.exports = function (app) {
 
-  console.log('Initializing collabjs.web.api routes...');
-
   app.get('/api/mentions:topId?', requireAuthenticated, function (req, res) {
     var _topId = (req.query.topId && req.query.topId > 0) ? req.query.topId : 0;
     repository.getMentions(req.user.id, req.user.account, _topId, function (err, result) {

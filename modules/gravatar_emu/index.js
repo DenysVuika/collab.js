@@ -8,9 +8,9 @@
  */
 
 module.exports = function (context) {
-  var app = context.app;
-
-  app.get('/avatar/:id?', function (req, res) {
-    res.sendfile(__dirname + '/public/img/avatar.png');
+  context.once('app.init.routes', function (app) {
+    app.get('/avatar/:id?', function (req, res) {
+      res.sendfile(__dirname + '/public/img/avatar.png');
+    });
   });
 };
