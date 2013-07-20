@@ -22,7 +22,7 @@ html
     script(src='/lib/jQuery/js/jquery.min.js')
 
   body
-    input(type='hidden', id='csrf_token', value=token)
+    input(type='hidden', id='csrf_token', value=collabjs.token)
     include shared/header
 
     div.container-fluid
@@ -44,7 +44,7 @@ html
                     | &nbsp;Mentions
                 block sidebar-main
                 //- Dynamic categories
-                each category in config.ui.sidebar.categories
+                each category in collabjs.config.ui.sidebar.categories
                   li.nav-header= category.name
                   each entry in category.entries
                     li
@@ -67,10 +67,10 @@ html
                     | &nbsp;People
                 block sidebar-connect
                 //- 'Administration' section
-                if (isAdministrator && config.ui.sidebar.administration.length > 0)
+                if (collabjs.isAdministrator && collabjs.config.ui.sidebar.administration.length > 0)
                   li.divider
                   li.nav-header Administration
-                  each link in config.ui.sidebar.administration
+                  each link in collabjs.config.ui.sidebar.administration
                     li
                       a(href='#{link.url}')
                         i(class='#{link.icon}')
@@ -109,9 +109,9 @@ html
       });
 
     // assign user-related variables
-    if (user && user.account && user.id)
+    if (collabjs.user && collabjs.user.account && collabjs.user.id)
       script.
-        collabjs.avatarServer = '#{config.env.avatarServer}';
-        collabjs.currentUser.id = '#{user.id}';
-        collabjs.currentUser.account = '#{user.account}';
-        collabjs.currentUser.pictureId = '#{user.emailHash}';
+        collabjs.avatarServer = '#{collabjs.config.env.avatarServer}';
+        collabjs.currentUser.id = '#{collabjs.user.id}';
+        collabjs.currentUser.account = '#{collabjs.user.account}';
+        collabjs.currentUser.pictureId = '#{collabjs.user.emailHash}';

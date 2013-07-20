@@ -16,7 +16,7 @@ block content
   if (!hasSavedSearch('' + search_q))
     div(style='text-align:right')
       form(method='post')
-        input(type='hidden', name='_csrf', value=token)
+        input(type='hidden', name='_csrf', value=collabjs.token)
         input(type='hidden', name='action', value='save')
         input(type='hidden', name='q', value=search_q)
         input(type='hidden', name='src', value=search_src)
@@ -24,7 +24,7 @@ block content
   else
     div(style='text-align:right')
       form(method='post')
-        input(type='hidden', name='_csrf', value=token)
+        input(type='hidden', name='_csrf', value=collabjs.token)
         input(type='hidden', name='action', value='delete')
         input(type='hidden', name='q', value=search_q)
         input(type='hidden', name='src', value=search_src)

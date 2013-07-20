@@ -11,10 +11,10 @@ block content
       lang: 'en'
     }
   form.form-horizontal(method='post')
-    input(type='hidden', name='_csrf', value=token)
+    input(type='hidden', name='_csrf', value=collabjs.token)
     fieldset
       legend Account Information
-      if (config.invitation.enabled)
+      if (collabjs.config.invitation.enabled)
         div.control-group
           div.control-label
             label(for='code') Invitation code
@@ -48,7 +48,7 @@ block content
             data-validation-required-message='Password confirmation is required'
             data-validation-matches-match='password',
             data-validation-matches-message='Must match password entered above')
-      if (config.recaptcha.enabled)
+      if (collabjs.config.recaptcha.enabled)
         div.control-group
           div.controls
             != recaptcha_form

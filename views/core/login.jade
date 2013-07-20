@@ -10,7 +10,7 @@ block content
     a(href='/register') Register
     |  if you don't have an account.
   form.form-horizontal(method='post', action=formAction)
-    input(type='hidden', name='_csrf', value=token)
+    input(type='hidden', name='_csrf', value=collabjs.token)
     fieldset
       legend Account Information
       div.control-group

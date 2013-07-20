@@ -9,26 +9,26 @@ block content
   mixin showError(error)
   hr
   form.form-horizontal.account-form(method='post', action='/account', enctype='multipart/form-data')
-    input(type='hidden', name='_csrf', value=token)
+    input(type='hidden', name='_csrf', value=collabjs.token)
     div.control-group
       div.control-label Picture
       div.controls
-        a(href='#{config.env.avatarServer}', target='_blank')
-          img(src='#{config.env.avatarServer}/avatar/#{user.pictureId}', alt='Gravatar')
+        a(href='#{collabjs.config.env.avatarServer}', target='_blank')
+          img(src='#{collabjs.config.env.avatarServer}/avatar/#{collabjs.user.pictureId}', alt='Gravatar')
         p.controls-hint
           | Click the picture to configure your avatar
     div.control-group
       div.control-label
         label(for='name') Name
       div.controls
-        input(type='text', required, id='name', name='name', value=user.name)
+        input(type='text', required, id='name', name='name', value=collabjs.user.name)
         p.controls-hint 
           | Enter your real name, so people you know can recognize you.
     div.control-group
       div.control-label
         label(for='location') Location
       div.controls
-        div.bfh-selectbox.bfh-countries(data-country='#{user.location}', data-flags='true')
+        div.bfh-selectbox.bfh-countries(data-country='#{collabjs.user.location}', data-flags='true')
           input(type='hidden', name='location', value='')
           a.bfh-selectbox-toggle(role='button', data-toggle='bfh-selectbox', href='#')
             span.bfh-selectbox-option.input-medium(data-option='')
@@ -42,14 +42,14 @@ block content
       div.control-label
         label(for='website') Website
       div.controls
-        input(type='text', id='website', name='website', value=user.website)
+        input(type='text', id='website', name='website', value=collabjs.user.website)
         p.controls-hint
           | Have a homepage or a blog? Put the address here.
     div.control-group
       div.control-label
         label(for='bio') Bio
       div.controls
-        textarea.input-xxlarge.v-resize(id='bio', name='bio', rows='3')= user.bio
+        textarea.input-xxlarge.v-resize(id='bio', name='bio', rows='3')= collabjs.user.bio
         p.controls-hint.bio-counter
           | About yourself in 160 characters or less.
           span.bio-counter-label(id='bio_counter') 160

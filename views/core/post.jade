@@ -39,7 +39,7 @@ block content
               div.author
                 img(data-bind="attr: { src: collabjs.currentUser.getPictureUrl() }", alt='avatar')
               form(method='post', action='', onSubmit='doPostComment(this); return false;')
-                input(type='hidden', name='_csrf', value=token)
+                input(type='hidden', name='_csrf', value=collabjs.token)
                 input(name='postId', type='hidden', data-bind='value: id')
                 input.input-block-level.border-sharp(name='content', type='text', placeholder='Write a comment...', autocomplete='off'
                   data-bind="attr: { id: 'comment-box-' + id }")

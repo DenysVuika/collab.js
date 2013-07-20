@@ -1,6 +1,12 @@
 'use strict';
 
 module.exports.detectMobileBrowser = detectMobileBrowser;
+module.exports.savedSearches = savedSearches;
+module.exports.commonLocals = commonLocals;
+
+var db = require('./data')
+  , auth = require('./collabjs.auth')
+  , config = require('./config');
 
 // Stub for reCaptcha that always returns successful result
 // used instead of real implementation when reCaptcha feature is disabled,
@@ -31,4 +37,42 @@ function detectMobileBrowser(req, res, next) {
   }
 
   return next();
+}
+
+// middleware that gets saved search lists for current user and
+// creates `hasSavedSearch` function for use in Jade views
+function savedSearches(req, res, next) {
+  res.locals.hasSavedSearch = function (name) {
+    var decodedName = decodeURIComponent(name);
+    var searches = res.locals.savedSearches;
+    if (searches && searches.length > 0) {
+      for (var i = 0; i < searches.length; i++) {
+        if (searches[i].name === decodedName) {
+          return true;
+        }
+      }
+    }
+    return false;
+  };
+  if (req.isAuthenticated()) {
+    db.getSavedSearches(req.user.id, function (err, result) {
+      res.locals.savedSearches = result;
+      next();
+    });
+  } else {
+    res.locals.savedSearches = [];
+    next();
+  }
+}
+
+// Initialize variables that are provided to all templates rendered within the application
+function commonLocals(req, res, next) {
+  res.locals.collabjs = res.locals.collabjs || {
+    config: config,
+    token: req.session._csrf,
+    user: req.user,
+    isAuthenticated: req.isAuthenticated(),
+    isAdministrator: auth.isUserInRole(req.user, 'administrator')
+  };
+  next();
 }
