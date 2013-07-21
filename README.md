@@ -49,8 +49,8 @@ Please refer to [Wiki](https://github.com/DenisVuyka/collab.js/wiki) for more de
 
 ## Supported databases
 
-- Microsoft SQL Server 2008/2012 (full or express edition)
 - MySQL Server
+- Microsoft SQL Server 2008 and later
 
 Database schemas can be found at **```data/schema```** folder.
 
@@ -72,6 +72,7 @@ collab.js was developed and tested with **OSX Lion 10.7 x64** and **Windows 7 x6
 ```javascript
 // data
 config.data.provider = 'collabjs.data.mysql';
+config.data.sessionStore = 'collabjs.data.mysql';
 config.data.host = '.';
 config.data.database = 'collabjs';
 config.data.user = '<user>';
