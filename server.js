@@ -75,8 +75,6 @@ passport.use(new LocalStrategy(
   }
 ));
 
-
-
 // Load external modules
 require('./modules')(runtimeContext);
 
@@ -114,45 +112,19 @@ app.configure(function () {
   // persistent Login sessions (recommended).
   app.use(passport.initialize());
   app.use(passport.session());
+
   // Use connect-flash middleware. This will add a 'req.flash()' function to
   // all requests, matching the functionality offered in Express 2.x.
   app.use(flash());
 
-  // Initialize variables that are provided to all templates rendered within the application
-  app.locals.config = config;
-  //app.locals.isUserInRole = auth.isUserInRole;
-  app.use(function (req, res, next) {
-    res.locals.token = req.session._csrf;
-    res.locals.user = req.user;
-    res.locals.isAuthenticated = req.isAuthenticated();
-    res.locals.isAdministrator = auth.isUserInRole(req.user, 'administrator');
-    next();
-  });
-  // middleware that gets saved search lists for current user
-  app.use(function (req, res, next) {
-    res.locals.hasSavedSearch = function (name) {
-      var decodedName = decodeURIComponent(name);
-      var searches = res.locals.savedSearches;
-      if (searches && searches.length > 0) {
-        for (var i = 0; i < searches.length; i++) {
-          if (searches[i].name === decodedName) {
-            return true;
-          }
-        }
-      }
-      return false;
-    };
-    if (req.isAuthenticated()) {
-      db.getSavedSearches(req.user.id, function (err, result) {
-        res.locals.savedSearches = result;
-        next();
-      });
-    } else {
-      res.locals.savedSearches = [];
-      next();
-    }
-  });
+  // Custom middleware
+
+  app.use(utils.commonLocals);
+  app.use(utils.savedSearches);
   app.use(utils.detectMobileBrowser);
+
+  // Router
+
   app.use(app.router);
 });
 
@@ -194,8 +166,8 @@ io.set('authorization', passportSocketIo.authorize({
 // Default routes
 
 app.get('/', routes.index);
-require('./collabjs.web.js')(app);
-require('./collabjs.web.api.js')(app);
+require('./collabjs.web.js')(runtimeContext);
+require('./collabjs.web.api.js')(runtimeContext);
 
 // Notify external modules
 
@@ -205,4 +177,4 @@ runtimeContext.emit(RuntimeEvents.app_start, app);
 // Server startup
 
 server.listen(config.env.port, config.env.ipaddress);
-console.log("Express server listening on port %d in %s mode", config.env.port, app.settings.env);
+console.log("collab.js server listening on port %d in %s mode", config.env.port, app.settings.env);

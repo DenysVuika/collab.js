@@ -1,19 +1,19 @@
 div.navbar.navbar-fixed-top
     div.navbar-inner
       div.container-fluid
-        a.brand(href='/')= config.ui.brand
+        a.brand(href='/')= collabjs.config.ui.brand
         ul.nav.pull-right
           li.dropdown
             a.dropdown-toggle(href='#', data-toggle='dropdown')
               i.icon-cogs.icon-2x
               b.caret
             ul.dropdown-menu
-              if (isAuthenticated)
+              if (collabjs.isAuthenticated)
                 li
                   a.profile-link(href='/account')
                     div
-                      img(src='#{config.env.avatarServer}/avatar/#{user.pictureId}?s=32')
-                      strong #{user.name}
+                      img(src='#{collabjs.config.env.avatarServer}/avatar/#{collabjs.user.pictureId}?s=32')
+                      strong #{collabjs.user.name}
                       small Edit profile
                 li.divider.no-top-margin
                 li
@@ -38,7 +38,7 @@ div.navbar.navbar-fixed-top
         div
           ul.nav
             li.divider-vertical
-            if (user)  
+            if (collabjs.user)
               li
                 a(href='/timeline', title='Home')
                   span
@@ -47,7 +47,7 @@ div.navbar.navbar-fixed-top
                       span.visible-desktop
                         | &nbsp;Home
               //- dynamic links
-              each link in config.ui.header.links
+              each link in collabjs.config.ui.header.links
                 li
                   a(href='#{link.url}', title='#{link.text}')
                     span

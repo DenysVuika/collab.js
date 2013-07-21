@@ -3,7 +3,7 @@ extends layout
 block content
   include shared/ko-timeline
   form.status-form(method='post', onSubmit='collabjs.ui.doUpdateStatus(this); return false;')
-    input(type='hidden', name='_csrf', value=token)
+    input(type='hidden', name='_csrf', value=collabjs.token)
     textarea.input-block-level(name='content', rows='3', placeholder="What's on your mind?")
     div.footer
       input.m-btn.green.pull-right(type='submit', value='Post')

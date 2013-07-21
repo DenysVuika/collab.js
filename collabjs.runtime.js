@@ -4,7 +4,8 @@
 
 var events = require('events')
   , config = require('./config')
-  , auth = require('./collabjs.auth');
+  , auth = require('./collabjs.auth')
+  , data = require('./data');
 
 var RuntimeContext = function() {
 
@@ -13,6 +14,7 @@ var RuntimeContext = function() {
 
   this.config = config;
   this.auth = auth;
+  this.data = data;
 
   // Return this object reference
   return (this);
