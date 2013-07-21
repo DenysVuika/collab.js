@@ -65,7 +65,7 @@ collab.js was developed and tested with **OSX Lion 10.7 x64** and **Windows 7 x6
 * Setup database with one of the scripts from 'data/schema' folder.
 * Install all dependencies with NPM:
 
-  ```npm install``` for Windows or ```sudo npm install``` for OSX
+  `npm install` for Windows or `sudo npm install` for OSX
 
 * Open 'config/config.default.js' and edit the following section:
 
@@ -77,15 +77,15 @@ config.data.database = 'collabjs';
 config.data.user = '<user>';
 config.data.password = '<password>';
 ```
-The value of ```config.data.provider``` parameter can be either ```collabjs.data.mssql``` for MS SQL provider or ```collabjs.data.mysql``` for MySQL provider support.
+The value of `config.data.provider` parameter can be either `collabjs.data.mssql` for MS SQL provider or `collabjs.data.mysql` for MySQL provider support.
 
-Host name for ```config.data.host``` parameter can take values like ```.``` (default MS SQL SERVER instance) or ```localhost```, IP address like ```192.168.1.1``` or ```127.0.0.1```.
+Host name for `config.data.host` parameter can take values like `.` (default MS SQL SERVER instance) or `localhost`, IP address like `192.168.1.1` or `127.0.0.1`.
 
 #### Installing Microsof Driver for node.js for SQL Server (optional, Windows only)
 
 In case of using MS SQL Server an additional npm package needs to be installed:
 
-```sudo npm install msnodesql``` for OSX or ```npm install msnodesql``` for Windows
+`sudo npm install msnodesql` for OSX or `npm install msnodesql` for Windows
 
 This package is available for Windows systems only, so it is not included into default configuration.
 
@@ -93,21 +93,21 @@ This package is available for Windows systems only, so it is not included into d
 
 That's it, you can now run the server:
 
-```node server.js```
+`node server.js`
 
 ## Configuration
 
 It is possible (and recommended) having multiple configurations for running and testing collab.js. 
 Default configuration layer consists of the following files:
 
-* ```index.js``` - default entry point
-* ```config.global.js``` - global application settings
-* ```config.default.js``` - custom application settings
+* `index.js` - default entry point
+* `config.global.js` - global application settings
+* `config.default.js` - custom application settings
 
 Common configuration loading workflow is as follows: 
 
-1. ```index.js``` checks ```NODE_CFG``` environment variable to determine whether custom configuration file should be loaded, and takes ```config.default.js``` as a fallback resource
-2. ```config.default.js``` inherits ```config.global.js``` structure and overrides global settings with custom values (if any)
+1. `index.js` checks `NODE_CFG` environment variable to determine whether custom configuration file should be loaded, and takes ```config.default.js``` as a fallback resource
+2. `config.default.js` inherits `config.global.js` structure and overrides global settings with custom values (if any)
 
 Out-of-box implementation of [config.default.js](config/config.default.js) may look similar to the following:
 
@@ -134,7 +134,7 @@ On practice you may want having multiple different configurations in order to te
 different database connections, local or remote storage, etc. Follow the steps below in order to create a new
 configuration file.
 
-* create a file named ```config.debug.js``` and put it into the **/config** folder
+* create a file named `config.debug.js` and put it into the **/config** folder
 * open the file with your favorite text editor and override some global settings, for example enabling invitation code for registration form
 
 ```javascript
@@ -146,24 +146,24 @@ config.invitation.code = '12345';
 module.exports = config;
 ```
 
-* assign a ```NODE_CFG``` environment varible with ```debug``` value (name of your configuration file without 'config.' prefix
+* assign a `NODE_CFG` environment variable with `debug` value (name of your configuration file without 'config.' prefix
 and '.js' extension.
 
 ####Running on OSX
 
 It is possible exporting environment variables right from the command line like shown below:
 
-```NODE_CFG=debug node server.js```
+`NODE_CFG=debug node server.js`
 
 ####Running on Windows
 
-```
+```bash
 set NODE_CFG=debug
 node server.js
 ```
 
 If you are using [WebStorm](http://www.jetbrains.com/webstorm/) for node.js development on Windows then you can edit your project settings to define 
-```NODE_CFG=debug``` environment variable so that every time you run/debug your project the custom configuration
+`NODE_CFG=debug` environment variable so that every time you run/debug your project the custom configuration
 file is used.
 
 ## Deployment
@@ -181,7 +181,7 @@ Deploying collab.js to OpenShift instance is extremely easy.
 It should take just several minutes if you follow the steps below.
 
 * clone collab.js master repository to your local system and navigate to the project folder with your terminal/command prompt
-* open ```config/config.default.js``` file with your favourite text editor and uncomment a section called 
+* open `config/config.default.js` file with your favourite text editor and uncomment a section called
 *'RedHat OpenShift Configuration (with MySQL cartridge)'*. The content of the section may look like the following:
 
 ```javascript
@@ -212,20 +212,20 @@ The contents may look like the following:
 
 * now commit the changes locally
 
-```
+```bash
 git add .
 git commit -m "enabled OpenShift configuration"
 ```
 
 * create a namespace if you haven't done that already
 
-```
+```bash
 rhc domain create YOURNAMESPACE
 ```
 
 * create a new **collabjs** application with **mysql** and **phpmyadmin** cartridges
 
-```
+```bash
 rhc app create -a collabjs -t nodejs-0.6
 rhc cartridge add mysql-5.1 -a collabjs
 rhc cartridge add phpmyadmin-3.4 -a collabjs
@@ -238,15 +238,15 @@ You won't need it, so feel free to remove this folder.*
 * setup database schema
 
 You can access **phpmyadmin** cartridge by navigating to the following link (rhc tool will output it during steps above): 
-```https://collabjs-YOURNAMESPACE.rhcloud.com/phpmyadmin/```. MySQL database schema for collab.js is located in the
-following file: ```data/schema/mysql/schema.mysql.sql```.
+`https://collabjs-YOURNAMESPACE.rhcloud.com/phpmyadmin/`. MySQL database schema for collab.js is located in the
+following file: `data/schema/mysql/schema.mysql.sql`.
 
 * configure separate git remote for publishing
 
 It is recommended to leave 'master' branch as it is in order to preserve your current GitHub settings.
 The easiest way of having both GitHub and OpenShift (or Azure) deployment enabled in parallel is using dedicated remotes for that.
 
-```
+```bash
 git remote add openshift ssh://APPLICATIONID@collabjs-YOURNAMESPACE.rhcloud.com/~/git/collabjs.git/
 ```
 
@@ -256,7 +256,7 @@ address in your web management panel).
 
 * publish collab.js
 
-```
+```bash
 git push openshift master --force
 ```
 
@@ -265,6 +265,4 @@ in order to replace default node.js sample pregenerated by rhc tool. You can omi
 
 * start using your personal collab.js version
 
-```
-https://collabjs-YOURNAMESPACE.rhcloud.com
-```
+`https://collabjs-YOURNAMESPACE.rhcloud.com`
