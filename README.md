@@ -26,6 +26,8 @@ sponsored by  [Raythos Interactive](http://raythos.com/)
 - [Deployment](#deployment)
   * [RedHat OpenShift](#redhat-openshift)
 
+Please refer to [Wiki](https://github.com/DenisVuyka/collab.js/wiki) for more details and articles.
+
 ## Major features
 
 - Account registration with [reCaptcha](http://www.google.com/recaptcha) support
