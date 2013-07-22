@@ -7,7 +7,7 @@ var express = require('express')
   , runtime = require('../collabjs.runtime')
   , RuntimeEvents = runtime.RuntimeEvents;
 
-describe('collabjs.web.api', function () {
+describe('collab.js web.api', function () {
 
   var app = express()
     , context = new runtime.RuntimeContext()

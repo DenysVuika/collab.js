@@ -126,43 +126,42 @@ exports.post_register = function (context) {
         // redisplay the form in case of error
         locals.message = 'Wrong verification code.';
         locals.recaptcha_form = getRecaptchaForm();
-        return res.render('core/register', locals);
-      }
+        res.render('core/register', locals);
+      } else {
+        // TODO: introduce better validation
+        if (body.account && body.name && body.email && body.password) {
+          var hashedPassword = passwordHash.generate(body.password);
 
-      // TODO: introduce better validation
-      if (body.account && body.name && body.email && body.password) {
-        var hashedPassword = passwordHash.generate(body.password);
+          var user = {
+            account: body.account,
+            name: body.name,
+            password: hashedPassword,
+            email: body.email
+          };
 
-        var user = {
-          account: body.account,
-          name: body.name,
-          password: hashedPassword,
-          email: body.email
-        };
-
-        repository.createAccount(user, function (err, result) {
-          if (err) {
-            locals.message = err;
-            locals.recaptcha_form = getRecaptchaForm();
-            return res.render('core/register', locals);
-          } else {
-            req.login({ id: result.id, username: user.account, password: hashedPassword }, function (err) {
-              if (err) {
-                console.log('Error logging in with newly created account. ' + err);
-                locals.message = 'Error authenticating user.';
-                locals.recaptcha_form = getRecaptchaForm();
-                return res.render('core/register', locals);
-              } else {
-                return res.redirect('/timeline');
-              }
-            });
-          }
-        });
-      }
-      else {
-        locals.message = 'Error creating account.';
-        locals.recaptcha_form = getRecaptchaForm();
-        return res.render('core/register', locals);
+          repository.createAccount(user, function (err, result) {
+            if (err) {
+              locals.message = err;
+              locals.recaptcha_form = getRecaptchaForm();
+              res.render('core/register', locals);
+            } else {
+              req.login({ id: result.id, username: user.account, password: hashedPassword }, function (err) {
+                if (err) {
+                  console.log('Error logging in with newly created account. ' + err);
+                  locals.message = 'Error authenticating user.';
+                  locals.recaptcha_form = getRecaptchaForm();
+                  return res.render('core/register', locals);
+                } else {
+                  return res.redirect('/timeline');
+                }
+              });
+            }
+          });
+        } else {
+          locals.message = 'Error creating account.';
+          locals.recaptcha_form = getRecaptchaForm();
+          res.render('core/register', locals);
+        }
       }
     });
   };
