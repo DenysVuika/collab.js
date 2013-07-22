@@ -9,8 +9,6 @@ module.exports = function (context) {
     , repository = context.data
     , requireAuthenticated = context.auth.requireAuthenticated;
 
-  var template_comment = jade.compile(fs.readFileSync(__dirname + '/config/templates/comment.jade', 'utf8'));
-
   context.once('app.init.routes', function (app) {
     app.get('/api/mentions:topId?', requireAuthenticated, function (req, res) {
       var _topId = (req.query.topId && req.query.topId > 0) ? req.query.topId : 0;
@@ -119,38 +117,40 @@ module.exports = function (context) {
     });
 
     app.post('/api/timeline/comments', requireAuthenticated, function (req, res) {
-      if (!req.body.content || req.body.content.length === 0) { return res.send(400); }
-      var created = new Date();
-      var comment = {
-        userId: req.user.id,
-        postId: req.body.postId,
-        created: created,
-        content: req.body.content
-      };
-      repository.addComment(comment, function (err, result) {
-        if (err || !result) { res.send(400); }
-        else {
-          comment.id = result.id;
-          comment.account = req.user.account;
-          comment.name = req.user.name;
-          comment.pictureId = req.user.pictureId;
-          res.json(200, comment);
-          // send email notification
-          notifyOnPostCommented(req, comment);
-        }
-      });
+      if (!req.body.content || req.body.content.length === 0) { res.send(400); }
+      else {
+        var created = new Date();
+        var comment = {
+          userId: req.user.id,
+          postId: req.body.postId,
+          created: created,
+          content: req.body.content
+        };
+        repository.addComment(comment, function (err, result) {
+          if (err || !result) { res.send(400); }
+          else {
+            comment.id = result.id;
+            comment.account = req.user.account;
+            comment.name = req.user.name;
+            comment.pictureId = req.user.pictureId;
+            res.json(200, comment);
+            // send email notification
+            notifyOnPostCommented(req, comment);
+          }
+        });
+      }
     });
 
     app.get('/api/timeline/posts/:id', requireAuthenticated, function (req, res) {
       repository.getPostWithComments(req.params.id, function (err, result) {
-        if (err) { res.send(400); }
+        if (err || !result) { res.send(400); }
         else { res.json(200, result); }
       });
     });
 
     app.get('/api/timeline/posts/:id/comments', requireAuthenticated, function (req, res) {
       repository.getComments(req.params.id, function (err, result) {
-        if (err) { res.send(400); }
+        if (err || !result) { res.send(400); }
         else { res.json(200, result); }
       });
     });
@@ -161,24 +161,29 @@ module.exports = function (context) {
       } else {
         var _topId = (req.query.topId && req.query.topId > 0) ? req.query.topId : 0;
         repository.getPostsByHashTag(req.user.id, req.query.q, _topId, function (err, result) {
-          if (err) { res.send(400); }
+          if (err || !result) { res.send(400); }
           else { res.json(200, result); }
         });
       }
     });
   }); // app.init.routes
 
+  var template_comment;
+
   function notifyOnPostCommented(req, comment) {
     // send email notification (if enabled)
     if (config.smtp.enabled) {
+      // init template comment if it was not previously
+      template_comment = template_comment || jade.compile(fs.readFileSync(__dirname + '/config/templates/comment.jade', 'utf8'));
+      // get author of the post
       repository.getPostAuthor(comment.postId, function (err, user) {
         if (err || !user) { return; }
         if (user.id === req.user.id) { return; }
         var html = template_comment({
           user: req.user.name,
-          profilePictureUrl: getGravatarUrl(req.user.pictureId),
-          timelineUrl: getTimelineUrl(req.user.account),
-          postUrl: getPostUrl(comment.postId),
+          profilePictureUrl: config.env.avatarServer + '/avatar/' + req.user.pictureId + '?s=48',
+          timelineUrl: config.hostname + '/people/' + req.user.account + '/timeline',
+          postUrl: config.hostname + '/timeline/posts/' + comment.postId,
           content: comment.content
         });
         var notification = {
@@ -195,17 +200,4 @@ module.exports = function (context) {
       });
     }
   }
-
-  function getPostUrl(postId) {
-    return config.hostname + '/timeline/posts/' + postId;
-  }
-
-  function getTimelineUrl(account) {
-    return config.hostname + '/people/' + account + '/timeline';
-  }
-
-  function getGravatarUrl(pictureId) {
-    return config.env.avatarServer + '/avatar/' + pictureId + '?s=48';
-  }
-
 }; // module.exports
