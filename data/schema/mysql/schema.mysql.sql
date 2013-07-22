@@ -182,7 +182,7 @@ BEGIN
     (SELECT IF (
       (
         SELECT COUNT(sub.id) FROM subscriptions AS sub
-        WHERE sub.userId AND sub.targetAccount = u.account
+        WHERE sub.userId = originatorId AND sub.targetAccount = u.account
         GROUP BY sub.id
         ) > 0, TRUE, FALSE
     )) AS isFollowed,
