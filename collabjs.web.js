@@ -29,7 +29,7 @@ module.exports = function (context) {
     app.get('/mentions', ensureAuthenticated, routes.get_mentions);
     app.get('/timeline/posts/:postId', ensureAuthenticated, routes.get_post);
     app.get('/timeline', ensureAuthenticated, routes.get_timeline);
-    app.get('/help/:article?', ensureAuthenticated, routes.get_help_article);
+    app.get('/help/:article?', ensureAuthenticated, routes.get_help_article(context));
     app.get('/search', ensureAuthenticated, routes.get_search);
     app.post('/search', ensureAuthenticated, routes.post_search);
   }); // app.init.routes

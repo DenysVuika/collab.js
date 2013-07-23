@@ -2,7 +2,6 @@
 
 var config = require('../config')
   , passwordHash = require('password-hash')
-  , fs = require('fs')
   , marked = require('marked')
   , utils = require('../collabjs.utils')
   , Recaptcha = require('recaptcha').Recaptcha
@@ -287,6 +286,7 @@ exports.get_following = function (context) {
   };
 };
 
+// TODO: turn into ajax call without redirect
 exports.follow = function (context) {
   var repository = context.data;
   return function (req, res) {
@@ -296,6 +296,7 @@ exports.follow = function (context) {
   };
 };
 
+// TODO: turn into ajax call without redirect
 exports.unfollow = function (context) {
   var repository = context.data;
   return function (req, res) {
@@ -360,25 +361,27 @@ exports.get_mentions = function (req, res) {
 exports.get_search = function (req, res) {
   // TODO: validate input
   var q = req.query.q;
-  if (q.indexOf('#') !== 0) {
+  if (q && q.indexOf('#') !== 0) {
     q = '#' + q;
   }
 
+  var src = req.query.src || 'unknown';
+
   return res.render('core/search-posts', {
     title: 'Results for ' + q,
-    navigationUri: '/search?q=' + encodeURIComponent(q) + '&src=' + req.query.src,
+    navigationUri: '/search?q=' + encodeURIComponent(q) + '&src=' + src,
     search_q: q,
     search_q_enc: encodeURIComponent(q),
-    search_src: encodeURIComponent(req.query.src)
+    search_src: encodeURIComponent(src)
   });
 };
 
 exports.post_search = function (context) {
   var repository = context.data;
   return function (req, res) {
-    var body = req.body;
-    var action = body.action;
-    var redirectUri = '/search?q=' + encodeURIComponent(body.q) + '&src=' + req.query.src;
+    var body = req.body
+      , action = body.action
+      , redirectUri = '/search?q=' + encodeURIComponent(body.q) + '&src=' + body.src;
     if (action === 'save') {
       repository.addSavedSearch({
         name: body.q,
@@ -404,30 +407,36 @@ exports.post_search = function (context) {
  * Help
  */
 
-exports.get_help_article = function (req, res) {
-  var article = 'help/index.md';
-  if (req.params.article && req.params.article.length > 0) {
-    article = 'help/' + req.params.article + '.md';
-  }
-
-  fs.readFile(article, 'utf8', function (err, data) {
-    if (err) {
-      console.log('Error reading file ' + article + '. ' + err);
-      res.render('core/help', {
-        title: 'Help',
-        message: req.flash('error'),
-        content: 'Content not found.',
-        requestPath: '/help' // keep 'Help' selected at sidebar
-      });
-    } else {
-      res.render('core/help', {
-        title: 'Help',
-        message: req.flash('error'),
-        content: marked(data),
-        requestPath: '/help' // keep 'Help' selected at sidebar
-      });
+exports.get_help_article = function (context) {
+  return function (req, res) {
+    var article = 'help/index.md';
+    if (req.params.article && req.params.article.length > 0) {
+      article = 'help/' + req.params.article + '.md';
     }
-  });
+
+    // get either proxied/mocked or real `fs` instance
+    var fs = context.fs || require('fs');
+
+    fs.readFile(article, 'utf8', function (err, data) {
+      if (err) {
+        res.render('core/help', {
+          title: 'Help',
+          article: article,
+          message: req.flash('error'),
+          content: 'Content not found.',
+          requestPath: '/help' // keep 'Help' selected at sidebar
+        });
+      } else {
+        res.render('core/help', {
+          title: 'Help',
+          article: article,
+          message: req.flash('error'),
+          content: marked(data),
+          requestPath: '/help' // keep 'Help' selected at sidebar
+        });
+      }
+    });
+  };
 };
 
 /*
