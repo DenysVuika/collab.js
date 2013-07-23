@@ -26,7 +26,7 @@ module.exports.setProvider = function (instance) {
 
 /**
  * Get account by id.
- * @param {string} id Account id.
+ * @param {number} id Account id.
  * @param {function(err, user)} callback Callback function.
  */
 module.exports.getAccountById = function (id, callback) {

@@ -113,7 +113,9 @@ module.exports = function (connect) {
   MySqlSessionStore.prototype.destroy = function (sid, callback) {
     sid = this.prefix + sid;
     this.connection.query('DELETE FROM _mysql_session_store WHERE id = ?', [sid], function (err) {
-      callback(err ? err : null);
+      if (callback) {
+        callback(err ? err : null);
+      }
     });
   };
 

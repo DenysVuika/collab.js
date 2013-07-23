@@ -3,6 +3,7 @@
 module.exports.detectMobileBrowser = detectMobileBrowser;
 module.exports.savedSearches = savedSearches;
 module.exports.commonLocals = commonLocals;
+module.exports.isUrlLocalToHost = isUrlLocalToHost
 
 var db = require('./data')
   , auth = require('./collabjs.auth')
@@ -75,4 +76,14 @@ function commonLocals(req, res, next) {
     isAdministrator: auth.isUserInRole(req.user, 'administrator')
   };
   next();
+}
+
+function isUrlLocalToHost(url) {
+  return !isStringEmpty(url) &&
+    ((url[0] === '/' && (url.length === 1 || (url[1] !== '/' && url[1] !== '\\'))) || // "/" or "/foo" but not "//" or "/\"
+      (url.length > 1 && url[0] === '~' && url[1] === '/' )); // "~/" or "~/foo"
+}
+
+function isStringEmpty(str) {
+  return !(str && str !== '');
 }

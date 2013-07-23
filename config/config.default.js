@@ -7,6 +7,7 @@ var config = require('./config.global');
 //
 /*
 config.data.provider = 'collabjs.data.mysql';
+config.data.sessionStore = 'collabjs.session.mysql';
 config.data.host = 'localhost';
 config.data.database = 'collabjs';
 config.data.user = '<user>';
@@ -20,6 +21,7 @@ config.data.password = '<password>';
 config.env.ipaddress = process.env.OPENSHIFT_NODEJS_IP || '127.0.0.1';
 config.env.port = process.env.OPENSHIFT_NODEJS_PORT || 8080;
 config.data.provider = 'collabjs.data.mysql';
+config.data.sessionStore = 'collabjs.session.mysql';
 config.data.host = process.env.OPENSHIFT_MYSQL_DB_HOST;
 config.data.database = 'collabjs';
 config.data.user = process.env.OPENSHIFT_MYSQL_DB_USERNAME;
