@@ -17,6 +17,7 @@ npm-debug.log
 .idea
 iisnode/
 node_modules/
+.elasticbeanstalk/
 
 # collab.js files
 config/*.js
