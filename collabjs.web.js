@@ -20,8 +20,6 @@ module.exports = function (context) {
     app.post('/account', ensureAuthenticated, routes.post_account(context));
     app.get('/account/password', ensureAuthenticated, routes.get_password);
     app.post('/account/password', ensureAuthenticated, routes.post_password);
-    app.get('/people/:account/follow', ensureAuthenticated, routes.follow(context));
-    app.get('/people/:account/unfollow', ensureAuthenticated, routes.unfollow(context));
     app.get('/people', ensureAuthenticated, routes.get_people);
     app.get('/people/:account/followers', ensureAuthenticated, routes.get_followers(context));
     app.get('/people/:account/following', ensureAuthenticated, routes.get_following(context));

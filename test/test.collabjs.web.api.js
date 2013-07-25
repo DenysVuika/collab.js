@@ -126,6 +126,52 @@ describe('collab.js web.api', function () {
     });
   });
 
+  describe('followAccount: GET /api/people/:account/follow', function () {
+
+    it('follows account', function (done) {
+      context.data.followAccount = function (callerId, targetAccount, callback) {
+        callback(null);
+      };
+
+      request(app)
+        .get('/api/people/johndoe/follow')
+        .expect(200, done);
+    });
+
+    it('gets error from repository', function (done) {
+      context.data.followAccount = function (callerId, targetAccount, callback) {
+        callback('Error');
+      };
+
+      request(app)
+        .get('/api/people/johndoe/follow')
+        .expect(400, done);
+    });
+  });
+
+  describe('unfollowAccount: GET /api/people/:account/unfollow', function () {
+
+    it('unfollows account', function (done) {
+      context.data.unfollowAccount = function (callerId, targetAccount, callback) {
+        callback(null);
+      };
+
+      request(app)
+        .get('/api/people/johndoe/unfollow')
+        .expect(200, done);
+    });
+
+    it('gets error from repository', function (done) {
+      context.data.unfollowAccount = function (callerId, targetAccount, callback) {
+        callback('Error');
+      };
+
+      request(app)
+        .get('/api/people/johndoe/unfollow')
+        .expect(400, done);
+    });
+  });
+
   describe('getFollowers: GET /api/people/:account/followers:topId?', function () {
 
     it('allows query without `topId`', function (done) {

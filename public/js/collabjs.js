@@ -282,11 +282,11 @@ function UserProfileViewModel(data) {
   self.followersUrl = '/people/' + data.account + '/followers';
   self.following = data.following;
   self.followingUrl = '/people/' + data.account + '/following';
-  self.isFollowed = data.isFollowed;
+  self.isFollowed = ko.observable(data.isFollowed);
   self.picture = collabjs.getUserPicture(data.pictureId);
   self.feed = '/people/' + data.account + '/timeline';
-  self.followAction = '/people/' + data.account + '/follow';
-  self.unfollowAction = '/people/' + data.account + '/unfollow';
+  self.followAction = '/api/people/' + data.account + '/follow';
+  self.unfollowAction = '/api/people/' + data.account + '/unfollow';
   self.isOwnProfile = data.isOwnProfile;
 }
 
@@ -300,6 +300,18 @@ function PeopleViewModel(data) {
       return new UserProfileViewModel(entry);
     });
     self.profiles.push.apply(self.profiles, newItems);
+  };
+
+  self.follow = function (profile) {
+    $.get(profile.followAction, function () {
+      profile.isFollowed(true);
+    });
+  };
+
+  self.unfollow = function (profile) {
+    $.get(profile.unfollowAction, function () {
+      profile.isFollowed(false);
+    });
   };
 
   self.appendItems(data);

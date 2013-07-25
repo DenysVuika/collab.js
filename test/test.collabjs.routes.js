@@ -416,53 +416,6 @@ describe('collab.js routes', function () {
     });
   });
 
-  describe('follow', function () {
-
-    it('follows account', function () {
-      var succeeded = false;
-      context.data.followAccount = function (callerId, targetAccount, callback) {
-        succeeded = true;
-        callback(null);
-      };
-
-      routes.follow(context)(req, res);
-      expect(succeeded).to.be.ok();
-      expect(res.redirectPath).to.be('/timeline');
-    });
-
-    it('gets error from repository', function () {
-      context.data.followAccount = function (callerId, targetAccount, callback) {
-        callback('Error');
-      };
-
-      routes.follow(context)(req, res);
-      expect(res.redirectPath).to.be('/timeline');
-    });
-  });
-
-  describe('unfollow', function () {
-
-    it('unfollows account', function () {
-      var succeeded = false;
-      context.data.unfollowAccount = function (callerId, targetAccount, callback) {
-        succeeded = true;
-        callback(null);
-      };
-
-      routes.unfollow(context)(req, res);
-      expect(succeeded).to.be.ok();
-      expect(res.redirectPath).to.be('/timeline');
-    });
-
-    it('gets error from repository', function () {
-      context.data.unfollowAccount = function (callerId, targetAccount, callback) {
-        callback('Error');
-      };
-      routes.unfollow(context)(req, res);
-      expect(res.redirectPath).to.be('/timeline');
-    });
-  });
-
   describe('get_personal_timeline', function () {
 
     it('gets no data from repository', function () {

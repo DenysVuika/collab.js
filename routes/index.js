@@ -286,26 +286,6 @@ exports.get_following = function (context) {
   };
 };
 
-// TODO: turn into ajax call without redirect
-exports.follow = function (context) {
-  var repository = context.data;
-  return function (req, res) {
-    repository.followAccount(req.user.id, req.params.account, function () {
-      res.redirect('/timeline');
-    });
-  };
-};
-
-// TODO: turn into ajax call without redirect
-exports.unfollow = function (context) {
-  var repository = context.data;
-  return function (req, res) {
-    repository.unfollowAccount(req.user.id, req.params.account, function () {
-      res.redirect('/timeline');
-    });
-  };
-};
-
 exports.get_personal_timeline = function (context) {
   var repository = context.data;
   return function (req, res) {
