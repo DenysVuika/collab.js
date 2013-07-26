@@ -14,12 +14,13 @@ var config = require('../config')
 exports.index = function (req, res) {
   if (req.isAuthenticated()) {
     res.redirect('/timeline');
-  } else {
-    res.render('core/index', {
-      title: config.ui.brand,
-      user: req.user
-    });
+    return;
   }
+
+  res.render('core/index', {
+    title: config.ui.brand,
+    user: req.user
+  });
 };
 
 /*
@@ -103,7 +104,8 @@ exports.post_register = function (context) {
         locals.data.code = '';
         locals.message = 'Wrong invitation code.';
         locals.recaptcha_form = getRecaptchaForm();
-        return res.render('core/register', locals);
+        res.render('core/register', locals);
+        return;
       }
     }
     // instantiate a stub in case reCaptcha feature is disabled
@@ -120,47 +122,49 @@ exports.post_register = function (context) {
     }
 
     // verify recaptcha
-    recaptcha.verify(function (success, err) {
+    recaptcha.verify(function (success) {
       if (!success) {
         // redisplay the form in case of error
         locals.message = 'Wrong verification code.';
         locals.recaptcha_form = getRecaptchaForm();
         res.render('core/register', locals);
-      } else {
-        // TODO: introduce better validation
-        if (body.account && body.name && body.email && body.password) {
-          var hashedPassword = passwordHash.generate(body.password);
+        return;
+      }
 
-          var user = {
-            account: body.account,
-            name: body.name,
-            password: hashedPassword,
-            email: body.email
-          };
+      // TODO: introduce better validation
+      if (body.account && body.name && body.email && body.password) {
+        var hashedPassword = passwordHash.generate(body.password);
 
-          repository.createAccount(user, function (err, result) {
+        var user = {
+          account: body.account,
+          name: body.name,
+          password: hashedPassword,
+          email: body.email
+        };
+
+        repository.createAccount(user, function (err, result) {
+          if (err) {
+            locals.message = err;
+            locals.recaptcha_form = getRecaptchaForm();
+            res.render('core/register', locals);
+            return;
+          }
+
+          req.login({ id: result.id, username: user.account, password: hashedPassword }, function (err) {
             if (err) {
-              locals.message = err;
+              console.log('Error logging in with newly created account. ' + err);
+              locals.message = 'Error authenticating user.';
               locals.recaptcha_form = getRecaptchaForm();
-              res.render('core/register', locals);
+              return res.render('core/register', locals);
             } else {
-              req.login({ id: result.id, username: user.account, password: hashedPassword }, function (err) {
-                if (err) {
-                  console.log('Error logging in with newly created account. ' + err);
-                  locals.message = 'Error authenticating user.';
-                  locals.recaptcha_form = getRecaptchaForm();
-                  return res.render('core/register', locals);
-                } else {
-                  return res.redirect('/timeline');
-                }
-              });
+              return res.redirect('/timeline');
             }
           });
-        } else {
-          locals.message = 'Error creating account.';
-          locals.recaptcha_form = getRecaptchaForm();
-          res.render('core/register', locals);
-        }
+        });
+      } else {
+        locals.message = 'Error creating account.';
+        locals.recaptcha_form = getRecaptchaForm();
+        res.render('core/register', locals);
       }
     });
   };
@@ -209,29 +213,32 @@ exports.post_password = function (context) {
       !settings.pwdConfirm || settings.pwdConfirm.length === 0 ||
       settings.pwdNew !== settings.pwdConfirm) {
       req.flash('error', 'Incorrect password values.');
-      return res.redirect('/account/password');
+      res.redirect('/account/password');
+      return;
     }
 
     if (settings.pwdOld === settings.pwdNew) {
       req.flash('info', 'New password is the same as old one.');
-      return res.redirect('/account/password');
+      res.redirect('/account/password');
+      return;
     }
 
     // verify old password
     if (!passwordHash.verify(settings.pwdOld, req.user.password)) {
       req.flash('error', 'Invalid old password.');
-      return res.redirect('/account/password');
+      res.redirect('/account/password');
+      return;
     }
 
     repository.setAccountPassword(req.user.id, settings.pwdNew, function (err, hash) {
       if (err || !hash) {
         req.flash('error', 'Error setting password.');
-        return res.redirect('/account/password');
-      } else {
-        req.user.password = hash;
-        req.flash('info', 'Password has been successfully changed.');
-        return res.redirect('/account');
+        res.redirect('/account/password');
+        return;
       }
+      req.user.password = hash;
+      req.flash('info', 'Password has been successfully changed.');
+      res.redirect('/account');
     });
   };
 };
@@ -251,17 +258,17 @@ exports.get_followers = function (context) {
   return function (req, res) {
     repository.getPublicProfile(req.user.account, req.params.account, function (err, result) {
       if (err || !result) {
-        // TODO: redirect to some special error page
+        // TODO: redirect to some special error page?
         res.send(400);
-      } else {
-        res.render('core/people-followers', {
-          title: req.params.account + ': followers',
-          account: req.params.account,
-          profile: result,
-          isOwnProfile: req.user.account === result.account,
-          requestPath: '/people' // keep 'People' selected at sidebar
-        });
+        return;
       }
+      res.render('core/people-followers', {
+        title: req.params.account + ': followers',
+        account: req.params.account,
+        profile: result,
+        isOwnProfile: req.user.account === result.account,
+        requestPath: '/people' // keep 'People' selected at sidebar
+      });
     });
   };
 };
@@ -273,15 +280,15 @@ exports.get_following = function (context) {
       if (err || !result) {
         // TODO: redirect to some special error page
         res.send(400);
-      } else {
-        res.render('core/people-following', {
-          title: req.params.account + ': following',
-          account: req.params.account,
-          profile: result,
-          isOwnProfile: req.user.account === result.account,
-          requestPath: '/people' // keep 'People' selected at sidebar
-        });
+        return;
       }
+      res.render('core/people-following', {
+        title: req.params.account + ': following',
+        account: req.params.account,
+        profile: result,
+        isOwnProfile: req.user.account === result.account,
+        requestPath: '/people' // keep 'People' selected at sidebar
+      });
     });
   };
 };
@@ -293,14 +300,14 @@ exports.get_personal_timeline = function (context) {
       if (err || !result) {
         // TODO: redirect to some special error page
         res.send(400);
-      } else {
-        res.render('core/people-timeline', {
-          title: req.params.account,
-          account: req.params.account,
-          profile: result,
-          isOwnProfile: req.user.account === result.account
-        });
+        return;
       }
+      res.render('core/people-timeline', {
+        title: req.params.account,
+        account: req.params.account,
+        profile: result,
+        isOwnProfile: req.user.account === result.account
+      });
     });
   };
 };
@@ -347,7 +354,7 @@ exports.get_search = function (req, res) {
 
   var src = req.query.src || 'unknown';
 
-  return res.render('core/search-posts', {
+  res.render('core/search-posts', {
     title: 'Results for ' + q,
     navigationUri: '/search?q=' + encodeURIComponent(q) + '&src=' + src,
     search_q: q,
@@ -406,15 +413,15 @@ exports.get_help_article = function (context) {
           content: 'Content not found.',
           requestPath: '/help' // keep 'Help' selected at sidebar
         });
-      } else {
-        res.render('core/help', {
-          title: 'Help',
-          article: article,
-          message: req.flash('error'),
-          content: marked(data),
-          requestPath: '/help' // keep 'Help' selected at sidebar
-        });
+        return;
       }
+      res.render('core/help', {
+        title: 'Help',
+        article: article,
+        message: req.flash('error'),
+        content: marked(data),
+        requestPath: '/help' // keep 'Help' selected at sidebar
+      });
     });
   };
 };
