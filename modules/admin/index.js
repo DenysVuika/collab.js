@@ -1,9 +1,8 @@
-'use strict';
-
 module.exports = function (context) {
+  'use strict';
 
   var config = context.config
-    , ensureRole = context.auth.ensureRole;
+    , authenticate = context.auth.ensureRole('administrator');
 
   // define path to module-specific 'views' folder
   var __views = __dirname + '/views/';
@@ -22,11 +21,11 @@ module.exports = function (context) {
 
   // add custom routes
   context.once('app.init.routes', function (app) {
-    app.get('/admin/sample1', ensureRole('administrator'), function (req, res) {
+    app.get('/admin/sample1', authenticate, function (req, res) {
       res.render(__views + 'sample1', { title: 'admin 1' });
     });
 
-    app.get('/admin/sample2', ensureRole('administrator'), function (req, res) {
+    app.get('/admin/sample2', authenticate, function (req, res) {
       res.render(__views + 'sample2', { title: 'admin 2' });
     });
   });
