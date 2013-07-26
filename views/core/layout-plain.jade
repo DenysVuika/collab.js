@@ -21,9 +21,11 @@ html
   body
     include shared/header
 
-    div.container
-      block content
-      include shared/footer
+    div.container-fluid
+      div.row-fluid
+        div.span12
+          block content
+          include shared/footer
 
     script(src='/lib/bootstrap/js/bootstrap.min.js')
     script(src='/lib/jqBootstrapValidation/js/jqBootstrapValidation.js')
