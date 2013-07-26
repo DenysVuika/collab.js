@@ -26,6 +26,20 @@ module.exports = function (context) {
       });
     });
 
+    app.get('/api/people/:account/follow', requireAuthenticated, function (req, res) {
+      repository.followAccount(req.user.id, req.params.account, function (err) {
+        if (err) { res.send(400); }
+        else { res.send(200); }
+      });
+    });
+
+    app.get('/api/people/:account/unfollow', requireAuthenticated, function (req, res) {
+      repository.unfollowAccount(req.user.id, req.params.account, function (err) {
+        if (err) { res.send(400); }
+        else { res.send(200); }
+      });
+    });
+
     app.get('/api/people/:account/followers:topId?', requireAuthenticated, function (req, res) {
       var _topId = (req.query.topId && req.query.topId > 0) ? req.query.topId : 0;
       repository.getFollowers(req.user.id, req.params.account, _topId, function (err, result) {

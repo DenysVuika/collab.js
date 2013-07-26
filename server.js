@@ -80,6 +80,7 @@ require('./modules')(runtimeContext);
 
 // Configuration
 app.configure(function () {
+  app.enable('trust proxy');
   app.set('port', config.env.port);
   app.set('views', __dirname + '/views');
   app.set('view engine', 'jade');

@@ -282,11 +282,11 @@ function UserProfileViewModel(data) {
   self.followersUrl = '/people/' + data.account + '/followers';
   self.following = data.following;
   self.followingUrl = '/people/' + data.account + '/following';
-  self.isFollowed = data.isFollowed;
+  self.isFollowed = ko.observable(data.isFollowed);
   self.picture = collabjs.getUserPicture(data.pictureId);
   self.feed = '/people/' + data.account + '/timeline';
-  self.followAction = '/people/' + data.account + '/follow';
-  self.unfollowAction = '/people/' + data.account + '/unfollow';
+  self.followAction = '/api/people/' + data.account + '/follow';
+  self.unfollowAction = '/api/people/' + data.account + '/unfollow';
   self.isOwnProfile = data.isOwnProfile;
 }
 
@@ -300,6 +300,18 @@ function PeopleViewModel(data) {
       return new UserProfileViewModel(entry);
     });
     self.profiles.push.apply(self.profiles, newItems);
+  };
+
+  self.follow = function (profile) {
+    $.get(profile.followAction, function () {
+      profile.isFollowed(true);
+    });
+  };
+
+  self.unfollow = function (profile) {
+    $.get(profile.unfollowAction, function () {
+      profile.isFollowed(false);
+    });
   };
 
   self.appendItems(data);
@@ -480,8 +492,11 @@ collabjs.ui.initPostView = function (id) {
 collabjs.ui.initTimeline = function () {
   'use strict';
   $(document).ready(function () {
+    var pageSpinner = $('.page-spinner');
+    pageSpinner.show();
     // load first page of posts
-    $.get('/api/timeline/posts', collabjs.ui.onFeedDataLoaded);
+    $.get('/api/timeline/posts', collabjs.ui.onFeedDataLoaded)
+     .always(function () { pageSpinner.hide(); });
     // init smooth infinite scrolling
     // (downloads additional posts as soon as user scrolls to the bottom)
     initLazyLoading(function (posts) {
@@ -560,8 +575,11 @@ collabjs.ui.doUpdateStatus = function (form) {
 collabjs.ui.initMentions = function () {
   'use strict';
   $(document).ready(function () {
+    var pageSpinner = $('.page-spinner');
+    pageSpinner.show();
     // get first page for mentions
-    $.get('/api/mentions', collabjs.ui.onFeedDataLoaded);
+    $.get('/api/mentions', collabjs.ui.onFeedDataLoaded)
+      .always(function () { pageSpinner.hide(); });
     // init smooth infinite scrolling
     //  (downloads additional posts as soon as user scrolls to the bottom)
     initLazyLoading(function () {
@@ -580,8 +598,11 @@ collabjs.ui.initMentions = function () {
 collabjs.ui.initPeople = function () {
   'use strict';
   $(document).ready(function () {
+    var pageSpinner = $('.page-spinner');
+    pageSpinner.show();
     // get first page for people hub
-    $.get('/api/people', collabjs.ui.onPeopleDataLoaded);
+    $.get('/api/people', collabjs.ui.onPeopleDataLoaded)
+      .always(function () { pageSpinner.hide(); });
     // smooth infinite scrolling
     // (downloads additional posts as soon as user scrolls to bottom)
     initLazyLoading(function () {
@@ -600,8 +621,11 @@ collabjs.ui.initPeople = function () {
 collabjs.ui.initFollowers = function (account) {
   'use strict';
   $(document).ready(function () {
+    var pageSpinner = $('.page-spinner');
+    pageSpinner.show();
     // get first page of followers for the given account
-    $.get('/api/people/' + account + '/followers', collabjs.ui.onPeopleDataLoaded);
+    $.get('/api/people/' + account + '/followers', collabjs.ui.onPeopleDataLoaded)
+      .always(function () { pageSpinner.hide(); });
 
     // smooth infinite scrolling
     // (downloads additional posts as soon as user scrolls to bottom)
@@ -621,8 +645,11 @@ collabjs.ui.initFollowers = function (account) {
 collabjs.ui.initFollowing = function (account) {
   'use strict';
   $(document).ready(function () {
+    var pageSpinner = $('.page-spinner');
+    pageSpinner.show();
     // get first page of followings for the given account
-    $.get('/api/people/' + account + '/following', collabjs.ui.onPeopleDataLoaded);
+    $.get('/api/people/' + account + '/following', collabjs.ui.onPeopleDataLoaded)
+      .always(function () { pageSpinner.hide(); });
     // smooth infinite scrolling
     // (downloads additional posts as soon as user scrolls to bottom)
     initLazyLoading(function () {
@@ -641,8 +668,11 @@ collabjs.ui.initFollowing = function (account) {
 collabjs.ui.initPersonalTimeline = function (account) {
   'use strict';
   $(document).ready(function () {
+    var pageSpinner = $('.page-spinner');
+    pageSpinner.show();
     // get first page of people for the given account
-    $.get('/api/people/' + account + '/timeline', collabjs.ui.onFeedDataLoaded);
+    $.get('/api/people/' + account + '/timeline', collabjs.ui.onFeedDataLoaded)
+      .always(function () { pageSpinner.hide(); });
     // smooth infinite scrolling
     //  (downloads additional posts as soon as user scrolls to the bottom)
     initLazyLoading(function () {
@@ -687,8 +717,11 @@ collabjs.ui.initAccountView = function () {
 collabjs.ui.initSearchPosts = function (q, src) {
   'use strict';
   $(document).ready(function () {
+    var pageSpinner = $('.page-spinner');
+    pageSpinner.show();
     // search posts
-    $.get('/api/search?q=' + encodeURIComponent(q) + '&src=' + src, collabjs.ui.onFeedDataLoaded);
+    $.get('/api/search?q=' + encodeURIComponent(q) + '&src=' + src, collabjs.ui.onFeedDataLoaded)
+      .always(function () { pageSpinner.hide(); });
     // smooth infinite scrolling
     //  (downloads additional posts as soon as user scrolls to the bottom)
     initLazyLoading(function () {
