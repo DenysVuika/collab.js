@@ -2,7 +2,6 @@ extends layout-plain
 
 block styles
   link(rel='stylesheet', href='/css/index.css')
-  link(rel='stylesheet', href='/lib/bootstrap/css/m-styles.min.css')
 block content
 
   header.jumbotron.masthead
@@ -11,12 +10,9 @@ block content
         small(style='vertical-align: top') beta
       p Starter kit for modern, extensible and social-enabled web applications.
     p
-      a.m-btn.big.blue(href='/register')
-        | Register
-        i.m-icon-big-swapright.m-icon-white
-      a.m-btn.big.green(href='/login')
-        | Sign in
-        i.m-icon-big-swapright.m-icon-white
+      a.btn.btn-primary.btn-large(href='/register') Register
+      a.btn.btn-success.btn-large(href='/login') Sign in
+
 
   a(href='https://github.com/DenisVuyka/collab.js').visible-desktop
     img.forkme(src='/img/forkme_right_orange.png', alt='Fork me on GitHub')

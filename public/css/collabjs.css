@@ -395,3 +395,6 @@ form.account-form textarea.v-resize {
 i.black {
   color: #333;
 }
+.flat {
+  border-radius: 0;
+}
