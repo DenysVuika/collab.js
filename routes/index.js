@@ -293,6 +293,26 @@ exports.get_following = function (context) {
   };
 };
 
+// TODO: still used by `profile.jade`
+exports.follow = function (context) {
+  var repository = context.data;
+  return function (req, res) {
+    repository.followAccount(req.user.id, req.params.account, function () {
+      res.redirect('/timeline');
+    });
+  };
+};
+
+// TODO: still used by `profile.jade`
+exports.unfollow = function (context) {
+  var repository = context.data;
+  return function (req, res) {
+    repository.unfollowAccount(req.user.id, req.params.account, function () {
+      res.redirect('/timeline');
+    });
+  };
+};
+
 exports.get_personal_timeline = function (context) {
   var repository = context.data;
   return function (req, res) {

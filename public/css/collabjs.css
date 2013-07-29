@@ -54,6 +54,12 @@ li.media.comment blockquote p {
 .media a {
   text-decoration: none;
 }
+.btn.flat {
+  border-radius: 0;
+  border: 0;
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.1), 0 1px 5px rgba(0, 0, 0, 0.25);
+  padding: 5px 12px;
+}
 /*
   iOS tweaks
 */
@@ -373,12 +379,18 @@ form .form-actions {
 form .form-actions a.m-btn {
   vertical-align: middle;
 }
+form .form-actions a.btn {
+  margin-right: 10px;
+}
 form.status-form textarea {
   resize: vertical;
   max-height: 300px;
 }
 form.status-form div.footer {
   padding-bottom: 30px;
+}
+form.status-form input[type=submit] {
+  margin-top: 10px;
 }
 form.account-form .control-group {
   margin-bottom: 10px;

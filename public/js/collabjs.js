@@ -499,10 +499,14 @@ collabjs.ui.initTimeline = function () {
      .always(function () { pageSpinner.hide(); });
     // init smooth infinite scrolling
     // (downloads additional posts as soon as user scrolls to the bottom)
-    initLazyLoading(function (posts) {
-      var bottomPostId = Math.min.apply(this, $.map(window.timelineFeed.posts(), function (p) {
-        return p.id;
-      }));
+    initLazyLoading(function () {
+      var posts = window.timelineFeed.posts()
+        , bottomPostId = 0;
+      if (posts.length > 0) {
+        bottomPostId = Math.min.apply(this, $.map(posts, function (p) {
+          return p.id;
+        }));
+      }
       return '/api/timeline/posts?topId=' + bottomPostId;
     }, collabjs.ui.onFeedDataLoaded);
     // start polling timer
@@ -583,9 +587,13 @@ collabjs.ui.initMentions = function () {
     // init smooth infinite scrolling
     //  (downloads additional posts as soon as user scrolls to the bottom)
     initLazyLoading(function () {
-      var bottomPostId = Math.min.apply(this, $.map(window.timelineFeed.posts(), function (p) {
-        return p.id;
-      }));
+      var posts = window.timelineFeed.posts()
+        , bottomPostId = 0;
+      if (posts.length > 0) {
+        bottomPostId = Math.min.apply(this, $.map(posts, function (p) {
+          return p.id;
+        }));
+      }
       return '/api/mentions?topId=' + bottomPostId;
     }, collabjs.ui.onFeedDataLoaded);
   });
@@ -606,9 +614,13 @@ collabjs.ui.initPeople = function () {
     // smooth infinite scrolling
     // (downloads additional posts as soon as user scrolls to bottom)
     initLazyLoading(function () {
-      var bottomUserId = Math.max.apply(this, $.map(window.peopleFeed.profiles(), function (u) {
-        return u.id;
-      }));
+      var profiles = window.peopleFeed.profiles()
+        , bottomUserId = 0;
+      if (profiles.length > 0) {
+        bottomUserId = Math.max.apply(this, $.map(profiles, function (u) {
+          return u.id;
+        }));
+      }
       return '/api/people?topId=' + bottomUserId;
     }, collabjs.ui.onPeopleDataLoaded);
   });
@@ -630,9 +642,13 @@ collabjs.ui.initFollowers = function (account) {
     // smooth infinite scrolling
     // (downloads additional posts as soon as user scrolls to bottom)
     initLazyLoading(function () {
-      var bottomUserId = Math.max.apply(this, $.map(window.peopleFeed.profiles(), function (u) {
-        return u.id;
-      }));
+      var profiles = window.peopleFeed.profiles()
+        , bottomUserId = 0;
+      if (profiles.length > 0) {
+        bottomUserId = Math.max.apply(this, $.map(profiles, function (u) {
+          return u.id;
+        }));
+      }
       return '/api/people/' + account + '/followers?topId=' + bottomUserId;
     }, collabjs.ui.onPeopleDataLoaded);
   });
@@ -653,9 +669,13 @@ collabjs.ui.initFollowing = function (account) {
     // smooth infinite scrolling
     // (downloads additional posts as soon as user scrolls to bottom)
     initLazyLoading(function () {
-      var bottomUserId = Math.max.apply(this, $.map(window.peopleFeed.profiles(), function (u) {
-        return u.id;
-      }));
+      var profiles = window.peopleFeed.profiles()
+        , bottomUserId = 0;
+      if (profiles.length > 0) {
+        bottomUserId = Math.max.apply(this, $.map(profiles, function (u) {
+          return u.id;
+        }));
+      }
       return '/api/people/' + account + '/following?topId=' + bottomUserId;
     }, collabjs.ui.onPeopleDataLoaded);
   });
@@ -676,9 +696,13 @@ collabjs.ui.initPersonalTimeline = function (account) {
     // smooth infinite scrolling
     //  (downloads additional posts as soon as user scrolls to the bottom)
     initLazyLoading(function () {
-      var bottomPostId = Math.min.apply(this, $.map(window.timelineFeed.posts(), function (p) {
-        return p.id;
-      }));
+      var posts = window.timelineFeed.posts()
+        , bottomPostId = 0;
+      if (posts.length > 0) {
+        bottomPostId = Math.min.apply(this, $.map(posts, function (p) {
+          return p.id;
+        }));
+      }
       return '/api/people/' + account + '/timeline?topId=' + bottomPostId;
     }, collabjs.ui.onFeedDataLoaded);
   });
@@ -725,9 +749,13 @@ collabjs.ui.initSearchPosts = function (q, src) {
     // smooth infinite scrolling
     //  (downloads additional posts as soon as user scrolls to the bottom)
     initLazyLoading(function () {
-      var bottomPostId = Math.min.apply(this, $.map(window.timelineFeed.posts(), function (p) {
-        return p.id;
-      }));
+      var posts = window.timelineFeed.posts()
+        , bottomPostId = 0;
+      if (posts.length > 0) {
+        bottomPostId = Math.min.apply(this, $.map(posts, function (p) {
+          return p.id;
+        }));
+      }
       return '/api/search?q=' + encodeURIComponent(q) + '&src=' + src + '&topId=' + bottomPostId;
     }, collabjs.ui.onFeedDataLoaded);
   });

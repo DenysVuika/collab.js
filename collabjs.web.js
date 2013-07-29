@@ -18,6 +18,10 @@ module.exports = function (context) {
     app.post('/account', authenticate, routes.post_account(context));
     app.get('/account/password', authenticate, routes.get_password);
     app.post('/account/password', authenticate, routes.post_password);
+    // TODO: still used by `profile.jade`
+    app.get('/people/:account/follow', authenticate, routes.follow(context));
+    // TODO: still used by `profile.jade`
+    app.get('/people/:account/unfollow', authenticate, routes.unfollow(context));
     app.get('/people', authenticate, routes.get_people);
     app.get('/people/:account/followers', authenticate, routes.get_followers(context));
     app.get('/people/:account/following', authenticate, routes.get_following(context));
