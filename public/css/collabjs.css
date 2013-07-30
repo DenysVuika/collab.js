@@ -383,9 +383,6 @@ form.status-form textarea {
 form.status-form div.footer {
   padding-bottom: 30px;
 }
-form.status-form input[type=submit] {
-  margin-top: 10px;
-}
 form.account-form .control-group {
   margin-bottom: 10px;
 }

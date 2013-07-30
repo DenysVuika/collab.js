@@ -7,8 +7,8 @@ block content
   header.jumbotron.masthead
     div
       h1= collabjs.config.ui.brand
-        small(style='vertical-align: top') beta
-      p Starter kit for modern, extensible and social-enabled web applications.
+        small.project-status= collabjs.config.ui.status
+      p= collabjs.config.ui.description
     p
       a.btn.btn-primary.btn-large(href='/register') Register
       a.btn.btn-success.btn-large(href='/login') Sign in

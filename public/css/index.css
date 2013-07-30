@@ -56,3 +56,7 @@ img.forkme {
   right: 0;
   border: 0;
 }
+
+small.project-status {
+  vertical-align: top;
+}

@@ -59,7 +59,9 @@ config.recaptcha = {
 // ui settings
 config.ui = {
   brand: 'collab.js',
-  copyright: '2013 Denys Vuika',
+  status: 'beta',
+  description: 'Starter kit for modern, extensible and social-enabled web applications.',
+  copyright: '2013 Denis Vuyka',
   header: {
     links: [
       {
