@@ -31,6 +31,6 @@ module.exports = function (context) {
     app.get('/timeline', authenticate, routes.get_timeline);
     app.get('/help/:article?', authenticate, routes.get_help_article(context));
     app.get('/search', authenticate, routes.get_search);
-    app.post('/search', authenticate, routes.post_search);
+    app.post('/search', authenticate, routes.post_search(context));
   }); // app.init.routes
 }; // module.exports

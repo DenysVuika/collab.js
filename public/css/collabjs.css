@@ -376,9 +376,6 @@ form .form-actions {
   border-top: none;
   padding-top: 0;
 }
-form .form-actions a.m-btn {
-  vertical-align: middle;
-}
 form .form-actions a.btn {
   margin-right: 10px;
 }
