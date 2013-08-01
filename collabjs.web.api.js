@@ -1,77 +1,48 @@
-'use strict';
-
-var email = require('./collabjs.email.js')
-	, jade = require('jade')
-	, fs = require('fs');
-
 module.exports = function (context) {
-  var config = context.config
+  'use strict';
+
+  var email = require('./collabjs.email.js')
+    , jade = require('jade')
+    , fs = require('fs')
+    , config = context.config
     , repository = context.data
-    , requireAuthenticated = context.auth.requireAuthenticated;
+    , authenticate = context.auth.requireAuthenticated;
 
   context.once('app.init.routes', function (app) {
-    app.get('/api/mentions:topId?', requireAuthenticated, function (req, res) {
-      var _topId = (req.query.topId && req.query.topId > 0) ? req.query.topId : 0;
-      repository.getMentions(req.user.id, req.user.account, _topId, function (err, result) {
-        if (err || !result) { res.send(400); }
-        else { res.json(200, result); }
-      });
+
+    app.get('/api/mentions:topId?', authenticate, function (req, res) {
+      repository.getMentions(req.user.id, req.user.account, getTopId(req), handleJsonResult(req, res));
     });
 
-    app.get('/api/people:topId?', requireAuthenticated, function (req, res) {
-      var _topId = (req.query.topId && req.query.topId > 0) ? req.query.topId : 0;
-      repository.getPeople(req.user.id, _topId, function (err, result) {
-        if (err || !result) { res.send(400); }
-        else { res.json(200, result); }
-      });
+    app.get('/api/people:topId?', authenticate, function (req, res) {
+      repository.getPeople(req.user.id, getTopId(req), handleJsonResult(req, res));
     });
 
-    app.get('/api/people/:account/follow', requireAuthenticated, function (req, res) {
-      repository.followAccount(req.user.id, req.params.account, function (err) {
-        if (err) { res.send(400); }
-        else { res.send(200); }
-      });
+    app.get('/api/people/:account/follow', authenticate, function (req, res) {
+      repository.followAccount(req.user.id, req.params.account, handleHtmlResult(req, res));
     });
 
-    app.get('/api/people/:account/unfollow', requireAuthenticated, function (req, res) {
-      repository.unfollowAccount(req.user.id, req.params.account, function (err) {
-        if (err) { res.send(400); }
-        else { res.send(200); }
-      });
+    app.get('/api/people/:account/unfollow', authenticate, function (req, res) {
+      repository.unfollowAccount(req.user.id, req.params.account, handleHtmlResult(req, res));
     });
 
-    app.get('/api/people/:account/followers:topId?', requireAuthenticated, function (req, res) {
-      var _topId = (req.query.topId && req.query.topId > 0) ? req.query.topId : 0;
-      repository.getFollowers(req.user.id, req.params.account, _topId, function (err, result) {
-        if (err || !result) { res.send(400); }
-        else { res.json(200, result); }
-      });
+    app.get('/api/people/:account/followers:topId?', authenticate, function (req, res) {
+      repository.getFollowers(req.user.id, req.params.account, getTopId(req), handleJsonResult(req, res));
     });
 
-    app.get('/api/people/:account/following:topId?', requireAuthenticated, function (req, res) {
-      var _topId = (req.query.topId && req.query.topId > 0) ? req.query.topId : 0;
-      repository.getFollowing(req.user.id, req.params.account, _topId, function (err, result) {
-        if (err || !result) { res.send(400); }
-        else { res.json(200, result); }
-      });
+    app.get('/api/people/:account/following:topId?', authenticate, function (req, res) {
+      repository.getFollowing(req.user.id, req.params.account, getTopId(req), handleJsonResult(req, res));
     });
 
-    app.get('/api/people/:account/timeline:topId?', requireAuthenticated, function (req, res) {
-      var _topId = (req.query.topId && req.query.topId > 0) ? req.query.topId : 0;
-      repository.getTimeline(req.user.id, req.params.account, _topId, function (err, result) {
-        if (err || !result) { res.send(400); }
-        else { res.json(200, result); }
-      });
+    app.get('/api/people/:account/timeline:topId?', authenticate, function (req, res) {
+      repository.getTimeline(req.user.id, req.params.account, getTopId(req), handleJsonResult(req, res));
     });
 
-    app.get('/api/accounts/:account/profile', requireAuthenticated, function (req, res) {
-      repository.getPublicProfile(req.user.account, req.params.account, function (err, result) {
-        if (err || !result) { res.send(400); }
-        else { res.json(200, result); }
-      });
+    app.get('/api/accounts/:account/profile', authenticate, function (req, res) {
+      repository.getPublicProfile(req.user.account, req.params.account, handleJsonResult(req, res));
     });
 
-    app.post('/api/timeline/posts', requireAuthenticated, function (req, res) {
+    app.post('/api/timeline/posts', authenticate, function (req, res) {
       var date = new Date();
       var post = {
         userId: req.user.id,
@@ -96,15 +67,11 @@ module.exports = function (context) {
       });
     });
 
-    app.get('/api/timeline/posts:topId?', requireAuthenticated, function (req, res) {
-      var _topId = (req.query.topId && req.query.topId > 0) ? req.query.topId : 0;
-      repository.getMainTimeline(req.user.id, _topId, function (err, result) {
-        if (err || !result) { res.send(400); }
-        else { res.json(200, result); }
-      });
+    app.get('/api/timeline/posts:topId?', authenticate, function (req, res) {
+      repository.getMainTimeline(req.user.id, getTopId(req), handleJsonResult(req, res));
     });
 
-    app.del('/api/timeline/posts/:id', requireAuthenticated, function (req, res) {
+    app.del('/api/timeline/posts/:id', authenticate, function (req, res) {
       repository.deletePost(req.params.id, req.user.id, function (err, result) {
         if (err || !result) { res.send(400); }
         else {
@@ -114,72 +81,75 @@ module.exports = function (context) {
       });
     });
 
-    app.get('/api/timeline/updates/count:topId?', requireAuthenticated, function (req, res) {
-      var _topId = (req.query.topId && req.query.topId > 0) ? req.query.topId : 0;
-      repository.getTimelineUpdatesCount(req.user.id, _topId, function (err, result) {
-        if (err || !result) { res.send(400); }
-        else { res.json(200, result); }
-      });
+    app.get('/api/timeline/updates/count:topId?', authenticate, function (req, res) {
+      repository.getTimelineUpdatesCount(req.user.id, getTopId(req), handleJsonResult(req, res));
     });
 
-    app.get('/api/timeline/updates:topId?', requireAuthenticated, function (req, res) {
-      var _topId = (req.query.topId && req.query.topId > 0) ? req.query.topId : 0;
-      repository.getTimelineUpdates(req.user.id, _topId, function (err, result) {
-        if (err || !result) { res.send(400); }
-        else { res.json(200, result); }
-      });
+    app.get('/api/timeline/updates:topId?', authenticate, function (req, res) {
+      repository.getTimelineUpdates(req.user.id, getTopId(req), handleJsonResult(req, res));
     });
 
-    app.post('/api/timeline/comments', requireAuthenticated, function (req, res) {
-      if (!req.body.content || req.body.content.length === 0) { res.send(400); }
-      else {
-        var created = new Date();
-        var comment = {
-          userId: req.user.id,
-          postId: req.body.postId,
-          created: created,
-          content: req.body.content
-        };
-        repository.addComment(comment, function (err, result) {
-          if (err || !result) { res.send(400); }
-          else {
-            comment.id = result.id;
-            comment.account = req.user.account;
-            comment.name = req.user.name;
-            comment.pictureId = req.user.pictureId;
-            res.json(200, comment);
-            // send email notification
-            notifyOnPostCommented(req, comment);
-          }
-        });
+    app.post('/api/timeline/comments', authenticate, function (req, res) {
+      if (!req.body.content || req.body.content.length === 0) {
+        res.send(400);
+        return;
       }
-    });
-
-    app.get('/api/timeline/posts/:id', requireAuthenticated, function (req, res) {
-      repository.getPostWithComments(req.params.id, function (err, result) {
+      var created = new Date()
+        , comment = {
+            userId: req.user.id,
+            postId: req.body.postId,
+            created: created,
+            content: req.body.content
+          };
+      repository.addComment(comment, function (err, result) {
         if (err || !result) { res.send(400); }
-        else { res.json(200, result); }
+        else {
+          comment.id = result.id;
+          comment.account = req.user.account;
+          comment.name = req.user.name;
+          comment.pictureId = req.user.pictureId;
+          res.json(200, comment);
+          // send email notification
+          notifyOnPostCommented(req, comment);
+        }
       });
     });
 
-    app.get('/api/timeline/posts/:id/comments', requireAuthenticated, function (req, res) {
-      repository.getComments(req.params.id, function (err, result) {
-        if (err || !result) { res.send(400); }
-        else { res.json(200, result); }
-      });
+    app.get('/api/timeline/posts/:id', authenticate, function (req, res) {
+      repository.getPostWithComments(req.params.id, handleJsonResult(req, res));
     });
 
-    app.get('/api/search', requireAuthenticated, function (req, res) {
+    app.get('/api/timeline/posts/:id/comments', authenticate, function (req, res) {
+      repository.getComments(req.params.id, handleJsonResult(req, res));
+    });
+
+    app.get('/api/search', authenticate, function (req, res) {
       if (!req.query.q || !req.query.src) {
         res.send(400);
-      } else {
-        var _topId = (req.query.topId && req.query.topId > 0) ? req.query.topId : 0;
-        repository.getPostsByHashTag(req.user.id, req.query.q, _topId, function (err, result) {
-          if (err || !result) { res.send(400); }
-          else { res.json(200, result); }
-        });
+        return;
       }
+      repository.getPostsByHashTag(req.user.id, req.query.q, getTopId(req), handleJsonResult(req, res));
     });
+
+    // UTILS
+
+    function getTopId(req) {
+      return (req.query && req.query.topId && req.query.topId > 0) ? req.query.topId : 0;
+    }
+
+    function handleJsonResult(req, res) {
+      return function (err, result) {
+        if (err || !result) { res.send(400); }
+        else { res.json(200, result); }
+      };
+    }
+
+    function handleHtmlResult(req, res) {
+      return function (err) {
+        if (err) { res.send(400); }
+        else { res.send(200); }
+      };
+    }
   }); // app.init.routes
 
   var template_comment;

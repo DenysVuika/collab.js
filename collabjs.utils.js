@@ -3,7 +3,7 @@
 module.exports.detectMobileBrowser = detectMobileBrowser;
 module.exports.savedSearches = savedSearches;
 module.exports.commonLocals = commonLocals;
-module.exports.isUrlLocalToHost = isUrlLocalToHost
+module.exports.isUrlLocalToHost = isUrlLocalToHost;
 
 var db = require('./data')
   , auth = require('./collabjs.auth')

@@ -337,6 +337,7 @@ CREATE TABLE IF NOT EXISTS `posts` (
   `content` text COLLATE utf8_unicode_ci NOT NULL,
   `created` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
   `commentsCount` int(11) NOT NULL DEFAULT '0',
+  `likesCount` int(11) NOT NULL DEFAULT '0',
   PRIMARY KEY (`id`),
   KEY `FK_Posts_Users_idx` (`userId`),
   CONSTRAINT `FK_Posts_Users` FOREIGN KEY (`userId`) REFERENCES `users` (`Id`) ON DELETE CASCADE ON UPDATE NO ACTION
@@ -510,12 +511,24 @@ CREATE PROCEDURE `add_comment` (
 	IN created TIMESTAMP,
 	IN content TEXT)
 BEGIN
-	DECLARE result INT default 0;
-	INSERT INTO comments (userId, postId, created, content)
-		VALUES (userId, postId, created, content);
-	SET result = last_insert_id();
-	IF (result > 0) THEN
-		UPDATE posts SET commentsCount = commentsCount + 1 WHERE id = postId;
+  DECLARE result INT default 0;
+	DECLARE subscribed INT DEFAULT 0;
+
+	SELECT 1 INTO subscribed FROM posts AS p
+		WHERE p.id = postId
+			AND (EXISTS (
+				SELECT id FROM subscriptions AS s
+				WHERE s.targetUserId = p.userId AND s.userId = userId)
+			OR p.userId = userId)
+	LIMIT 1;
+
+	IF (subscribed = 1) THEN
+		INSERT INTO comments (userId, postId, created, content)
+			VALUES (userId, postId, created, content);
+		SET result = last_insert_id();
+		IF (result > 0) THEN
+			UPDATE posts SET commentsCount = commentsCount + 1 WHERE id = postId;
+		END IF;
 	END IF;
 
 	SELECT result AS `id`;
@@ -583,6 +596,53 @@ CREATE PROCEDURE `delete_search_list` (
 BEGIN
 	DELETE FROM search_lists WHERE `userId` = listOwnerId AND `name` = listName;
 END//
+DELIMITER ;
+
+CREATE  TABLE `likes` (
+  `id` INT NOT NULL AUTO_INCREMENT ,
+  `userId` INT NOT NULL ,
+  `postId` INT NOT NULL ,
+  `created` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ,
+  PRIMARY KEY (`id`) );
+
+DELIMITER //
+CREATE PROCEDURE `add_like` (
+	IN userId INT,
+	IN postId INT,
+	IN created TIMESTAMP)
+BEGIN
+  DECLARE liked INT DEFAULT 0;
+  DECLARE subscribed INT DEFAULT 0;
+
+  SELECT 1 INTO liked FROM likes
+    WHERE userId = userId AND postId = postId
+  LIMIT 1;
+
+  IF (liked = 0) THEN
+    SELECT 1 INTO subscribed FROM posts AS p
+      WHERE p.id = postId AND EXISTS (
+        SELECT id FROM subscriptions AS s WHERE s.targetUserId = p.userId AND s.userId = userId)
+    LIMIT 1;
+
+    IF (subscribed = 1) THEN
+      INSERT INTO `likes` (userId, postId, created) VALUES (userId, postId, created);
+      UPDATE `posts` SET likesCount = likesCount + 1 WHERE id = postId;
+      END IF;
+    END IF;
+END
+DELIMITER ;
+
+DELIMITER //
+CREATE PROCEDURE `delete_like` (
+	IN userId INT,
+	IN postId INT
+)
+BEGIN
+	DELETE FROM likes WHERE userId = userId AND postId = postId;
+	IF (ROW_COUNT() > 0) THEN
+		UPDATE posts SET likesCount = likesCount - 1 WHERE id = postId;
+	END IF;
+END
 DELIMITER ;
 
 /*!40101 SET SQL_MODE=IFNULL(@OLD_SQL_MODE, '') */;

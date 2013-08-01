@@ -6,7 +6,7 @@ block content
     input(type='hidden', name='_csrf', value=collabjs.token)
     textarea.input-block-level(name='content', rows='3', placeholder="What's on your mind?")
     div.footer
-      input.m-btn.green.pull-right(type='submit', value='Post')
+      input.btn.btn-success.flat.pull-right(type='submit', value='Post')
 
   p.lead(style='display: none', data-bind='visible: posts().length == 0') No posts found...
 

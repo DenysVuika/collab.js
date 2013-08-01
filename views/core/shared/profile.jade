@@ -25,11 +25,11 @@ div.row-fluid
             div
               span.bfh-countries(data-flags='true', data-country='#{profile.location}')
           if (isOwnProfile)
-            a.m-btn.green.pull-right.profile-btn(href='/account') Edit profile
+            a.btn.btn-success.flat.pull-right.profile-btn(href='/account') Edit profile
           else if (profile.isFollowed)
-            a.m-btn.black.pull-right.profile-btn(href='/people/#{profile.account}/unfollow') Unfollow
+            a.btn.btn-inverse.flat.pull-right.profile-btn(href='/people/#{profile.account}/unfollow') Unfollow
           else
-            a.m-btn.blue.pull-right.profile-btn(href='/people/#{profile.account}/follow') Follow
+            a.btn.btn-primary.flat.pull-right.profile-btn(href='/people/#{profile.account}/follow') Follow
     div.footer
       ul.profile-stats-list(style='padding-top:10px;')
         li.profile-stats

@@ -20,7 +20,7 @@ block content
         input(type='hidden', name='action', value='save')
         input(type='hidden', name='q', value=search_q)
         input(type='hidden', name='src', value=search_src)
-        input.m-btn.green(type='submit', value='Save search')
+        input.btn.btn-success.flat(type='submit', value='Save search')
   else
     div(style='text-align:right')
       form(method='post')
@@ -28,7 +28,7 @@ block content
         input(type='hidden', name='action', value='delete')
         input(type='hidden', name='q', value=search_q)
         input(type='hidden', name='src', value=search_src)
-        input.m-btn.red(type='submit', value='Remove saved search')
+        input.btn.btn-danger.flat(type='submit', value='Remove saved search')
 
   p.lead(style='display: none', data-bind='visible: posts().length == 0') No entries found...
   div(style='display: none;', data-bind="visible: posts().length > 0, template: { name: 'timeline-template' }")

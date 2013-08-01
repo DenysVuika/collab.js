@@ -20,9 +20,6 @@
 .nav > .disabled > a > i {
   color: #999;
 }
-img.media-object {
-  border-radius: 4px;
-}
 li.media.post {
   border-top: solid 1px lightgray;
   padding-top: 15px;
@@ -53,6 +50,12 @@ li.media.comment blockquote p {
 }
 .media a {
   text-decoration: none;
+}
+.btn.flat {
+  border-radius: 0;
+  border: 0;
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.1), 0 1px 5px rgba(0, 0, 0, 0.25);
+  padding: 5px 12px;
 }
 /*
   iOS tweaks

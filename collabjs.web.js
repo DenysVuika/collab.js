@@ -1,11 +1,9 @@
-'use strict';
-
-var passport = require('passport')
-  , routes = require('./routes');
-
 module.exports = function (context) {
+  'use strict';
 
-  var ensureAuthenticated = context.auth.ensureAuthenticated;
+  var passport = require('passport')
+    , routes = require('./routes')
+    , authenticate = context.auth.ensureAuthenticated;
 
   context.once('app.init.routes', function (app) {
     app.get('/', routes.index);
@@ -16,19 +14,23 @@ module.exports = function (context) {
     app.all('/logout', routes.logout);
     app.get('/register', routes.get_register);
     app.post('/register', routes.post_register(context));
-    app.get('/account', ensureAuthenticated, routes.get_account);
-    app.post('/account', ensureAuthenticated, routes.post_account(context));
-    app.get('/account/password', ensureAuthenticated, routes.get_password);
-    app.post('/account/password', ensureAuthenticated, routes.post_password);
-    app.get('/people', ensureAuthenticated, routes.get_people);
-    app.get('/people/:account/followers', ensureAuthenticated, routes.get_followers(context));
-    app.get('/people/:account/following', ensureAuthenticated, routes.get_following(context));
-    app.get('/people/:account/timeline', ensureAuthenticated, routes.get_personal_timeline(context));
-    app.get('/mentions', ensureAuthenticated, routes.get_mentions);
-    app.get('/timeline/posts/:postId', ensureAuthenticated, routes.get_post);
-    app.get('/timeline', ensureAuthenticated, routes.get_timeline);
-    app.get('/help/:article?', ensureAuthenticated, routes.get_help_article(context));
-    app.get('/search', ensureAuthenticated, routes.get_search);
-    app.post('/search', ensureAuthenticated, routes.post_search);
+    app.get('/account', authenticate, routes.get_account);
+    app.post('/account', authenticate, routes.post_account(context));
+    app.get('/account/password', authenticate, routes.get_password);
+    app.post('/account/password', authenticate, routes.post_password);
+    // TODO: still used by `profile.jade`
+    app.get('/people/:account/follow', authenticate, routes.follow(context));
+    // TODO: still used by `profile.jade`
+    app.get('/people/:account/unfollow', authenticate, routes.unfollow(context));
+    app.get('/people', authenticate, routes.get_people);
+    app.get('/people/:account/followers', authenticate, routes.get_followers(context));
+    app.get('/people/:account/following', authenticate, routes.get_following(context));
+    app.get('/people/:account/timeline', authenticate, routes.get_personal_timeline(context));
+    app.get('/mentions', authenticate, routes.get_mentions);
+    app.get('/timeline/posts/:postId', authenticate, routes.get_post);
+    app.get('/timeline', authenticate, routes.get_timeline);
+    app.get('/help/:article?', authenticate, routes.get_help_article(context));
+    app.get('/search', authenticate, routes.get_search);
+    app.post('/search', authenticate, routes.post_search(context));
   }); // app.init.routes
 }; // module.exports

@@ -9,7 +9,6 @@ html
 
     link(rel='stylesheet', href='/lib/bootstrap/css/bootstrap.min.css')
     link(rel='stylesheet', href='/lib/font-awesome/css/font-awesome.min.css')
-    link(rel='stylesheet', href='/lib/bootstrap/css/m-styles.min.css')
     link(rel='stylesheet', href='/css/collabjs.css')
     link(rel='stylesheet', href='/lib/bootstrap/css/bootstrap-responsive.min.css')
     link(rel='stylesheet', href='/css/collabjs-responsive.css')
@@ -21,9 +20,11 @@ html
   body
     include shared/header
 
-    div.container
-      block content
-      include shared/footer
+    div.container-fluid
+      div.row-fluid
+        div.span12
+          block content
+          include shared/footer
 
     script(src='/lib/bootstrap/js/bootstrap.min.js')
     script(src='/lib/jqBootstrapValidation/js/jqBootstrapValidation.js')
