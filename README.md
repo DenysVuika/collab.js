@@ -15,16 +15,11 @@ sponsored by  [Raythos Interactive](http://raythos.com/)
 - [Features](#major-features)
 - [Supported Databases](#supported-databases)
 - [Supported Environments](#supported-environments)
-- [First Run](#first-run)
-  * [Configuring](#configuring)
-  * [Installing SQL driver for node.js](#installing-microsof-driver-for-nodejs-for-sql-server-optional-windows-only)
-  * [Running](#running)
+- [Running](#running)
 - [Configuration](#configuration)
   * [Creating custom configurations](#creating-custom-configurations)
       - [Running on OSX](#running-on-osx)
       - [Running on Windows](#running-on-windows)
-- [Deployment](#deployment)
-  * [RedHat OpenShift](#redhat-openshift)
 - [License](#license)
 
 Please refer to [Wiki](https://github.com/DenisVuyka/collab.js/wiki) for more details and articles.
@@ -48,25 +43,12 @@ Please refer to [Wiki](https://github.com/DenisVuyka/collab.js/wiki) for more de
 - Extensible data layer with multiple providers
 - Runs everywhere node.js can run
 
-## Supported databases
+## Running
 
-- MySQL Server
-- Microsoft SQL Server 2008 and later
-
-Database schemas can be found at **```data/schema```** folder.
-
-## Supported environments
-
-collab.js was developed and tested with **OSX Lion 10.7 x64** and **Windows 7 x64**. Project folder contains all configuration files required to open it with [WebMatrix 2](http://www.microsoft.com/web/webmatrix/). It is possible deploying and running collab.js on both Linux and [Windows](http://goo.gl/Pn44P)-based servers.
-
-## First run
-
-#### Configuring
-
-* Setup database with one of the scripts from 'data/schema' folder.
+* Setup database with one of the scripts from 'data/schema/{engine}' folder.
 * Install all dependencies with NPM:
 
-  `npm install` for Windows or `sudo npm install` for OSX
+  `npm install`
 
 * Open 'config/config.default.js' and edit the following section:
 
@@ -74,24 +56,13 @@ collab.js was developed and tested with **OSX Lion 10.7 x64** and **Windows 7 x6
 // data
 config.data.provider = 'collabjs.data.mysql';
 config.data.sessionStore = 'collabjs.data.mysql';
-config.data.host = '.';
+config.data.host = 'localhost';
 config.data.database = 'collabjs';
 config.data.user = '<user>';
 config.data.password = '<password>';
 ```
-The value of `config.data.provider` parameter can be either `collabjs.data.mssql` for MS SQL provider or `collabjs.data.mysql` for MySQL provider support.
 
-Host name for `config.data.host` parameter can take values like `.` (default MS SQL SERVER instance) or `localhost`, IP address like `192.168.1.1` or `127.0.0.1`.
-
-#### Installing Microsof Driver for node.js for SQL Server (optional, Windows only)
-
-In case of using MS SQL Server an additional npm package needs to be installed:
-
-`sudo npm install msnodesql` for OSX or `npm install msnodesql` for Windows
-
-This package is available for Windows systems only, so it is not included into default configuration.
-
-#### Running
+Where `<user>` and `<password>` should be replaced with valid credentials.
 
 That's it, you can now run the server:
 
@@ -169,113 +140,11 @@ If you are using [WebStorm](http://www.jetbrains.com/webstorm/) for node.js deve
 `NODE_CFG=debug` environment variable so that every time you run/debug your project the custom configuration
 file is used.
 
-## Deployment
-
-This section contains various deployment scenarios and hints.
-
-### RedHat OpenShift
-
-To get more details on running node.js with RedHat's OpenShift PaaS please refer to the articles below:
-
-- [Node.js on OpenShift](https://openshift.redhat.com/community/get-started/node-js)
-- [Any version of Node.JS you want in the cloud - OpenShift does it PaaS style](https://openshift.redhat.com/community/blogs/any-version-of-nodejs-you-want-in-the-cloud-openshift-does-it-paas-style)
-
-Deploying collab.js to OpenShift instance is extremely easy. 
-It should take just several minutes if you follow the steps below.
-
-* clone collab.js master repository to your local system and navigate to the project folder with your terminal/command prompt
-* open `config/config.default.js` file with your favourite text editor and uncomment a section called
-*'RedHat OpenShift Configuration (with MySQL cartridge)'*. The content of the section may look like the following:
-
-```javascript
-config.env.ipaddress = process.env.OPENSHIFT_NODEJS_IP || '127.0.0.1';
-config.env.port = process.env.OPENSHIFT_NODEJS_PORT || 8080;
-config.data.provider = 'collabjs.data.mysql';
-config.data.host = process.env.OPENSHIFT_MYSQL_DB_HOST;
-config.data.database = 'collabjs';
-config.data.user = process.env.OPENSHIFT_MYSQL_DB_USERNAME;
-config.data.password = process.env.OPENSHIFT_MYSQL_DB_PASSWORD;
-```
-
-* decide on the node.js version you want running on server
-
-Edit file '.openshift/markers/NODEJS_VERSION' with your favourite text editor and provide the desired version of the node.js.
-The contents may look like the following:
-
-```
-#  Uncomment one of the version lines to select the node version to use.
-#  The last "non-blank" version line is the one picked up by the code in
-#  .openshift/lib/utils
-#  Default: 0.8.9
-#
-# 0.8.9
-# 0.9.1
-0.8.16
-```
-
-* now commit the changes locally
-
-```bash
-git add .
-git commit -m "enabled OpenShift configuration"
-```
-
-* create a namespace if you haven't done that already
-
-```bash
-rhc domain create YOURNAMESPACE
-```
-
-* create a new **collabjs** application with **mysql** and **phpmyadmin** cartridges
-
-```bash
-rhc app create -a collabjs -t nodejs-0.6
-rhc cartridge add mysql-5.1 -a collabjs
-rhc cartridge add phpmyadmin-3.4 -a collabjs
-```
-
-*Notes: after executing the commands above you may see a new 'collabjs' folder appeared at current directory.
-This is an initial template for node.js applications generated by rhc tool. 
-You won't need it, so feel free to remove this folder.*
-
-* setup database schema
-
-You can access **phpmyadmin** cartridge by navigating to the following link (rhc tool will output it during steps above): 
-`https://collabjs-YOURNAMESPACE.rhcloud.com/phpmyadmin/`. MySQL database schema for collab.js is located in the
-following file: `data/schema/mysql/schema.mysql.sql`.
-
-* configure separate git remote for publishing
-
-It is recommended to leave 'master' branch as it is in order to preserve your current GitHub settings.
-The easiest way of having both GitHub and OpenShift (or Azure) deployment enabled in parallel is using dedicated remotes for that.
-
-```bash
-git remote add openshift ssh://APPLICATIONID@collabjs-YOURNAMESPACE.rhcloud.com/~/git/collabjs.git/
-```
-
-Where **APPLICATIONID** and **YOURNAMESPACE** should be replaced with appropriate values 
-(rhc tool should give you correct address during application creation, alternatively you can get the full repository
-address in your web management panel).
-
-* publish collab.js
-
-```bash
-git push openshift master --force
-```
-
-*Note: for the very first publishing you will need using '--force' switch 
-in order to replace default node.js sample pregenerated by rhc tool. You can omit it for later deployments.*
-
-* start using your personal collab.js version
-
-`https://collabjs-YOURNAMESPACE.rhcloud.com`
-
-
 ## License
 
 **The MIT License (MIT)**
 
-**Copyright (c) 2013 Denys Vuika**
+**Copyright (c) 2013 Denis Vuyka**
 
 Permission is hereby granted, free of charge, to any person obtaining a copy of this software
 and associated documentation files (the "Software"), to deal in the Software without restriction,
