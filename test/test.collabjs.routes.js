@@ -308,163 +308,52 @@ describe('collab.js routes', function () {
   });
 
   describe('get_followers', function () {
-    it('gets no data from repository', function () {
-      context.data.getPublicProfile = function (callerAccount, targetAccount, callback) {
-        callback(null, null);
-      };
-      routes.get_followers(context)(req, res);
-      expect(res.statusCode).to.be(400);
-    });
-
-    it('gets error from repository', function () {
-      context.data.getPublicProfile = function (callerAccount, targetAccount, callback) {
-        callback('Error');
-      };
-      routes.get_followers(context)(req, res);
-      expect(res.statusCode).to.be(400);
-    });
 
     it('renders `core/people-followers` view', function () {
       context.data.getPublicProfile = function (callerAccount, targetAccount, callback) {
         callback(null, {});
       };
-      routes.get_followers(context)(req, res);
+      routes.get_followers(req, res);
       expect(res.viewName).to.be('core/people-followers');
-    });
-
-    it('detects own user profile', function () {
-      req.user.account = 'dvuyka';
-      context.data.getPublicProfile = function (callerAccount, targetAccount, callback) {
-        callback(null, { account: 'dvuyka' });
-      };
-      routes.get_followers(context)(req, res);
-      expect(res.statusCode).to.be(200);
-      expect(res.locals.isOwnProfile).to.be.ok();
-    });
-
-    it('detects other user profile', function () {
-      req.user.account = 'dvuyka';
-      context.data.getPublicProfile = function (callerAccount, targetAccount, callback) {
-        callback(null, { account: 'johndoe' });
-      };
-      routes.get_followers(context)(req, res);
-      expect(res.statusCode).to.be(200);
-      expect(res.locals.isOwnProfile).to.not.be.ok();
     });
 
     it('overrides sidebar selection to `/people`', function () {
       context.data.getPublicProfile = function (callerAccount, targetAccount, callback) {
         callback(null, {});
       };
-      routes.get_followers(context)(req, res);
+      routes.get_followers(req, res);
       expect(res.locals.requestPath).to.be('/people');
     });
   });
 
   describe('get_following', function () {
 
-    it('gets no data from repository', function () {
-      context.data.getPublicProfile = function (callerAccount, targetAccount, callback) {
-        callback(null, null);
-      };
-      routes.get_following(context)(req, res);
-      expect(res.statusCode).to.be(400);
-    });
-
-    it('gets error from repository', function () {
-      context.data.getPublicProfile = function (callerAccount, targetAccount, callback) {
-        callback('Error');
-      };
-      routes.get_following(context)(req, res);
-      expect(res.statusCode).to.be(400);
-    });
-
     it('renders `core/people-following` view', function () {
       context.data.getPublicProfile = function (callerAccount, targetAccount, callback) {
         callback(null, {});
       };
-      routes.get_following(context)(req, res);
+      routes.get_following(req, res);
       expect(res.viewName).to.be('core/people-following');
-    });
-
-    it('detects own user profile', function () {
-      req.user.account = 'dvuyka';
-      context.data.getPublicProfile = function (callerAccount, targetAccount, callback) {
-        callback(null, { account: 'dvuyka' });
-      };
-      routes.get_following(context)(req, res);
-      expect(res.statusCode).to.be(200);
-      expect(res.locals.isOwnProfile).to.be.ok();
-    });
-
-    it('detects other user profile', function () {
-      req.user.account = 'dvuyka';
-      context.data.getPublicProfile = function (callerAccount, targetAccount, callback) {
-        callback(null, { account: 'johndoe' });
-      };
-      routes.get_following(context)(req, res);
-      expect(res.statusCode).to.be(200);
-      expect(res.locals.isOwnProfile).to.not.be.ok();
     });
 
     it('overrides sidebar selection to `/people`', function () {
       context.data.getPublicProfile = function (callerAccount, targetAccount, callback) {
         callback(null, {});
       };
-      routes.get_following(context)(req, res);
+      routes.get_following(req, res);
       expect(res.locals.requestPath).to.be('/people');
     });
   });
 
   describe('get_personal_timeline', function () {
 
-    it('gets no data from repository', function () {
-      context.data.getPublicProfile = function (callerAccount, targetAccount, callback) {
-        callback(null, null);
-      };
-
-      routes.get_personal_timeline(context)(req, res);
-      expect(res.statusCode).to.be(400);
-    });
-
-    it('gets error from repository', function () {
-      context.data.getPublicProfile = function (callerAccount, targetAccount, callback) {
-        callback('Error');
-      };
-
-      routes.get_personal_timeline(context)(req, res);
-      expect(res.statusCode).to.be(400);
-    });
-
     it('renders `core/people-timeline` view', function () {
       context.data.getPublicProfile = function (callerAccount, targetAccount, callback) {
         callback(null, {});
       };
 
-      routes.get_personal_timeline(context)(req, res);
+      routes.get_personal_timeline(req, res);
       expect(res.viewName).to.be('core/people-timeline');
-    });
-
-    it('detects own user profile', function () {
-      req.user.account = 'dvuyka';
-      context.data.getPublicProfile = function (callerAccount, targetAccount, callback) {
-        callback(null, { account: 'dvuyka' });
-      };
-
-      routes.get_personal_timeline(context)(req, res);
-      expect(res.statusCode).to.be(200);
-      expect(res.locals.isOwnProfile).to.be.ok();
-    });
-
-    it('detects other user profile', function () {
-      req.user.account = 'dvuyka';
-      context.data.getPublicProfile = function (callerAccount, targetAccount, callback) {
-        callback(null, { account: 'johndoe' });
-      };
-
-      routes.get_personal_timeline(context)(req, res);
-      expect(res.statusCode).to.be(200);
-      expect(res.locals.isOwnProfile).to.not.be.ok();
     });
   });
 

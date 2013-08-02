@@ -4,6 +4,7 @@
 var express = require('express')
   , request = require('supertest')
   , should = require('should')
+  , expect = require('expect.js')
   , runtime = require('../collabjs.runtime')
   , RuntimeEvents = runtime.RuntimeEvents;
 
@@ -55,7 +56,7 @@ describe('collab.js web.api', function () {
       request(app)
         .get('/api/mentions?topId=10')
         .expect('Content-Type', /json/)
-        .expect(200, data, done);
+        .expect(200, {feed: data}, done);
     });
 
     it('gets no data from repository', function (done) {
@@ -102,7 +103,7 @@ describe('collab.js web.api', function () {
       request(app)
         .get('/api/people?topId=10')
         .expect('Content-Type', /json/)
-        .expect(200, data, done);
+        .expect(200, {feed:data}, done);
     });
 
     it('gets no data from repository', function (done) {
@@ -174,7 +175,29 @@ describe('collab.js web.api', function () {
 
   describe('getFollowers: GET /api/people/:account/followers:topId?', function () {
 
+    it('gets error for profile', function (done) {
+      context.data.getPublicProfile = function (callerAccount, targetAccount, callback) {
+        callback('Error');
+      };
+      request(app)
+        .get('/api/people/johndoe/followers')
+        .expect(400, done);
+    });
+
+    it('gets no data for profile', function (done) {
+      context.data.getPublicProfile = function (callerAccount, targetAccount, callback) {
+        callback(null, null);
+      };
+      request(app)
+        .get('/api/people/johndoe/followers')
+        .expect(400, done);
+    });
+
     it('allows query without `topId`', function (done) {
+      context.data.getPublicProfile = function (callerAccount, targetAccount, callback) {
+        callback(null, {});
+      };
+
       context.data.getFollowers = function (callerId, targetAccount, topId, callback) {
         if (topId === 0) { callback(null, []); }
         else { callback('Error'); }
@@ -187,6 +210,9 @@ describe('collab.js web.api', function () {
     });
 
     it('gets data from repository', function (done) {
+      context.data.getPublicProfile = function (callerAccount, targetAccount, callback) {
+        callback(null, {});
+      };
       var data = [{id:1}];
       context.data.getFollowers = function (callerId, targetAccount, topId, callback) {
         callback(null, data);
@@ -195,10 +221,17 @@ describe('collab.js web.api', function () {
       request(app)
         .get('/api/people/johndoe/followers?topId=10')
         .expect('Content-Type', /json/)
-        .expect(200, data, done);
+        .expect(200)
+        .end(function (err, res) {
+          expect(res.body.feed).to.eql(data);
+          done();
+        });
     });
 
     it('gets no data from repository', function (done) {
+      context.data.getPublicProfile = function (callerAccount, targetAccount, callback) {
+        callback(null, {});
+      };
       context.data.getFollowers = function (callerId, targetAccount, topId, callback) {
         callback(null, null);
       };
@@ -209,6 +242,9 @@ describe('collab.js web.api', function () {
     });
 
     it('gets error from repository', function (done) {
+      context.data.getPublicProfile = function (callerAccount, targetAccount, callback) {
+        callback(null, {});
+      };
       context.data.getFollowers = function (callerId, targetAccount, topId, callback) {
         callback('Error');
       };
@@ -219,6 +255,9 @@ describe('collab.js web.api', function () {
     });
 
     it('gets data by account', function (done) {
+      context.data.getPublicProfile = function (callerAccount, targetAccount, callback) {
+        callback(null, {});
+      };
       var data = [ { id: 1 } ];
       context.data.getFollowers = function (callerId, targetAccount, topId, callback) {
         if (targetAccount === 'johndoe') { callback(null, data); }
@@ -228,13 +267,38 @@ describe('collab.js web.api', function () {
       request(app)
         .get('/api/people/johndoe/followers?topId=10')
         .expect('Content-Type', /json/)
-        .expect(200, data, done);
+        .expect(200)
+        .end(function (err, res) {
+          expect(res.body.feed).to.eql(data);
+          done();
+        });
     });
   });
 
   describe('getFollowing: GET /api/people/:account/following:topId?', function () {
 
+    it('gets error for profile', function (done) {
+      context.data.getPublicProfile = function (callerAccount, targetAccount, callback) {
+        callback('Error');
+      };
+      request(app)
+        .get('/api/people/johndoe/following')
+        .expect(400, done);
+    });
+
+    it('gets no data for profile', function (done) {
+      context.data.getPublicProfile = function (callerAccount, targetAccount, callback) {
+        callback(null, null);
+      };
+      request(app)
+        .get('/api/people/johndoe/following')
+        .expect(400, done);
+    });
+
     it('allows query without `topId`', function (done) {
+      context.data.getPublicProfile = function (callerAccount, targetAccount, callback) {
+        callback(null, {});
+      };
       context.data.getFollowing = function (callerId, targetAccount, topId, callback) {
         if (topId === 0) { callback(null, []); }
         else { callback('Error'); }
@@ -247,6 +311,9 @@ describe('collab.js web.api', function () {
     });
 
     it('gets data from repository', function (done) {
+      context.data.getPublicProfile = function (callerAccount, targetAccount, callback) {
+        callback(null, {});
+      };
       var data = [{id:1}];
       context.data.getFollowing = function (callerId, targetAccount, topId, callback) {
         callback(null, data);
@@ -255,7 +322,11 @@ describe('collab.js web.api', function () {
       request(app)
         .get('/api/people/johndoe/following?topId=10')
         .expect('Content-Type', /json/)
-        .expect(200, data, done);
+        .expect(200)
+        .end(function (err, res) {
+          expect(res.body.feed).to.eql(data);
+          done();
+        });
     });
 
     it('gets no data from repository', function (done) {
@@ -269,6 +340,9 @@ describe('collab.js web.api', function () {
     });
 
     it('gets error from repository', function (done) {
+      context.data.getPublicProfile = function (callerAccount, targetAccount, callback) {
+        callback(null, {});
+      };
       context.data.getFollowing = function (callerId, targetAccount, topId, callback) {
         callback('Error');
       };
@@ -279,6 +353,9 @@ describe('collab.js web.api', function () {
     });
 
     it('gets data by account', function (done) {
+      context.data.getPublicProfile = function (callerAccount, targetAccount, callback) {
+        callback(null, {});
+      };
       var data = [ { id: 1 } ];
       context.data.getFollowing = function (callerId, targetAccount, topId, callback) {
         if (targetAccount === 'johndoe') { callback(null, data); }
@@ -288,57 +365,98 @@ describe('collab.js web.api', function () {
       request(app)
         .get('/api/people/johndoe/following?topId=10')
         .expect('Content-Type', /json/)
-        .expect(200, data, done);
+        .expect(200)
+        .end(function (err, res) {
+          expect(res.body.feed).to.eql(data);
+          done();
+        });
     });
   });
 
   describe('getTimeline: GET /api/people/:account/timeline:topId?', function () {
 
+    it('gets error for profile', function (done) {
+      context.data.getPublicProfile = function (callerAccount, targetAccount, callback) {
+        callback('Error');
+      };
+      request(app)
+        .get('/api/people/johndoe/timeline')
+        .expect(400, done);
+    });
+
+    it('gets no data for profile', function (done) {
+      context.data.getPublicProfile = function (callerAccount, targetAccount, callback) {
+        callback(null, null);
+      };
+      request(app)
+        .get('/api/people/johndoe/timeline')
+        .expect(400, done);
+    });
+
     it('allows query without `topId`', function (done) {
+      context.data.getPublicProfile = function (callerAccount, targetAccount, callback) {
+        callback(null, {});
+      };
       context.data.getTimeline = function (callerId, targetAccount, topId, callback) {
         if (topId === 0) { callback(null, []); }
         else { callback('Error'); }
       };
 
       request(app)
-        .get('/api/people/:account/timeline')
+        .get('/api/people/johndoe/timeline')
         .expect('Content-Type', /json/)
         .expect(200, done);
     });
 
     it('gets data from repository', function (done) {
+      context.data.getPublicProfile = function (callerAccount, targetAccount, callback) {
+        callback(null, {});
+      };
       var data = [{id:1}];
       context.data.getTimeline = function (callerId, targetAccount, topId, callback) {
         callback(null, data);
       };
 
       request(app)
-        .get('/api/people/:account/timeline')
+        .get('/api/people/johndoe/timeline')
         .expect('Content-Type', /json/)
-        .expect(200, data, done);
+        .expect(200)
+        .end(function (err, res) {
+          expect(res.body.feed).to.eql(data);
+          done();
+        });
     });
 
     it('gets no data from repository', function (done) {
+      context.data.getPublicProfile = function (callerAccount, targetAccount, callback) {
+        callback(null, {});
+      };
       context.data.getTimeline = function (callerId, targetAccount, topId, callback) {
         callback(null, null);
       };
 
       request(app)
-        .get('/api/people/:account/timeline')
+        .get('/api/people/johndoe/timeline')
         .expect(400, done);
     });
 
     it('gets error from repository', function (done) {
+      context.data.getPublicProfile = function (callerAccount, targetAccount, callback) {
+        callback(null, {});
+      };
       context.data.getTimeline = function (callerId, targetAccount, topId, callback) {
         callback('Error');
       };
 
       request(app)
-        .get('/api/people/:account/timeline')
+        .get('/api/people/johndoe/timeline')
         .expect(400, done);
     });
 
     it('gets data by account', function (done) {
+      context.data.getPublicProfile = function (callerAccount, targetAccount, callback) {
+        callback(null, {});
+      };
       var data = [ { id: 1 } ];
       context.data.getTimeline = function (callerId, targetAccount, topId, callback) {
         if (targetAccount === 'johndoe') { callback(null, data); }
@@ -348,7 +466,11 @@ describe('collab.js web.api', function () {
       request(app)
         .get('/api/people/johndoe/timeline?topId=10')
         .expect('Content-Type', /json/)
-        .expect(200, data, done);
+        .expect(200)
+        .end(function (err, res) {
+          expect(res.body.feed).to.eql(data);
+          done();
+        });
     });
   });
 

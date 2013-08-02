@@ -19,9 +19,9 @@ module.exports = function (context) {
     app.get('/account/password', authenticate, routes.get_password);
     app.post('/account/password', authenticate, routes.post_password);
     app.get('/people', authenticate, routes.get_people);
-    app.get('/people/:account/followers', authenticate, routes.get_followers(context));
-    app.get('/people/:account/following', authenticate, routes.get_following(context));
-    app.get('/people/:account/timeline', authenticate, routes.get_personal_timeline(context));
+    app.get('/people/:account/followers', authenticate, routes.get_followers);
+    app.get('/people/:account/following', authenticate, routes.get_following);
+    app.get('/people/:account/timeline', authenticate, routes.get_personal_timeline);
     app.get('/mentions', authenticate, routes.get_mentions);
     app.get('/timeline/posts/:postId', authenticate, routes.get_post);
     app.get('/timeline', authenticate, routes.get_timeline);
