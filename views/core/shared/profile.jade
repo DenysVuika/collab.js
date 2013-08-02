@@ -1,43 +1,34 @@
 div.row-fluid
-  div.span12.profilebox.blue
-    div.header Denis Vuyka @dvuyka
+  div.span12.profilebox.blue(data-bind='with: user')
+    div.header(data-bind='text: name + " @" + account')
     div.content
       div.media
         div.pull-left
-          img.media-object.avatar(src='#{collabjs.config.env.avatarServer}/avatar/#{profile.pictureId}', alt='')
+          img.media-object.avatar(data-bind='attr: { src: picture }', alt='')
         div.media-body
           h4.media-heading
-            | #{profile.name}
-            small
-              | @#{profile.account}
-          if (profile.bio)
+            span(data-bind='text: name')
+            small(data-bind='text: " @" + account')
+          span
+            i.icon-pencil
+            | &nbsp;
+            em(data-bind='text: bio')
+          div
             span
-              i.icon-pencil
+              i.icon-globe
               | &nbsp;
-              em #{profile.bio}
-          if (profile.website)
-            div
-              span
-                i.icon-globe
-                | &nbsp;
-                a(href='#{profile.website}') #{profile.website}
-          if (profile.location)
-            div
-              span.bfh-countries(data-flags='true', data-country='#{profile.location}')
-          if (isOwnProfile)
-            a.btn.btn-success.flat.pull-right.profile-btn(href='/account') Edit profile
-          else if (profile.isFollowed)
-            a.btn.btn-inverse.flat.pull-right.profile-btn(href='/people/#{profile.account}/unfollow') Unfollow
-          else
-            a.btn.btn-primary.flat.pull-right.profile-btn(href='/people/#{profile.account}/follow') Follow
+              a(data-bind='attr: { href: website }, text: website', target='_blank')
+          div
+            span.bfh-countries(data-bind='country: location', data-flags='true')
+          div
+            a.btn.btn-success.flat.pull-right.profile-btn(style='display:none', data-bind='visible: isOwnProfile', href='/account') Edit profile
+            a.btn.btn-inverse.flat.pull-right.profile-btn(style='display:none', data-bind='visible: canUnfollow, click: unfollow') Unfollow
+            a.btn.btn-primary.flat.pull-right.profile-btn(style='display:none', data-bind='visible: canFollow, click: follow') Follow
     div.footer
       ul.profile-stats-list(style='padding-top:10px;')
         li.profile-stats
-          a.blue(href='/people/#{profile.account}/timeline')
-            | #{profile.posts} posts
+          a.blue(data-bind='attr: { href: feed }, text: posts + " posts"')
         li.profile-stats
-          a.blue(href='/people/#{profile.account}/following')
-            | #{profile.following} following
+          a.blue(data-bind='attr: { href: followingUrl }, text: following + " following"')
         li.profile-stats
-          a.blue(href='/people/#{profile.account}/followers')
-            | #{profile.followers} followers
+          a.blue(data-bind='attr: { href: followersUrl }, text: followers + " followers"')

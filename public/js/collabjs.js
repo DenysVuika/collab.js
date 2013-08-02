@@ -110,7 +110,10 @@ $(function () {
       if (valueUnwrapped && valueUnwrapped.length > 0) {
         $element.css('display', 'block');
         $element.attr('data-country', valueUnwrapped);
-        $element.bfhcountries($element.data());
+        var data = $element.data();
+        delete data.bfhcountries;
+        data.country = valueUnwrapped;
+        $element.bfhcountries(data);
       } else {
         $element.css('display', 'none');
       }
@@ -279,15 +282,36 @@ function UserProfileViewModel(data) {
   self.bio = data.bio;
   self.posts = data.posts;
   self.followers = data.followers;
-  self.followersUrl = '/people/' + data.account + '/followers';
   self.following = data.following;
-  self.followingUrl = '/people/' + data.account + '/following';
   self.isFollowed = ko.observable(data.isFollowed);
+  self.isOwnProfile = data.isOwnProfile;
+  // url helpers
   self.picture = collabjs.getUserPicture(data.pictureId);
   self.feed = '/people/' + data.account + '/timeline';
+  self.followingUrl = '/people/' + data.account + '/following';
+  self.followersUrl = '/people/' + data.account + '/followers';
   self.followAction = '/api/people/' + data.account + '/follow';
   self.unfollowAction = '/api/people/' + data.account + '/unfollow';
-  self.isOwnProfile = data.isOwnProfile;
+
+  self.canFollow = ko.computed(function () {
+     return (!self.isFollowed() && !self.isOwnProfile);
+  }, this);
+
+  self.canUnfollow = ko.computed(function () {
+    return (self.isFollowed() && !self.isOwnProfile);
+  }, this);
+
+  self.follow = function (profile) {
+    $.get(profile.followAction, function () {
+      profile.isFollowed(true);
+    });
+  };
+
+  self.unfollow = function (profile) {
+    $.get(profile.unfollowAction, function () {
+      profile.isFollowed(false);
+    });
+  };
 }
 
 function PeopleViewModel(data) {
@@ -321,29 +345,57 @@ function PeopleViewModel(data) {
 // Common Functions
 // ========================================================================================
 
-collabjs.ui.onPeopleDataLoaded = function (data) {
+collabjs.ui.onFeedDataLoaded = function (data) {
   'use strict';
-  if (!data) {
-    data = [];
-  }
-  if (!window.peopleFeed) {
-    window.peopleFeed = new PeopleViewModel(data);
-    ko.applyBindings(window.peopleFeed);
+  var feed = data || [];
+  if (!window.timelineFeed) {
+    window.timelineFeed = new FeedViewModel(feed);
+    ko.applyBindings(window.timelineFeed);
   } else {
-    window.peopleFeed.appendItems(data);
+    window.timelineFeed.appendPosts(feed);
+  }
+  collabjs.ui.enableCommentExpanders();
+};
+
+collabjs.ui.onPeopleLoaded = function (data) {
+  'use strict';
+
+  var feed = [];
+
+  if (data && data.feed) {
+    feed = data.feed;
+  }
+
+  if (!window.peopleFeed) {
+    var model = new PeopleViewModel(feed);
+    if (data.user) {
+      model.user = new UserProfileViewModel(data.user);
+    }
+    window.peopleFeed = model;
+    ko.applyBindings(model);
+  } else {
+    window.peopleFeed.appendItems(feed);
   }
 };
 
-collabjs.ui.onFeedDataLoaded = function (data) {
+collabjs.ui.onTimelineLoaded = function (data) {
   'use strict';
-  if (!data) {
-    data = [];
+
+  var feed = [];
+
+  if (data && data.feed) {
+    feed = data.feed;
   }
+
   if (!window.timelineFeed) {
-    window.timelineFeed = new FeedViewModel(data);
-    ko.applyBindings(window.timelineFeed);
+    var model = new FeedViewModel(feed);
+    if (data.user) {
+      model.user = new UserProfileViewModel(data.user);
+    }
+    window.timelineFeed = model;
+    ko.applyBindings(model);
   } else {
-    window.timelineFeed.appendPosts(data);
+    window.timelineFeed.appendPosts(feed);
   }
   collabjs.ui.enableCommentExpanders();
 };
@@ -582,7 +634,7 @@ collabjs.ui.initMentions = function () {
     var pageSpinner = $('.page-spinner');
     pageSpinner.show();
     // get first page for mentions
-    $.get('/api/mentions', collabjs.ui.onFeedDataLoaded)
+    $.get('/api/mentions', collabjs.ui.onTimelineLoaded)
       .always(function () { pageSpinner.hide(); });
     // init smooth infinite scrolling
     //  (downloads additional posts as soon as user scrolls to the bottom)
@@ -595,7 +647,7 @@ collabjs.ui.initMentions = function () {
         }));
       }
       return '/api/mentions?topId=' + bottomPostId;
-    }, collabjs.ui.onFeedDataLoaded);
+    }, collabjs.ui.onTimelineLoaded);
   });
 };
 
@@ -609,7 +661,7 @@ collabjs.ui.initPeople = function () {
     var pageSpinner = $('.page-spinner');
     pageSpinner.show();
     // get first page for people hub
-    $.get('/api/people', collabjs.ui.onPeopleDataLoaded)
+    $.get('/api/people', collabjs.ui.onPeopleLoaded)
       .always(function () { pageSpinner.hide(); });
     // smooth infinite scrolling
     // (downloads additional posts as soon as user scrolls to bottom)
@@ -622,7 +674,7 @@ collabjs.ui.initPeople = function () {
         }));
       }
       return '/api/people?topId=' + bottomUserId;
-    }, collabjs.ui.onPeopleDataLoaded);
+    }, collabjs.ui.onPeopleLoaded);
   });
 };
 
@@ -636,7 +688,7 @@ collabjs.ui.initFollowers = function (account) {
     var pageSpinner = $('.page-spinner');
     pageSpinner.show();
     // get first page of followers for the given account
-    $.get('/api/people/' + account + '/followers', collabjs.ui.onPeopleDataLoaded)
+    $.get('/api/people/' + account + '/followers', collabjs.ui.onPeopleLoaded)
       .always(function () { pageSpinner.hide(); });
 
     // smooth infinite scrolling
@@ -650,7 +702,7 @@ collabjs.ui.initFollowers = function (account) {
         }));
       }
       return '/api/people/' + account + '/followers?topId=' + bottomUserId;
-    }, collabjs.ui.onPeopleDataLoaded);
+    }, collabjs.ui.onPeopleLoaded);
   });
 };
 
@@ -664,7 +716,7 @@ collabjs.ui.initFollowing = function (account) {
     var pageSpinner = $('.page-spinner');
     pageSpinner.show();
     // get first page of followings for the given account
-    $.get('/api/people/' + account + '/following', collabjs.ui.onPeopleDataLoaded)
+    $.get('/api/people/' + account + '/following', collabjs.ui.onPeopleLoaded)
       .always(function () { pageSpinner.hide(); });
     // smooth infinite scrolling
     // (downloads additional posts as soon as user scrolls to bottom)
@@ -677,7 +729,7 @@ collabjs.ui.initFollowing = function (account) {
         }));
       }
       return '/api/people/' + account + '/following?topId=' + bottomUserId;
-    }, collabjs.ui.onPeopleDataLoaded);
+    }, collabjs.ui.onPeopleLoaded);
   });
 };
 
@@ -691,7 +743,7 @@ collabjs.ui.initPersonalTimeline = function (account) {
     var pageSpinner = $('.page-spinner');
     pageSpinner.show();
     // get first page of people for the given account
-    $.get('/api/people/' + account + '/timeline', collabjs.ui.onFeedDataLoaded)
+    $.get('/api/people/' + account + '/timeline', collabjs.ui.onTimelineLoaded)
       .always(function () { pageSpinner.hide(); });
     // smooth infinite scrolling
     //  (downloads additional posts as soon as user scrolls to the bottom)
@@ -704,7 +756,7 @@ collabjs.ui.initPersonalTimeline = function (account) {
         }));
       }
       return '/api/people/' + account + '/timeline?topId=' + bottomPostId;
-    }, collabjs.ui.onFeedDataLoaded);
+    }, collabjs.ui.onTimelineLoaded);
   });
 };
 

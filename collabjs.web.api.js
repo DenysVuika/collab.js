@@ -11,11 +11,25 @@ module.exports = function (context) {
   context.once('app.init.routes', function (app) {
 
     app.get('/api/mentions:topId?', authenticate, function (req, res) {
-      repository.getMentions(req.user.id, req.user.account, getTopId(req), handleJsonResult(req, res));
+      repository.getMentions(req.user.id, req.user.account, getTopId(req), function (err, result) {
+        if (err || !result) { res.send(400); }
+        else {
+          res.json(200, {
+            feed: result
+          });
+        }
+      });
     });
 
     app.get('/api/people:topId?', authenticate, function (req, res) {
-      repository.getPeople(req.user.id, getTopId(req), handleJsonResult(req, res));
+      repository.getPeople(req.user.id, getTopId(req), function (err, result) {
+        if (err || !result) { res.send(400); }
+        else {
+          res.json(200, {
+            feed: result
+          });
+        }
+      });
     });
 
     app.get('/api/people/:account/follow', authenticate, function (req, res) {
@@ -27,15 +41,76 @@ module.exports = function (context) {
     });
 
     app.get('/api/people/:account/followers:topId?', authenticate, function (req, res) {
-      repository.getFollowers(req.user.id, req.params.account, getTopId(req), handleJsonResult(req, res));
+
+      repository.getPublicProfile(req.user.account, req.params.account, function (err, result) {
+        if (err || !result) {
+          res.send(400);
+          return;
+        }
+
+        var profile = result;
+        profile.isOwnProfile = req.user.account === profile.account;
+        profile.pictureUrl = config.env.avatarServer + '/avatar/' + profile.pictureId;
+
+        repository.getFollowers(req.user.id, req.params.account, getTopId(req), function (err, result) {
+          if (err || !result) { res.send(400);}
+          else {
+            res.json(200, {
+              user: profile,
+              feed: result
+            });
+          }
+        });
+      });
     });
 
     app.get('/api/people/:account/following:topId?', authenticate, function (req, res) {
-      repository.getFollowing(req.user.id, req.params.account, getTopId(req), handleJsonResult(req, res));
+
+      repository.getPublicProfile(req.user.account, req.params.account, function (err, result) {
+        if (err || !result) {
+          res.send(400);
+          return;
+        }
+
+        var profile = result;
+        profile.isOwnProfile = req.user.account === profile.account;
+        profile.pictureUrl = config.env.avatarServer + '/avatar/' + profile.pictureId;
+
+        repository.getFollowing(req.user.id, req.params.account, getTopId(req), function (err, result) {
+          if (err || !result) { res.send(400);}
+          else {
+            res.json(200, {
+              user: profile,
+              feed: result
+            });
+          }
+        });
+      });
     });
 
     app.get('/api/people/:account/timeline:topId?', authenticate, function (req, res) {
-      repository.getTimeline(req.user.id, req.params.account, getTopId(req), handleJsonResult(req, res));
+
+      repository.getPublicProfile(req.user.account, req.params.account, function (err, result) {
+        if (err || !result) {
+          res.send(400);
+          return;
+        }
+
+        var profile = result;
+        profile.isOwnProfile = req.user.account === profile.account;
+        profile.pictureUrl = config.env.avatarServer + '/avatar/' + profile.pictureId;
+
+        repository.getTimeline(req.user.id, req.params.account, getTopId(req), function (err, result) {
+          if (err || !result) { res.send(400); }
+          else {
+            res.json(200, {
+              user: profile,
+              feed: result
+            });
+          }
+        });
+
+      });
     });
 
     app.get('/api/accounts/:account/profile', authenticate, function (req, res) {
