@@ -253,83 +253,27 @@ exports.get_people = function (req, res) {
   });
 };
 
-exports.get_followers = function (context) {
-  var repository = context.data;
-  return function (req, res) {
-    repository.getPublicProfile(req.user.account, req.params.account, function (err, result) {
-      if (err || !result) {
-        // TODO: redirect to some special error page?
-        res.send(400);
-        return;
-      }
-      res.render('core/people-followers', {
-        title: req.params.account + ': followers',
-        account: req.params.account,
-        profile: result,
-        isOwnProfile: req.user.account === result.account,
-        requestPath: '/people' // keep 'People' selected at sidebar
-      });
-    });
-  };
+exports.get_followers = function (req, res) {
+  res.render('core/people-followers', {
+    title: req.params.account + ': followers',
+    account: req.params.account,
+    requestPath: '/people' // keep 'People' selected at sidebar
+  });
 };
 
-exports.get_following = function (context) {
-  var repository = context.data;
-  return function (req, res) {
-    repository.getPublicProfile(req.user.account, req.params.account, function (err, result) {
-      if (err || !result) {
-        // TODO: redirect to some special error page
-        res.send(400);
-        return;
-      }
-      res.render('core/people-following', {
-        title: req.params.account + ': following',
-        account: req.params.account,
-        profile: result,
-        isOwnProfile: req.user.account === result.account,
-        requestPath: '/people' // keep 'People' selected at sidebar
-      });
-    });
-  };
+exports.get_following = function (req, res) {
+  res.render('core/people-following', {
+    title: req.params.account + ': following',
+    account: req.params.account,
+    requestPath: '/people' // keep 'People' selected at sidebar
+  });
 };
 
-// TODO: still used by `profile.jade`
-exports.follow = function (context) {
-  var repository = context.data;
-  return function (req, res) {
-    repository.followAccount(req.user.id, req.params.account, function () {
-      res.redirect('/timeline');
-    });
-  };
-};
-
-// TODO: still used by `profile.jade`
-exports.unfollow = function (context) {
-  var repository = context.data;
-  return function (req, res) {
-    repository.unfollowAccount(req.user.id, req.params.account, function () {
-      res.redirect('/timeline');
-    });
-  };
-};
-
-exports.get_personal_timeline = function (context) {
-  var repository = context.data;
-  return function (req, res) {
-    repository.getPublicProfile(req.user.account, req.params.account, function (err, result) {
-      if (err || !result) {
-        // TODO: redirect to some special error page
-        res.send(400);
-        return;
-      }
-      res.render('core/people-timeline', {
-        title: req.params.account,
-        account: req.params.account,
-        profile: result,
-        isOwnProfile: req.user.account === result.account
-      });
-    });
-  };
+exports.get_personal_timeline = function (req, res) {
+  res.render('core/people-timeline', {
+    title: req.params.account,
+    account: req.params.account
+  });
 };
 
 

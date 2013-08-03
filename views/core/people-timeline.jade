@@ -2,9 +2,9 @@ extends layout
 
 append sidebar-connect
   li.active
-    a(href='/people/#{profile.account}/timeline')
+    a(href='/people/#{account}/timeline')
       i.icon-user
-      | &nbsp;@#{profile.account}
+      | &nbsp;@#{account}
 
 block content
   include shared/ko-timeline

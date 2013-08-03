@@ -1,6 +1,6 @@
 'use strict';
 
-var config = require('../../config')
+var config = require('../../.')
 	, sql = require('msnodesql')
   , passwordHash = require('password-hash')
   , crypto = require('crypto');
