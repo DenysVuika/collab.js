@@ -13,8 +13,6 @@ sponsored by  [Raythos Interactive](http://raythos.com/)
 ## Table of Contents
 
 - [Features](#major-features)
-- [Supported Databases](#supported-databases)
-- [Supported Environments](#supported-environments)
 - [Running](#running)
 - [Configuration](#configuration)
   * [Creating custom configurations](#creating-custom-configurations)
