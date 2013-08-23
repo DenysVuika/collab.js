@@ -48,7 +48,6 @@ html
               block sidebar-connect
               //- 'Administration' section
               if (collabjs.isAdministrator && collabjs.config.ui.sidebar.administration.length > 0)
-                li.divider
                 li.list-group-item.list-group-item-heading Administration
                 each link in collabjs.config.ui.sidebar.administration
                   li.list-group-item
