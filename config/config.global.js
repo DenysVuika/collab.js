@@ -64,11 +64,12 @@ config.ui = {
   copyright: '2013 Denis Vuyka',
   header: {
     links: [
-      {
-        text: 'People',
-        url: '/people',
-        icon: 'icon-group'
-      }]
+//      {
+//        text: 'People',
+//        url: '/people',
+//        icon: 'icon-group'
+//      }
+    ]
   },
   sidebar: {
     // custom sidebar categories with number or links per each

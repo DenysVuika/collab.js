@@ -40,10 +40,10 @@ div.navbar.navbar-default.navbar-fixed-top(role='navigation')
 
     ul.nav.navbar-nav
       if (collabjs.user)
-        li
-          a(href='/timeline', title='Home')
-            span
-              i.icon-home.icon-large &nbsp;Home
+        //-li
+        //-  a(href='/timeline', title='Home')
+        //-    span
+        //-      i.icon-home.icon-large &nbsp;Home
         //- dynamic links
         each link in collabjs.config.ui.header.links
           li

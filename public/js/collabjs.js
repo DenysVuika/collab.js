@@ -244,7 +244,6 @@ function FeedViewModel(data) {
           name: entry.name,
           content: entry.content,
           created: entry.created,
-          //pictureSize: 32,
           pictureSize: 48,
           pictureId: entry.pictureId
         });
@@ -448,7 +447,7 @@ collabjs.ui.enableCommentExpanders = function () {
           name: entry.name,
           content: entry.content,
           created: entry.created,
-          pictureSize: 32,
+          pictureSize: 48,
           pictureId: entry.pictureId
         });
       });
@@ -474,7 +473,7 @@ collabjs.ui.doPostComment = function (form) {
       name: data.name,
       content: data.content,
       created: data.created,
-      pictureSize: 32,
+      pictureSize: 48,
       pictureId: data.pictureId
     }));
     post.sortComments();

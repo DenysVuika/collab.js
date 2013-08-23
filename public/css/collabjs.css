@@ -180,6 +180,17 @@ a.account {
   font-weight: normal;
   font-size: 90%;
   padding-left: 5px;
+  text-decoration: none;
+}
+a.account:hover {
+  color: steelblue;
+}
+a.account-name {
+  font-weight: bold;
+  text-decoration: none;
+}
+a.no-decoration {
+  text-decoration: none;
 }
 .bio-counter-label {
   color: #999;
