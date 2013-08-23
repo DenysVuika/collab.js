@@ -2,19 +2,9 @@
 html
   head
     title= title
-    
-    meta(name='viewport', content='width=device-width, initial-scale=1.0, maximum-scale=1.0')
-    meta(name='description', content='')
-    meta(name='author', content='')
 
-    link(rel='stylesheet', href='/lib/bootstrap/css/bootstrap.min.css')
-    link(rel='stylesheet', href='/lib/font-awesome/css/font-awesome.min.css')
-    link(rel='stylesheet', href='/css/collabjs.css')
-    link(rel='stylesheet', href='/lib/bootstrap/css/bootstrap-responsive.min.css')
-    link(rel='stylesheet', href='/css/collabjs-responsive.css')
-
-    link(rel='stylesheet', href='/lib/bootstrap-formhelpers/css/bootstrap-formhelpers.css')
-    link(rel='stylesheet', href='/lib/bootstrap-formhelpers/css/bootstrap-formhelpers-countries.flags.css')
+    include shared/_meta
+    include shared/_styles
 
     block styles
 
@@ -24,98 +14,56 @@ html
     input(type='hidden', id='csrf_token', value=collabjs.token)
     include shared/header
 
-    div.container-fluid
-      div.row-fluid
+    div.container
+      div.row
         if (collabjs.isAuthenticated)
-          div.span3
+          div.col-md-3.col-lg-3
             //- SIDEBAR
             block sidebar
-              div.well.sidebar-nav.sidebar-left
-                ul.nav.nav-list
-                  //- 'Main' section
-                  li.nav-header Main
-                  li
-                    a(href='/timeline')
-                      i.icon-home
-                      | &nbsp;Home
-                  li
-                    a(href='/mentions')
-                      i.icon-globe
-                      | &nbsp;Mentions
-                  block sidebar-main
-                  //- Dynamic categories
-                  each category in collabjs.config.ui.sidebar.categories
-                    li.nav-header= category.name
-                    each entry in category.entries
-                      li
-                        a(href='#{entry.url}')
-                          i(class='#{entry.icon}')
-                          | &nbsp; #{entry.text}
-                  if (savedSearches && savedSearches.length > 0)
-                    li.nav-header Search Lists
-                    block sidebar-search
-                    each list in savedSearches
-                      li
-                        a(href='/search?q=#{list.query}&src=#{list.source}')
-                          i.icon-filter
-                          | &nbsp;#{list.name}
-                  //- 'Connect' section
-                  li.nav-header Connect
-                  li
-                    a(href='/people')
-                      i.icon-group
-                      | &nbsp;People
-                  block sidebar-connect
-                  //- 'Administration' section
-                  if (collabjs.isAdministrator && collabjs.config.ui.sidebar.administration.length > 0)
-                    li.divider
-                    li.nav-header Administration
-                    each link in collabjs.config.ui.sidebar.administration
-                      li
-                        a(href='#{link.url}')
-                          i(class='#{link.icon}')
-                          | &nbsp;#{link.text}
-                  //- 'Help' section
-                  li.divider
-                  li
-                    a(href='/help')
-                      i.icon-flag
-                      | &nbsp;Help
-          div.span9
+              div.list-group
+                a.list-group-item(href='/timeline')
+                  i.icon-home
+                  | &nbsp;Home
+                a.list-group-item(href='/mentions')
+                  i.icon-globe
+                  | &nbsp;Mentions
+                block sidebar-main
+                //- Dynamic categories
+                each category in collabjs.config.ui.sidebar.categories
+                  each entry in category.entries
+                    a.list-group-item(href='#{entry.url}')
+                      i(class='#{entry.icon}')
+                      | &nbsp; #{entry.text}
+                //-Search Lists
+                if (savedSearches && savedSearches.length > 0)
+                  block sidebar-search
+                  each list in savedSearches
+                    a.list-group-item(href='/search?q=#{list.query}&src=#{list.source}')
+                      i.icon-filter
+                      | &nbsp;#{list.name}
+                //- 'Connect' section
+                a.list-group-item(href='/people')
+                  i.icon-group
+                  | &nbsp;People
+                block sidebar-connect
+                //- 'Administration' section
+                if (collabjs.isAdministrator && collabjs.config.ui.sidebar.administration.length > 0)
+                  each link in collabjs.config.ui.sidebar.administration
+                    a.list-group-item(href='#{link.url}')
+                      i(class='#{link.icon}')
+                      | &nbsp;#{link.text}
+                //- 'Help' section
+                a.list-group-item(href='/help')
+                  i.icon-flag
+                  | &nbsp;Help
+          div.col-md-9.col-lg-9
             //- MAIN CONTENT
             block content
         else
-          div.span12
+          div.col-md-12.col-lg-12
             //- MAIN CONTENT
             block content
       include shared/footer
 
-    script(src='/lib/bootstrap/js/bootstrap.min.js')
-    script(src='/lib/bootstrap-formhelpers/js/bootstrap-formhelpers-selectbox.js')
-    script(src='/lib/bootstrap-formhelpers/js/bootstrap-formhelpers-countries.js')
-    script(src='/lib/bootstrap-formhelpers/js/bootstrap-formhelpers-countries.en_US.js')
-    script(src='/lib/knockout/js/knockout.min.js')
-    script(src='/lib/moment/js/moment.min.js')
-    script(src='/lib/jqBootstrapValidation/js/jqBootstrapValidation.js')
-    script(src='/js/collabjs.js')
-
+    include shared/_scripts
     block scripts
-
-    //- initialize request path variable if not defined
-    - if (typeof(requestPath) === 'undefined')
-      - requestPath = '';
-
-    script.
-      $(function() {
-        // Synchronize sidebar/header selection with current request path
-        var path = '#{requestPath}' || window.location.pathname + window.location.search;
-        $('.nav li a[href="' + path + '"]').parents('li').addClass('active');
-      });
-
-    //- assign user-related variables
-    if (collabjs.user)
-      script.
-        collabjs.avatarServer = '#{collabjs.config.env.avatarServer}';
-        collabjs.currentUser.id = '#{collabjs.user.id}';
-        collabjs.currentUser.account = '#{collabjs.user.account}';
-        collabjs.currentUser.pictureId = '#{collabjs.user.emailHash}';

@@ -1,7 +1,8 @@
-div.row-fluid
-  div.span12.profilebox.blue(data-bind='with: user')
-    div.header(data-bind='text: name + " @" + account')
-    div.content
+div.row
+  div.panel.panel-primary(data-bind='with: user')
+    div.panel-heading
+      h3.panel-title(data-bind='text: name + " @" + account')
+    div.panel-body
       div.media
         div.pull-left
           img.media-object.avatar(data-bind='attr: { src: picture }', alt='')
@@ -9,26 +10,25 @@ div.row-fluid
           h4.media-heading
             span(data-bind='text: name')
             small(data-bind='text: " @" + account')
-          span
-            i.icon-pencil
-            | &nbsp;
-            em(data-bind='text: bio')
-          div
-            span
-              i.icon-globe
-              | &nbsp;
-              a(data-bind='attr: { href: website }, text: website', target='_blank')
-          div
-            span.bfh-countries(data-bind='country: location', data-flags='true')
-          div
-            a.btn.btn-success.flat.pull-right.profile-btn(style='display:none', data-bind='visible: isOwnProfile', href='/account') Edit profile
-            a.btn.btn-inverse.flat.pull-right.profile-btn(style='display:none', data-bind='visible: canUnfollow, click: unfollow') Unfollow
-            a.btn.btn-primary.flat.pull-right.profile-btn(style='display:none', data-bind='visible: canFollow, click: follow') Follow
-    div.footer
-      ul.profile-stats-list(style='padding-top:10px;')
-        li.profile-stats
-          a.blue(data-bind='attr: { href: feed }, text: posts + " posts"')
-        li.profile-stats
-          a.blue(data-bind='attr: { href: followingUrl }, text: following + " following"')
-        li.profile-stats
-          a.blue(data-bind='attr: { href: followersUrl }, text: followers + " followers"')
+          ul.list-unstyled
+            li
+              span.bfh-countries(data-bind='country: location', data-flags='true')
+            li
+              span
+                i.icon-globe
+                | &nbsp;
+                a(data-bind='attr: { href: website }, text: website', target='_blank')
+            li
+              span
+                i.icon-pencil
+                | &nbsp;
+                em(data-bind='text: bio')
+          a.btn.btn-success.pull-right.profile-btn(style='display:none', data-bind='visible: isOwnProfile', href='/account') Edit profile
+          a.btn.btn-danger.pull-right.profile-btn(style='display:none', data-bind='visible: canUnfollow, click: unfollow') Unfollow
+          a.btn.btn-default.pull-right.profile-btn(style='display:none', data-bind='visible: canFollow, click: follow') Follow
+
+    div.panel-footer
+      ul.list-inline.profile-stats
+        a.blue(data-bind='attr: { href: feed }, text: posts + " posts"')
+        a.blue(data-bind='attr: { href: followingUrl }, text: following + " following"')
+        a.blue(data-bind='attr: { href: followersUrl }, text: followers + " followers"')

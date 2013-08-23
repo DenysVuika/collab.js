@@ -1,0 +1,17 @@
+script(src='/lib/bootstrap/js/bootstrap.min.js')
+script(src='/lib/bootstrap-formhelpers/js/bootstrap-formhelpers-selectbox.js')
+script(src='/lib/bootstrap-formhelpers/js/bootstrap-formhelpers-countries.js')
+script(src='/lib/bootstrap-formhelpers/js/bootstrap-formhelpers-countries.en_US.js')
+script(src='/lib/knockout/js/knockout.min.js')
+script(src='/lib/moment/js/moment.min.js')
+script(src='/lib/jqBootstrapValidation/js/jqBootstrapValidation.js')
+script(src='/js/collabjs.js')
+script.
+  collabjs.ui.requestPath = '#{requestPath}';
+//- assign user-related variables
+if (collabjs.user)
+  script.
+    collabjs.avatarServer = '#{collabjs.config.env.avatarServer}';
+    collabjs.currentUser.id = '#{collabjs.user.id}';
+    collabjs.currentUser.account = '#{collabjs.user.account}';
+    collabjs.currentUser.pictureId = '#{collabjs.user.emailHash}';

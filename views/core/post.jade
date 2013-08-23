@@ -9,15 +9,15 @@ block content
   div.page-spinner
     i.icon-spinner.icon-spin.icon-4x
 
-  div.row-fluid(style='display: none;', data-bind='visible: posts().length > 0')
-    div.span12.timeline-feed
+  div.row(style='display: none;', data-bind='visible: posts().length > 0')
+    div.timeline-feed
       ul(data-bind='foreach: posts')
         li
           div.author
             a.account(data-bind="attr: { href: feed }")
               img(data-bind="attr: { src: picture }", alt='avatar')
           div.name(style='width:94%')
-            span.bold(data-bind='text: name')
+            strong(data-bind='text: name')
             a.account(data-bind="text: '@' + account, attr: { href: feed }")
           div.date(data-bind="text: created.calendar(), attr: { title : created.format('LLLL') }")
           //- div.delete
@@ -30,7 +30,7 @@ block content
                 a.account(data-bind="attr: { href: feed }")
                   img(data-bind="attr: { src: picture }", alt='avatar')
               div.name
-                span.bold(data-bind='text: name')
+                strong(data-bind='text: name')
                 a.account(data-bind="text: '@' + account, attr: { href: feed }")
               div.date(data-bind="text: created.calendar(), attr: { title : created.format('LLLL') }")
               div.message(data-bind='html: content')
@@ -38,10 +38,10 @@ block content
             li
               div.author
                 img(data-bind="attr: { src: collabjs.currentUser.getPictureUrl() }", alt='avatar')
-              form(method='post', action='', onSubmit='doPostComment(this); return false;')
+              form(method='post', action='', onSubmit='doPostComment(this); return false;', role='form')
                 input(type='hidden', name='_csrf', value=collabjs.token)
                 input(name='postId', type='hidden', data-bind='value: id')
-                input.input-block-level.border-sharp(name='content', type='text', placeholder='Write a comment...', autocomplete='off'
+                input.form-control(name='content', type='text', placeholder='Write a comment...', autocomplete='off'
                   data-bind="attr: { id: 'comment-box-' + id }")
 
 block scripts

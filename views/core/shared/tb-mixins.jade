@@ -1,10 +1,10 @@
 // Mixins for Twitter Bootstrap
 mixin showError(message, closeable)
   if (typeof(message) !== 'undefined' && message != '')
-    div.alert.alert-error
+    div.alert.alert-danger
       if (typeof(closeable) !== 'undefined' && closeable == true)
         button(type='button', data-dismiss='alert').close &times;
-      div= message
+      strong= message
 
 mixin showInfo(message, closeable)
   if (typeof(message) !== 'undefined' && message != '')

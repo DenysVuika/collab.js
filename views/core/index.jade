@@ -1,25 +1,23 @@
 extends layout-plain
 
 block styles
-  link(rel='stylesheet', href='/css/index.css')
+  style
+    body { background: #ffffff; }
+
 block content
 
-  header.jumbotron.masthead
-    div
-      h1= collabjs.config.ui.brand
-        small.project-status= collabjs.config.ui.status
-      p= collabjs.config.ui.description
+  div.jumbotron(style='text-align: center; background: none')
+    div.container
+      div.page-header
+        h1= collabjs.config.ui.brand
+          small.project-status= collabjs.config.ui.status
+        p= collabjs.config.ui.description
+      div(style='margin-left:-40px')
+        a.btn.btn-primary.btn-lg(href='/register') Register
+        a.btn.btn-success.btn-lg(href='/login', style='margin-left:5px;') Sign in
+
+  div(style='text-align:right;margin-right:10px;')
+    small Sponsored by
     p
-      a.btn.btn-primary.btn-large(href='/register') Register
-      a.btn.btn-success.btn-large(href='/login') Sign in
-
-
-  a(href='https://github.com/DenisVuyka/collab.js').visible-desktop
-    img.forkme(src='/img/forkme_right_orange.png', alt='Fork me on GitHub')
-
-  div.row-fluid
-    div(style='text-align:right')
-      small Sponsored by
-      p
-        a(href='http://raythos.com/')
-          img(src='/img/raythos.png')
+      a(href='http://raythos.com/')
+        img(src='/img/raythos.png')

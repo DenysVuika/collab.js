@@ -3,15 +3,8 @@ html
   head
     title= title
 
-    meta(name='viewport', content='width=device-width, initial-scale=1.0, maximum-scale=1.0')
-    meta(name='description', content='')
-    meta(name='author', content='')
-
-    link(rel='stylesheet', href='/lib/bootstrap/css/bootstrap.min.css')
-    link(rel='stylesheet', href='/lib/font-awesome/css/font-awesome.min.css')
-    link(rel='stylesheet', href='/css/collabjs.css')
-    link(rel='stylesheet', href='/lib/bootstrap/css/bootstrap-responsive.min.css')
-    link(rel='stylesheet', href='/css/collabjs-responsive.css')
+    include shared/_meta
+    include shared/_styles
 
     block styles
 
@@ -20,33 +13,11 @@ html
   body
     include shared/header
 
-    div.container-fluid
-      div.row-fluid
-        div.span12
+    div.container
+      div.row
+        div.col-md-12
           block content
           include shared/footer
 
-    script(src='/lib/bootstrap/js/bootstrap.min.js')
-    script(src='/lib/jqBootstrapValidation/js/jqBootstrapValidation.js')
-    script(src='/js/collabjs.js')
-
+    include shared/_scripts
     block scripts
-
-    //- initialize request path variable if not defined
-    - if (typeof(requestPath) === 'undefined')
-      - requestPath = '';
-
-    script.
-      $(function() {
-        // Synchronize sidebar/header selection with current request path
-        var path = '#{requestPath}' || window.location.pathname;
-        $('.nav li a[href="' + path + '"]').parents('li').addClass('active');
-      });
-
-    //- assign user-related variables
-    if (collabjs.user)
-      script.
-        collabjs.avatarServer = '#{collabjs.config.env.avatarServer}';
-        collabjs.currentUser.id = '#{collabjs.user.id}';
-        collabjs.currentUser.account = '#{collabjs.user.account}';
-        collabjs.currentUser.pictureId = '#{collabjs.user.emailHash}';

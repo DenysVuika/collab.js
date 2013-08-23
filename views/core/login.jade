@@ -2,32 +2,28 @@ extends layout-plain
 
 block content
   include shared/tb-mixins
-  h2= title
+  div.page-header
+    h1= title
+    small
+      | Please enter your user name and password.&nbsp;
+      a(href='/register') Register
+      | &nbsp;if you don't have an account.
   mixin showError(message)
   p= message.error
-  p
-    | Please enter your user name and password. 
-    a(href='/register') Register
-    |  if you don't have an account.
-  form.form-horizontal(method='post', action=formAction)
+
+  form.form-horizontal(method='post', action=formAction, role='form')
     input(type='hidden', name='_csrf', value=collabjs.token)
-    fieldset
-      legend Account Information
-      div.control-group
-        div.control-label
-          label(for='username') Account
-        div.controls
-          div.input-prepend
-            span.add-on @
-            input(type='text', id='username', name='username', required, placeholder='e.g. johndoe', value='#{account}')
-      div.control-group
-        div.control-label
-          label(for='password') Password
-        div.controls
-          div.input-prepend
-            span.add-on
-              i.icon-key
-            input(type='password', id='password', name='password', required, placeholder='type password')
-      hr
-      div.form-actions
-        input.btn.btn-primary.flat(type='submit', value='Sign In')
+    div.form-group
+      label(for='username').col-lg-2.control-label Account
+      div.col-lg-4.input-group
+        span.input-group-addon @
+        input.form-control(type='text', id='username', name='username', required, placeholder='e.g. johndoe', value='#{account}')
+    div.form-group
+      label(for='password').col-lg-2.control-label Password
+      div.col-lg-4.input-group
+        span.input-group-addon
+          i.icon-key
+        input.form-control(type='password', id='password', name='password', required, placeholder='type password')
+    div.form-group
+      div.col-lg-offset-2.col-lg-4
+        input.btn.btn-success(type='submit', value='Sign In')

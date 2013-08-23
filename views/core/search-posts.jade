@@ -2,33 +2,35 @@ extends layout
 
 append sidebar-search
   if (!hasSavedSearch('' + search_q))
-    li.active
-      a(href='#{navigationUri}')
-        i.icon-search
-        | &nbsp;#{search_q}
+    a.list-group-item.active(href='#{navigationUri}')
+      i.icon-search
+      | &nbsp;#{search_q}
 
 block content
   include shared/ko-timeline
-  h3
-    i.icon-search
-    | &nbsp;#{title}
+  div.page-header
+    h3
+      i.icon-search
+      | &nbsp;#{title}
 
   if (!hasSavedSearch('' + search_q))
     div(style='text-align:right')
-      form(method='post')
+      form(method='post', role='form')
         input(type='hidden', name='_csrf', value=collabjs.token)
         input(type='hidden', name='action', value='save')
         input(type='hidden', name='q', value=search_q)
         input(type='hidden', name='src', value=search_src)
-        input.btn.btn-success.flat(type='submit', value='Save search')
+        div.form-group
+          input.btn.btn-success(type='submit', value='Save search')
   else
     div(style='text-align:right')
-      form(method='post')
+      form(method='post', role='form')
         input(type='hidden', name='_csrf', value=collabjs.token)
         input(type='hidden', name='action', value='delete')
         input(type='hidden', name='q', value=search_q)
         input(type='hidden', name='src', value=search_src)
-        input.btn.btn-danger.flat(type='submit', value='Remove saved search')
+        div.form-group
+          input.btn.btn-danger(type='submit', value='Remove saved search')
 
   p.lead(style='display: none', data-bind='visible: posts().length == 0') No entries found...
   div(style='display: none;', data-bind="visible: posts().length > 0, template: { name: 'timeline-template' }")
@@ -37,7 +39,7 @@ block content
   div.page-spinner
     i.icon-spinner.icon-spin.icon-4x
 
-  div.alert.alert-error.page-error
+  div.alert.alert-danger.page-error
 
 block scripts
   script.

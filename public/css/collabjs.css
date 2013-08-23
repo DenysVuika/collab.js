@@ -1,121 +1,3 @@
-/*
-  Twitter Bootstrap customization and fixes
-*/
-.sidebar-nav {
-  padding: 9px 0;
-}
-.navbar .nav > li > a.dropdown-toggle {
-  padding: 6px 5px 5px;
-  margin-bottom: 0;
-}
-.navbar .divider-vertical {
-  margin: 0;
-}
-.nav-list > li > a > i {
-  color: #000;
-}
-.nav-list > li.active > a > i {
-  color: #fff;
-}
-.nav > .disabled > a > i {
-  color: #999;
-}
-li.media.post {
-  border-top: solid 1px lightgray;
-  padding-top: 15px;
-}
-li.media.post:first-child {
-  border-top: none;
-  padding-top: 0;
-}
-li.media.post .media-heading {
-  margin-bottom: 0;
-}
-li.media.post .media-body blockquote {
-  border-left: none;
-  padding: 0;
-}
-li.media.comment {
-  margin-top: 0;
-  margin-bottom: 0;
-}
-li.media.comment blockquote {
-  border-left: none;
-  padding: 0;
-  margin-bottom: 5px;
-}
-li.media.comment blockquote p {
-  font-size: 14px;
-  line-height: 1.38;
-}
-.media a {
-  text-decoration: none;
-}
-.btn.flat {
-  border-radius: 0;
-  border: 0;
-  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.1), 0 1px 5px rgba(0, 0, 0, 0.25);
-  padding: 5px 12px;
-}
-/*
-  iOS tweaks
-*/
-input[type=submit] {
-  -webkit-appearance: none;
-  -webkit-border-radius: 0;
-}
-/*
-  Twitter Bootstrap Form Helpers
-*/
-[class^="icon-flag-"],
-[class*=" icon-flag-"] {
-  display: inline-block !important;
-  vertical-align: text-top;
-  width: 16px;
-  height: 16px;
-}
-div.media-body span.bfh-countries > i {
-  margin-right: 0;
-}
-/*
-  User profile
-*/
-img.avatar {
-  height: 50px;
-  border-radius: 50em;
-}
-.profilebox {
-  border-radius: 2px;
-  box-shadow: 0 1px 0 1px #e4e6eb;
-  overflow: hidden;
-  margin: 0 0 28px 0;
-  background: #fff;
-  text-align: center;
-}
-.profilebox.blue .header {
-  background: #36a9e1;
-}
-.profilebox .header {
-  padding: 10px;
-  color: #fff;
-  background: #eaebef;
-}
-.profilebox .content {
-  padding: 5px 0;
-  background-color: #e4e6eb;
-  text-align: left;
-  color: #383e4b;
-}
-.profilebox .content img.avatar {
-  height: 50px;
-  border-radius: 50em;
-  box-shadow: 0 1px 0 1px #e4e6eb;
-  margin-left: 10px;
-}
-.profilebox .footer {
-  color: #383e4b;
-  padding: 10px;
-}
 .timeline-feed ul {
   list-style: none;
   margin: 0;
@@ -255,12 +137,8 @@ body {
   color: #383e4b;
   background: #f5f5f5;
 }
-.sidebar-left {
-  background: #fff;
-}
-h3 > i {
-  font-size: 14px;
-  vertical-align: text-top !important;
+small.project-status {
+  vertical-align: top;
 }
 .field-validation-error {
   color: #B94A48;
@@ -283,7 +161,6 @@ div.page-spinner {
   font-size: 10px;
   text-transform: uppercase;
   text-decoration: none;
-  border-left: 1px solid #E8E8E8;
   padding-left: 5px;
 }
 .profile-stats a:hover {
@@ -295,62 +172,8 @@ div.page-spinner {
   font-weight: bold;
   font-size: 14px;
 }
-.profile-stats-list {
-  list-style: none;
-  margin: 0;
-}
-.profile-stats-list li {
-  display: inline;
-}
-.profile-stats-list li:first-child a {
-  border-left: none;
-  margin-left: 0;
-  padding-left: 0;
-}
-.profile-stats-list li.profile-stats a.blue {
-  color: #08c;
-}
-a.profile-link {
-  padding-bottom: 7px !important;
-}
-a.profile-link div {
-  white-space: nowrap;
-  line-height: 14px;
-  padding-top: 2px;
-}
-a.profile-link img {
-  display: inline-block;
-  border: 0;
-  border-radius: 4px;
-  width: 32px;
-  height: 32px;
-  max-width: 32px;
-  max-height: 32px;
-  position: absolute;
-  top: 8px;
-}
-a.profile-link strong {
-  white-space: nowrap;
-  display: block;
-  padding-left: 40px;
-  font-size: 13px;
-  font-weight: bold;
-}
-a.profile-link small {
-  white-space: nowrap;
-  overflow: hidden;
-  display: block;
-  padding-left: 40px;
-  font-size: 11px;
-}
 a.profile-btn {
   min-width: 80px;
-}
-.no-top-margin {
-  margin-top: 0;
-}
-.no-bottom-margin {
-  margin-bottom: 0;
 }
 a.account {
   color: #808080;
@@ -358,38 +181,21 @@ a.account {
   font-size: 90%;
   padding-left: 5px;
 }
-input[type="text"].border-sharp {
-  border-radius: 0;
-}
-.bio-counter {
-  width: 530px;
-}
 .bio-counter-label {
   color: #999;
   float: right;
   font-weight: bold;
-}
-form .form-actions {
-  border-top: none;
-  padding-top: 0;
-}
-form .form-actions a.btn {
-  margin-right: 10px;
 }
 form.status-form textarea {
   resize: vertical;
   max-height: 300px;
 }
 form.status-form div.footer {
-  padding-bottom: 30px;
+  padding-bottom: 20px;
+  text-align: right;
+  padding-top: 5px;
 }
-form.account-form .control-group {
-  margin-bottom: 10px;
-}
-form.account-form .controls-hint {
-  color: #999;
-}
-form.account-form textarea.v-resize {
+textarea.v-resize {
   resize: vertical;
 }
 .bold {
@@ -400,4 +206,21 @@ i.black {
 }
 .flat {
   border-radius: 0;
+}
+img.avatar {
+  height: 50px;
+  border-radius: 50em;
+}
+/*
+  Twitter Bootstrap Form Helpers
+*/
+[class^="icon-flag-"],
+[class*=" icon-flag-"] {
+  display: inline-block !important;
+  vertical-align: text-top;
+  width: 16px;
+  height: 16px;
+}
+div.media-body span.bfh-countries > i {
+  margin-right: 0;
 }

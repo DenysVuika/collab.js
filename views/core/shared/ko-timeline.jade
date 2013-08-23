@@ -1,6 +1,6 @@
 script(type='text/html', id='timeline-template')
-  div.row-fluid
-    div.span12.timeline-feed
+  div.row
+    div.col-md-12.timeline-feed
       ul(data-bind='foreach: posts')
         li
           div.author
@@ -32,7 +32,7 @@ script(type='text/html', id='timeline-template')
               div.author
                 img(data-bind="attr: { src: picture }", alt='avatar')
               div.name(style='width:94%')
-                span.bold(data-bind='text: name')
+                strong(data-bind='text: name')
                 a.account(data-bind="text: '@' + account, attr: { href: feed }")
               div.date(data-bind="text: created.calendar(), attr: { title : created.format('LLLL') }")
               div.message(data-bind='html: content')
@@ -40,8 +40,8 @@ script(type='text/html', id='timeline-template')
             li
               div.author
                 img(data-bind="attr: { src: collabjs.currentUser.getPictureUrl() }", alt='avatar')
-              form(method='post', action='', onSubmit='collabjs.ui.doPostComment(this); return false;')
+              form(method='post', action='', onSubmit='collabjs.ui.doPostComment(this); return false;', role='form')
                 input(type='hidden', name='_csrf', value=collabjs.token)
                 input(name='postId', type='hidden', data-bind='value: id')
-                input.input-block-level.border-sharp(name='content', type='text', placeholder='Write a comment...', autocomplete='off'
+                input.form-control(name='content', type='text', placeholder='Write a comment...', autocomplete='off'
                   data-bind="attr: { id: 'comment-box-' + id }")

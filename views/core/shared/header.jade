@@ -1,58 +1,54 @@
-div.navbar.navbar-fixed-top
-    div.navbar-inner
-      div.container-fluid
-        a.brand(href='/')= collabjs.config.ui.brand
-        ul.nav.pull-right
-          li.dropdown
-            a.dropdown-toggle(href='#', data-toggle='dropdown')
-              i.icon-cogs.icon-2x
-              b.caret
-            ul.dropdown-menu
-              if (collabjs.isAuthenticated)
-                li
-                  a.profile-link(href='/account')
-                    div
-                      img(src='#{collabjs.config.env.avatarServer}/avatar/#{collabjs.user.pictureId}?s=32')
-                      strong #{collabjs.user.name}
-                      small Edit profile
-                li.divider.no-top-margin
-                li
-                  a(href='/help')
-                    i.icon.icon-flag
-                    | &nbsp;Help
-                li
-                  a(href='#')
-                    i.icon-question-sign
-                    | &nbsp;About
-                li.divider.no-bottom-margin
-                li
-                  a(href='/logout')
-                    i.icon-signout
-                    | &nbsp;Logout
-              else
-                li
-                  a(href='/login') Sign in
-                li.divider
-                li
-                  a(href='/register') Register
-        div
-          ul.nav
-            li.divider-vertical
+div.navbar.navbar-default.navbar-fixed-top(role='navigation')
+  div.navbar-header
+    button.navbar-toggle(type='button', data-toggle='collapse', data-target='.navbar-ex1-collapse')
+      span.sr-only Toggle Navigation
+      span.icon-bar
+      span.icon-bar
+      span.icon-bar
+    a.navbar-brand(href='/')= collabjs.config.ui.brand
+
+  div.collapse.navbar-collapse.navbar-ex1-collapse
+    if (collabjs.isAuthenticated)
+      ul.nav.navbar-nav.navbar-right
+        li.dropdown
+          a.dropdown-toggle(href='#', data-toggle='dropdown')
             if (collabjs.user)
-              li
-                a(href='/timeline', title='Home')
-                  span
-                    i.icon-home.icon-large
-                    if (!isMobile)
-                      span.visible-desktop
-                        | &nbsp;Home
-              //- dynamic links
-              each link in collabjs.config.ui.header.links
-                li
-                  a(href='#{link.url}', title='#{link.text}')
-                    span
-                      if (link.icon)
-                        i(class='#{link.icon}')
-                      if (!isMobile)
-                        span.visible-desktop
-                          | &nbsp;#{link.text}
+              //-img(src='https://www.gravatar.com/avatar/#{collabjs.user.pictureId}?s=32')
+              span= collabjs.user.name
+            else
+              i.icon-cogs
+            b.caret
+          ul.dropdown-menu
+            li
+              a(href='/account')
+                i.icon-user
+                | &nbsp;Edit profile
+            li.divider
+            li
+              a(href='/help')
+                i.icon.icon-flag
+                | &nbsp;Help
+            li
+              a(href='#')
+                i.icon-question-sign
+                | &nbsp;About
+            li.divider
+            li
+              a(href='/logout')
+                i.icon-signout
+                | &nbsp;Logout
+
+    ul.nav.navbar-nav
+      if (collabjs.user)
+        li
+          a(href='/timeline', title='Home')
+            span
+              i.icon-home.icon-large &nbsp;Home
+        //- dynamic links
+        each link in collabjs.config.ui.header.links
+          li
+            a(href='#{link.url}', title='#{link.text}')
+              span
+                if (link.icon)
+                  i(class='#{link.icon}')
+                | &nbsp;#{link.text}

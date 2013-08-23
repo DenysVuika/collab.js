@@ -1,19 +1,18 @@
 extends layout
 
 block sidebar
-  div.well.sidebar-nav.sidebar-left
-    ul.nav.nav-list#sidebar
-      li.nav-header Profile
-      li
-        a(href='/account')
-          i.icon-user
-          | &nbsp;Account
-      li
-        a(href='/account/password')
-          i.icon-key
-          | &nbsp;Change password
-      li.divider
-      li
-        a(href='/help')
-          i.icon-flag
-          | &nbsp;Help
+  //-ul.nav.nav-list#sidebar
+  div.list-group
+    a.list-group-item(href='/timeline')
+      i.icon-home
+      | &nbsp;Home
+    //-li.nav-header Profile
+    a.list-group-item(href='/account')
+      i.icon-user
+      | &nbsp;Account
+    a.list-group-item(href='/account/password')
+      i.icon-key
+      | &nbsp;Change password
+    a.list-group-item(href='/help')
+      i.icon-flag
+      | &nbsp;Help

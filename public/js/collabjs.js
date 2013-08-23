@@ -865,3 +865,19 @@ function initLazyLoading(url, onSuccess) {
     }
   });
 }
+
+collabjs.ui.requestPath = '';
+collabjs.ui.syncSelection = function () {
+  'use strict';
+  // Synchronize sidebar/header selection with current request path
+  var path = collabjs.ui.requestPath || window.location.pathname + window.location.search;
+  // header item selection
+  $('.nav li a[href="' + path + '"]').parents('li').addClass('active');
+  // sidebar item selection
+  $('a.list-group-item[href="' + path + '"]').addClass('active');
+};
+
+$(function () {
+  'use strict';
+  collabjs.ui.syncSelection();
+});

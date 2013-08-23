@@ -2,11 +2,11 @@ extends layout
 
 block content
   include shared/ko-timeline
-  form.status-form(method='post', onSubmit='collabjs.ui.doUpdateStatus(this); return false;')
+  form.status-form(method='post', onSubmit='collabjs.ui.doUpdateStatus(this); return false;', role='form')
     input(type='hidden', name='_csrf', value=collabjs.token)
-    textarea.input-block-level(name='content', rows='3', placeholder="What's on your mind?")
+    textarea.form-control(name='content', rows='3', placeholder="What's on your mind?")
     div.footer
-      input.btn.btn-success.flat.pull-right(type='submit', value='Post')
+      input.btn.btn-success(type='submit', value='Post')
 
   p.lead(style='display: none', data-bind='visible: posts().length == 0') No posts found...
 
