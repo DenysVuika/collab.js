@@ -30,6 +30,7 @@ block content
       label.col-lg-2.control-label(for='email') Email
       div.col-lg-4
         input.form-control(type='email', required, id='email', name='email', placeholder='e.g. jdoe@mail.com', value='#{data.email}')
+        span.help-block
     div.form-group
       label.col-lg-2.control-label(for='password') Password
       div.col-lg-4
@@ -41,6 +42,7 @@ block content
           data-validation-required-message='Password confirmation is required'
           data-validation-matches-match='password',
           data-validation-matches-message='Must match password entered above')
+        span.help-block
     if (collabjs.config.recaptcha.enabled)
       div.form-group
         div.col-lg-offset-2.col-lg-4
