@@ -26,14 +26,7 @@ block content
     div.form-group
       label.col-lg-2.control-label(for='location') Location
       div.col-lg-10
-        div.bfh-selectbox.bfh-countries(data-country='#{collabjs.user.location}', data-flags='true')
-          input(type='hidden', name='location', value='')
-          a.bfh-selectbox-toggle(role='button', data-toggle='bfh-selectbox', href='#')
-            span.bfh-selectbox-option.input-medium(data-option='')
-            b.caret
-          div.bfh-selectbox-options
-            input.bfh-selectbox-filter(type='text')
-            ul(role='options')
+        input.form-control(id='location', name='location', type='hidden', data-location='#{collabjs.user.location}')
         span.help-block Where in the world are you?
     div.form-group
       label.col-lg-2.control-label(for='website') Website
@@ -53,6 +46,6 @@ block content
         a.btn.btn-default(href='/timeline') Cancel
         button.btn.btn-primary(type='submit', style='margin-left:5px') Update
 
-block scripts
+append scripts
   script.
     collabjs.ui.initAccountView();

@@ -1,5 +1,9 @@
 extends layout
 
+block styles
+  link(rel='stylesheet', href='/lib/select2/select2.css')
+  link(rel='stylesheet', href='/css/select2-bootstrap.css')
+
 block sidebar
   //-ul.nav.nav-list#sidebar
   div.list-group
@@ -16,3 +20,6 @@ block sidebar
     a.list-group-item(href='/help')
       i.icon-flag
       | &nbsp;Help
+
+block scripts
+  script(src='/lib/select2/select2.min.js')

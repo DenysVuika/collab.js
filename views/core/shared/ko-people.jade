@@ -15,7 +15,7 @@ ul.media-list(style='display: none', data-bind='visible: profiles().length > 0, 
         a.btn.btn-success.pull-right.profile-btn(data-bind='visible: isOwnProfile', href='/account') Edit profile
       ul.list-unstyled
         li
-          span.bfh-countries(data-bind='country: location', data-flags='true')
+          span(data-bind='country: location')
         li
           a(data-bind='attr: { href: website }, text: website')
         li
