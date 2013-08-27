@@ -48,12 +48,10 @@ html
               block sidebar-connect
               //- 'Administration' section
               if (collabjs.isAdministrator && collabjs.config.ui.sidebar.administration.length > 0)
-                li.list-group-item.list-group-item-heading Administration
                 each link in collabjs.config.ui.sidebar.administration
-                  li.list-group-item
-                    a(href='#{link.url}')
-                      i(class='#{link.icon}')
-                      | &nbsp;#{link.text}
+                  a.list-group-item(href='#{link.url}')
+                    i(class='#{link.icon}')
+                    | &nbsp;#{link.text}
               //- 'Help' section
               a.list-group-item(href='/help')
                 i.icon-flag
