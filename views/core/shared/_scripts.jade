@@ -2,7 +2,10 @@ script(src='/lib/bootstrap/js/bootstrap.min.js')
 script(src='/lib/knockout/js/knockout.min.js')
 script(src='/lib/moment/js/moment.min.js')
 script(src='/lib/jqBootstrapValidation/js/jqBootstrapValidation.js')
-script(src='/js/collabjs.js')
+if collabjs.env === 'production'
+  script(src='/js/collabjs.min.js')
+else
+  script(src='/js/collabjs.js')
 script.
   collabjs.ui.requestPath = '#{requestPath}';
 //- assign user-related variables

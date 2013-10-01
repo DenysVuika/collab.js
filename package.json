@@ -44,7 +44,8 @@
     "expect.js": "0.2.0",
     "nock": "0.22.1",
     "grunt": "~0.4.1",
-    "grunt-contrib-cssmin": "~0.6.2"
+    "grunt-contrib-cssmin": "~0.6.2",
+    "grunt-contrib-uglify": "~0.2.4"
   },
   "analyze": false,
   "license": "MIT",
