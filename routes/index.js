@@ -13,7 +13,11 @@ var config = require('../config')
 
 exports.index = function (req, res) {
   if (req.isAuthenticated()) {
-    res.redirect('/timeline');
+    //res.redirect('/timeline');
+    res.render('core/timeline', {
+      title: 'Timeline',
+      message: req.flash('error')
+    });
     return;
   }
 
