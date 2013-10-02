@@ -71,7 +71,7 @@ function commonLocals(req, res, next) {
   res.locals.collabjs = res.locals.collabjs || {
     env: process.env.NODE_ENV || 'development',
     config: config,
-    token: req.session._csrf,
+    token: req.csrfToken(),
     user: req.user,
     isAuthenticated: req.isAuthenticated(),
     isAdministrator: auth.isUserInRole(req.user, 'administrator'),
