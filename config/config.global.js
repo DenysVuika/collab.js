@@ -34,6 +34,7 @@ config.data = {
   //  'mysql://user:pass@host/db?debug=true&charset=BIG5_CHINESE_CI&timezone=-0700'
   connectionString: null,
   host: 'localhost',
+  port: 3306,
   database: 'collabjs',
   user: '[username]',
   password: '[password]'

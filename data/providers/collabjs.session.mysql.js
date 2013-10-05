@@ -1,7 +1,7 @@
 'use strict';
 
-var mysql = require('mysql')
-  , config = require('../../config');
+var config = require('../../config')
+  , pool = require('./collabjs.pool.mysql').pool;
 
 /**
  * Return the 'MySqlSessionStore' extending `connect`'s session Store.
@@ -24,36 +24,31 @@ module.exports = function (connect) {
    */
   function MySqlSessionStore(options) {
     var self = this;
-    options = options || {
-      prefix: 'sess'
-    };
+    options = options || { prefix: 'sess' };
     Store.call(this, options);
     this.prefix = null === options.prefix ? 'sess:' : options.prefix;
 
-    // create database connection based on configuration settings
-    this.connection = mysql.createConnection(config.data.connectionString || {
-      host: config.data.host,
-      database: config.data.database,
-      user: config.data.user,
-      password: config.data.password
-    });
-
-    // create table if not exists
-    var command = 'CREATE  TABLE IF NOT EXISTS `_mysql_session_store` (`id` VARCHAR(255) NOT NULL, `expires` BIGINT NULL, `data` TEXT NULL, PRIMARY KEY (`id`));';
-    this.connection.query(command, function (err) {
-      if (err) { throw err; }
+    pool.getConnection(function (err, connection) {
+      // create table if not exists
+      var command = 'CREATE  TABLE IF NOT EXISTS `_mysql_session_store` (`id` VARCHAR(255) NOT NULL, `expires` BIGINT NULL, `data` TEXT NULL, PRIMARY KEY (`id`));';
+      connection.query(command, function (err) {
+        connection.release();
+        if (err) { throw err; }
+      });
     });
 
     // every minute go and burn the old sessions
-    var checkUpInterval = typeof(config.server.sessionCleanupTime) === "undefined" ? 60000 : config.server.sessionCleanupTime;
-    if(checkUpInterval > 0) {
+    self.checkUpInterval = typeof(config.server.sessionCleanupTime) === "undefined" ? 60000 : config.server.sessionCleanupTime;
+    if(self.checkUpInterval > 0) {
       setInterval(function(){
         //console.log('[info]: cleaning old sessions...');
-        var now = new Date().valueOf();
-        self.connection.query('DELETE FROM _mysql_session_store WHERE expires < ?', [now], function (err) {
-          if (err) { console.log(err); }
+        pool.getConnection(function (err, connection) {
+          var now = new Date().valueOf();
+          connection.query('DELETE FROM _mysql_session_store WHERE expires < ?', [now], function () {
+            connection.release();
+          });
         });
-      }, checkUpInterval);
+      }, self.checkUpInterval);
     }
   }
 
@@ -69,17 +64,16 @@ module.exports = function (connect) {
    */
   MySqlSessionStore.prototype.get = function (sid, callback) {
     sid = this.prefix + sid;
-    //console.log('GET "%s"', sid);
-
-    this.connection.query('SELECT * FROM _mysql_session_store WHERE id = ? LIMIT 1', [sid], function (err, result) {
-      if (err) { return callback(err); }
-      if (!result || result.length === 0) { return callback(); }
-      var session = JSON.parse(result[0].data);
-      //console.log('GOT %s', JSON.stringify(session, null, 2));
-      return callback(null, session);
+    pool.getConnection(function (err, connection) {
+      connection.query('SELECT * FROM _mysql_session_store WHERE id = ? LIMIT 1', [sid], function (err, result) {
+        connection.release();
+        if (err) { return callback(err); }
+        if (!result || result.length === 0) { return callback(); }
+        var session = JSON.parse(result[0].data);
+        return callback(null, session);
+      });
     });
   };
-
 
   /**
    * Commit the given 'session' object associated with the given 'sid'.
@@ -93,14 +87,13 @@ module.exports = function (connect) {
     var data = JSON.stringify(session);
     var expires = 'string' === typeof session.cookie.expires ? new Date(session.cookie.expires) : session.cookie.expires;
     expires = expires.valueOf();
-
-    //console.log('SET-SESSION "%s" expires:%s %s', sid, expires, data);
-
     var command = 'INSERT INTO _mysql_session_store (id, expires, data) VALUES (?, ?, ?) ON DUPLICATE KEY UPDATE expires=?, data=?;';
     var params = [sid, expires, data, expires, data];
-    this.connection.query(command, params, function (err) {
-      if (err) { console.log(err); }
-      callback(err);
+    pool.getConnection(function (err, connection) {
+      connection.query(command, params, function (err) {
+        connection.release();
+        callback(err);
+      });
     });
   };
 
@@ -112,10 +105,13 @@ module.exports = function (connect) {
    */
   MySqlSessionStore.prototype.destroy = function (sid, callback) {
     sid = this.prefix + sid;
-    this.connection.query('DELETE FROM _mysql_session_store WHERE id = ?', [sid], function (err) {
-      if (callback) {
-        callback(err ? err : null);
-      }
+    pool.getConnection(function (err, connection) {
+      connection.query('DELETE FROM _mysql_session_store WHERE id = ?', [sid], function (err) {
+        connection.release();
+        if (callback) {
+          callback(err ? err : null);
+        }
+      });
     });
   };
 

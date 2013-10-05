@@ -1,6 +1,7 @@
 link(rel='stylesheet', href='/lib/bootstrap/css/bootstrap.min.css')
 link(rel='stylesheet', href='/lib/font-awesome/css/font-awesome.min.css')
-if collabjs.env === 'production'
-  link(rel='stylesheet', href='/css/collabjs.min.css')
-else
+
+if collabjs.env === 'development'
   link(rel='stylesheet', href='/css/collabjs.css')
+else
+  link(rel='stylesheet', href='/css/collabjs.min.css')

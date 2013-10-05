@@ -68,10 +68,10 @@ function savedSearches(req, res, next) {
 
 // Initialize variables that are provided to all templates rendered within the application
 function commonLocals(req, res, next) {
-  res.locals.collabjs = res.locals.collabjs || {
+  res.locals.collabjs = {
     env: process.env.NODE_ENV || 'development',
     config: config,
-    token: req.csrfToken(),
+    token: config.server.csrf ? req.csrfToken() : null,
     user: req.user,
     isAuthenticated: req.isAuthenticated(),
     isAdministrator: auth.isUserInRole(req.user, 'administrator'),
