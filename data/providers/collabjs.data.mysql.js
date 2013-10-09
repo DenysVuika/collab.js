@@ -8,24 +8,6 @@ var config = require('../../config')
 function Provider() {}
 
 Provider.prototype = {
-  /*
-  getIdByAccount: function (account, callback) {
-    var command = 'SELECT id FROM `users` WHERE account = ? LIMIT 1';
-    pool.getConnection(function (err, connection) {
-      connection.query(command, [account], function (err, result) {
-        if (err) {
-          callback(err);
-          return;
-        }
-        if (result && result.length > 0) {
-          callback(null, result[0].id);
-        } else {
-          callback(null);
-        }
-      });
-    });
-  },
-  */
   getAccountById: function (id, callback) {
     var command = "SELECT u.*, emailHash as pictureId, GROUP_CONCAT(r.loweredName separator ',') AS roles " +
       "FROM users AS u " +
@@ -112,20 +94,6 @@ Provider.prototype = {
       });
     }
   },
-//  getPublicProfile: function (callerAccount, targetAccount, callback) {
-//    var command = 'CALL get_public_profile(?,?)';
-//    pool.getConnection(function (err, connection) {
-//      connection.query(command, [callerAccount, targetAccount], function (err, result) {
-//        connection.release();
-//        if (err || !result || result.length !== 2 || result[0].length === 0) {
-//          callback(err, null);
-//        } else {
-//          var rows = result[0];
-//          callback(err, rows[0]);
-//        }
-//      });
-//    });
-//  },
   getPublicProfile: function (callerId, targetAccount, callback) {
     var command = 'SELECT u.id, u.account, u.name, u.website, u.bio, u.emailHash AS pictureId, u.location, u.posts, u.following, u.followers, ' +
       '(SELECT IF(u.id = ?, TRUE, FALSE)) AS isOwnProfile, ' +
@@ -192,7 +160,6 @@ Provider.prototype = {
   getFollowers: function (callerId, targetId, callback) {
     var command = 'SELECT u.id, u.account, u.name, u.website, u.location, u.bio, u.emailHash as pictureId, u.posts, u.following, u.followers' +
       ', (SELECT IF(u.id = ?, TRUE, FALSE)) AS isOwnProfile ' +
-      //', (SELECT IF ((SELECT COUNT(sub.userId) FROM following AS sub WHERE sub.userId = ? AND sub.targetId = u.id GROUP BY sub.userId) > 0, TRUE, FALSE )) AS isFollowed ' +
       ', (SELECT IF ((SELECT COUNT(sub.userId) FROM following AS sub WHERE sub.userId = ? AND sub.targetId = u.id) > 0, TRUE, FALSE )) AS isFollowed ' +
       'FROM following AS f ' +
       'LEFT JOIN users AS u ON u.id = f.userId ' +
@@ -207,7 +174,6 @@ Provider.prototype = {
   getFollowing: function (callerId, targetId, callback) {
     var command = 'SELECT u.id, u.account, u.name, u.website, u.location, u.bio, u.emailHash as pictureId, u.posts, u.following, u.followers' +
       ', (SELECT IF(u.id = ?, TRUE, FALSE)) AS isOwnProfile' +
-      //', (SELECT IF ((SELECT COUNT(sub.userId) FROM following AS sub WHERE sub.userId = ? AND sub.targetId = u.id GROUP BY sub.userId) > 0, TRUE, FALSE)) AS isFollowed ' +
       ', (SELECT IF ((SELECT COUNT(sub.userId) FROM following AS sub WHERE sub.userId = ? AND sub.targetId = u.id) > 0, TRUE, FALSE)) AS isFollowed ' +
       'FROM following AS f ' +
       'LEFT JOIN users AS u ON u.id = f.targetId ' +
@@ -220,24 +186,6 @@ Provider.prototype = {
       });
     });
   },
-  /*
-  listFollowing: function (userId, callback) {
-    var command = 'SELECT u.id, u.account, u.name, u.website, u.location, u.bio, ' +
-      'u.emailHash as pictureId, u.posts, u.following, u.followers, ' +
-      'FALSE as isOwnProfile, ' +
-      'TRUE AS isFollowed ' +
-      'FROM following AS f ' +
-      'LEFT JOIN users AS u ON u.id = f.targetId ' +
-      'WHERE f.userId = ?';
-    pool.getConnection(function (err, connection) {
-      connection.query(command, [userId], function (err, result) {
-        connection.release();
-        if (err) { callback(err, null); }
-        else { callback(err, result); }
-      });
-    });
-  },
-  */
   getTimeline: function (callerId, targetAccount, topId, callback) {
     var command = 'CALL get_timeline(?,?,?)'
       , params = [callerId, targetAccount, topId];
