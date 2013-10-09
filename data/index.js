@@ -139,23 +139,21 @@ module.exports.getPeople = function (callerId, topId, callback) {
 /**
  * Get a list of followers (subscribers) for the given account name.
  * @param {number} callerId Originator account id.
- * @param {string} targetAccount Target account name.
- * @param {number} topId Position of the first entry from the top (used for paging).
+ * @param {string} targetId Target account id.
  * @param {function(err, result)} callback Callback function.
  */
-module.exports.getFollowers = function (callerId, targetAccount, topId, callback) {
-	provider.getFollowers(callerId, targetAccount, topId, callback);
+module.exports.getFollowers = function (callerId, targetId, callback) {
+	provider.getFollowers(callerId, targetId, callback);
 };
 
 /**
  * Get a list of people being followed (subscribed) by the given account id.
  * @param {number} callerId Originator account id.
- * @param {string} targetAccount Target account name.
- * @param {number} topId Position of the first entry from the top (used for paging).
+ * @param {string} targetId Target account id.
  * @param {function(err, result)} callback Callback function.
  */
-module.exports.getFollowing = function (callerId, targetAccount, topId, callback) {
-	provider.getFollowing(callerId, targetAccount, topId, callback);
+module.exports.getFollowing = function (callerId, targetId, callback) {
+	provider.getFollowing(callerId, targetId, callback);
 };
 
 /**

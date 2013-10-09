@@ -42,63 +42,53 @@ module.exports = function (context) {
 
     app.get('/api/people/:account/followers:topId?', authenticate, function (req, res) {
 
-      repository.getPublicProfile(req.user.account, req.params.account, function (err, result) {
+      repository.getPublicProfile(req.user.id, req.params.account, function (err, result) {
         if (err || !result) {
           res.send(400);
           return;
         }
 
         var profile = result;
-        profile.isOwnProfile = req.user.account === profile.account;
-        profile.pictureUrl = config.env.avatarServer + '/avatar/' + profile.pictureId;
+        //profile.isOwnProfile = req.user.account === profile.account;
+        //profile.pictureUrl = config.env.avatarServer + '/avatar/' + profile.pictureId;
 
-        repository.getFollowers(req.user.id, req.params.account, getTopId(req), function (err, result) {
+        repository.getFollowers(req.user.id, profile.id, function (err, result) {
           if (err || !result) { res.send(400);}
-          else {
-            res.json(200, {
-              user: profile,
-              feed: result
-            });
-          }
+          else { res.json(200, { user: profile, feed: result }); }
         });
       });
     });
 
     app.get('/api/people/:account/following:topId?', authenticate, function (req, res) {
 
-      repository.getPublicProfile(req.user.account, req.params.account, function (err, result) {
+      repository.getPublicProfile(req.user.id, req.params.account, function (err, result) {
         if (err || !result) {
           res.send(400);
           return;
         }
 
         var profile = result;
-        profile.isOwnProfile = req.user.account === profile.account;
-        profile.pictureUrl = config.env.avatarServer + '/avatar/' + profile.pictureId;
+        //profile.isOwnProfile = req.user.account === profile.account;
+        //profile.pictureUrl = config.env.avatarServer + '/avatar/' + profile.pictureId;
 
-        repository.getFollowing(req.user.id, req.params.account, getTopId(req), function (err, result) {
+        repository.getFollowing(req.user.id, profile.id, function (err, result) {
           if (err || !result) { res.send(400);}
-          else {
-            res.json(200, {
-              user: profile,
-              feed: result
-            });
-          }
+          else { res.json(200, { user: profile, feed: result }); }
         });
       });
     });
 
     app.get('/api/people/:account/timeline:topId?', authenticate, function (req, res) {
 
-      repository.getPublicProfile(req.user.account, req.params.account, function (err, result) {
+      repository.getPublicProfile(req.user.id, req.params.account, function (err, result) {
         if (err || !result) {
           res.send(400);
           return;
         }
 
         var profile = result;
-        profile.isOwnProfile = req.user.account === profile.account;
-        profile.pictureUrl = config.env.avatarServer + '/avatar/' + profile.pictureId;
+        //profile.isOwnProfile = req.user.account === profile.account;
+        //profile.pictureUrl = config.env.avatarServer + '/avatar/' + profile.pictureId;
 
         repository.getTimeline(req.user.id, req.params.account, getTopId(req), function (err, result) {
           if (err || !result) { res.send(400); }
@@ -114,7 +104,7 @@ module.exports = function (context) {
     });
 
     app.get('/api/accounts/:account/profile', authenticate, function (req, res) {
-      repository.getPublicProfile(req.user.account, req.params.account, handleJsonResult(req, res));
+      repository.getPublicProfile(req.user.id, req.params.account, handleJsonResult(req, res));
     });
 
     app.post('/api/timeline/posts', authenticate, function (req, res) {
@@ -125,11 +115,11 @@ module.exports = function (context) {
         created: date
       };
 
-      repository.addPost(post, function (err, result) {
-        if (err || !result) { res.send(400); }
+      repository.addPost(post, function (err, postId) {
+        if (err || !postId) { res.send(400); }
         else {
           res.json(200, {
-            id: result.id,
+            id: postId.id,
             account: req.user.account,
             name: req.user.name,
             pictureId: req.user.pictureId,
