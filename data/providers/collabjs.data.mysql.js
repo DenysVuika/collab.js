@@ -365,13 +365,12 @@ Provider.prototype = {
     });
   },
   addSavedSearch: function (json, callback) {
-    var command = 'CALL add_search_list(?,?,?,?)'
+    var command = 'INSERT IGNORE INTO `search_lists` (name, userId, query, source) VALUES (?,?,?,?)'
       , params = [json.name, json.userId, json.q, json.src];
     pool.getConnection(function (err, connection) {
       connection.query(command, params, function (err) {
         connection.release();
-        if (err) { callback(err); }
-        else { callback(false); }
+        callback(err);
       });
     });
   },
@@ -380,8 +379,7 @@ Provider.prototype = {
     pool.getConnection(function (err, connection) {
       connection.query(command, [userId, name], function (err) {
         connection.release();
-        if (err) { callback(err); }
-        else { callback(false); }
+        callback(err);
       });
     });
   }

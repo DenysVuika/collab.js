@@ -328,36 +328,13 @@ CREATE  TABLE `hidden_posts` (
   `postId` INT NOT NULL ,
   PRIMARY KEY (`id`) );
 
-CREATE  TABLE `search_lists` (
-  `id` INT NOT NULL AUTO_INCREMENT ,
-  `name` VARCHAR(45) NOT NULL ,
-  `userId` INT NOT NULL ,
-  `query` TEXT NOT NULL ,
-  `source` VARCHAR(45) NOT NULL ,
-  PRIMARY KEY (`id`),
-  KEY `list_user_idx` (`userId`));
-
-DELIMITER //
-CREATE PROCEDURE `add_search_list` (
-	IN `name` varchar(45),
-	IN `userId` int,
-	IN `query` text,
-	IN `source` varchar(45)
-)
-BEGIN
-	DECLARE saved int DEFAULT 0;
-
-	SELECT 1 into saved FROM search_lists AS s
-	  WHERE s.name = name
-		  AND s.userId = userId
-	  LIMIT 1;
-
-	IF (saved = 0) THEN
-	  INSERT INTO search_lists (`name`, `userId`, `query`, `source`)
-		  VALUES (name, userId, query, source);
-	END IF;
-END//
-DELIMITER ;
+CREATE TABLE `search_lists` (
+  `name` varchar(45) COLLATE utf8_unicode_ci NOT NULL,
+  `userId` int(11) NOT NULL,
+  `query` text COLLATE utf8_unicode_ci NOT NULL,
+  `source` varchar(45) COLLATE utf8_unicode_ci NOT NULL,
+  PRIMARY KEY (`name`,`userId`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 
 CREATE  TABLE `likes` (
   `id` INT NOT NULL AUTO_INCREMENT ,
