@@ -575,6 +575,7 @@ collabjs.ui.onFeedDataLoaded = function (data) {
   collabjs.ui.enableCommentExpanders();
 };
 
+/*
 collabjs.ui.onPeopleLoaded = function (data) {
   'use strict';
 
@@ -595,6 +596,7 @@ collabjs.ui.onPeopleLoaded = function (data) {
     window.peopleFeed.appendItems(feed);
   }
 };
+*/
 
 collabjs.ui.onTimelineLoaded = function (data) {
   'use strict';
@@ -873,6 +875,7 @@ collabjs.ui.initMentions = function () {
 // People
 // ========================================================================================
 
+/*
 collabjs.ui.initPeople = function () {
   'use strict';
   $(document).ready(function () {
@@ -895,11 +898,13 @@ collabjs.ui.initPeople = function () {
     }, collabjs.ui.onPeopleLoaded);
   });
 };
+*/
 
 // ========================================================================================
 // Followers
 // ========================================================================================
 
+/*
 collabjs.ui.initFollowers = function (account) {
   'use strict';
   $(document).ready(function () {
@@ -923,11 +928,13 @@ collabjs.ui.initFollowers = function (account) {
     }, collabjs.ui.onPeopleLoaded);
   });
 };
+*/
 
 // ========================================================================================
 // Following
 // ========================================================================================
 
+/*
 collabjs.ui.initFollowing = function (account) {
   'use strict';
   $(document).ready(function () {
@@ -950,6 +957,7 @@ collabjs.ui.initFollowing = function (account) {
     }, collabjs.ui.onPeopleLoaded);
   });
 };
+*/
 
 // ========================================================================================
 // Personal Timeline

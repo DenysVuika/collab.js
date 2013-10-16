@@ -152,6 +152,12 @@ Provider.prototype = {
         if (err) { callback(err, null); }
         else {
           var rows = result[0];
+          // init picture urls
+          if (rows.length > 0) {
+            for (var i = 0; i < rows.length; i++) {
+              rows[i].pictureUrl = config.env.avatarServer + '/avatar/' + rows[i].pictureId;
+            }
+          }
           callback(err, rows);
         }
       });
@@ -167,6 +173,12 @@ Provider.prototype = {
     pool.getConnection(function (err, connection) {
       connection.query(command, [callerId, callerId, targetId], function (err, result) {
         connection.release();
+        // init picture urls
+        if (result.length > 0) {
+          for (var i = 0; i < result.length; i++) {
+            result[i].pictureUrl = config.env.avatarServer + '/avatar/' + result[i].pictureId;
+          }
+        }
         callback(err, result);
       });
     });
@@ -182,6 +194,12 @@ Provider.prototype = {
     pool.getConnection(function (err, connection) {
       connection.query(command, [callerId, callerId, targetId], function (err, result) {
         connection.release();
+        // init picture urls
+        if (result.length > 0) {
+          for (var i = 0; i < result.length; i++) {
+            result[i].pictureUrl = config.env.avatarServer + '/avatar/' + result[i].pictureId;
+          }
+        }
         callback(err, result);
       });
     });

@@ -1,0 +1,36 @@
+div.row
+  div.panel.panel-primary
+    div.panel-heading
+      h3.panel-title {{profile.name + ' @' + profile.account}}
+    div.panel-body
+      div.media
+        div.pull-left
+          img.media-object.avatar(ng-src='{{profile.pictureUrl}}' alt='')
+        div.media-body
+          h4.media-heading
+            span {{profile.name}}
+            small {{' @' + profile.account}}
+          ul.list-unstyled
+            li
+              span(style='display:block')
+                i(class='flag-icon-16 flag-{{profile.location.toLowerCase()}}')
+                | {{getCountryName(profile)}}
+            li
+              span
+                i.icon-globe
+                | &nbsp;
+                a(ng-href='{{profile.website}}', target='_blank') {{profile.website}}
+            li
+              span
+                i.icon-pencil
+                | &nbsp;
+                em {{profile.bio}}
+          a.btn.btn-default.pull-right.profile-btn(ng-show='canFollow(profile)', ng-click='follow(profile)') Follow
+          a.btn.btn-danger.pull-right.profile-btn(ng-show='canUnfollow(profile)', ng-click='unfollow(profile)') Unfollow
+          a.btn.btn-success.pull-right.profile-btn(ng-show='profile.isOwnProfile', href='/account') Edit profile
+
+    div.panel-footer
+      ul.list-inline.profile-stats
+        a.blue(ng-href='{{getProfileFeed(profile)}}') {{profile.posts + ' posts'}}
+        a.blue(ng-href='{{getFollowingUrl(profile)}}') {{profile.following + ' following'}}
+        a.blue(ng-href='{{getFollowersUrl(profile)}}') {{profile.followers + ' followers'}}

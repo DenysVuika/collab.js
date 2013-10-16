@@ -1,8 +1,5 @@
 extends layout
 
 block content
-  include shared/ko-people
-
-block scripts
-  script.
-    collabjs.ui.initPeople();
+  div(ng-controller='PeopleListController', ng-init='init()')
+    include partials/people-list

@@ -1,12 +1,9 @@
 extends layout
 
 block content
-  include shared/profile
-  h3
-    i.icon-user
-    | &nbsp;Following
-  include shared/ko-people
-
-block scripts
-  script.
-    collabjs.ui.initFollowing('#{account}');
+  div(ng-controller='PeopleListController', ng-init='initFollowing("#{account}")')
+    include partials/people-profile
+    h3
+      i.icon-user
+      | &nbsp;Following
+    include partials/people-list
