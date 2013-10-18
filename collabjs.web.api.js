@@ -49,8 +49,6 @@ module.exports = function (context) {
         }
 
         var profile = result;
-        //profile.isOwnProfile = req.user.account === profile.account;
-        //profile.pictureUrl = config.env.avatarServer + '/avatar/' + profile.pictureId;
 
         repository.getFollowers(req.user.id, profile.id, function (err, result) {
           if (err || !result) { res.send(400);}
@@ -68,8 +66,6 @@ module.exports = function (context) {
         }
 
         var profile = result;
-        //profile.isOwnProfile = req.user.account === profile.account;
-        //profile.pictureUrl = config.env.avatarServer + '/avatar/' + profile.pictureId;
 
         repository.getFollowing(req.user.id, profile.id, function (err, result) {
           if (err || !result) { res.send(400);}
@@ -87,8 +83,6 @@ module.exports = function (context) {
         }
 
         var profile = result;
-        //profile.isOwnProfile = req.user.account === profile.account;
-        //profile.pictureUrl = config.env.avatarServer + '/avatar/' + profile.pictureId;
 
         repository.getTimeline(req.user.id, req.params.account, getTopId(req), function (err, result) {
           if (err || !result) { res.send(400); }
@@ -173,6 +167,7 @@ module.exports = function (context) {
           comment.account = req.user.account;
           comment.name = req.user.name;
           comment.pictureId = req.user.pictureId;
+          comment.pictureUrl = config.env.avatarServer + '/avatar/' + comment.pictureId;
           res.json(200, comment);
           // send email notification
           notifyOnPostCommented(req, comment);

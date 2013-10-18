@@ -1,0 +1,41 @@
+div.row
+  div.timeline-feed(infinite-scroll='loadMorePosts()')
+    ul
+      li(ng-repeat='post in posts | orderBy:"created":true')
+        div.author
+          a.account(ng-href='{{getProfileFeed(post.account)}}')
+            img(ng-src='{{post.pictureUrl}}', alt='')
+        div.name
+          a.account-name(ng-href='{{getPostUrl(post.id)}}') {{post.name}}
+          a.account(ng-href='{{getProfileFeed(post.account)}}') {{'@' + post.account}}
+        div.date
+          i.icon-time &nbsp;
+          span(am-time-ago='post.created', title='{{post.created | amDateFormat: "LLLL"}}')
+        div.delete(ng-click='deletePost(post)')
+          i.icon-remove
+        div.message
+          div(ng-bind-html-unsafe='getPostContent(post)')
+          a.no-decoration(ng-if='post.commentsCount > 9', ng-href='{{getPostUrl(post.id)}}')
+            i.icon-comment.black
+            span {{' View all ' + post.commentsCount + ' comments'}}
+          a.no-decoration(ng-if='post.commentsCount < 10', href='#', ng-click='loadPostComments(post)')
+            i.icon-comment.black
+            | &nbsp;Comments
+            span(ng-show='post.commentsCount > 0') {{'(' + post.commentsCount + ')'}}
+        ul
+          li(ng-repeat='comment in post.comments')
+            div.author
+              img(ng-src='{{comment.pictureUrl}}', alt='')
+            div.name(style='width:94%')
+              strong {{comment.name}}
+              a.account(ng-href='{{getProfileFeed(comment.account)}}') {{'@' + comment.account}}
+            div.date
+              i.icon-time &nbsp;
+              span(am-time-ago='comment.created', title='{{comment.created | amDateFormat: "LLLL"}}')
+            div.message(ng-bind-html-unsafe='getPostContent(comment)')
+          li
+            div.author(style='top: 4px')
+              img(ng-src='{{profilePictureUrl}}', alt='')
+            form(ng-controller='CommentController', ng-init='init("#{collabjs.token}")',  ng-submit='submit()', role='form')
+              input.form-control(type='text', ng-model='content', name='content', placeholder='Write a comment...', autocomplete='off',
+                id='comment-box-{{post.id}}')

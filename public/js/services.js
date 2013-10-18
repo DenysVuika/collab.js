@@ -1,4 +1,12 @@
 angular.module('collabjs.services', ['ngResource'])
+  .service('profileService', function () {
+    'use strict';
+    return {
+      profilePictureUrl: function () {
+        return collabjs.currentUser.getPictureUrl();
+      }
+    };
+  })
   .service('peopleService', function ($http, $q) {
     'use strict';
     var _people = [];
@@ -46,7 +54,13 @@ angular.module('collabjs.services', ['ngResource'])
         }
       },
       getProfileFeed: function (profile) {
-          return profile ? '/people/' + profile.account + '/timeline' : null;
+        if (typeof profile === 'string') {
+          return '/people/' + profile + '/timeline';
+        }
+        if (profile && profile.account) {
+          return '/people/' + profile.account + '/timeline';
+        }
+        return null;
       },
       getFollowingUrl: function (profile) {
         return profile ? '/people/' + profile.account + '/following' : null;
@@ -65,6 +79,63 @@ angular.module('collabjs.services', ['ngResource'])
         $http.get(unfollowAction).success(function () {
           profile.isFollowed = false;
         });
+      }
+    };
+  })
+  .service('postsService', function ($http, $q) {
+    'use strict';
+    return {
+      getMentions: function (topId) {
+        var d = $q.defer();
+        var query = '/api/mentions';
+        if (topId) {
+          query = query + '?topId=' + topId;
+        }
+        $http.get(query).success(function (data) {
+          d.resolve(data);
+        });
+        return d.promise;
+      },
+      getPostUrl: function (postId) {
+        return postId ? '/timeline/posts/' + postId : null;
+      },
+      getPostContent: function (post) {
+        return post ? post.content.twitterize() : null;
+      },
+      getPostComments: function (postId) {
+        var d = $q.defer();
+        $http.get('/api/timeline/posts/' + postId + '/comments').success(function (data) {
+          d.resolve(data);
+        });
+        return d.promise;
+      },
+      addComment: function (comment) {
+        var d = $q.defer();
+        $http.post(
+          '/api/timeline/comments',
+          comment,
+          { xsrfHeaderName : 'x-csrf-token' }
+        ).then(function (res) {
+            d.resolve(res.data);
+          });
+        return d.promise;
+      },
+      deletePost: function (postId, token) {
+        var d = $q.defer();
+        $http
+          .delete('/api/timeline/posts/' + postId,
+            { headers: { 'x-csrf-token': token }, xsrfHeaderName : 'x-csrf-token' })
+          .then(function (res) {
+            d.resolve(res);
+          });
+        return d.promise;
+      },
+      loadPostComments: function (post) {
+        if (post && post.id) {
+          $http.get('/api/timeline/posts/' + post.id + '/comments').success(function (data) {
+            post.comments = data || [];
+          });
+        }
       }
     };
   });

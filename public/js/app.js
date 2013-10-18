@@ -1,4 +1,4 @@
-angular.module('collabjs', ['collabjs.services']);
+angular.module('collabjs', ['collabjs.services', 'angularMoment', 'infinite-scroll']);
 /*
   .config(['$routeProvider', function ($routeProvider) {
     $routeProvider

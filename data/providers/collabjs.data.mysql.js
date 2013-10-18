@@ -139,6 +139,12 @@ Provider.prototype = {
         if (err) { callback(err, null); }
         else {
           var rows = result[0];
+          // init picture urls
+          if (rows.length > 0) {
+            for (var i = 0; i < rows.length; i++) {
+              rows[i].pictureUrl = config.env.avatarServer + '/avatar/' + rows[i].pictureId;
+            }
+          }
           callback(err, rows);
         }
       });
@@ -346,7 +352,15 @@ Provider.prototype = {
       connection.query(command, [postId], function (err, result) {
         connection.release();
         if (err) { callback(err, null); }
-        else { callback(err, result); }
+        else {
+          // init picture urls
+          if (result.length > 0) {
+            for (var i = 0; i < result.length; i++) {
+              result[i].pictureUrl = config.env.avatarServer + '/avatar/' + result[i].pictureId;
+            }
+          }
+          callback(err, result);
+        }
       });
     });
   },

@@ -1,20 +1,16 @@
 extends layout
 
 block content
-  include shared/ko-timeline
-  div.page-header
-    h3
-      i.icon-globe
-      | &nbsp;#{title}
-  p.lead(style='display: none', data-bind='visible: posts().length == 0') No mentions found...
-  div(style='display: none;', data-bind="visible: posts().length > 0, template: { name: 'timeline-template' }")
+  div(ng-controller='MentionsController', ng-init='init("#{collabjs.token}");')
+    div.page-header
+      h3
+        i.icon-globe
+        | &nbsp;#{title}
+    p.lead(ng-show='hasNoPosts') No mentions found...
+    include partials/posts-list
 
-  // Loading progress indicator
-  div.page-spinner
-    i.icon-spinner.icon-spin.icon-4x
+    // Loading progress indicator
+    div.text-center(ng-show='isLoadingMorePosts')
+      i.icon-spinner.icon-4x.icon-spin
 
-  div.alert.alert-error.page-error
-
-block scripts
-  script.
-    collabjs.ui.initMentions();
+    div.alert.alert-error.page-error
