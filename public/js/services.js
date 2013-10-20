@@ -28,16 +28,14 @@ angular.module('collabjs.services', ['ngResource'])
       },
       getFollowing: function (account) {
         var d = $q.defer();
-        $http.get('/api/people/' + account + '/following').success(function(data) {
-          d.resolve(data);
-        });
+        var query = '/api/people/' + account + '/following';
+        $http.get(query).success(function(data) { d.resolve(data); });
         return d.promise;
       },
       getFollowers: function (account) {
         var d = $q.defer();
-        $http.get('/api/people/' + account + '/followers').success(function(data) {
-          d.resolve(data);
-        });
+        var query = '/api/people/' + account + '/followers';
+        $http.get(query).success(function(data) { d.resolve(data); });
         return d.promise;
       },
       canFollow: function (profile) {
@@ -85,15 +83,18 @@ angular.module('collabjs.services', ['ngResource'])
   .service('postsService', function ($http, $q) {
     'use strict';
     return {
+      getWall: function (account, topId) {
+        var d = $q.defer();
+        var query = '/api/people/' + account + '/timeline';
+        if (topId) { query = query + '?topId=' + topId; }
+        $http.get(query).success(function (data) { d.resolve(data); });
+        return d.promise;
+      },
       getMentions: function (topId) {
         var d = $q.defer();
         var query = '/api/mentions';
-        if (topId) {
-          query = query + '?topId=' + topId;
-        }
-        $http.get(query).success(function (data) {
-          d.resolve(data);
-        });
+        if (topId) { query = query + '?topId=' + topId; }
+        $http.get(query).success(function (data) { d.resolve(data || []); });
         return d.promise;
       },
       getPostUrl: function (postId) {
@@ -115,9 +116,7 @@ angular.module('collabjs.services', ['ngResource'])
           '/api/timeline/comments',
           comment,
           { xsrfHeaderName : 'x-csrf-token' }
-        ).then(function (res) {
-            d.resolve(res.data);
-          });
+        ).then(function (res) { d.resolve(res.data); });
         return d.promise;
       },
       deletePost: function (postId, token) {
@@ -125,9 +124,7 @@ angular.module('collabjs.services', ['ngResource'])
         $http
           .delete('/api/timeline/posts/' + postId,
             { headers: { 'x-csrf-token': token }, xsrfHeaderName : 'x-csrf-token' })
-          .then(function (res) {
-            d.resolve(res);
-          });
+          .then(function (res) { d.resolve(res); });
         return d.promise;
       },
       loadPostComments: function (post) {
@@ -136,6 +133,39 @@ angular.module('collabjs.services', ['ngResource'])
             post.comments = data || [];
           });
         }
+      }
+    };
+  })
+  .service('searchService', function ($http, $q) {
+    'use strict';
+    return {
+      saveList: function (token, q, src) {
+        var d = $q.defer();
+        var payload = { action: 'save', q: q, src: src };
+        $http
+          .post('/search', payload,
+            { headers: { 'x-csrf-token': token }, xsrfHeaderName : 'x-csrf-token' })
+          .then(function (res) { d.resolve(res); });
+        return d.promise;
+      },
+      deleteList: function (token, q, src) {
+        var d = $q.defer();
+        var payload = { action: 'delete', q: q, src: src };
+        $http
+          .post('/search', payload,
+            { headers: { 'x-csrf-token': token }, xsrfHeaderName : 'x-csrf-token' })
+          .then(function (res) { d.resolve(res); });
+        return d.promise;
+      },
+      searchPosts: function (q, src, topId) {
+        var d = $q.defer();
+        var query = '/api/search?q=' + encodeURIComponent(q) + '&src=' + src;
+        if (topId) { query = query + '&topId=' + topId; }
+        $http
+          .get(query)
+          .then(function (res) { d.resolve(res.data || []); });
+
+        return d.promise;
       }
     };
   });

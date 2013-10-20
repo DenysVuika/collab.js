@@ -1,6 +1,6 @@
 p.lead(ng-show='hasNoPeople') No people found...
-ul.media-list(ng-repeat='profile in people', ng-hide='hasNoPeople')
-  li.media.post
+ul.media-list
+  li.media.post(ng-repeat='profile in people', ng-hide='hasNoPeople')
     img.pull-left.avatar(ng-src='{{profile.pictureUrl}}', alt='')
     div.media-body
       div.media-heading(style='font-weight: normal')

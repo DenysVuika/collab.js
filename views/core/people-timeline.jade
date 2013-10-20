@@ -6,23 +6,19 @@ append sidebar-connect
     | &nbsp;@#{account}
 
 block content
-  include shared/ko-timeline
-  include shared/profile
-  div.page-header
-    h3
-      i.icon-list-ul
-      | &nbsp;Posts
+  div(ng-controller='WallController', ng-init="init('#{collabjs.token}', '#{account}');")
+    div(ng-controller='UserProfileController')
+      include partials/people-profile
+    div.page-header
+      h3
+        i.icon-list-ul
+        | &nbsp;Posts
 
-  p.lead(style='display: none', data-bind='visible: posts().length == 0') No posts found...
+    p.lead(ng-show='hasNoPosts') No posts found...
+    include partials/posts-list
 
-  div(style='display: none;', data-bind="visible: posts().length > 0, template: { name: 'timeline-template' }")  
-  
-  // Loading progress indicator
-  div.page-spinner
-    i.icon-spinner.icon-spin.icon-4x
+    // Loading progress indicator
+    div.text-center(ng-show='isLoadingMorePosts')
+      i.icon-spinner.icon-4x.icon-spin
 
-  div.alert.alert-danger.page-error
-
-block scripts
-  script.
-    collabjs.ui.initPersonalTimeline('#{account}');
+    div.alert.alert-danger.page-error

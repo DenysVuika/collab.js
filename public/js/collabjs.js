@@ -598,6 +598,7 @@ collabjs.ui.onPeopleLoaded = function (data) {
 };
 */
 
+/*
 collabjs.ui.onTimelineLoaded = function (data) {
   'use strict';
 
@@ -619,6 +620,7 @@ collabjs.ui.onTimelineLoaded = function (data) {
   }
   collabjs.ui.enableCommentExpanders();
 };
+*/
 
 $(document).bind("collabjs.onStatusUpdated", function (event, data) {
   'use strict';
@@ -964,6 +966,7 @@ collabjs.ui.initFollowing = function (account) {
 // Personal Timeline
 // ========================================================================================
 
+/*
 collabjs.ui.initPersonalTimeline = function (account) {
   'use strict';
   $(document).ready(function () {
@@ -986,7 +989,7 @@ collabjs.ui.initPersonalTimeline = function (account) {
     }, collabjs.ui.onTimelineLoaded);
   });
 };
-
+*/
 // ========================================================================================
 // Account
 // ========================================================================================
@@ -1056,6 +1059,7 @@ collabjs.ui.initAccountView = function () {
 // Search Posts
 // ========================================================================================
 
+/*
 collabjs.ui.initSearchPosts = function (q, src) {
   'use strict';
   $(document).ready(function () {
@@ -1078,6 +1082,7 @@ collabjs.ui.initSearchPosts = function (q, src) {
     }, collabjs.ui.onFeedDataLoaded);
   });
 };
+*/
 
 // ========================================================================================
 // Smooth/infinite loading

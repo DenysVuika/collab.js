@@ -210,6 +210,7 @@ Provider.prototype = {
       });
     });
   },
+  // TODO: rename to 'getWall'
   getTimeline: function (callerId, targetAccount, topId, callback) {
     var command = 'CALL get_timeline(?,?,?)'
       , params = [callerId, targetAccount, topId];
@@ -219,6 +220,12 @@ Provider.prototype = {
         if (err) { callback(err, null); }
         else {
           var rows = result[0];
+          // init picture urls
+          if (rows.length > 0) {
+            for (var i = 0; i < rows.length; i++) {
+              rows[i].pictureUrl = config.env.avatarServer + '/avatar/' + rows[i].pictureId;
+            }
+          }
           callback(err, rows);
         }
       });
@@ -301,6 +308,12 @@ Provider.prototype = {
         if (err) { callback(err, null); }
         else {
           var rows = result[0];
+          // init picture urls
+          if (rows.length > 0) {
+            for (var i = 0; i < rows.length; i++) {
+              rows[i].pictureUrl = config.env.avatarServer + '/avatar/' + rows[i].pictureId;
+            }
+          }
           callback(err, rows);
         }
       });

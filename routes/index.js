@@ -327,7 +327,8 @@ exports.get_search = function (req, res) {
     navigationUri: '/search?q=' + encodeURIComponent(q) + '&src=' + src,
     search_q: q,
     search_q_enc: encodeURIComponent(q),
-    search_src: encodeURIComponent(src)
+    search_src: encodeURIComponent(src),
+    isSaved: res.locals.hasSavedSearch(q)
   });
 };
 
@@ -338,6 +339,7 @@ exports.post_search = function (context) {
       , action = body.action
       , redirectUri = '/search?q=' + encodeURIComponent(body.q) + '&src=' + body.src;
     if (action === 'save') {
+      console.log('saving search list...');
       repository.addSavedSearch({
         name: body.q,
         userId: req.user.id,
@@ -345,14 +347,18 @@ exports.post_search = function (context) {
         src: body.src
       }, function (err) {
         // TODO: generate error message for UI alert
+        console.log(err);
         res.redirect(redirectUri);
       });
     } else if (action === 'delete') {
+      console.log('deleting search list');
       repository.deleteSavedSearch(req.user.id, body.q, function (err) {
         // TODO: generate error message for UI alert
+        console.log(err);
         res.redirect(redirectUri);
       });
     } else {
+      console.log('unknown action ' + action);
       res.redirect(redirectUri);
     }
   };

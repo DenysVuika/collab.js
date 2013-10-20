@@ -2,7 +2,8 @@ extends layout
 
 block content
   div(ng-controller='PeopleListController', ng-init='initFollowing("#{account}")')
-    include partials/people-profile
+    div(ng-controller='UserProfileController')
+      include partials/people-profile
     h3
       i.icon-user
       | &nbsp;Following

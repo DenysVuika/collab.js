@@ -258,7 +258,7 @@ BEGIN
   SET term = CONCAT('%', `tag`, '%');
   SELECT result.* FROM
   (
-    SELECT p.*, u.name, u.account
+    SELECT p.*, u.name, u.account, u.emailHash as pictureId
     FROM posts AS p
       LEFT JOIN users AS u ON u.id = p.userId
     WHERE p.content LIKE term
