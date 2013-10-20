@@ -730,6 +730,7 @@ collabjs.ui.initChangePasswordView = function () {
 // Post Viewer
 // ========================================================================================
 
+/*
 collabjs.ui.initPostView = function (id) {
   'use strict';
   $(document).ready(function () {
@@ -758,6 +759,7 @@ collabjs.ui.initPostView = function (id) {
     }
   }
 };
+*/
 
 // ========================================================================================
 // Timeline

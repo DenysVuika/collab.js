@@ -97,6 +97,15 @@ angular.module('collabjs.services', ['ngResource'])
         $http.get(query).success(function (data) { d.resolve(data || []); });
         return d.promise;
       },
+      getPostById: function (postId) {
+        var d = $q.defer();
+        var query = '/api/timeline/posts/' + postId;
+        $http.get(query)
+          .success(function (res) { d.resolve(res); })
+          .error(function (data) { d.reject(data); });
+
+        return d.promise;
+      },
       getPostUrl: function (postId) {
         return postId ? '/timeline/posts/' + postId : null;
       },

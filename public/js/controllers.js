@@ -90,7 +90,7 @@ function MentionsController($scope, postsService, peopleService, profileService)
   $scope.posts = [];
   // user has no posts to display
   $scope.hasNoPosts = false;
-  $scope.profilePictureUrl = profileService.profilePictureUrl();
+
 
   $scope.init = function (token) {
     $scope.token = token;
@@ -104,6 +104,7 @@ function MentionsController($scope, postsService, peopleService, profileService)
     });
   };
 
+  $scope.profilePictureUrl = profileService.profilePictureUrl();
   $scope.getProfileFeed = peopleService.getProfileFeed;
   $scope.getPostUrl = postsService.getPostUrl;
   $scope.getPostContent = postsService.getPostContent;
@@ -153,7 +154,6 @@ function WallController($scope, postsService, peopleService, profileService) {
   $scope.posts = [];
   // user has no posts to display
   $scope.hasNoPosts = false;
-  $scope.profilePictureUrl = profileService.profilePictureUrl();
 
   $scope.init = function (token, account) {
     $scope.account = account;
@@ -167,6 +167,7 @@ function WallController($scope, postsService, peopleService, profileService) {
     });
   };
 
+  $scope.profilePictureUrl = profileService.profilePictureUrl();
   $scope.getProfileFeed = peopleService.getProfileFeed;
   $scope.getPostUrl = postsService.getPostUrl;
   $scope.getPostContent = postsService.getPostContent;
@@ -216,8 +217,7 @@ function SearchController($scope, searchService, postsService, peopleService, pr
   $scope.searchSource = null;
   $scope.isSaved = false;
   $scope.hasNoPosts = false;
-  $scope.posts = [];$scope.profilePictureUrl = profileService.profilePictureUrl();
-
+  $scope.posts = [];
 
   $scope.init = function (token, q, src, saved) {
     $scope.token = token;
@@ -231,6 +231,7 @@ function SearchController($scope, searchService, postsService, peopleService, pr
     });
   };
 
+  $scope.profilePictureUrl = profileService.profilePictureUrl();
   $scope.getProfileFeed = peopleService.getProfileFeed;
   $scope.getPostUrl = postsService.getPostUrl;
   $scope.getPostContent = postsService.getPostContent;
@@ -286,4 +287,32 @@ function SearchController($scope, searchService, postsService, peopleService, pr
       $scope.hasNoPosts = ($scope.posts.length === 0);
     });
   };
+}
+
+function PostController($scope, postsService, peopleService, profileService) {
+  'use strict';
+
+  $scope.postId = null;
+  $scope.post = null;
+  $scope.hasPost = false;
+  $scope.hasError = false;
+  $scope.error = null;
+
+  $scope.init = function (postId) {
+    $scope.postId = postId;
+
+    postsService.getPostById(postId).then(function (data) {
+      $scope.post = data;
+      $scope.hasPost = (data !== null);
+    }, function (err) {
+      $scope.error = 'Post not found.';
+      $scope.hasError = true;
+    });
+  };
+
+  $scope.profilePictureUrl = profileService.profilePictureUrl();
+  $scope.getProfileFeed = peopleService.getProfileFeed;
+  $scope.getPostUrl = postsService.getPostUrl;
+  $scope.getPostContent = postsService.getPostContent;
+  $scope.loadPostComments = postsService.loadPostComments;
 }

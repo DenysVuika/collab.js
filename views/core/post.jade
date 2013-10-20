@@ -1,53 +1,36 @@
 extends layout
 
 block content
-  include shared/tb-mixins
-
-  p.lead.page-error
-
-  // Loading progress indicator
-  div.page-spinner
-    i.icon-spinner.icon-spin.icon-4x
-
-  div.row(style='display: none;', data-bind='visible: posts().length > 0')
-    div.timeline-feed
-      ul(data-bind='foreach: posts')
-        li
-          div.author
-            a.account(data-bind="attr: { href: feed }")
-              img(data-bind="attr: { src: picture }", alt='avatar')
-          div.name(style='width:94%')
-            strong(data-bind='text: name')
-            a.account(data-bind="text: '@' + account, attr: { href: feed }")
-          div.date
-            i.icon-time &nbsp;
-            span(data-bind="text: created.calendar(), attr: { title : created.format('LLLL') }")
-          //- div.delete
-          //-  i.icon-remove
-          div.message(data-bind='html: content')
-          ul
-            // ko foreach: comments
-            li
-              div.author
-                a.account(data-bind="attr: { href: feed }")
-                  img(data-bind="attr: { src: picture }", alt='avatar')
-              div.name
-                strong(data-bind='text: name')
-                a.account(data-bind="text: '@' + account, attr: { href: feed }")
-              div.date
-                i.icon-time &nbsp;
-                span(data-bind="text: created.calendar(), attr: { title : created.format('LLLL') }")
-              div.message(data-bind='html: content')
-            // /ko
-            li
-              div.author(style='top: 4px;')
-                img(data-bind="attr: { src: collabjs.currentUser.getPictureUrl() }", alt='avatar')
-              form(method='post', action='', onSubmit='collabjs.ui.doPostComment(this); return false;', role='form')
-                input(type='hidden', name='_csrf', value=collabjs.token)
-                input(name='postId', type='hidden', data-bind='value: id')
-                input.form-control(name='content', type='text', placeholder='Write a comment...', autocomplete='off'
-                  data-bind="attr: { id: 'comment-box-' + id }")
-
-block scripts
-  script.
-    collabjs.ui.initPostView('#{postId}');
+  div(ng-controller='PostController', ng-init="init(#{postId})")
+    p.lead.text-center(ng-show='hasError') {{error}}
+    div.row(style='display: none;', ng-show='hasPost')
+      div.timeline-feed
+        ul
+          li
+            div.author
+              a.account(ng-href='{{getProfileFeed(post.account)}}')
+                img(ng-src='{{post.pictureUrl}}', alt='')
+            div.name(style='width:94%')
+              strong {{post.name}}
+              a.account(ng-href='{{getProfileFeed(post.account)}}') {{'@' + post.account}}
+            div.date
+              i.icon-time &nbsp;
+              span(am-time-ago='post.created', title='{{post.created | amDateFormat: "LLLL"}}')
+            div.message(ng-bind-html-unsafe='getPostContent(post)')
+            ul
+              li(ng-repeat='comment in post.comments')
+                div.author
+                  a.account(ng-href='{{getProfileFeed(comment.account)}}')
+                    img(ng-src='{{comment.pictureUrl}}', alt='')
+                div.name
+                  strong {{comment.name}}
+                  a.account(ng-href='{{getProfileFeed(comment.account)}}') {{'@' + comment.account}}
+                div.date
+                  i.icon-time &nbsp;
+                  span(am-time-ago='comment.created', title='{{comment.created | amDateFormat: "LLLL"}}')
+                div.message(ng-bind-html-unsafe='getPostContent(comment)')
+              li
+                div.author(style='top: 4px')
+                  img(ng-src='{{profilePictureUrl}}', alt='')
+                form(ng-controller='CommentController', ng-init='init("#{collabjs.token}")',  ng-submit='submit()', role='form')
+                  input.form-control(type='text', ng-model='content', name='content', placeholder='Write a comment...', autocomplete='off')

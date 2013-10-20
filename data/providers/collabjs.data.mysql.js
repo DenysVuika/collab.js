@@ -343,9 +343,13 @@ Provider.prototype = {
             callback(err, null);
           } else {
             var post = rows[0];
+            post.pictureUrl = config.env.avatarServer + '/avatar/' + post.pictureId;
             if (result[1] && result[1].length > 0) {
               post.commentsCount = result[1].length;
               post.comments = result[1];
+              for (var i = 0; i < post.comments.length; i++) {
+                post.comments[i].pictureUrl = config.env.avatarServer + '/avatar/' + post.comments[i].pictureId;
+              }
             } else {
               post.commentsCount = 0;
               post.comments = [];
