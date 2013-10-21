@@ -1,30 +1,22 @@
 extends layout
 
 block content
-  include shared/ko-timeline
-  form.status-form(method='post', onSubmit='collabjs.ui.doUpdateStatus(this); return false;', role='form')
-    input(type='hidden', name='_csrf', value=collabjs.token)
-    textarea.form-control(name='content', rows='3', placeholder="What's on your mind?")
-    div.footer
-      input.btn.btn-success(type='submit', value='Post')
+  div(ng-controller='NewsController', ng-init="init('#{collabjs.token}', '#{account}');")
+    form.status-form(ng-controller='StatusController', ng-init="init('#{collabjs.token}')", ng-submit='submit()', role='form')
+      textarea.form-control(ng-model='content', name='content', rows='3', placeholder="What's on your mind?")
+      div.footer
+        input.btn.btn-success(type='submit', value='Post')
 
-  p.lead(style='display: none', data-bind='visible: posts().length == 0') No posts found...
+    p.lead(ng-show='hasNoPosts') No posts found...
 
-  div.alert.alert-info(id='msg-new-posts', style='text-align: center; display: none')
-    a(id='new-msg-link', href='#')
-      | You got 
-      span(id='new-msg-counter')
-      |  new posts for your timeline.
+    div.alert.alert-info.text-center(id='msg-new-posts', style='display: none', ng-show='newPostsCount > 0')
+      a(id='new-msg-link', href='#', ng-click='loadNewPosts()')
+        | You got {{newPostsCount}} new post(s) for your timeline.
 
-  // timeline
-  div(style='display: none;', data-bind="visible: posts().length > 0, template: { name: 'timeline-template' }")
+    include partials/posts-list
 
-  // Loading progress indicator
-  div.page-spinner
-    i.icon-spinner.icon-spin.icon-4x
+    //- Loading progress indicator
+    div.text-center(ng-show='isLoadingMorePosts')
+      i.icon-spinner.icon-4x.icon-spin
 
-  div.alert.alert-error.page-error
-
-block scripts
-  script.
-    collabjs.ui.initTimeline();
+    div.alert.alert-error.page-error

@@ -6,28 +6,20 @@
 
 var collabjs = collabjs || {
   // value may be assigned based on server-side settings
-  avatarServer: 'https://www.gravatar.com',
+  // avatarServer: 'https://www.gravatar.com',
   currentUser: {
-    id: null,
-    account: null,
-    pictureId: null,
-    getPictureUrl: function () {
-      'use strict';
-      return collabjs.getUserPicture(collabjs.currentUser.pictureId, 48);
-    }
-  },
-  getUserPicture: function(pictureId, pictureSize) {
-    'use strict';
-    return collabjs.avatarServer + '/avatar/' + pictureId + '?s=' + (pictureSize || '48');
+    //id: null,
+    //account: null,
+    pictureUrl: null
   },
   // ui-related members
-  ui: {},
+  ui: {}/*,
   utils: {
     isNullOrWhiteSpace: function (str) {
       'use strict';
       return str === null || str.match(/^ *$/) !== null;
     }
-  }
+  }*/
 };
 
 collabjs.countries = {
@@ -312,10 +304,10 @@ collabjs.countries = {
   };
 })(jQuery);
 
-
+/*
 $(function () {
   'use strict';
-  /* Knockout extensions */
+  // Knockout extensions
   ko.bindingHandlers.country = {
     init: function(element, valueAccessor, allBindingsAccessor, viewModel, bindingContext) {
       // This will be called when the binding is first applied to an element
@@ -339,10 +331,11 @@ $(function () {
     }
   };
 });
-
+*/
 
 
 /* String extensions */
+/*
 String.prototype.formatString = function() {
   'use strict';
   var formatted = this;
@@ -352,6 +345,7 @@ String.prototype.formatString = function() {
   }
   return formatted;
 };
+*/
 
 String.prototype.parseUrls = function () {
   'use strict';
@@ -395,7 +389,7 @@ String.prototype.twitterize = function () {
 // ========================================================================================
 // View Models
 // ========================================================================================
-
+/*
 function PostViewModel(data) {
   'use strict';
   var self = this;
@@ -423,7 +417,9 @@ function PostViewModel(data) {
     });
   };
 }
+*/
 
+/*
 function FeedViewModel(data) {
   'use strict';
   var self = this;
@@ -488,7 +484,9 @@ function FeedViewModel(data) {
 
   self.appendPosts(data);
 }
+*/
 
+/*
 function UserProfileViewModel(data) {
   'use strict';
   var self = this;
@@ -531,7 +529,9 @@ function UserProfileViewModel(data) {
     });
   };
 }
+*/
 
+/*
 function PeopleViewModel(data) {
   'use strict';
   var self = this;
@@ -558,11 +558,13 @@ function PeopleViewModel(data) {
 
   self.appendItems(data);
 }
+*/
 
 // ========================================================================================
 // Common Functions
 // ========================================================================================
 
+/*
 collabjs.ui.onFeedDataLoaded = function (data) {
   'use strict';
   var feed = data || [];
@@ -574,6 +576,7 @@ collabjs.ui.onFeedDataLoaded = function (data) {
   }
   collabjs.ui.enableCommentExpanders();
 };
+*/
 
 /*
 collabjs.ui.onPeopleLoaded = function (data) {
@@ -622,6 +625,7 @@ collabjs.ui.onTimelineLoaded = function (data) {
 };
 */
 
+/*
 $(document).bind("collabjs.onStatusUpdated", function (event, data) {
   'use strict';
   var feed = window.timelineFeed;
@@ -629,11 +633,13 @@ $(document).bind("collabjs.onStatusUpdated", function (event, data) {
     window.timelineFeed.addNewPost(data);
   }
 });
+*/
 
 // ========================================================================================
 // Comment expanders
 // ========================================================================================
 
+/*
 collabjs.ui.enableCommentExpanders = function () {
   'use strict';
   var comments = $('a[data-link-type="comment"]');
@@ -680,7 +686,9 @@ collabjs.ui.enableCommentExpanders = function () {
     }
   }
 };
+*/
 
+/*
 collabjs.ui.doPostComment = function (form) {
   'use strict';
   var formData = $(form).serialize();
@@ -703,28 +711,33 @@ collabjs.ui.doPostComment = function (form) {
     editor.val("");
   });
 };
+*/
 
 // ========================================================================================
 // Register
 // ========================================================================================
 
+/*
 collabjs.ui.initRegisterView = function () {
   'use strict';
   $(function() {
     $("input").not(["type=submit"]).jqBootstrapValidation();
   });
 };
+*/
 
 // ========================================================================================
 // Change Password
 // ========================================================================================
 
+/*
 collabjs.ui.initChangePasswordView = function () {
   'use strict';
   $(function() {
     $("input").not(["type=submit"]).jqBootstrapValidation();
   });
 };
+*/
 
 // ========================================================================================
 // Post Viewer
@@ -765,6 +778,7 @@ collabjs.ui.initPostView = function (id) {
 // Timeline
 // ========================================================================================
 
+/*
 collabjs.ui.initTimeline = function () {
   'use strict';
   $(document).ready(function () {
@@ -835,7 +849,9 @@ collabjs.ui.initTimeline = function () {
       });
   });
 };
+*/
 
+/*
 collabjs.ui.doUpdateStatus = function (form) {
   'use strict';
   var f = $(form);
@@ -848,6 +864,7 @@ collabjs.ui.doUpdateStatus = function (form) {
     $(document).trigger("collabjs.onStatusUpdated", result);
   });
 };
+*/
 
 // ========================================================================================
 // Mentions
@@ -1089,7 +1106,7 @@ collabjs.ui.initSearchPosts = function (q, src) {
 // ========================================================================================
 // Smooth/infinite loading
 // ========================================================================================
-
+/*
 var _page = 0;
 var _inCallback = false;
 
@@ -1138,6 +1155,7 @@ function initLazyLoading(url, onSuccess) {
     }
   });
 }
+*/
 
 collabjs.ui.requestPath = '';
 collabjs.ui.syncSelection = function () {

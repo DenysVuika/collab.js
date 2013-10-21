@@ -3,7 +3,7 @@ angular.module('collabjs.services', ['ngResource'])
     'use strict';
     return {
       profilePictureUrl: function () {
-        return collabjs.currentUser.getPictureUrl();
+        return  collabjs.currentUser.pictureUrl;
       }
     };
   })
@@ -83,6 +83,27 @@ angular.module('collabjs.services', ['ngResource'])
   .service('postsService', function ($http, $q) {
     'use strict';
     return {
+      getNews: function (topId) {
+        var d = $q.defer();
+        var query = '/api/timeline/posts';
+        if (topId) { query = query + '?topId=' + topId; }
+        $http.get(query).success(function (data) { d.resolve(data || []); });
+        return d.promise;
+      },
+      getNewsUpdatesCount: function (topId) {
+        var d = $q.defer();
+        var query = '/api/timeline/updates/count?topId=' + topId;
+        $http.get(query)
+          .success(function (data) { d.resolve(data.posts || 0); })
+          .error(function (data) { d.resolve(0); });
+        return d.promise;
+      },
+      getNewsUpdates: function (topId) {
+        var d = $q.defer();
+        var query = '/api/timeline/updates?topId=' + topId;
+        $http.get(query).success(function (data) { d.resolve(data || []); });
+        return d.promise;
+      },
       getWall: function (account, topId) {
         var d = $q.defer();
         var query = '/api/people/' + account + '/timeline';
@@ -119,13 +140,22 @@ angular.module('collabjs.services', ['ngResource'])
         });
         return d.promise;
       },
-      addComment: function (comment) {
+      createPost: function (token, content) {
         var d = $q.defer();
-        $http.post(
-          '/api/timeline/comments',
-          comment,
-          { xsrfHeaderName : 'x-csrf-token' }
-        ).then(function (res) { d.resolve(res.data); });
+        var post = { _csrf: token, content: content };
+        var options = { headers: { 'x-csrf-token': token }, xsrfHeaderName : 'x-csrf-token' };
+        $http
+          .post('/api/timeline/posts', post, options)
+          .then(function (res) { d.resolve(res.data); });
+        return d.promise;
+      },
+      addComment: function (token, postId, content) {
+        var d = $q.defer();
+        var comment = { _csrf: token, postId: postId, content: content };
+        var options = { headers: { 'x-csrf-token': token }, xsrfHeaderName : 'x-csrf-token' };
+        $http
+          .post('/api/timeline/comments', comment, options)
+          .then(function (res) { d.resolve(res.data); });
         return d.promise;
       },
       deletePost: function (postId, token) {

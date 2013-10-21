@@ -1,13 +1,15 @@
 'use strict';
 
-module.exports.detectMobileBrowser = detectMobileBrowser;
-module.exports.savedSearches = savedSearches;
-module.exports.commonLocals = commonLocals;
-module.exports.isUrlLocalToHost = isUrlLocalToHost;
-
 var db = require('./data')
   , auth = require('./collabjs.auth')
   , config = require('./config');
+
+function noCache (req, res, next) {
+  res.header("Cache-Control", "no-cache, no-store, must-revalidate");
+  res.header("Pragma", "no-cache");
+  res.header("Expires",0);
+  next();
+}
 
 // Stub for reCaptcha that always returns successful result
 // used instead of real implementation when reCaptcha feature is disabled,
@@ -80,12 +82,18 @@ function commonLocals(req, res, next) {
   next();
 }
 
+function isStringEmpty(str) {
+  return !(str && str !== '');
+}
+
 function isUrlLocalToHost(url) {
   return !isStringEmpty(url) &&
     ((url[0] === '/' && (url.length === 1 || (url[1] !== '/' && url[1] !== '\\'))) || // "/" or "/foo" but not "//" or "/\"
       (url.length > 1 && url[0] === '~' && url[1] === '/' )); // "~/" or "~/foo"
 }
 
-function isStringEmpty(str) {
-  return !(str && str !== '');
-}
+module.exports.detectMobileBrowser = detectMobileBrowser;
+module.exports.savedSearches = savedSearches;
+module.exports.commonLocals = commonLocals;
+module.exports.isUrlLocalToHost = isUrlLocalToHost;
+module.exports.noCache = noCache;

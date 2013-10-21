@@ -18,7 +18,10 @@ Provider.prototype = {
       connection.query(command, [id], function (err, result) {
         connection.release();
         if (err) { return callback(err, null); }
-        if (result.length > 0) { return callback(err, result[0]); }
+        if (result.length > 0) {
+          result[0].pictureUrl = config.env.avatarServer + '/avatar/' + result[0].pictureId;
+          return callback(err, result[0]);
+        }
         else { return callback(err, null); }
       });
     });
@@ -33,7 +36,10 @@ Provider.prototype = {
       connection.query(command, [account], function (err, result) {
         connection.release();
         if (err) { return callback(err, null); }
-        if (result.length > 0) { return callback(err, result[0]); }
+        if (result.length > 0) {
+          result[0].pictureUrl = config.env.avatarServer + '/avatar/' + result[0].pictureId;
+          return callback(err, result[0]);
+        }
         else { return callback(err, null); }
       });
     });
@@ -251,6 +257,12 @@ Provider.prototype = {
         if (err) { callback(err, null); }
         else {
           var rows = result[0];
+          // init picture urls
+          if (rows.length > 0) {
+            for (var i = 0; i < rows.length; i++) {
+              rows[i].pictureUrl = config.env.avatarServer + '/avatar/' + rows[i].pictureId;
+            }
+          }
           callback(err, rows);
         }
       });
@@ -290,6 +302,12 @@ Provider.prototype = {
         if (err) { callback(err, null); }
         else {
           var rows = result[0];
+          // init picture urls
+          if (rows.length > 0) {
+            for (var i = 0; i < rows.length; i++) {
+              rows[i].pictureUrl = config.env.avatarServer + '/avatar/' + rows[i].pictureId;
+            }
+          }
           callback(err, rows);
         }
       });

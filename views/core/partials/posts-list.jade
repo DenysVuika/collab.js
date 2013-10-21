@@ -37,5 +37,4 @@ div.row
             div.author(style='top: 4px')
               img(ng-src='{{profilePictureUrl}}', alt='')
             form(ng-controller='CommentController', ng-init='init("#{collabjs.token}")',  ng-submit='submit()', role='form')
-              input.form-control(type='text', ng-model='content', name='content', placeholder='Write a comment...', autocomplete='off',
-                id='comment-box-{{post.id}}')
+              input.form-control(type='text', ng-model='content', name='content', placeholder='Write a comment...', autocomplete='off')

@@ -11,7 +11,7 @@ block content
       theme: 'clean',
       lang: 'en'
     }
-  form.form-horizontal(method='post', role='form')
+  form.form-horizontal(method='post', action='/register' role='form')
     input(type='hidden', name='_csrf', value=collabjs.token)
     if (collabjs.config.invitation.enabled)
       div.form-group
@@ -53,4 +53,6 @@ block content
 
 block scripts
   script.
-    collabjs.ui.initRegisterView();
+    $(function() {
+      $("input").not(["type=submit"]).jqBootstrapValidation();
+    });

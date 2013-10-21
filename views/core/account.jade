@@ -16,8 +16,8 @@ block content
       label.col-lg-2.control-label Picture
       div.col-lg-10
         a(href='#{collabjs.config.env.avatarServer}', target='_blank')
-          img(src='#{collabjs.config.env.avatarServer}/avatar/#{collabjs.user.pictureId}', alt='Gravatar')
-        span.help-block Click the picture to configure your avatar
+          img(src='#{collabjs.user.pictureUrl}', alt='Gravatar')
+        span.help-block Click the picture to edit your avatar
     div.form-group
       label.col-lg-2.control-label(for='name') Name
       div.col-lg-10

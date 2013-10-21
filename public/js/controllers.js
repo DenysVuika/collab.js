@@ -59,26 +59,25 @@ function PeopleListController($scope, peopleService) {
 function CommentController($scope, postsService) {
   'use strict';
 
-  $scope.csrf = '';
+  $scope.token = '';
   $scope.content = '';
 
   $scope.init = function (token) {
-    $scope.csrf = token;
+    $scope.token = token;
   };
 
   $scope.submit = function () {
-    postsService
-      .addComment({
-        _csrf: $scope.csrf,
-        postId: $scope.post.id,
-        content: $scope.content})
-      .then(function (comment) {
-        var comments = $scope.post.comments || [];
-        comments.push(comment);
-        $scope.post.comments = comments;
-        $scope.post.commentsCount++;
-        $scope.content = '';
-      });
+    if ($scope.token && $scope.content && $scope.content.length > 0) {
+      postsService
+        .addComment($scope.token, $scope.post.id, $scope.content)
+        .then(function (comment) {
+          var comments = $scope.post.comments || [];
+          comments.push(comment);
+          $scope.post.comments = comments;
+          $scope.post.commentsCount++;
+          $scope.content = null;
+        });
+    }
   };
 }
 
@@ -95,7 +94,6 @@ function MentionsController($scope, postsService, peopleService, profileService)
   $scope.init = function (token) {
     $scope.token = token;
     postsService.getMentions().then(function (data) {
-      console.log(data);
       $scope.user = data.user; // TODO: verify if ever provided for mentions
       if (data.feed && data.feed.length > 0) {
         $scope.posts = data.feed;
@@ -119,6 +117,7 @@ function MentionsController($scope, postsService, peopleService, profileService)
           $scope.hasNoPosts = ($scope.posts.length === 0);
         }
         // Raise event to notify external components
+        // TODO: remove
         $(document).trigger("collabjs.onPostRemoved", post);
       });
     }
@@ -130,7 +129,7 @@ function MentionsController($scope, postsService, peopleService, profileService)
     if ($scope.isLoadingMorePosts) { return; }
     $scope.isLoadingMorePosts = true;
 
-    var bottomPostId = null;
+    var bottomPostId = 0;
     if ($scope.posts.length > 0) {
       bottomPostId = Math.min.apply(this, $.map($scope.posts, function (p) {
         return p.id;
@@ -158,6 +157,7 @@ function WallController($scope, postsService, peopleService, profileService) {
   $scope.init = function (token, account) {
     $scope.account = account;
     $scope.token = token;
+
     postsService.getWall(account).then(function (data) {
       $scope.profile = data.user;
       if (data.feed && data.feed.length > 0) {
@@ -194,7 +194,7 @@ function WallController($scope, postsService, peopleService, profileService) {
     if ($scope.isLoadingMorePosts) { return; }
     $scope.isLoadingMorePosts = true;
 
-    var bottomPostId = null;
+    var bottomPostId = 0;
     if ($scope.posts.length > 0) {
       bottomPostId = Math.min.apply(this, $.map($scope.posts, function (p) {
         return p.id;
@@ -206,6 +206,120 @@ function WallController($scope, postsService, peopleService, profileService) {
       $scope.isLoadingMorePosts = false;
       $scope.hasNoPosts = ($scope.posts.length === 0);
     });
+  };
+}
+
+function NewsController($scope, $timeout, postsService, peopleService, profileService) {
+  'use strict';
+  $scope.token = null;
+  $scope.account = null;
+  $scope.posts = [];
+  $scope.hasNoPosts = false;
+  $scope.newPostsCount = 0;
+  // TODO: check whether $scope is needed here
+  var _updateChecker = null;
+
+  $scope.init = function (token, account) {
+    $scope.account = account;
+    $scope.token = token;
+
+    postsService.getNews().then(function (data) {
+      $scope.posts = data;
+      $scope.hasNoPosts = (data.length === 0);
+    });
+
+    // start monitoring new updates
+    $scope.checkNewPosts();
+  };
+
+  $scope.profilePictureUrl = profileService.profilePictureUrl();
+  $scope.getProfileFeed = peopleService.getProfileFeed;
+  $scope.getPostUrl = postsService.getPostUrl;
+  $scope.getPostContent = postsService.getPostContent;
+  $scope.loadPostComments = postsService.loadPostComments;
+
+  $scope.deletePost = function (post) {
+    if (post) {
+      postsService.deletePost(post.id, $scope.token).then(function () {
+        var i = $scope.posts.indexOf(post);
+        if (i >-1) {
+          $scope.posts.splice(i, 1);
+          $scope.hasNoPosts = ($scope.posts.length === 0);
+        }
+        // Raise event to notify external components
+        $(document).trigger("collabjs.onPostRemoved", post);
+      });
+    }
+  };
+
+  $scope.loadNewPosts = function () {
+    $timeout.cancel(_updateChecker);
+    // TODO: check the case when no posts are loaded
+    var topId = Math.max.apply(this, $.map($scope.posts, function(p) { return p.id; }));
+
+    postsService
+      .getNewsUpdates(topId)
+      .then(function (data) {
+        $scope.posts.push.apply($scope.posts, data || []);
+        $scope.newPostsCount = 0;
+        $scope.checkNewPosts();
+      });
+  };
+
+  $scope.checkNewPosts = function () {
+    $timeout.cancel(_updateChecker);
+    _updateChecker = $timeout(function () {
+      // TODO: check the case when no posts are loaded
+      var topId = Math.max.apply(this, $.map($scope.posts, function(p) { return p.id; }));
+      postsService
+        .getNewsUpdatesCount(topId)
+        .then(function (count) {
+          $scope.newPostsCount = count;
+          $scope.checkNewPosts();
+        });
+    }, 60000); // once per minute
+    //}, 6000); // once per 6 seconds (debugging)
+  };
+
+  $scope.isLoadingMorePosts = false;
+
+  $scope.loadMorePosts = function () {
+    if ($scope.isLoadingMorePosts) { return; }
+    $scope.isLoadingMorePosts = true;
+
+    var bottomPostId = 0;
+    if ($scope.posts.length > 0) {
+      bottomPostId = Math.min.apply(this, $.map($scope.posts, function (p) { return p.id; }));
+    }
+
+    postsService.getNews(bottomPostId).then(function (data) {
+      $scope.posts.push.apply($scope.posts, data || []);
+      $scope.isLoadingMorePosts = false;
+      $scope.hasNoPosts = ($scope.posts.length === 0);
+    });
+  };
+}
+
+function StatusController($scope, postsService) {
+  'use strict';
+
+  $scope.token = null;
+  $scope.content = null;
+
+  $scope.init = function (token) {
+    $scope.token = token;
+  };
+
+  $scope.submit = function () {
+    if ($scope.token && $scope.content && $scope.content.length > 0) {
+      postsService
+        .createPost($scope.token, $scope.content)
+        .then(function (post) {
+          $scope.content = null;
+          // access and modify parent scope items
+          $scope.posts.push(post);
+        });
+    }
   };
 }
 

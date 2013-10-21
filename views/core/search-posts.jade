@@ -9,7 +9,6 @@ append sidebar-search
 block content
 
   div(ng-controller='SearchController', ng-init="init('#{collabjs.token}', '#{search_q}', '#{search_src}', #{isSaved})")
-    include shared/ko-timeline
     div.page-header
       h3
         i.icon-search
@@ -24,7 +23,7 @@ block content
     p.lead(ng-show='hasNoPosts') No mentions found...
     include partials/posts-list
 
-    // Loading progress indicator
+    //- Loading progress indicator
     div.text-center(ng-show='isLoadingMorePosts')
       i.icon-spinner.icon-4x.icon-spin
 
