@@ -13,7 +13,6 @@ div.navbar.navbar-default.navbar-fixed-top(role='navigation')
         li.dropdown
           a.dropdown-toggle(href='#', data-toggle='dropdown')
             if (collabjs.user)
-              //-img(src='https://www.gravatar.com/avatar/#{collabjs.user.pictureId}?s=32')
               span= collabjs.user.name
             else
               i.icon-cogs
@@ -40,10 +39,6 @@ div.navbar.navbar-default.navbar-fixed-top(role='navigation')
 
     ul.nav.navbar-nav
       if (collabjs.user)
-        //-li
-        //-  a(href='/timeline', title='Home')
-        //-    span
-        //-      i.icon-home.icon-large &nbsp;Home
         //- dynamic links
         each link in collabjs.config.ui.header.links
           li

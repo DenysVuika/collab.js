@@ -476,7 +476,7 @@ describe('collab.js web.api', function () {
 
     it('creates post', function (done) {
       context.data.addPost = function (json, callback) {
-        callback(null, { id: 1 });
+        callback(null, 1);
       };
 
       request(app)

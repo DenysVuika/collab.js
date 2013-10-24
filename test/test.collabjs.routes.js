@@ -33,7 +33,9 @@ describe('collab.js routes', function () {
 
     res = {
       viewName: '',
-      locals: {},
+      locals: {
+        hasSavedSearch: function (q) { return true; }
+      },
       cookies: [],
       redirectPath: '',
       statusCode: 0,
@@ -125,7 +127,7 @@ describe('collab.js routes', function () {
 
   describe('post_register', function () {
 
-    it('registers new account and redirects to `/timeline`', function () {
+    it('registers new account and redirects to `/`', function () {
       req.body = {
         account: 'dvuyka',
         name: 'Denis Vuyka',
@@ -138,7 +140,7 @@ describe('collab.js routes', function () {
       };
 
       routes.post_register(context)(req, res);
-      expect(res.redirectPath).to.be('/timeline');
+      expect(res.redirectPath).to.be('/');
     });
 
     it('reloads on missing body values', function () {
@@ -372,9 +374,9 @@ describe('collab.js routes', function () {
       expect(res.viewName).to.be('core/post');
     });
 
-    it('overrides sidebar selection to `/timeline`', function () {
+    it('overrides sidebar selection to `/`', function () {
       routes.get_post(req, res);
-      expect(res.locals.requestPath).to.be('/timeline');
+      expect(res.locals.requestPath).to.be('/');
     });
 
     it('passes `postId` to view', function () {

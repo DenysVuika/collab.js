@@ -20,7 +20,7 @@ html(ng-app='collabjs')
           //- SIDEBAR
           block sidebar
             div.list-group
-              a.list-group-item(href='/timeline')
+              a.list-group-item(href='/')
                 i.icon-home
                 | &nbsp;Home
               a.list-group-item(href='/mentions')
@@ -29,7 +29,6 @@ html(ng-app='collabjs')
               block sidebar-main
               //- Dynamic categories
               each category in collabjs.config.ui.sidebar.categories
-                //-li.list-group-item.list-group-item-heading= category.name
                 each entry in category.entries
                   a.list-group-item(href='#{entry.url}')
                     i(class='#{entry.icon}')

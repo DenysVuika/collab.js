@@ -13,7 +13,7 @@ var config = require('../config')
 
 exports.index = function (req, res) {
   if (req.isAuthenticated()) {
-    //res.redirect('/timeline');
+
     res.render('core/timeline', {
       title: 'Timeline',
       message: req.flash('error')
@@ -161,7 +161,7 @@ exports.post_register = function (context) {
               locals.recaptcha_form = getRecaptchaForm();
               return res.render('core/register', locals);
             } else {
-              return res.redirect('/timeline');
+              return res.redirect('/');
             }
           });
         });
@@ -299,7 +299,7 @@ exports.get_post = function (req, res) {
     postId: req.params.postId,
     //error: 'Post not found'
     error: false,
-    requestPath: '/timeline' // keep 'Timeline' selected at sidebar
+    requestPath: '/'
   });
 };
 
