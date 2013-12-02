@@ -1,22 +1,4 @@
 extends layout
 
 block content
-  div(ng-controller='NewsController', ng-init="init('#{collabjs.token}', '#{account}');")
-    form.status-form(ng-controller='StatusController', ng-init="init('#{collabjs.token}')", ng-submit='submit()', role='form')
-      textarea.form-control(ng-model='content', name='content', rows='3', placeholder="What's on your mind?")
-      div.footer
-        input.btn.btn-success(type='submit', value='Post')
-
-    p.lead(ng-show='hasNoPosts') No posts found...
-
-    div.alert.alert-info.text-center(id='msg-new-posts', style='display: none', ng-show='newPostsCount > 0')
-      a(id='new-msg-link', href='#', ng-click='loadNewPosts()')
-        | You got {{newPostsCount}} new post(s) for your timeline.
-
-    include partials/posts-list
-
-    //- Loading progress indicator
-    div.text-center(ng-show='isLoadingMorePosts')
-      i.icon-spinner.icon-4x.icon-spin
-
-    div.alert.alert-error.page-error
+  div.ng-view

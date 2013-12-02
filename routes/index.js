@@ -8,6 +8,20 @@ var config = require('../config')
   , NullRecaptcha = utils.NullRecaptcha;
 
 /*
+ * Utils
+ */
+
+function getRecaptchaForm() {
+  // generate appropriate html content if recaptcha is enabled
+  if (config.recaptcha.enabled) {
+    var recaptcha = new Recaptcha(config.recaptcha.publicKey, config.recaptcha.privateKey);
+    return recaptcha.toHTML();
+  } else {
+    return '';
+  }
+}
+
+/*
  * GET home page.
  */
 
@@ -174,141 +188,6 @@ exports.post_register = function (context) {
   };
 };
 
-// GET: /account
-exports.get_account = function (req, res) {
-  res.render('core/account', {
-    title: 'Account Settings',
-    error: req.flash('error'),
-    info: req.flash('info')
-  });
-};
-
-// POST: /account
-exports.post_account = function (context) {
-  var repository = context.data;
-  return function (req, res) {
-    var settings = req.body;
-    repository.updateAccount(req.user.id, settings, function (err) {
-      if (err) { req.flash('error', 'Error updating account settings.'); }
-      else { req.flash('info', 'Account settings have been successfully updated.'); }
-      res.redirect('/account');
-    });
-  };
-};
-
-// GET: /account/password
-exports.get_password = function (req, res) {
-  res.render('core/password', {
-    title: 'Change password',
-    error: req.flash('error'),
-    info: req.flash('info')
-  });
-};
-
-// POST: /account/password
-exports.post_password = function (context) {
-  var repository = context.data;
-  return function (req, res) {
-    var settings = req.body;
-
-    // verify fields
-    if (!settings.pwdOld || settings.pwdOld.length === 0 ||
-      !settings.pwdNew || settings.pwdNew.length === 0 ||
-      !settings.pwdConfirm || settings.pwdConfirm.length === 0 ||
-      settings.pwdNew !== settings.pwdConfirm) {
-      req.flash('error', 'Incorrect password values.');
-      res.redirect('/account/password');
-      return;
-    }
-
-    if (settings.pwdOld === settings.pwdNew) {
-      req.flash('info', 'New password is the same as old one.');
-      res.redirect('/account/password');
-      return;
-    }
-
-    // verify old password
-    if (!passwordHash.verify(settings.pwdOld, req.user.password)) {
-      req.flash('error', 'Invalid old password.');
-      res.redirect('/account/password');
-      return;
-    }
-
-    repository.setAccountPassword(req.user.id, settings.pwdNew, function (err, hash) {
-      if (err || !hash) {
-        req.flash('error', 'Error setting password.');
-        res.redirect('/account/password');
-        return;
-      }
-      req.user.password = hash;
-      req.flash('info', 'Password has been successfully changed.');
-      res.redirect('/account');
-    });
-  };
-};
-
-/*
- * People
- */
-
-exports.get_people = function (req, res) {
-  res.render('core/people', {
-    title: 'People'
-  });
-};
-
-exports.get_followers = function (req, res) {
-  res.render('core/people-followers', {
-    title: req.params.account + ': followers',
-    account: req.params.account,
-    requestPath: '/people' // keep 'People' selected at sidebar
-  });
-};
-
-exports.get_following = function (req, res) {
-  res.render('core/people-following', {
-    title: req.params.account + ': following',
-    account: req.params.account,
-    requestPath: '/people' // keep 'People' selected at sidebar
-  });
-};
-
-exports.get_personal_timeline = function (req, res) {
-  res.render('core/people-timeline', {
-    title: req.params.account,
-    account: req.params.account
-  });
-};
-
-
-/*
- * Timeline
- */
-
-exports.get_timeline = function (req, res) {
-  res.render('core/timeline', {
-    title: 'Timeline',
-    message: req.flash('error')
-  });
-};
-
-// GET: /timeline/posts/:postId
-exports.get_post = function (req, res) {
-  res.render('core/post', {
-    title: 'Post',
-    postId: req.params.postId,
-    //error: 'Post not found'
-    error: false,
-    requestPath: '/'
-  });
-};
-
-exports.get_mentions = function (req, res) {
-  res.render('core/mentions', {
-    title: 'Mentions'
-  });
-};
-
 /*
  * Search
  */
@@ -399,36 +278,3 @@ exports.get_help_article = function (context) {
     });
   };
 };
-
-/*
- * Utils
- */
-
-function getRecaptchaForm() {
-  // generate appropriate html content if recaptcha is enabled
-  if (config.recaptcha.enabled) {
-    var recaptcha = new Recaptcha(config.recaptcha.publicKey, config.recaptcha.privateKey);
-    return recaptcha.toHTML();
-  } else {
-    return '';
-  }
-}
-
-//  app.get('/accounts/:account/picture', function (req, res) {
-//    repository.getProfilePicture(req.params.account, function (err, file) {
-//      if (err || !file) {
-//        res.set('ETag', '0');
-//        res.sendfile(defaultProfilePicture);
-//      } else {
-//        if (req.get('if-none-match') === file.md5) {
-//          res.send(304); // Not modified
-//        } else {
-//          res.set('Content-Type', file.mime)
-//            .set('Content-Length', file.length)
-//            .set('Last-Modified', file.lastModified)
-//            .set('ETag', file.md5);
-//          res.send(file.data);
-//        }
-//      }
-//    });
-//  });

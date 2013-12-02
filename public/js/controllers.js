@@ -1,13 +1,11 @@
 function UserProfileController($scope, peopleService) {
   'use strict';
 
-  //$scope.profile = null;
   $scope.getCountryName = peopleService.getCountryName;
   $scope.canFollow = peopleService.canFollow;
   $scope.follow = peopleService.follow;
   $scope.canUnfollow = peopleService.canUnfollow;
   $scope.unfollow = peopleService.unfollow;
-  $scope.getProfileFeed = peopleService.getProfileFeed;
   $scope.getFollowingUrl = peopleService.getFollowingUrl;
   $scope.getFollowersUrl = peopleService.getFollowersUrl;
 
@@ -23,33 +21,58 @@ function PeopleListController($scope, peopleService) {
   // server returns no people for current user
   $scope.hasNoPeople = false;
 
-  $scope.init = function () {
-    peopleService.getPeople().then(function (data) {
-      $scope.people = data;
-      $scope.hasNoPeople = ($scope.people.length === 0);
-    });
-  };
-
-  $scope.initFollowing = function (account) {
-    peopleService.getFollowing(account).then(function (data) {
-      $scope.profile = data.user;
-      $scope.people = data.feed || [];
-      $scope.hasNoPeople = ($scope.people.length === 0);
-    });
-  };
-
-  $scope.initFollowers = function (account) {
-    peopleService.getFollowers(account).then(function (data) {
-      $scope.profile = data.user;
-      $scope.people = data.feed || [];
-      $scope.hasNoPeople = ($scope.people.length === 0);
-    });
-  };
+  peopleService.getPeople().then(function (data) {
+    $scope.people = data;
+    $scope.hasNoPeople = ($scope.people.length === 0);
+  });
 
   $scope.canFollow = peopleService.canFollow;
   $scope.canUnfollow = peopleService.canUnfollow;
   $scope.getCountryName = peopleService.getCountryName;
-  $scope.getProfileFeed = peopleService.getProfileFeed;
+  $scope.getFollowingUrl = peopleService.getFollowingUrl;
+  $scope.getFollowersUrl = peopleService.getFollowersUrl;
+  $scope.follow = peopleService.follow;
+  $scope.unfollow = peopleService.unfollow;
+}
+
+function FollowingController($scope, $routeParams, peopleService) {
+  'use strict';
+
+  $scope.people = [];
+  // server returns no people for current user
+  $scope.hasNoPeople = false;
+
+  peopleService.getFollowing($routeParams.account).then(function (data) {
+    $scope.profile = data.user;
+    $scope.people = data.feed || [];
+    $scope.hasNoPeople = ($scope.people.length === 0);
+  });
+
+  $scope.canFollow = peopleService.canFollow;
+  $scope.canUnfollow = peopleService.canUnfollow;
+  $scope.getCountryName = peopleService.getCountryName;
+  $scope.getFollowingUrl = peopleService.getFollowingUrl;
+  $scope.getFollowersUrl = peopleService.getFollowersUrl;
+  $scope.follow = peopleService.follow;
+  $scope.unfollow = peopleService.unfollow;
+}
+
+function FollowersController($scope, $routeParams, peopleService) {
+  'use strict';
+
+  $scope.people = [];
+  // server returns no people for current user
+  $scope.hasNoPeople = false;
+
+  peopleService.getFollowers($routeParams.account).then(function (data) {
+    $scope.profile = data.user;
+    $scope.people = data.feed || [];
+    $scope.hasNoPeople = ($scope.people.length === 0);
+  });
+
+  $scope.canFollow = peopleService.canFollow;
+  $scope.canUnfollow = peopleService.canUnfollow;
+  $scope.getCountryName = peopleService.getCountryName;
   $scope.getFollowingUrl = peopleService.getFollowingUrl;
   $scope.getFollowersUrl = peopleService.getFollowersUrl;
   $scope.follow = peopleService.follow;
@@ -81,20 +104,17 @@ function CommentController($scope, postsService) {
   };
 }
 
-function MentionsController($scope, postsService, peopleService, profileService) {
+function MentionsController($scope, postsService, profileService) {
   'use strict';
 
   $scope.token = '';
-  $scope.user = null;
   $scope.posts = [];
   // user has no posts to display
   $scope.hasNoPosts = false;
 
-
   $scope.init = function (token) {
     $scope.token = token;
     postsService.getMentions().then(function (data) {
-      $scope.user = data.user; // TODO: verify if ever provided for mentions
       if (data.feed && data.feed.length > 0) {
         $scope.posts = data.feed;
       }
@@ -103,9 +123,7 @@ function MentionsController($scope, postsService, peopleService, profileService)
   };
 
   $scope.profilePictureUrl = profileService.profilePictureUrl();
-  $scope.getProfileFeed = peopleService.getProfileFeed;
   $scope.getPostUrl = postsService.getPostUrl;
-  $scope.getPostContent = postsService.getPostContent;
   $scope.loadPostComments = postsService.loadPostComments;
 
   $scope.deletePost = function (post) {
@@ -116,9 +134,6 @@ function MentionsController($scope, postsService, peopleService, profileService)
           $scope.posts.splice(i, 1);
           $scope.hasNoPosts = ($scope.posts.length === 0);
         }
-        // Raise event to notify external components
-        // TODO: remove
-        $(document).trigger("collabjs.onPostRemoved", post);
       });
     }
   };
@@ -144,21 +159,19 @@ function MentionsController($scope, postsService, peopleService, profileService)
   };
 }
 
-function WallController($scope, postsService, peopleService, profileService) {
+function WallController($scope, $routeParams, postsService, profileService) {
   'use strict';
 
   $scope.token = null;
-  $scope.account = null;
-  $scope.user = null;
+  $scope.account = $routeParams.account;
   $scope.posts = [];
   // user has no posts to display
   $scope.hasNoPosts = false;
 
-  $scope.init = function (token, account) {
-    $scope.account = account;
+  $scope.init = function (token) {
     $scope.token = token;
 
-    postsService.getWall(account).then(function (data) {
+    postsService.getWall($scope.account).then(function (data) {
       $scope.profile = data.user;
       if (data.feed && data.feed.length > 0) {
         $scope.posts = data.feed;
@@ -168,9 +181,7 @@ function WallController($scope, postsService, peopleService, profileService) {
   };
 
   $scope.profilePictureUrl = profileService.profilePictureUrl();
-  $scope.getProfileFeed = peopleService.getProfileFeed;
   $scope.getPostUrl = postsService.getPostUrl;
-  $scope.getPostContent = postsService.getPostContent;
   $scope.loadPostComments = postsService.loadPostComments;
 
   $scope.deletePost = function (post) {
@@ -181,8 +192,6 @@ function WallController($scope, postsService, peopleService, profileService) {
           $scope.posts.splice(i, 1);
           $scope.hasNoPosts = ($scope.posts.length === 0);
         }
-        // Raise event to notify external components
-        $(document).trigger("collabjs.onPostRemoved", post);
       });
     }
   };
@@ -209,18 +218,14 @@ function WallController($scope, postsService, peopleService, profileService) {
   };
 }
 
-function NewsController($scope, $timeout, postsService, peopleService, profileService) {
+function NewsController($scope, $timeout, postsService, profileService) {
   'use strict';
   $scope.token = null;
-  $scope.account = null;
   $scope.posts = [];
   $scope.hasNoPosts = false;
   $scope.newPostsCount = 0;
-  // TODO: check whether $scope is needed here
-  var _updateChecker = null;
 
-  $scope.init = function (token, account) {
-    $scope.account = account;
+  $scope.init = function (token) {
     $scope.token = token;
 
     postsService.getNews().then(function (data) {
@@ -233,9 +238,7 @@ function NewsController($scope, $timeout, postsService, peopleService, profileSe
   };
 
   $scope.profilePictureUrl = profileService.profilePictureUrl();
-  $scope.getProfileFeed = peopleService.getProfileFeed;
   $scope.getPostUrl = postsService.getPostUrl;
-  $scope.getPostContent = postsService.getPostContent;
   $scope.loadPostComments = postsService.loadPostComments;
 
   $scope.deletePost = function (post) {
@@ -246,12 +249,11 @@ function NewsController($scope, $timeout, postsService, peopleService, profileSe
           $scope.posts.splice(i, 1);
           $scope.hasNoPosts = ($scope.posts.length === 0);
         }
-        // Raise event to notify external components
-        $(document).trigger("collabjs.onPostRemoved", post);
       });
     }
   };
 
+  var _updateChecker = null;
   $scope.loadNewPosts = function () {
     $timeout.cancel(_updateChecker);
     // TODO: check the case when no posts are loaded
@@ -323,7 +325,7 @@ function StatusController($scope, postsService) {
   };
 }
 
-function SearchController($scope, searchService, postsService, peopleService, profileService) {
+function SearchController($scope, searchService, postsService, profileService) {
   'use strict';
 
   $scope.token = null;
@@ -346,9 +348,7 @@ function SearchController($scope, searchService, postsService, peopleService, pr
   };
 
   $scope.profilePictureUrl = profileService.profilePictureUrl();
-  $scope.getProfileFeed = peopleService.getProfileFeed;
   $scope.getPostUrl = postsService.getPostUrl;
-  $scope.getPostContent = postsService.getPostContent;
   $scope.loadPostComments = postsService.loadPostComments;
 
   $scope.saveList = function () {
@@ -375,8 +375,6 @@ function SearchController($scope, searchService, postsService, peopleService, pr
           $scope.posts.splice(i, 1);
           $scope.hasNoPosts = ($scope.posts.length === 0);
         }
-        // Raise event to notify external components
-        $(document).trigger("collabjs.onPostRemoved", post);
       });
     }
   };
@@ -403,30 +401,154 @@ function SearchController($scope, searchService, postsService, peopleService, pr
   };
 }
 
-function PostController($scope, postsService, peopleService, profileService) {
+function PostController($scope, $routeParams, postsService, profileService) {
   'use strict';
 
-  $scope.postId = null;
+  $scope.postId = $routeParams.postId;
   $scope.post = null;
   $scope.hasPost = false;
   $scope.hasError = false;
   $scope.error = null;
 
-  $scope.init = function (postId) {
-    $scope.postId = postId;
-
-    postsService.getPostById(postId).then(function (data) {
-      $scope.post = data;
-      $scope.hasPost = (data !== null);
-    }, function (err) {
-      $scope.error = 'Post not found.';
-      $scope.hasError = true;
-    });
-  };
+  postsService.getPostById($scope.postId).then(function (data) {
+    $scope.post = data;
+    $scope.hasPost = (data !== undefined);
+  }, function (err) {
+    $scope.error = 'Post not found.';
+    $scope.hasError = true;
+  });
 
   $scope.profilePictureUrl = profileService.profilePictureUrl();
-  $scope.getProfileFeed = peopleService.getProfileFeed;
-  $scope.getPostUrl = postsService.getPostUrl;
-  $scope.getPostContent = postsService.getPostContent;
   $scope.loadPostComments = postsService.loadPostComments;
+}
+
+function AccountController($scope, $timeout, accountService) {
+  'use strict';
+
+  $scope.error = false;
+  $scope.info = false;
+
+  function formatCountry (entry) {
+    if (!entry.id) { return entry.text; }
+    return '<i class="flag-icon-16 flag-' + entry.id.toLowerCase() + '"></i>' + entry.text;
+  }
+
+  function initUI() {
+    // TODO: turn into directive?
+    $('#bio').countdown({
+      limit: 160,
+      init: function (counter) {
+        $('#bio_counter').css('color', '#999').text(counter);
+      },
+      plus: function (counter) {
+        $('#bio_counter').css('color', '#999').text(counter);
+        $('#submit').removeAttr('disabled');
+      },
+      minus: function (counter) {
+        $('#bio_counter').css('color', 'red').text(counter);
+        $('#submit').attr('disabled', 'disabled');
+      }
+    });
+  }
+
+  var countryData = [];
+  for (var key in collabjs.countries) {
+    if (collabjs.countries.hasOwnProperty(key)) {
+      countryData.push({ id: key, text: collabjs.countries[key] });
+    }
+  }
+
+  $scope.countries = countryData;
+  $scope.select2Options = {
+    placeholder: 'Select a Country',
+    allowClear: true,
+    formatResult: formatCountry,
+    formatSelection: formatCountry
+  };
+
+  accountService.getAccount().then(function (account) {
+    $scope.token = account.token;
+    $scope.avatarServer = account.avatarServer;
+    $scope.pictureUrl = account.pictureUrl;
+    $scope.name = account.name;
+    $scope.location = account.location;
+    $scope.website = account.website;
+    $scope.bio = account.bio;
+
+    $timeout(initUI);
+  });
+
+  $scope.dismissError = function () { $scope.error = false; };
+  $scope.dismissInfo = function () { $scope.info = false; };
+
+  $scope.submit = function () {
+    var account = {
+      _csrf: $scope.token, // TODO: verify whether still needed
+      name: $scope.name,
+      location: $scope.location,
+      website: $scope.website,
+      bio: $scope.bio
+    };
+
+    accountService
+      .updateAccount($scope.token, account)
+      .then(function () {
+        $scope.info = 'Account settings have been successfully updated.';
+      });
+  };
+}
+
+function PasswordController($scope, accountService) {
+  'use strict';
+
+  $scope.token = null;
+  $scope.pwdOld = '';
+  $scope.pwdNew = '';
+  $scope.pwdConfirm = '';
+
+  $scope.error = false;
+  $scope.info = false;
+
+  $scope.init = function (token) {
+    $scope.token = token;
+  };
+
+  $scope.dismissError = function () { $scope.error = false; };
+  $scope.dismissInfo = function () { $scope.info = false; };
+
+  function clear() {
+    $scope.pwdOld = '';
+    $scope.pwdNew = '';
+    $scope.pwdConfirm = '';
+  }
+
+  $scope.submit = function () {
+    var settings = {
+      pwdOld: $scope.pwdOld,
+      pwdNew: $scope.pwdNew,
+      pwdConfirm: $scope.pwdConfirm
+    };
+
+    accountService
+      .changePassword($scope.token, settings)
+      .then(
+        function (data) {
+          $scope.info = 'Password has been successfully changed.';
+          clear();
+        },
+        function (err) {
+          $scope.error = 'Error: ' + err;
+          clear();
+        }
+      );
+  };
+}
+
+function SidebarController($scope, $location) {
+  'use strict';
+
+  $scope.navClass = function (page) {
+    var currentRoute = $location.path().substring(1) || 'home';
+    return page === currentRoute ? 'active' : '';
+  };
 }

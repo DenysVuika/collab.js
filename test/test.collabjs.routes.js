@@ -190,6 +190,7 @@ describe('collab.js routes', function () {
     });
   });
 
+  /* TODO: remove
   describe('get_account', function () {
 
     it('renders `core/account` view', function () {
@@ -197,7 +198,9 @@ describe('collab.js routes', function () {
       expect(res.viewName).to.be('core/account');
     });
   });
+  */
 
+  /* TODO: remove
   describe('post_account', function () {
 
     it('updates account', function() {
@@ -219,7 +222,9 @@ describe('collab.js routes', function () {
       expect(req.flashMessageType).to.be('error');
     });
   });
+  */
 
+  /* TODO: remove
   describe('get_password', function () {
 
     it('renders `core/password` view', function () {
@@ -227,7 +232,9 @@ describe('collab.js routes', function () {
       expect(res.viewName).to.be('core/password');
     });
   });
+  */
 
+  /* TODO: remove
   describe('post_password', function () {
 
     it('changes password', function () {
@@ -300,7 +307,9 @@ describe('collab.js routes', function () {
       expect(req.flashMessageText).to.be('Error setting password.');
     });
   });
+  */
 
+  /* TODO: remove
   describe('get_people', function () {
 
     it('renders `core/people` view', function () {
@@ -308,7 +317,9 @@ describe('collab.js routes', function () {
       expect(res.viewName).to.be('core/people');
     });
   });
+  */
 
+  /* TODO: remove
   describe('get_followers', function () {
 
     it('renders `core/people-followers` view', function () {
@@ -327,7 +338,9 @@ describe('collab.js routes', function () {
       expect(res.locals.requestPath).to.be('/people');
     });
   });
+  */
 
+  /* TODO: remove
   describe('get_following', function () {
 
     it('renders `core/people-following` view', function () {
@@ -346,7 +359,9 @@ describe('collab.js routes', function () {
       expect(res.locals.requestPath).to.be('/people');
     });
   });
+  */
 
+  /* TODO: remove
   describe('get_personal_timeline', function () {
 
     it('renders `core/people-timeline` view', function () {
@@ -358,7 +373,9 @@ describe('collab.js routes', function () {
       expect(res.viewName).to.be('core/people-timeline');
     });
   });
+  */
 
+  /* TODO: remove
   describe('get_timeline', function () {
 
     it('renders `core/timeline` view', function () {
@@ -366,7 +383,9 @@ describe('collab.js routes', function () {
       expect(res.viewName).to.be('core/timeline');
     });
   });
+  */
 
+  /* TODO: remove
   describe('get_post', function () {
 
     it('renders `core/post` view', function () {
@@ -385,7 +404,9 @@ describe('collab.js routes', function () {
       expect(res.locals.postId).to.be(10);
     });
   });
+  */
 
+  /* TODO: remove
   describe('get_mentions', function () {
 
     it('renders `core/mentions` view', function () {
@@ -393,6 +414,7 @@ describe('collab.js routes', function () {
       expect(res.viewName).to.be('core/mentions');
     });
   });
+  */
 
   describe('get_search', function () {
 

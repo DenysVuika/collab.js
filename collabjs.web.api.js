@@ -4,6 +4,7 @@ module.exports = function (context) {
   var email = require('./collabjs.email.js')
     , jade = require('jade')
     , fs = require('fs')
+    , passwordHash = require('password-hash')
     , utils = require('./collabjs.utils')
     , config = context.config
     , repository = context.data
@@ -12,25 +13,69 @@ module.exports = function (context) {
 
   context.once('app.init.routes', function (app) {
 
+    app.get('/api/account', authenticate, noCache, function (req, res) {
+      res.json(200, {
+        token: config.server.csrf ? req.csrfToken() : null,
+        avatarServer: config.env.avatarServer,
+        pictureUrl: req.user.pictureUrl,
+        name: req.user.name,
+        location: req.user.location,
+        website: req.user.website,
+        bio: req.user.bio
+      });
+    });
+
+    app.post('/api/account', authenticate, function (req, res) {
+      repository.updateAccount(req.user.id, req.body, function (err) {
+        if (err) { res.send(400); }
+        else { res.send(200); }
+      });
+    });
+
+    app.post('/api/account/password', authenticate, function(req, res) {
+      var settings = req.body;
+
+      // verify fields
+      if (!settings.pwdOld || settings.pwdOld.length === 0 ||
+        !settings.pwdNew || settings.pwdNew.length === 0 ||
+        !settings.pwdConfirm || settings.pwdConfirm.length === 0 ||
+        settings.pwdNew !== settings.pwdConfirm) {
+        res.send(400, 'Incorrect password values.');
+        return;
+      }
+
+      // verify old password
+      if (!passwordHash.verify(settings.pwdOld, req.user.password)) {
+        res.send(400, 'Invalid old password.');
+        return;
+      }
+
+      if (settings.pwdOld === settings.pwdNew) {
+        res.send(400, 'New password is the same as old one.');
+        return;
+      }
+
+      repository.setAccountPassword(req.user.id, settings.pwdNew, function (err, hash) {
+        if (err || !hash) {
+          res.send(400, 'Error setting password.');
+          return;
+        }
+        req.user.password = hash;
+        res.send(200, 'Password has been successfully changed.');
+      });
+    });
+
     app.get('/api/mentions:topId?', authenticate, noCache, function (req, res) {
       repository.getMentions(req.user.id, req.user.account, getTopId(req), function (err, result) {
         if (err || !result) { res.send(400); }
-        else {
-          res.json(200, {
-            feed: result
-          });
-        }
+        else { res.json(200, { feed: result }); }
       });
     });
 
     app.get('/api/people:topId?', authenticate, noCache, function (req, res) {
       repository.getPeople(req.user.id, getTopId(req), function (err, result) {
         if (err || !result) { res.send(400); }
-        else {
-          res.json(200, {
-            feed: result
-          });
-        }
+        else { res.json(200, { feed: result }); }
       });
     });
 

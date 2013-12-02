@@ -31,6 +31,6 @@ div.row
 
     div.panel-footer
       ul.list-inline.profile-stats
-        a.blue(ng-href='{{getProfileFeed(profile)}}') {{profile.posts + ' posts'}}
+        a.blue(ng-href='{{profile | wallUrl}}') {{profile.posts + ' posts'}}
         a.blue(ng-href='{{getFollowingUrl(profile)}}') {{profile.following + ' following'}}
         a.blue(ng-href='{{getFollowersUrl(profile)}}') {{profile.followers + ' followers'}}

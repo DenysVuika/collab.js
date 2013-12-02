@@ -1,0 +1,52 @@
+div(ng-controller='AccountController')
+  div.page-header
+    h3
+      i.icon-user
+      | &nbsp;Account Settings
+
+  div.alert.alert-danger(ng-if='error')
+    button(type='button', ng-click='dismissError()').close &times;
+    span {{error}}
+
+  div.alert.alert-success(ng-if='info')
+    button(type='button', ng-click='dismissInfo()').close &times;
+    span {{info}}
+
+  form.form-horizontal(role='form', ng-submit='submit()')
+    //- TODO: verify whether still needed
+    input(type='hidden', name='_csrf', value='{{token}}')
+    div.form-group
+      label.col-lg-2.control-label Picture
+      div.col-lg-10
+        a(target='_blank', ng-href='{{avatarServer}}')
+          img(alt='', ng-src='{{pictureUrl}}')
+        span.help-block Click the picture to edit your avatar
+    div.form-group
+      label.col-lg-2.control-label(for='name') Name
+      div.col-lg-10
+        input.form-control(type='text', required, id='name', name='name', ng-model='name')
+        span.help-block Enter your real name, so people you know can recognize you.
+    div.form-group
+      label.col-lg-2.control-label(for='location') Location
+      div.col-lg-10
+        select.form-control(ui-select2='select2Options', ng-model='location')
+          option(value='')
+          option(ng-repeat='country in countries' value='{{country.id}}') {{country.text}}
+        span.help-block Where in the world are you?
+    div.form-group
+      label.col-lg-2.control-label(for='website') Website
+      div.col-lg-10
+        input.form-control(type='text', id='website', name='website', ng-model='website')
+        span.help-block Have a homepage or a blog? Put the address here.
+    div.form-group
+      label.col-lg-2.control-label(for='bio') Bio
+      div.col-lg-10
+        textarea.form-control.v-resize(id='bio', name='bio', rows='3', ng-model='bio')
+        span.help-block
+          | About yourself in 160 characters or less.
+          span.bio-counter-label(id='bio_counter') 160
+
+    div.form-group
+      div.col-lg-offset-2.col-lg-4
+        a.btn.btn-default(href='/#/account/password') Change Password
+        button.btn.btn-primary(type='submit', style='margin-left:5px') Update

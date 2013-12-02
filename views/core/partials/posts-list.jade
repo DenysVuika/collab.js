@@ -3,22 +3,22 @@ div.row
     ul
       li(ng-repeat='post in posts | orderBy:"created":true')
         div.author
-          a.account(ng-href='{{getProfileFeed(post.account)}}')
+          a.account(ng-href='{{post.account | wallUrl}}')
             img(ng-src='{{post.pictureUrl}}', alt='')
         div.name
-          a.account-name(ng-href='{{getPostUrl(post.id)}}') {{post.name}}
-          a.account(ng-href='{{getProfileFeed(post.account)}}') {{'@' + post.account}}
+          a.account-name(ng-href='/#/posts/{{post.id}}') {{post.name}}
+          a.account(ng-href='{{post.account | wallUrl}}') {{'@' + post.account}}
         div.date
           i.icon-time &nbsp;
           span(am-time-ago='post.created', title='{{post.created | amDateFormat: "LLLL"}}')
         div.delete(ng-click='deletePost(post)')
           i.icon-remove
         div.message
-          div(ng-bind-html-unsafe='getPostContent(post)')
-          a.no-decoration(ng-if='post.commentsCount > 9', ng-href='{{getPostUrl(post.id)}}')
+          div(ng-bind-html='post.content | twitterize')
+          a.comments-button(ng-if='post.commentsCount > 9', ng-href='/#/posts/{{post.id}}')
             i.icon-comment.black
             span {{' View all ' + post.commentsCount + ' comments'}}
-          a.no-decoration(ng-if='post.commentsCount < 10', href='#', ng-click='loadPostComments(post)')
+          a.comments-button(ng-if='post.commentsCount < 10', href='', ng-click='loadPostComments(post)')
             i.icon-comment.black
             | &nbsp;Comments
             span(ng-show='post.commentsCount > 0') {{'(' + post.commentsCount + ')'}}
@@ -28,11 +28,11 @@ div.row
               img(ng-src='{{comment.pictureUrl}}', alt='')
             div.name(style='width:94%')
               strong {{comment.name}}
-              a.account(ng-href='{{getProfileFeed(comment.account)}}') {{'@' + comment.account}}
+              a.account(ng-href='{{comment.account | wallUrl}}') {{'@' + comment.account}}
             div.date
               i.icon-time &nbsp;
               span(am-time-ago='comment.created', title='{{comment.created | amDateFormat: "LLLL"}}')
-            div.message(ng-bind-html-unsafe='getPostContent(comment)')
+            div.message(ng-bind-html='comment.content | twitterize')
           li
             div.author(style='top: 4px')
               img(ng-src='{{profilePictureUrl}}', alt='')

@@ -1,4 +1,28 @@
 angular.module('collabjs.services', ['ngResource'])
+  .service('accountService', function ($http, $q) {
+    'use strict';
+    return {
+      getAccount: function () {
+        var d = $q.defer();
+        $http.get('/api/account').success(function (data) { d.resolve(data); });
+        return d.promise;
+      },
+      updateAccount: function (token, data) {
+        var d = $q.defer();
+        var options = { headers: { 'x-csrf-token': token }, xsrfHeaderName : 'x-csrf-token' };
+        $http.post('/api/account', data, options).success(function (res) { d.resolve(true); });
+        return d.promise;
+      },
+      changePassword: function (token, data) {
+        var d = $q.defer();
+        var options = { headers: { 'x-csrf-token': token }, xsrfHeaderName : 'x-csrf-token' };
+        $http.post('/api/account/password', data, options)
+          .success(function (res) { console.log(res); d.resolve(res); })
+          .error(function (data, status, headers, config) { d.reject(data); });
+        return d.promise;
+      }
+    };
+  })
   .service('profileService', function () {
     'use strict';
     return {
@@ -51,6 +75,7 @@ angular.module('collabjs.services', ['ngResource'])
           return '';
         }
       },
+      // TODO: moved to 'wallUrl' filter
       getProfileFeed: function (profile) {
         if (typeof profile === 'string') {
           return '/people/' + profile + '/timeline';
@@ -61,10 +86,12 @@ angular.module('collabjs.services', ['ngResource'])
         return null;
       },
       getFollowingUrl: function (profile) {
-        return profile ? '/people/' + profile.account + '/following' : null;
+        //return profile ? '/people/' + profile.account + '/following' : null;
+        return profile ? '/#/people/' + profile.account + '/following' : null;
       },
       getFollowersUrl: function (profile) {
-        return profile ? '/people/' + profile.account + '/followers' : null;
+        //return profile ? '/people/' + profile.account + '/followers' : null;
+        return profile ? '/#/people/' + profile.account + '/followers' : null;
       },
       follow: function (profile) {
         var followAction = '/api/people/' + profile.account + '/follow';
@@ -130,9 +157,11 @@ angular.module('collabjs.services', ['ngResource'])
       getPostUrl: function (postId) {
         return postId ? '/timeline/posts/' + postId : null;
       },
+      /* TODO: remove
       getPostContent: function (post) {
         return post ? post.content.twitterize() : null;
       },
+      */
       getPostComments: function (postId) {
         var d = $q.defer();
         $http.get('/api/timeline/posts/' + postId + '/comments').success(function (data) {

@@ -11,7 +11,7 @@ div.navbar.navbar-default.navbar-fixed-top(role='navigation')
     if (collabjs.isAuthenticated)
       ul.nav.navbar-nav.navbar-right
         li.dropdown
-          a.dropdown-toggle(href='#', data-toggle='dropdown')
+          a.dropdown-toggle(href='', data-toggle='dropdown')
             if (collabjs.user)
               span= collabjs.user.name
             else
@@ -19,7 +19,7 @@ div.navbar.navbar-default.navbar-fixed-top(role='navigation')
             b.caret
           ul.dropdown-menu
             li
-              a(href='/account')
+              a(href='/#/account')
                 i.icon-user
                 | &nbsp;Edit profile
             li.divider
@@ -28,7 +28,7 @@ div.navbar.navbar-default.navbar-fixed-top(role='navigation')
                 i.icon.icon-flag
                 | &nbsp;Help
             li
-              a(href='#')
+              a(href='/#/about')
                 i.icon-question-sign
                 | &nbsp;About
             li.divider

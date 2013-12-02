@@ -16,14 +16,14 @@ html(ng-app='collabjs')
 
     div.container
       div.row
-        div.col-md-3.col-lg-3
+        div.col-md-3.col-lg-3(ng-controller='SidebarController')
           //- SIDEBAR
           block sidebar
-            div.list-group
-              a.list-group-item(href='/')
+            div.list-group(sidebar='active', data-subpaths='true')
+              a.list-group-item(href='/#/news')
                 i.icon-home
-                | &nbsp;Home
-              a.list-group-item(href='/mentions')
+                | &nbsp;News
+              a.list-group-item(href='/#/mentions')
                 i.icon-globe
                 | &nbsp;Mentions
               block sidebar-main
@@ -41,7 +41,7 @@ html(ng-app='collabjs')
                     i.icon-filter
                     | &nbsp;#{list.name}
               //- 'Connect' section
-              a.list-group-item(href='/people')
+              a.list-group-item(href='/#/people')
                 i.icon-group
                 | &nbsp;People
               block sidebar-connect
@@ -58,7 +58,6 @@ html(ng-app='collabjs')
         div.col-md-9.col-lg-9
           //- MAIN CONTENT
           block content
-      include shared/footer
 
     include shared/_scripts
     block scripts

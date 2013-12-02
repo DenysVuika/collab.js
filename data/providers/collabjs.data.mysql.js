@@ -248,6 +248,7 @@ Provider.prototype = {
       });
     });
   },
+  // TODO: rename to getNews
   getMainTimeline: function (userId, topId, callback) {
     var command = 'CALL get_main_timeline(?, ?)'
       , params = [userId, topId];

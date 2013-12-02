@@ -1,0 +1,33 @@
+div(ng-controller='PostController')
+  p.lead.text-center(ng-show='hasError') {{error}}
+  div.row(ng-show='hasPost')
+    div.timeline-feed
+      ul
+        li
+          div.author
+            a.account(ng-href='{{post.account | wallUrl}}')
+              img(ng-src='{{post.pictureUrl}}', alt='')
+          div.name(style='width:94%')
+            strong {{post.name}}
+            a.account(ng-href='{{post.account | wallUrl}}') {{'@' + post.account}}
+          div.date
+            i.icon-time &nbsp;
+            span(am-time-ago='post.created', title='{{post.created | amDateFormat: "LLLL"}}')
+          div.message(ng-bind-html='post.content | twitterize')
+          ul
+            li(ng-repeat='comment in post.comments')
+              div.author
+                a.account(ng-href='{{comment.account | wallUrl}}')
+                  img(ng-src='{{comment.pictureUrl}}', alt='')
+              div.name
+                strong {{comment.name}}
+                a.account(ng-href='{{comment.account | wallUrl}}') {{'@' + comment.account}}
+              div.date
+                i.icon-time &nbsp;
+                span(am-time-ago='comment.created', title='{{comment.created | amDateFormat: "LLLL"}}')
+              div.message(ng-bind-html='comment.content | twitterize')
+            li
+              div.author(style='top: 4px')
+                img(ng-src='{{profilePictureUrl}}', alt='')
+              form(ng-controller='CommentController', ng-init='init("#{collabjs.token}")',  ng-submit='submit()', role='form')
+                input.form-control(type='text', ng-model='content', name='content', placeholder='Write a comment...', autocomplete='off')

@@ -5,9 +5,9 @@ ul.media-list
     div.media-body
       div.media-heading(style='font-weight: normal')
         span
-          a(ng-href='{{getProfileFeed(profile)}}')
+          a(ng-href='{{profile | wallUrl}}')
             strong {{profile.name}}
-          a(ng-href='{{getProfileFeed(profile)}}', style='color: grey; font-weight: normal; font-size: 90%; padding-left: 5px') {{'@' + profile.account}}
+          a(ng-href='{{profile | wallUrl}}', style='color: grey; font-weight: normal; font-size: 90%; padding-left: 5px') {{'@' + profile.account}}
         a.btn.btn-default.pull-right.profile-btn(ng-show='canFollow(profile)', ng-click='follow(profile)') Follow
         a.btn.btn-danger.pull-right.profile-btn(ng-show='canUnfollow(profile)', ng-click='unfollow(profile)') Unfollow
         a.btn.btn-success.pull-right.profile-btn(ng-show='profile.isOwnProfile', href='/account') Edit profile
@@ -22,7 +22,7 @@ ul.media-list
           em {{profile.bio}}
       ul.list-inline.profile-stats
         li
-          a(ng-href='{{getProfileFeed(profile)}}')
+          a(ng-href='{{profile | wallUrl}}')
             strong {{profile.posts}}
             | &nbsp;posts
         li
