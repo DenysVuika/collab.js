@@ -170,7 +170,6 @@ exports.post_register = function (context) {
 
           req.login({ id: result.id, username: user.account, password: hashedPassword }, function (err) {
             if (err) {
-              console.log('Error logging in with newly created account. ' + err);
               locals.message = 'Error authenticating user.';
               locals.recaptcha_form = getRecaptchaForm();
               return res.render('core/register', locals);
@@ -185,61 +184,6 @@ exports.post_register = function (context) {
         res.render('core/register', locals);
       }
     });
-  };
-};
-
-/*
- * Search
- */
-
-exports.get_search = function (req, res) {
-  // TODO: validate input
-  var q = req.query.q;
-  if (q && q.indexOf('#') !== 0) {
-    q = '#' + q;
-  }
-
-  var src = req.query.src || 'unknown';
-
-  res.render('core/search-posts', {
-    title: 'Results for ' + q,
-    navigationUri: '/search?q=' + encodeURIComponent(q) + '&src=' + src,
-    search_q: q,
-    search_q_enc: encodeURIComponent(q),
-    search_src: encodeURIComponent(src),
-    isSaved: res.locals.hasSavedSearch(q)
-  });
-};
-
-exports.post_search = function (context) {
-  var repository = context.data;
-  return function (req, res) {
-    var body = req.body
-      , action = body.action
-      , redirectUri = '/search?q=' + encodeURIComponent(body.q) + '&src=' + body.src;
-    if (action === 'save') {
-      console.log('saving search list...');
-      repository.addSavedSearch({
-        name: body.q,
-        userId: req.user.id,
-        q: encodeURIComponent(body.q),
-        src: body.src
-      }, function (err) {
-        // TODO: generate error message for UI alert
-        console.log(err);
-        res.redirect(redirectUri);
-      });
-    } else if (action === 'delete') {
-      console.log('deleting search list');
-      repository.deleteSavedSearch(req.user.id, body.q, function (err) {
-        // TODO: generate error message for UI alert
-        console.log(err);
-        res.redirect(redirectUri);
-      });
-    } else {
-      console.log('unknown action ' + action);
-      res.redirect(redirectUri);
-    }
   };
 };
 

@@ -325,27 +325,31 @@ function StatusController($scope, postsService) {
   };
 }
 
-function SearchController($scope, searchService, postsService, profileService) {
+function SearchController($scope, $routeParams, searchService, postsService, profileService) {
   'use strict';
 
+  $scope.error = false;
+  $scope.info = false;
+
   $scope.token = null;
-  $scope.searchQuery = null;
-  $scope.searchSource = null;
+  $scope.query = $routeParams.q || null;
+  $scope.source = $routeParams.src || 'unknown';
   $scope.isSaved = false;
   $scope.hasNoPosts = false;
   $scope.posts = [];
 
-  $scope.init = function (token, q, src, saved) {
+  $scope.init = function (token) {
     $scope.token = token;
-    $scope.searchQuery = q;
-    $scope.searchSource = src;
-    $scope.isSaved = saved;
 
-    searchService.searchPosts(q, src).then(function (data) {
-      $scope.posts = data;
+    searchService.searchPosts($scope.query, $scope.source).then(function (data) {
+      $scope.isSaved = data.isSaved;
+      $scope.posts = data.entries;
       $scope.hasNoPosts = ($scope.posts.length === 0);
     });
   };
+
+  $scope.dismissError = function () { $scope.error = false; };
+  $scope.dismissInfo = function () { $scope.info = false; };
 
   $scope.profilePictureUrl = profileService.profilePictureUrl();
   $scope.getPostUrl = postsService.getPostUrl;
@@ -353,18 +357,26 @@ function SearchController($scope, searchService, postsService, profileService) {
 
   $scope.saveList = function () {
     searchService
-      .saveList($scope.token, $scope.searchQuery, $scope.searchSource)
-      .then(function () {
-        $scope.isSaved = true;
-      });
+      .saveList($scope.token, $scope.query, $scope.source)
+      .then(
+        function () {
+          $scope.isSaved = true;
+          $scope.info = 'Search list was successfully saved.';
+        },
+        function (err) { $scope.error = err; }
+      );
   };
 
   $scope.deleteList = function () {
     searchService
-      .deleteList($scope.token, $scope.searchQuery, $scope.searchSource)
-      .then(function () {
-        $scope.isSaved = false;
-      });
+      .deleteList($scope.token, $scope.query, $scope.source)
+      .then(
+        function () {
+          $scope.isSaved = false;
+          $scope.info = 'Search list was successfully removed.';
+        },
+        function (err) { $scope.error = err; }
+      );
   };
 
   $scope.deletePost = function (post) {
@@ -546,9 +558,4 @@ function PasswordController($scope, accountService) {
 
 function SidebarController($scope, $location) {
   'use strict';
-
-  $scope.navClass = function (page) {
-    var currentRoute = $location.path().substring(1) || 'home';
-    return page === currentRoute ? 'active' : '';
-  };
 }

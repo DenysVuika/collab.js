@@ -416,6 +416,7 @@ describe('collab.js routes', function () {
   });
   */
 
+  /* TODO: remove
   describe('get_search', function () {
 
     it('renders `core/search-posts` view', function () {
@@ -457,7 +458,9 @@ describe('collab.js routes', function () {
       expect(res.locals.search_src).to.be('hash');
     });
   });
+  */
 
+  /* TODO: remove
   describe('post_search', function () {
 
     it('saves search list', function () {
@@ -500,6 +503,7 @@ describe('collab.js routes', function () {
       expect(executed).to.not.be.ok();
     });
   });
+  */
 
   describe('get_help_article', function () {
 

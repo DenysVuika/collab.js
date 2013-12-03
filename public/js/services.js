@@ -209,20 +209,23 @@ angular.module('collabjs.services', ['ngResource'])
     return {
       saveList: function (token, q, src) {
         var d = $q.defer();
-        var payload = { action: 'save', q: q, src: src };
+        var query = '/api/search?q=' + encodeURIComponent(q) + '&src=' + src;
+        console.log(query);
+        var options = { headers: { 'x-csrf-token': token }, xsrfHeaderName : 'x-csrf-token' };
         $http
-          .post('/search', payload,
-            { headers: { 'x-csrf-token': token }, xsrfHeaderName : 'x-csrf-token' })
-          .then(function (res) { d.resolve(res); });
+          .post(query, null, options)
+          .success(function (res) { d.resolve(true); })
+          .error(function (err) { d.resolve(err); });
         return d.promise;
       },
       deleteList: function (token, q, src) {
         var d = $q.defer();
-        var payload = { action: 'delete', q: q, src: src };
+        var query = '/api/search?q=' + encodeURIComponent(q) + '&src=' + src;
+        var options = { headers: { 'x-csrf-token': token }, xsrfHeaderName : 'x-csrf-token' };
         $http
-          .post('/search', payload,
-            { headers: { 'x-csrf-token': token }, xsrfHeaderName : 'x-csrf-token' })
-          .then(function (res) { d.resolve(res); });
+          .delete(query, options)
+          .success(function (res) { d.resolve(true); })
+          .error(function (err) { d.resolve(err); });
         return d.promise;
       },
       searchPosts: function (q, src, topId) {

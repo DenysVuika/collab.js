@@ -19,5 +19,6 @@ angular.module('collabjs', [
       .when('/posts/:postId', { templateUrl: '/partials/post' })
       .when('/account', { templateUrl: '/partials/account' })
       .when('/account/password', { templateUrl: '/partials/password' })
+      .when('/search', { templateUrl: '/partials/search' })
       .otherwise({ redirectTo: '/news' });
   }]);

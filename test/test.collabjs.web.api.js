@@ -26,6 +26,7 @@ describe('collab.js web.api', function () {
   app.use(function (req, res, next) {
     req.user = testUser;
     req.isAuthenticated = function() { return true; };
+    res.locals({ hasSavedSearch: function (name) { return true; }});
     next();
   });
 
@@ -831,7 +832,7 @@ describe('collab.js web.api', function () {
 
     it('allows query without `topId`', function (done) {
       context.data.getPostsByHashTag = function (callerId, hashtag, topId, callback) {
-        if (topId === 0) { callback(null, []); }
+        if (topId === 0) { callback(null, { entries: []}); }
         else { callback('Error'); }
       };
 
@@ -850,7 +851,7 @@ describe('collab.js web.api', function () {
       request(app)
         .get('/api/search?q=test&src=hash')
         .expect('Content-Type', /json/)
-        .expect(200, data, done);
+        .expect(200, { isSaved: true, entries: data }, done);
     });
 
     it('gets no data from repository', function (done) {

@@ -233,7 +233,76 @@ module.exports = function (context) {
         res.send(400);
         return;
       }
-      repository.getPostsByHashTag(req.user.id, req.query.q, getTopId(req), handleJsonResult(req, res));
+      repository.getPostsByHashTag(req.user.id, req.query.q, getTopId(req), function (err, result) {
+        if (err || !result) { res.send(400); }
+        else {
+          res.json(200, {
+            isSaved: res.locals.hasSavedSearch(req.query.q),
+            entries: result
+          });
+        }
+      });
+    });
+
+    /*
+    exports.post_search = function (context) {
+      var repository = context.data;
+      return function (req, res) {
+        var body = req.body
+          , action = body.action
+          , redirectUri = '/search?q=' + encodeURIComponent(body.q) + '&src=' + body.src;
+        if (action === 'save') {
+          console.log('saving search list...');
+          repository.addSavedSearch({
+            name: body.q,
+            userId: req.user.id,
+            q: encodeURIComponent(body.q),
+            src: body.src
+          }, function (err) {
+            // TODO: generate error message for UI alert
+            console.log(err);
+            res.redirect(redirectUri);
+          });
+        } else if (action === 'delete') {
+          console.log('deleting search list');
+          repository.deleteSavedSearch(req.user.id, body.q, function (err) {
+            // TODO: generate error message for UI alert
+            console.log(err);
+            res.redirect(redirectUri);
+          });
+        } else {
+          console.log('unknown action ' + action);
+          res.redirect(redirectUri);
+        }
+      };
+    };
+    */
+
+    app.post('/api/search', authenticate, function (req, res) {
+      if (req.query.q) {
+        repository.addSavedSearch({
+          userId: req.user.id,
+          name: req.query.q,
+          q: encodeURIComponent(req.query.q),
+          src: req.query.src || 'unknown'
+        }, function (err) {
+          if (err) { res.send(400, 'Error saving search list.'); }
+          else { res.send(200); }
+        });
+      } else {
+        res.send(400, 'Error saving search list.');
+      }
+    });
+
+    app.del('/api/search', authenticate, function (req, res) {
+      if (req.query.q) {
+        repository.deleteSavedSearch(req.user.id, decodeURIComponent(req.query.q), function (err) {
+          if (err) { res.send(400, 'Error deleting search list. '); }
+          else { res.send(200); }
+        });
+      } else {
+        res.send(400, 'Error deleting search list.');
+      }
     });
 
     // UTILS

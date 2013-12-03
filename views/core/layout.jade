@@ -37,7 +37,7 @@ html(ng-app='collabjs')
               if (savedSearches && savedSearches.length > 0)
                 block sidebar-search
                 each list in savedSearches
-                  a.list-group-item(href='/search?q=#{list.query}&src=#{list.source}')
+                  a.list-group-item(href='/#/search?q=#{list.query}&src=#{list.source}')
                     i.icon-filter
                     | &nbsp;#{list.name}
               //- 'Connect' section

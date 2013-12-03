@@ -29,11 +29,11 @@ angular.module('collabjs.directives', [])
       }
 
       scope.$on('$routeChangeStart', function() {
-        var pathLink = urlMap[$location.path()];
-
         if (currentLink) {
           currentLink.removeClass(onClass);
         }
+
+        var pathLink = urlMap[$location.path()] || urlMap[$location.url()];
 
         // try only beginning of the url
         if (!pathLink && subpaths) {
