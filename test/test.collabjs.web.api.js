@@ -851,7 +851,7 @@ describe('collab.js web.api', function () {
       request(app)
         .get('/api/search?q=test&src=hash')
         .expect('Content-Type', /json/)
-        .expect(200, { isSaved: true, entries: data }, done);
+        .expect(200, { isSaved: false, entries: data }, done);
     });
 
     it('gets no data from repository', function (done) {

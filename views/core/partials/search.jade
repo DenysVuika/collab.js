@@ -12,12 +12,13 @@ div(ng-controller='SearchController', ng-init="init('#{collabjs.token}')")
     button(type='button', ng-click='dismissInfo()').close &times;
     span {{info}}
 
-  div.text-right.ng-cloak(style='padding-bottom: 10px;', ng-if='!isSaved && !hasNoPosts')
+  div.text-right.ng-cloak(style='padding-bottom: 10px;', ng-if='canSave()')
     button.btn.btn-success(ng-click='saveList()') Save search
-  div.text-right.ng-cloak(style='padding-bottom: 10px;', ng-if='isSaved')
+
+  div.text-right.ng-cloak(style='padding-bottom: 10px;', ng-if='canRemove()')
     button.btn.btn-danger(ng-click='deleteList()') Remove saved search
 
-  p.lead.ng-cloak(ng-show='hasNoPosts') No entries found...
+  p.lead.ng-cloak(ng-if='hasNoPosts') No entries found...
 
   include posts-list
 

@@ -33,13 +33,10 @@ html(ng-app='collabjs')
                   a.list-group-item(href='#{entry.url}')
                     i(class='#{entry.icon}')
                     | &nbsp; #{entry.text}
-              //- Search lists
-              if (savedSearches && savedSearches.length > 0)
-                block sidebar-search
-                each list in savedSearches
-                  a.list-group-item(href='/#/search?q=#{list.query}&src=#{list.source}')
-                    i.icon-filter
-                    | &nbsp;#{list.name}
+              //- Saved searches
+              a.list-group-item(ng-repeat='list in searchLists', ng-href='{{list.url}}')
+                i.icon-filter
+                | &nbsp;{{list.name}}
               //- 'Connect' section
               a.list-group-item(href='/#/people')
                 i.icon-group

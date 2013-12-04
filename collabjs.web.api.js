@@ -228,6 +228,13 @@ module.exports = function (context) {
       repository.getComments(req.params.id, handleJsonResult(req, res));
     });
 
+    app.get('/api/search/list', authenticate, noCache, function (req, res) {
+      repository.getSavedSearches(req.user.id, function (err, result) {
+        if (err) { res.send(400, 'Error getting search lists.'); }
+        else { res.json(200, result); }
+      });
+    });
+
     app.get('/api/search', authenticate, noCache, function (req, res) {
       if (!req.query.q || !req.query.src) {
         res.send(400);
@@ -236,47 +243,15 @@ module.exports = function (context) {
       repository.getPostsByHashTag(req.user.id, req.query.q, getTopId(req), function (err, result) {
         if (err || !result) { res.send(400); }
         else {
-          res.json(200, {
-            isSaved: res.locals.hasSavedSearch(req.query.q),
-            entries: result
+          repository.hasSavedSearch(req.user.id, req.query.q, function (err, isSaved) {
+            res.json(200, {
+              isSaved: isSaved,
+              entries: result
+            });
           });
         }
       });
     });
-
-    /*
-    exports.post_search = function (context) {
-      var repository = context.data;
-      return function (req, res) {
-        var body = req.body
-          , action = body.action
-          , redirectUri = '/search?q=' + encodeURIComponent(body.q) + '&src=' + body.src;
-        if (action === 'save') {
-          console.log('saving search list...');
-          repository.addSavedSearch({
-            name: body.q,
-            userId: req.user.id,
-            q: encodeURIComponent(body.q),
-            src: body.src
-          }, function (err) {
-            // TODO: generate error message for UI alert
-            console.log(err);
-            res.redirect(redirectUri);
-          });
-        } else if (action === 'delete') {
-          console.log('deleting search list');
-          repository.deleteSavedSearch(req.user.id, body.q, function (err) {
-            // TODO: generate error message for UI alert
-            console.log(err);
-            res.redirect(redirectUri);
-          });
-        } else {
-          console.log('unknown action ' + action);
-          res.redirect(redirectUri);
-        }
-      };
-    };
-    */
 
     app.post('/api/search', authenticate, function (req, res) {
       if (req.query.q) {

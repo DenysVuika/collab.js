@@ -310,3 +310,7 @@ module.exports.getSavedSearches = function (userId, callback) {
 module.exports.deleteSavedSearch = function (userId, name, callback) {
   provider.deleteSavedSearch(userId, name, callback);
 };
+
+module.exports.hasSavedSearch = function (userId, name, callback) {
+  provider.hasSavedSearch(userId, name, callback);
+};

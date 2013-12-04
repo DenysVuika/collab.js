@@ -1,5 +1,5 @@
 !!! 5
-html
+html(ng-app='collabjs')
   head
     title= title
 
@@ -17,7 +17,7 @@ html
     div.container
       div.row
         if (collabjs.isAuthenticated)
-          div.col-md-3.col-lg-3
+          div.col-md-3.col-lg-3(ng-controller='SidebarController')
             //- SIDEBAR
             block sidebar
               div.list-group
@@ -34,13 +34,10 @@ html
                     a.list-group-item(href='#{entry.url}')
                       i(class='#{entry.icon}')
                       | &nbsp; #{entry.text}
-                //-Search Lists
-                if (savedSearches && savedSearches.length > 0)
-                  block sidebar-search
-                  each list in savedSearches
-                    a.list-group-item(href='/search?q=#{list.query}&src=#{list.source}')
-                      i.icon-filter
-                      | &nbsp;#{list.name}
+                //- Saved searches
+                a.list-group-item(ng-repeat='list in searchLists', ng-href='{{list.url}}')
+                  i.icon-filter
+                  | &nbsp;{{list.name}}
                 //- 'Connect' section
                 a.list-group-item(href='/people')
                   i.icon-group

@@ -10,14 +10,11 @@
 
 var express = require('express')
   , flash = require('connect-flash')
-  , fs = require('fs')
-  , routes = require('./routes')
   , passport = require('passport')
   , LocalStrategy = require('passport-local').Strategy
   , passwordHash = require('password-hash')
   , db = require('./data')
   , config = require('./config')
-  , auth = require('./collabjs.auth')
   , utils = require('./collabjs.utils')
   , runtime = require('./collabjs.runtime')
   , RuntimeEvents = runtime.RuntimeEvents
@@ -121,7 +118,6 @@ app.use(flash());
 // Custom middleware
 
 app.use(utils.commonLocals);
-app.use(utils.savedSearches);
 app.use(utils.detectMobileBrowser);
 
 // Router

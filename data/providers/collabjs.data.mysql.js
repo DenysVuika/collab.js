@@ -315,12 +315,11 @@ Provider.prototype = {
     });
   },
   getPostsByHashTag: function (callerId, hashtag, topId, callback) {
-    var tag = hashtag;
-    if (tag.indexOf('#') !== 0) {
-      tag = '#' + tag;
+    if (hashtag.indexOf('#') !== 0) {
+      hashtag = '#' + hashtag;
     }
     var command = 'CALL get_posts_by_hashtag(?,?,?)'
-      , params = [callerId, tag, topId];
+      , params = [callerId, hashtag, topId];
     pool.getConnection(function (err, connection) {
       connection.query(command, params, function (err, result) {
         connection.release();
@@ -422,13 +421,23 @@ Provider.prototype = {
       });
     });
   },
+  hasSavedSearch: function (userId, name, callback) {
+    pool.getConnection(function (err, connection) {
+      var command = 'SELECT 1 FROM search_lists WHERE userId = ? AND name = ? LIMIT 1';
+      connection.query(command, [userId, name], function (err, result) {
+        connection.release();
+        if (err) { callback(err, false); }
+        else { callback(null, result.length > 0); }
+      });
+    });
+  },
   getSavedSearches: function (userId, callback) {
-    var command = 'SELECT s.name, s.query, s.source FROM search_lists AS s WHERE s.userId = ?';
+    var command = 'SELECT s.name, s.query AS q, s.source AS src FROM search_lists AS s WHERE s.userId = ?';
     pool.getConnection(function (err, connection) {
       connection.query(command, [userId], function (err, result) {
         connection.release();
         if (err) { callback(err, null); }
-        else { callback(null, result); }
+        else { callback(null, result || []); }
       });
     });
   },

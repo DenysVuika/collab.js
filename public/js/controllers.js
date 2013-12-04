@@ -334,9 +334,17 @@ function SearchController($scope, $routeParams, searchService, postsService, pro
   $scope.token = null;
   $scope.query = $routeParams.q || null;
   $scope.source = $routeParams.src || 'unknown';
-  $scope.isSaved = false;
-  $scope.hasNoPosts = false;
+  $scope.isSaved = null;
+  $scope.hasNoPosts = null;
   $scope.posts = [];
+
+  $scope.canSave = function () {
+    return $scope.isSaved !== null && !$scope.isSaved && !$scope.hasNoPosts;
+  };
+
+  $scope.canRemove = function () {
+    return $scope.isSaved;
+  };
 
   $scope.init = function (token) {
     $scope.token = token;
@@ -556,6 +564,30 @@ function PasswordController($scope, accountService) {
   };
 }
 
-function SidebarController($scope, $location) {
+function SidebarController($scope, searchService) {
   'use strict';
+
+  $scope.searchLists = [];
+
+  searchService.getLists().then(
+    function (data) {
+      $scope.searchLists = data || [];
+    }
+  );
+
+  /*
+   $scope.$on('destroy', function () {
+   console.log('SearchController is destroyed.');
+   });
+   */
+
+  $scope.$on('listSaved@searchService', function (e, list) {
+    $scope.searchLists.push(list);
+  });
+
+  $scope.$on('listDeleted@searchService', function (e, list) {
+    $scope.searchLists =  $scope.searchLists.filter(function (element) {
+      return element.q !== list.q;
+    });
+  });
 }

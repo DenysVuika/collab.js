@@ -1,16 +1,14 @@
 angular.module('collabjs.directives', [])
   .directive('sidebar', function ($location) {
     'use strict';
-    return function(scope, element, attrs) {
-      var links = element.find('a'),
-        onClass = attrs.sidebar || 'on',
-        subpaths = attrs.subpaths || false,
-        routePattern,
-        link,
-        url,
-        currentLink,
-        urlMap = {},
-        i;
+
+    function mapLinks(element) {
+      var links = element.find('a')
+        , routePattern
+        , link
+        , url
+        , urlMap = {}
+        , i;
 
       if (!$location.$$html5) {
         routePattern = /^\/#[^/]*/;
@@ -18,7 +16,6 @@ angular.module('collabjs.directives', [])
 
       for (i = 0; i < links.length; i++) {
         link = angular.element(links[i]);
-        //data-sidebar-subitems
         url = link.attr('href');
 
         if ($location.$$html5) {
@@ -28,26 +25,38 @@ angular.module('collabjs.directives', [])
         }
       }
 
-      scope.$on('$routeChangeStart', function() {
-        if (currentLink) {
-          currentLink.removeClass(onClass);
-        }
+      return urlMap;
+    }
 
-        var pathLink = urlMap[$location.path()] || urlMap[$location.url()];
+    return function(scope, element, attrs) {
+      var onClass = attrs.sidebar || 'on'
+        , subpaths = attrs.subpaths || false
+        , currentLink;
 
-        // try only beginning of the url
-        if (!pathLink && subpaths) {
-          var path = $location.path();
-          var parts = (path.indexOf('/') === 0 ? path.substr(1) : path).split('/');
-          if (parts.length > 0) {
-            pathLink = urlMap['/' + parts[0]];
-          }
-        }
+     //scope.$on('$routeChangeStart', function() { });
 
-        if (pathLink) {
-          currentLink = pathLink;
-          currentLink.addClass(onClass);
-        }
-      });
+     scope.$on('$routeChangeSuccess', function () {
+       if (currentLink) {
+         currentLink.removeClass(onClass);
+       }
+
+       var urlMap = mapLinks(element);
+
+       var pathLink = urlMap[$location.path()] || urlMap[$location.url()];
+
+       // try only beginning of the url
+       if (!pathLink && subpaths) {
+         var path = $location.path();
+         var parts = (path.indexOf('/') === 0 ? path.substr(1) : path).split('/');
+         if (parts.length > 0) {
+           pathLink = urlMap['/' + parts[0]];
+         }
+       }
+
+       if (pathLink) {
+         currentLink = pathLink;
+         currentLink.addClass(onClass);
+       }
+     });
     };
   });
