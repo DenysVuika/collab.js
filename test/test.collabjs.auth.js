@@ -1,10 +1,9 @@
-/* global describe, it, beforeEach */
 'use strict';
 
 var express = require('express')
   , request = require('supertest')
-  , should = require('should')
-  , auth = require('../collabjs.auth');
+  , auth = require('../collabjs.auth')
+  , should = require('should');
 
 describe('collabjs.auth', function () {
 

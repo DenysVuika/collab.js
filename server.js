@@ -99,7 +99,8 @@ app.use(express.methodOverride());
 app.use(express.session({
   secret: config.server.sessionSecret,
   cookie: { maxAge: 14 * 24 * 3600 * 1000 }, // 2 weeks
-  store: sessionStore }));
+  store: sessionStore
+}));
 
 // use CSRF protection middleware if enabled
 if (config.server.csrf) {

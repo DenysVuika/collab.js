@@ -80,11 +80,11 @@ module.exports = function (context) {
     });
 
     app.get('/api/people/:account/follow', authenticate, noCache, function (req, res) {
-      repository.followAccount(req.user.id, req.params.account, handleHtmlResult(req, res));
+      repository.followAccount(req.user.id, req.params.account, handleHtmlResult(res));
     });
 
     app.get('/api/people/:account/unfollow', authenticate, noCache, function (req, res) {
-      repository.unfollowAccount(req.user.id, req.params.account, handleHtmlResult(req, res));
+      repository.unfollowAccount(req.user.id, req.params.account, handleHtmlResult(res));
     });
 
     app.get('/api/people/:account/followers:topId?', authenticate, noCache, function (req, res) {
@@ -142,7 +142,7 @@ module.exports = function (context) {
     });
 
     app.get('/api/accounts/:account/profile', authenticate, noCache, function (req, res) {
-      repository.getPublicProfile(req.user.id, req.params.account, handleJsonResult(req, res));
+      repository.getPublicProfile(req.user.id, req.params.account, handleJsonResult(res));
     });
 
     app.post('/api/timeline/posts', authenticate, function (req, res) {
@@ -172,7 +172,7 @@ module.exports = function (context) {
     });
 
     app.get('/api/timeline/posts:topId?', authenticate, noCache, function (req, res) {
-      repository.getMainTimeline(req.user.id, getTopId(req), handleJsonResult(req, res));
+      repository.getMainTimeline(req.user.id, getTopId(req), handleJsonResult(res));
     });
 
     app.del('/api/timeline/posts/:id', authenticate, function (req, res) {
@@ -186,11 +186,11 @@ module.exports = function (context) {
     });
 
     app.get('/api/timeline/updates/count:topId?', authenticate, noCache, function (req, res) {
-      repository.getTimelineUpdatesCount(req.user.id, getTopId(req), handleJsonResult(req, res));
+      repository.getTimelineUpdatesCount(req.user.id, getTopId(req), handleJsonResult(res));
     });
 
     app.get('/api/timeline/updates:topId?', authenticate, noCache, function (req, res) {
-      repository.getTimelineUpdates(req.user.id, getTopId(req), handleJsonResult(req, res));
+      repository.getTimelineUpdates(req.user.id, getTopId(req), handleJsonResult(res));
     });
 
     app.post('/api/timeline/comments', authenticate, function (req, res) {
@@ -198,13 +198,12 @@ module.exports = function (context) {
         res.send(400);
         return;
       }
-      var created = new Date()
-        , comment = {
-            userId: req.user.id,
-            postId: req.body.postId,
-            created: created,
-            content: req.body.content
-          };
+      var comment = {
+        userId: req.user.id,
+        postId: req.body.postId,
+        created: new Date(),
+        content: req.body.content
+      };
       repository.addComment(comment, function (err, result) {
         if (err || !result) { res.send(400); }
         else {
@@ -221,11 +220,11 @@ module.exports = function (context) {
     });
 
     app.get('/api/timeline/posts/:id', authenticate, noCache, function (req, res) {
-      repository.getPostWithComments(req.params.id, handleJsonResult(req, res));
+      repository.getPostWithComments(req.params.id, handleJsonResult(res));
     });
 
     app.get('/api/timeline/posts/:id/comments', authenticate, noCache, function (req, res) {
-      repository.getComments(req.params.id, handleJsonResult(req, res));
+      repository.getComments(req.params.id, handleJsonResult(res));
     });
 
     app.get('/api/search/list', authenticate, noCache, function (req, res) {
@@ -290,14 +289,14 @@ module.exports = function (context) {
       return (req.query && req.query.topId && req.query.topId > 0) ? req.query.topId : 0;
     }
 
-    function handleJsonResult(req, res) {
+    function handleJsonResult(res) {
       return function (err, result) {
         if (err || !result) { res.send(400); }
         else { res.json(200, result); }
       };
     }
 
-    function handleHtmlResult(req, res) {
+    function handleHtmlResult(res) {
       return function (err) {
         if (err) { res.send(400); }
         else { res.send(200); }

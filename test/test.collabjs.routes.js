@@ -1,9 +1,6 @@
-/* global describe, it, beforeEach */
 'use strict';
 
-var express = require('express')
-  , request = require('supertest')
-  , expect = require('expect.js')
+var expect = require('expect.js')
   , runtime = require('../collabjs.runtime')
   , context = new runtime.RuntimeContext()
   , routes = require('../routes');
@@ -33,9 +30,7 @@ describe('collab.js routes', function () {
 
     res = {
       viewName: '',
-      locals: {
-        hasSavedSearch: function (q) { return true; }
-      },
+      locals: {},
       cookies: [],
       redirectPath: '',
       statusCode: 0,

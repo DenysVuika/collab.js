@@ -1,12 +1,13 @@
 angular.module('collabjs', [
-  'ngRoute',
-  'ngSanitize',
-  'collabjs.services',
-  'collabjs.filters',
-  'collabjs.directives',
-  'angularMoment',
-  'infinite-scroll',
-  'ui.select2'])
+    'ngRoute',
+    'ngSanitize',
+    'collabjs.services',
+    'collabjs.filters',
+    'collabjs.directives',
+    'angularMoment',
+    'infinite-scroll',
+    'ui.select2'
+  ])
   .config(['$routeProvider', function ($routeProvider) {
     'use strict';
     $routeProvider

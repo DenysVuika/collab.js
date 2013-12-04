@@ -1,4 +1,3 @@
-/* global describe, it, beforeEach */
 'use strict';
 
 var express = require('express')
@@ -26,7 +25,7 @@ describe('collab.js web.api', function () {
   app.use(function (req, res, next) {
     req.user = testUser;
     req.isAuthenticated = function() { return true; };
-    res.locals({ hasSavedSearch: function (name) { return true; }});
+    res.locals({ hasSavedSearch: function () { return true; }});
     next();
   });
 
@@ -57,7 +56,7 @@ describe('collab.js web.api', function () {
     it('gets data from repository', function (done) {
       var data = [{id:1}];
       context.data.getMentions = function (callerId, account, topId, callback) {
-       callback(null, data);
+        callback(null, data);
       };
 
       request(app)

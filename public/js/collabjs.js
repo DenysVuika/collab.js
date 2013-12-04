@@ -1,8 +1,3 @@
-/* global ko, moment */
-/// <reference path="../lib/jQuery/js/jquery.min.js" />
-/// <reference path="../lib/bootstrap/js/bootstrap.js" />
-/// <reference path="../lib/moment/js/moment.min.js" />
-
 var collabjs = collabjs || {
   currentUser: {
     pictureUrl: null
