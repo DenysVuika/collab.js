@@ -236,14 +236,18 @@ module.exports = function (context) {
     });
 
     app.get('/api/search', authenticate, noCache, function (req, res) {
-      if (!req.query.q || !req.query.src) {
+      var userId = req.user.id
+        , q = req.query.q
+        , src = req.query.src;
+
+      if (!userId || !q || !src) {
         res.send(400);
         return;
       }
-      repository.getPostsByHashTag(req.user.id, req.query.q, getTopId(req), function (err, result) {
+      repository.getPostsByHashTag(userId, q, getTopId(req), function (err, result) {
         if (err || !result) { res.send(400); }
         else {
-          repository.hasSavedSearch(req.user.id, req.query.q, function (err, isSaved) {
+          repository.hasSavedSearch(userId, q, function (err, isSaved) {
             res.json(200, {
               isSaved: isSaved,
               entries: result
