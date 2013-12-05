@@ -22,6 +22,7 @@ angular.module('collabjs', [
       .when('/account', { templateUrl: '/partials/account' })
       .when('/account/password', { templateUrl: '/partials/password' })
       .when('/search', { templateUrl: '/partials/search' })
+      .when('/help/:article?', { templateUrl: '/partials/help', controller: 'HelpController' })
       .otherwise({ redirectTo: '/news' });
   }]);
 

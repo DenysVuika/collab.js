@@ -20,6 +20,5 @@ module.exports = function (context) {
     app.all('/logout', routes.logout);
     app.get('/register', routes.get_register);
     app.post('/register', routes.post_register(context));
-    app.get('/help/:article?', authenticate, routes.get_help_article(context));
   }); // app.init.routes
 }; // module.exports

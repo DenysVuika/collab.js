@@ -2,7 +2,6 @@
 
 var config = require('../config')
   , passwordHash = require('password-hash')
-  , marked = require('marked')
   , utils = require('../collabjs.utils')
   , Recaptcha = require('recaptcha').Recaptcha
   , NullRecaptcha = utils.NullRecaptcha;
@@ -183,42 +182,6 @@ exports.post_register = function (context) {
         locals.recaptcha_form = getRecaptchaForm();
         res.render('core/register', locals);
       }
-    });
-  };
-};
-
-/*
- * Help
- */
-
-exports.get_help_article = function (context) {
-  return function (req, res) {
-    var article = 'help/index.md';
-    if (req.params.article && req.params.article.length > 0) {
-      article = 'help/' + req.params.article + '.md';
-    }
-
-    // get either proxied/mocked or real `fs` instance
-    var fs = context.fs || require('fs');
-
-    fs.readFile(article, 'utf8', function (err, data) {
-      if (err) {
-        res.render('core/help', {
-          title: 'Help',
-          article: article,
-          message: req.flash('error'),
-          content: 'Content not found.',
-          requestPath: '/help' // keep 'Help' selected at sidebar
-        });
-        return;
-      }
-      res.render('core/help', {
-        title: 'Help',
-        article: article,
-        message: req.flash('error'),
-        content: marked(data),
-        requestPath: '/help' // keep 'Help' selected at sidebar
-      });
     });
   };
 };

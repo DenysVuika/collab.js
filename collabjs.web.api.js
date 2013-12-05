@@ -5,6 +5,7 @@ module.exports = function (context) {
     , jade = require('jade')
     , fs = require('fs')
     , passwordHash = require('password-hash')
+    , marked = require('marked')
     , utils = require('./collabjs.utils')
     , config = context.config
     , repository = context.data
@@ -281,6 +282,44 @@ module.exports = function (context) {
       } else {
         res.send(400, 'Error deleting search list.');
       }
+    });
+
+    app.get('/api/help/:article?', authenticate, function (req, res) {
+      var article = 'help/index.md';
+      if (req.params.article && req.params.article.length > 0) {
+        article = 'help/' + req.params.article + '.md';
+      }
+
+      // get either proxied/mocked or real `fs` instance
+      var fs = context.fs || require('fs');
+
+      fs.readFile(article, 'utf8', function (err, data) {
+        if (err) {
+          /*
+          res.render('core/help', {
+            title: 'Help',
+            article: article,
+            message: req.flash('error'),
+            content: 'Content not found.',
+            requestPath: '/help' // keep 'Help' selected at sidebar
+          });
+          return;
+          */
+          console.log(err);
+          res.send(404);
+          return;
+        }
+        res.send(200, marked(data));
+        /*
+        res.render('core/help', {
+          title: 'Help',
+          article: article,
+          message: req.flash('error'),
+          content: marked(data),
+          requestPath: '/help' // keep 'Help' selected at sidebar
+        });
+        */
+      });
     });
 
     // UTILS

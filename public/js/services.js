@@ -10,7 +10,7 @@ angular.module('collabjs.services', ['ngResource'])
       updateAccount: function (token, data) {
         var d = $q.defer()
           , options = { headers: { 'x-csrf-token': token }, xsrfHeaderName : 'x-csrf-token' };
-        $http.post('/api/account', data, options).success(function (res) { d.resolve(true); });
+        $http.post('/api/account', data, options).success(function () { d.resolve(true); });
         return d.promise;
       },
       changePassword: function (token, data) {
@@ -18,7 +18,7 @@ angular.module('collabjs.services', ['ngResource'])
           , options = { headers: { 'x-csrf-token': token }, xsrfHeaderName : 'x-csrf-token' };
         $http.post('/api/account/password', data, options)
           .success(function (res) { console.log(res); d.resolve(res); })
-          .error(function (data, status, headers, config) { d.reject(data); });
+          .error(function (data) { d.reject(data); });
         return d.promise;
       }
     };
@@ -120,7 +120,7 @@ angular.module('collabjs.services', ['ngResource'])
           , query = '/api/timeline/updates/count?topId=' + topId;
         $http.get(query)
           .success(function (data) { d.resolve(data.posts || 0); })
-          .error(function (data) { d.resolve(0); });
+          .error(function () { d.resolve(0); });
         return d.promise;
       },
       getNewsUpdates: function (topId) {
@@ -196,6 +196,17 @@ angular.module('collabjs.services', ['ngResource'])
       }
     };
   })
+  .service('helpService', function ($http, $q) {
+    'use strict';
+    return {
+      getArticle: function (name) {
+        var d = $q.defer();
+        var query = (name) ? '/api/help/' + name : '/api/help';
+        $http.get(query).success(function (data) { d.resolve(data); });
+        return d.promise;
+      }
+    };
+  })
   .service('searchService', function ($rootScope, $http, $q) {
     'use strict';
     return {
@@ -219,7 +230,7 @@ angular.module('collabjs.services', ['ngResource'])
           , options = { headers: { 'x-csrf-token': token }, xsrfHeaderName : 'x-csrf-token' };
         $http
           .post(query, null, options)
-          .success(function (res) {
+          .success(function () {
             d.resolve(true);
             $rootScope.$broadcast('listSaved@searchService', {
               name: q,
@@ -237,7 +248,7 @@ angular.module('collabjs.services', ['ngResource'])
           , options = { headers: { 'x-csrf-token': token }, xsrfHeaderName : 'x-csrf-token' };
         $http
           .delete(query, options)
-          .success(function (res) {
+          .success(function () {
             d.resolve(true);
             $rootScope.$broadcast('listDeleted@searchService', {
               name: q,

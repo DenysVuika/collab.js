@@ -24,7 +24,7 @@ html(ng-app='collabjs')
                 a.list-group-item(href='/')
                   i.icon-home
                   | &nbsp;Home
-                a.list-group-item(href='/mentions')
+                a.list-group-item(href='/#/mentions')
                   i.icon-globe
                   | &nbsp;Mentions
                 block sidebar-main
@@ -39,7 +39,7 @@ html(ng-app='collabjs')
                   i.icon-filter
                   | &nbsp;{{list.name}}
                 //- 'Connect' section
-                a.list-group-item(href='/people')
+                a.list-group-item(href='/#/people')
                   i.icon-group
                   | &nbsp;People
                 block sidebar-connect
@@ -50,7 +50,7 @@ html(ng-app='collabjs')
                       i(class='#{link.icon}')
                       | &nbsp;#{link.text}
                 //- 'Help' section
-                a.list-group-item(href='/help')
+                a.list-group-item(href='/#/help')
                   i.icon-flag
                   | &nbsp;Help
           div.col-md-9.col-lg-9

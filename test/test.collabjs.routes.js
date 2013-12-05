@@ -500,6 +500,7 @@ describe('collab.js routes', function () {
   });
   */
 
+  /* TODO: remove
   describe('get_help_article', function () {
 
     it('renders `help/index.md` by default', function () {
@@ -533,4 +534,5 @@ describe('collab.js routes', function () {
       expect(res.locals.requestPath).to.be('/help');
     });
   });
+  */
 });
