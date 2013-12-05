@@ -4,6 +4,7 @@ angular.module('collabjs', [
     'collabjs.services',
     'collabjs.filters',
     'collabjs.directives',
+    'collabjs.controllers',
     'angularMoment',
     'infinite-scroll',
     'ui.select2'
@@ -23,3 +24,5 @@ angular.module('collabjs', [
       .when('/search', { templateUrl: '/partials/search' })
       .otherwise({ redirectTo: '/news' });
   }]);
+
+angular.module('collabjs.controllers', []);

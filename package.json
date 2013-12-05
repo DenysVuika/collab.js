@@ -16,7 +16,6 @@
   ],
   "main": "./server.js",
   "keywords": [
-    "azure",
     "boilerplate",
     "express",
     "node.js",
