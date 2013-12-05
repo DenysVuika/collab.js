@@ -119,7 +119,7 @@ app.use(flash());
 // Custom middleware
 
 app.use(utils.commonLocals);
-app.use(utils.detectMobileBrowser);
+//app.use(utils.detectMobileBrowser);
 
 // Router
 

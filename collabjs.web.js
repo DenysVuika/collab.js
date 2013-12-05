@@ -2,8 +2,7 @@ module.exports = function (context) {
   'use strict';
 
   var passport = require('passport')
-    , routes = require('./routes')
-    , authenticate = context.auth.ensureAuthenticated;
+    , routes = require('./routes');
 
   context.once('app.init.routes', function (app) {
     app.get('/', routes.index);
