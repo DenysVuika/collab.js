@@ -7,9 +7,11 @@ angular.module('collabjs', [
     'collabjs.controllers',
     'angularMoment',
     'infinite-scroll',
-    'ui.select2'
+    'ui.select2',
+    'chieffancypants.loadingBar',
+    'ngAnimate'
   ])
-  .config(['$routeProvider', function ($routeProvider) {
+  .config(['$routeProvider', 'cfpLoadingBarProvider', function ($routeProvider) {
     'use strict';
     $routeProvider
       .when('/news', { templateUrl: '/partials/news' })

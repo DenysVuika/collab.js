@@ -21,8 +21,6 @@ div(ng-controller='SearchController', ng-init="init('#{collabjs.token}')")
   p.lead.ng-cloak(ng-if='hasNoPosts') No entries found...
 
   include posts-list
+  include _spinner
 
-  //- Loading progress indicator
-  div.text-center(ng-show='isLoadingMorePosts')
-    i.icon-spinner.icon-4x.icon-spin
   div.alert.alert-danger.page-error

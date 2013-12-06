@@ -9,9 +9,6 @@ div(ng-controller='NewsController', ng-init="init('#{collabjs.token}');")
       | You got {{newPostsCount}} new post(s) for your timeline.
 
   include posts-list
-
-  //- Loading progress indicator
-  div.text-center(ng-show='isLoadingMorePosts')
-    i.icon-spinner.icon-4x.icon-spin
+  include _spinner
 
   div.alert.alert-error.page-error

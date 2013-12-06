@@ -8,10 +8,8 @@ div(ng-controller='WallController', ng-init="init('#{collabjs.token}', '#{accoun
       | &nbsp;Posts
 
   p.lead(ng-show='hasNoPosts') No posts found...
-  include posts-list
 
-  //- Loading progress indicator
-  div.text-center(ng-show='isLoadingMorePosts')
-    i.icon-spinner.icon-4x.icon-spin
+  include posts-list
+  include _spinner
 
   div.alert.alert-danger.page-error

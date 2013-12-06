@@ -5,10 +5,8 @@ div(ng-controller='MentionsController', ng-init='init("#{collabjs.token}");')
       | &nbsp;Mentions
 
   p.lead(ng-show='hasNoPosts') No mentions found...
-  include posts-list
 
-  // Loading progress indicator
-  div.text-center(ng-show='isLoadingMorePosts')
-    i.icon-spinner.icon-4x.icon-spin
+  include posts-list
+  include _spinner
 
   div.alert.alert-error.page-error

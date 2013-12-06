@@ -146,6 +146,7 @@ module.exports = function (context) {
       repository.getPublicProfile(req.user.id, req.params.account, handleJsonResult(res));
     });
 
+    // TODO: rename to '/api/news'
     app.post('/api/timeline/posts', authenticate, function (req, res) {
       var date = new Date();
       var post = {
@@ -172,6 +173,7 @@ module.exports = function (context) {
       });
     });
 
+    // TODO: rename to '/api/news'
     app.get('/api/timeline/posts:topId?', authenticate, noCache, function (req, res) {
       repository.getMainTimeline(req.user.id, getTopId(req), handleJsonResult(res));
     });
@@ -295,30 +297,10 @@ module.exports = function (context) {
 
       fs.readFile(article, 'utf8', function (err, data) {
         if (err) {
-          /*
-          res.render('core/help', {
-            title: 'Help',
-            article: article,
-            message: req.flash('error'),
-            content: 'Content not found.',
-            requestPath: '/help' // keep 'Help' selected at sidebar
-          });
-          return;
-          */
-          console.log(err);
           res.send(404);
           return;
         }
         res.send(200, marked(data));
-        /*
-        res.render('core/help', {
-          title: 'Help',
-          article: article,
-          message: req.flash('error'),
-          content: marked(data),
-          requestPath: '/help' // keep 'Help' selected at sidebar
-        });
-        */
       });
     });
 
