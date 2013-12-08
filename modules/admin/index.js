@@ -10,12 +10,12 @@ module.exports = function (context) {
 // extend sidebar
   config.ui.sidebar.administration.push({
     text: 'Link 1',
-    icon: 'icon-wrench',
+    icon: 'wrench',
     url: '/admin/sample1'
   });
   config.ui.sidebar.administration.push({
     text: 'Link 2',
-    icon: 'icon-wrench',
+    icon: 'wrench',
     url: '/admin/sample2'
   });
 

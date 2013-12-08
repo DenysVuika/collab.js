@@ -21,10 +21,10 @@ html(ng-app='collabjs')
           block sidebar
             div.list-group(sidebar='active', data-subpaths='true')
               a.list-group-item(href='/#/news')
-                i.icon-home
+                i.fa.fa-home.fa-fw
                 | &nbsp;News
               a.list-group-item(href='/#/mentions')
-                i.icon-globe
+                i.fa.fa-globe.fa-fw
                 | &nbsp;Mentions
               block sidebar-main
               //- Dynamic categories
@@ -35,22 +35,22 @@ html(ng-app='collabjs')
                     | &nbsp; #{entry.text}
               //- Saved searches
               a.list-group-item(ng-repeat='list in searchLists', ng-href='{{list.url}}')
-                i.icon-filter
+                i.fa.fa-filter.fa-fw
                 | &nbsp;{{list.name}}
               //- 'Connect' section
               a.list-group-item(href='/#/people')
-                i.icon-group
+                i.fa.fa-group.fa-fw
                 | &nbsp;People
               block sidebar-connect
               //- 'Administration' section
               if (collabjs.isAdministrator && collabjs.config.ui.sidebar.administration.length > 0)
                 each link in collabjs.config.ui.sidebar.administration
                   a.list-group-item(href='#{link.url}')
-                    i(class='#{link.icon}')
+                    i(class='fa fa-#{link.icon} fa-fw')
                     | &nbsp;#{link.text}
               //- 'Help' section
               a.list-group-item(href='/#/help')
-                i.icon-flag
+                i.fa.fa-flag.fa-fw
                 | &nbsp;Help
         div.col-md-9.col-lg-9
           //- MAIN CONTENT

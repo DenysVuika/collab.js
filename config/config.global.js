@@ -68,7 +68,7 @@ config.ui = {
 //      {
 //        text: 'People',
 //        url: '/people',
-//        icon: 'icon-group'
+//        icon: 'group'
 //      }
     ]
   },

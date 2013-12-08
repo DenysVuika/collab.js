@@ -9,17 +9,17 @@ div.row
           a.account-name(ng-href='/#/posts/{{post.id}}') {{post.name}}
           a.account(ng-href='{{post.account | wallUrl}}') {{'@' + post.account}}
         div.date
-          i.icon-time &nbsp;
+          i.fa.fa-clock-o &nbsp;
           span(am-time-ago='post.created', title='{{post.created | amDateFormat: "LLLL"}}')
         div.delete(ng-click='deletePost(post)')
-          i.icon-remove
+          i.fa.fa-times
         div.message
           div(ng-bind-html='post.content | twitterize')
           a.comments-button(ng-if='post.commentsCount > 9', ng-href='/#/posts/{{post.id}}')
-            i.icon-comment.black
+            i.fa.fa-comments.black
             span {{' View all ' + post.commentsCount + ' comments'}}
           a.comments-button(ng-if='post.commentsCount < 10', href='', ng-click='loadPostComments(post)')
-            i.icon-comment.black
+            i.fa.fa-comments.black
             | &nbsp;Comments
             span(ng-show='post.commentsCount > 0') {{'(' + post.commentsCount + ')'}}
         ul
@@ -30,7 +30,7 @@ div.row
               strong {{comment.name}}
               a.account(ng-href='{{comment.account | wallUrl}}') {{'@' + comment.account}}
             div.date
-              i.icon-time &nbsp;
+              i.fa.fa-clock-o &nbsp;
               span(am-time-ago='comment.created', title='{{comment.created | amDateFormat: "LLLL"}}')
             div.message(ng-bind-html='comment.content | twitterize')
           li

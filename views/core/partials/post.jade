@@ -11,7 +11,7 @@ div(ng-controller='PostController')
             strong {{post.name}}
             a.account(ng-href='{{post.account | wallUrl}}') {{'@' + post.account}}
           div.date
-            i.icon-time &nbsp;
+            i.fa.fa-clock-o &nbsp;
             span(am-time-ago='post.created', title='{{post.created | amDateFormat: "LLLL"}}')
           div.message(ng-bind-html='post.content | twitterize')
           ul
@@ -23,7 +23,7 @@ div(ng-controller='PostController')
                 strong {{comment.name}}
                 a.account(ng-href='{{comment.account | wallUrl}}') {{'@' + comment.account}}
               div.date
-                i.icon-time &nbsp;
+                i.fa.fa-clock-o &nbsp;
                 span(am-time-ago='comment.created', title='{{comment.created | amDateFormat: "LLLL"}}')
               div.message(ng-bind-html='comment.content | twitterize')
             li

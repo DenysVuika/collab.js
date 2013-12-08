@@ -17,12 +17,12 @@ div.row
                 | {{getCountryName(profile)}}
             li
               span
-                i.icon-globe
+                i.fa.fa-globe
                 | &nbsp;
                 a(ng-href='{{profile.website}}', target='_blank') {{profile.website}}
             li
               span
-                i.icon-pencil
+                i.fa.fa-pencil
                 | &nbsp;
                 em {{profile.bio}}
           a.btn.btn-default.pull-right.profile-btn(ng-show='canFollow(profile)', ng-click='follow(profile)') Follow
