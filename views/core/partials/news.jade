@@ -3,9 +3,11 @@ div(ng-controller='NewsController', ng-init="init('#{collabjs.token}');")
     textarea.form-control(ng-model='content', name='content', rows='3', placeholder="What's on your mind?")
     div.footer
       input.btn.btn-success(type='submit', value='Post')
+
   p.lead(ng-show='hasNoPosts') No posts found...
+
   div.alert.alert-info.text-center(id='msg-new-posts', style='display: none', ng-show='newPostsCount > 0')
-    a(id='new-msg-link', href='#', ng-click='loadNewPosts()')
+    a(id='new-msg-link', href='', ng-click='loadNewPosts()')
       | You got {{newPostsCount}} new post(s) for your timeline.
 
   include posts-list

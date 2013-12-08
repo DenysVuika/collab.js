@@ -327,6 +327,7 @@ module.exports = function (context) {
 
   var template_comment;
 
+  // TODO: fix
   function notifyOnPostCommented(req, comment) {
     // send email notification (if enabled)
     if (config.smtp.enabled) {
