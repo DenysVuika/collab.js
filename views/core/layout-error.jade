@@ -18,47 +18,12 @@ html(ng-app='collabjs')
       div.row
         if (collabjs.isAuthenticated)
           div.col-md-3.col-lg-3(ng-controller='SidebarController')
-            //- SIDEBAR
             block sidebar
-              div.list-group
-                a.list-group-item(href='/')
-                  i.fa.fa-home.fa-fw
-                  | &nbsp;Home
-                a.list-group-item(href='/#/mentions')
-                  i.fa.fa-globe.fa-fw
-                  | &nbsp;Mentions
-                block sidebar-main
-                //- Dynamic categories
-                each category in collabjs.config.ui.sidebar.categories
-                  each entry in category.entries
-                    a.list-group-item(href='#{entry.url}')
-                      i(class='fa fa-#{entry.icon} fa-fw')
-                      | &nbsp; #{entry.text}
-                //- Saved searches
-                a.list-group-item(ng-repeat='list in searchLists', ng-href='{{list.url}}')
-                  i.fa.fa-filter.fa-fw
-                  | &nbsp;{{list.name}}
-                //- 'Connect' section
-                a.list-group-item(href='/#/people')
-                  i.fa.fa-group.fa-fw
-                  | &nbsp;People
-                block sidebar-connect
-                //- 'Administration' section
-                if (collabjs.isAdministrator && collabjs.config.ui.sidebar.administration.length > 0)
-                  each link in collabjs.config.ui.sidebar.administration
-                    a.list-group-item(href='#{link.url}')
-                      i(class='fa fa-#{link.icon} fa-fw')
-                      | &nbsp;#{link.text}
-                //- 'Help' section
-                a.list-group-item(href='/#/help')
-                  i.fa.fa-flag.fa-fw
-                  | &nbsp;Help
+              include shared/sidebar
           div.col-md-9.col-lg-9
-            //- MAIN CONTENT
             block content
         else
           div.col-md-12.col-lg-12
-            //- MAIN CONTENT
             block content
 
     include shared/_scripts
