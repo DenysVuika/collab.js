@@ -1,4 +1,4 @@
-div.list-group(sidebar='active', data-subpaths='true')
+div.list-group(sidebar='active', data-subpaths='true', ng-controller='SidebarController')
   a.list-group-item(href='/#/news')
     i.fa.fa-home.fa-fw
     | &nbsp;News
@@ -12,7 +12,7 @@ div.list-group(sidebar='active', data-subpaths='true')
         i(class='#{entry.icon}')
         | &nbsp; #{entry.text}
   //- Saved searches
-  a.list-group-item(ng-repeat='list in searchLists', ng-href='{{list.url}}')
+  a.list-group-item.ng-cloak(ng-repeat='list in searchLists', ng-href='{{list.url}}')
     i.fa.fa-filter.fa-fw
     | &nbsp;{{list.name}}
   //- 'Connect' section
