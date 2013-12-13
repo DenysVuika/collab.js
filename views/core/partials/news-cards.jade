@@ -1,0 +1,23 @@
+div.cards-container(ng-init="init('#{collabjs.token}')")
+  ul.cards(infinite-scroll='loadMorePosts()', infinite-scroll-immediate-check='false')
+    li
+      form.status-card(ng-controller='StatusController', ng-init="init('#{collabjs.token}')", ng-submit='submit()', role='form')
+        textarea.form-control(ng-model='content', name='content', style='resize: none', rows='3', placeholder="Share what's new...")
+        div.text-right(style='padding-top:5px;')
+          input.btn.btn-success(type='submit', value='Share')
+    li(ng-repeat='post in posts | orderBy:"created":true')
+      div.card-content
+        div.card-avatar
+          a(ng-href='{{post.account | wallUrl}}')
+            img(ng-src='{{post.pictureUrl}}', alt='', width='46px', height='46px')
+        div.card-header
+          h3
+            a(ng-href='{{post.account | wallUrl}}') {{post.name}}
+          span.card-details
+            span Shared publicly
+            |  &nbsp;-&nbsp;
+            span(am-time-ago='post.created', title='{{post.created | amDateFormat: "LLLL"}}')
+        div.card-text
+          div(ng-bind-html='post.content | twitterize')
+        div.card-comments
+          input(type='text', placeholder='Add a comment...')

@@ -931,3 +931,125 @@ a.comments-button {
 .ng-cloak {
   display: none !important;
 }
+/* menu */
+.menu-actions {
+  margin-bottom: -1px;
+}
+.menu-actions > li.active {
+  border-bottom: 1px blue solid;
+}
+/* card layout */
+.cards-container {
+  margin: 30px 0;
+  position: relative;
+}
+.cards {
+  list-style-type: none;
+  position: relative;
+  /** Needed to ensure items are laid out relative to this container **/
+  margin: 0;
+  padding: 0;
+}
+.cards li {
+  width: 440px;
+  background-color: #ffffff;
+  border: 1px solid #dedede;
+  border-radius: 2px;
+  -moz-border-radius: 2px;
+  -webkit-border-radius: 2px;
+  display: none;
+  /** Hide items initially to avoid a flicker effect **/
+  padding: 4px;
+  box-sizing: content-box;
+}
+.cards li.inactive {
+  visibility: hidden;
+  opacity: 0;
+}
+.cards li img {
+  display: block;
+}
+.cards li p {
+  color: #666;
+  font-size: 12px;
+  margin: 7px 0 0 7px;
+}
+.cards li .status-card {
+  padding: 5px;
+}
+.cards li .status-card textarea {
+  box-sizing: border-box;
+  font-size: 16px;
+  margin: 0;
+  padding: 6px 8px;
+  border-radius: 0;
+}
+.cards li .status-card .btn {
+  border-radius: 0;
+}
+.cards li .card-avatar {
+  float: left;
+  border-radius: 50%;
+  box-shadow: 0 1px 0 rgba(255, 255, 255, 0.4) inset;
+}
+.cards li .card-avatar img {
+  border-radius: 50%;
+  box-shadow: 0 1px 3px 0px rgba(0, 0, 0, 0.3);
+  vertical-align: middle;
+  border: 0;
+}
+.cards li .card-content {
+  padding: 10px;
+}
+.cards li .card-header {
+  margin-left: 60px;
+  margin-right: 50px;
+}
+.cards li .card-header h3 {
+  margin: 0;
+  padding: 0;
+  color: #636364;
+  font-size: 14px;
+  font-weight: 600;
+  text-shadow: 0 1px rgba(255, 255, 255, 0.5);
+}
+.cards li .card-header h3 a {
+  color: #262626;
+}
+.cards li .card-header .card-details {
+  color: #999;
+  font-size: 12px;
+  display: inline-block;
+  outline: none;
+}
+.cards li .card-text {
+  margin: 0;
+  padding: 0;
+  padding-top: 40px;
+  padding-bottom: 20px;
+  text-decoration: none;
+  outline: none;
+  box-sizing: border-box;
+  text-overflow: ellipsis;
+}
+.cards li .card-comments {
+  border-top: 1px solid #e5e5e5;
+  padding: 20px 0;
+}
+.cards li .card-comments input[type='text'] {
+  width: 100%;
+  border: 1px solid #ddd;
+  color: #999;
+  box-sizing: border-box;
+  font-size: 12px;
+  margin: 0;
+  padding: 6px 8px;
+}
+.wookmark-placeholder {
+  border-radius: 2px;
+  -moz-border-radius: 2px;
+  -webkit-border-radius: 2px;
+  background-color: #eee;
+  border: 1px solid #dedede;
+  z-index: -1;
+}

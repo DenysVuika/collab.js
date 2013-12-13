@@ -12,19 +12,12 @@ html(ng-app='collabjs')
 
   body
     input(type='hidden', id='csrf_token', value=collabjs.token)
-    include shared/header
+    include shared/menu
 
-    div.container
+    div.container(style='width:100%')
       div.row
-        if (collabjs.isAuthenticated)
-          div.col-md-3.col-lg-3
-            block sidebar
-              include shared/sidebar
-          div.col-md-9.col-lg-9
-            block content
-        else
-          div.col-md-12.col-lg-12
-            block content
+        div.col-md-12.col-lg-12
+          block content
 
     include shared/_scripts
     block scripts

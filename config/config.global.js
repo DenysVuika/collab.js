@@ -63,20 +63,15 @@ config.ui = {
   status: 'beta',
   description: 'Starter kit for modern, extensible and social-enabled web applications.',
   copyright: '2013 Denis Vuyka',
-  header: {
+  menu: {
     links: [
-//      {
-//        text: 'People',
-//        url: '/people',
-//        icon: 'group'
-//      }
+      /*
+      {
+        text: 'People',
+        url: '/people',
+        icon: 'group'
+      }
+      */
     ]
-  },
-  sidebar: {
-    // custom sidebar categories with number or links per each
-    categories: [],
-    // links for special 'Administration' category
-    // available for users assigned to 'administrator' role
-    administration: []
   }
 };

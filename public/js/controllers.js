@@ -248,6 +248,11 @@ angular.module('collabjs.controllers')
       $scope.hasNoPosts = false;
       $scope.newPostsCount = 0;
 
+      var cardLayout = true;
+      $scope.templateUrl = cardLayout ? '/partials/news-cards' : '/partials/news-list';
+
+      var layout;
+
       $scope.init = function (token) {
         $scope.token = token;
 
@@ -259,6 +264,31 @@ angular.module('collabjs.controllers')
         // start monitoring new updates
         $scope.checkNewPosts();
       };
+
+      function initWookmark() {
+
+        if (layout && layout.wookmarkInstance) {
+          layout.wookmarkInstance.clear();
+        }
+
+        layout = angular.element('.cards li');
+
+        layout.wookmark({
+          // Prepare layout options
+          autoResize: true, // This will auto-update the layout when the browser window is resized.
+          //direction: 'right',
+          container: angular.element('.cards-container'), // Optional, used for some extra CSS styling
+          offset: 15, // Optional, the distance between grid items
+          outerOffset: 10, // Optional, the distance to the containers border
+          itemWidth: 450 // Optional, the width of a grid item
+        });
+      }
+
+      $scope.$watchCollection('posts', function () {
+        if (cardLayout) {
+          $timeout(initWookmark, 0);
+        }
+      });
 
       $scope.profilePictureUrl = profileService.profilePictureUrl();
       $scope.getPostUrl = postsService.getPostUrl;
@@ -604,7 +634,7 @@ angular.module('collabjs.controllers')
 ]);
 
 angular.module('collabjs.controllers')
-  .controller('SidebarController', ['$scope', 'searchService',
+  .controller('MenuController', ['$scope', 'searchService',
     function ($scope, searchService) {
       'use strict';
 
@@ -647,3 +677,41 @@ angular.module('collabjs.controllers')
       });
     }
 ]);
+
+/*
+angular.module('collabjs.controllers')
+  .controller('DebugController', ['$scope', '$timeout', 'postsService',
+    function ($scope, $timeout, postsService) {
+      'use strict';
+
+      $scope.token = '';
+      $scope.posts = [];
+
+      // update the layout.
+      // handler.wookmark();
+
+      $scope.init = function (token) {
+        $scope.token = token;
+
+        postsService.getNews().then(function (posts) {
+          $scope.posts = posts;
+          $timeout(initWookmark, 0);
+        });
+      };
+
+      function initWookmark() {
+        var handler = $('.cards li');
+
+        handler.wookmark({
+          // Prepare layout options
+          autoResize: true, // This will auto-update the layout when the browser window is resized.
+          //direction: 'right',
+          container: $('.cards-container'), // Optional, used for some extra CSS styling
+          offset: 5, // Optional, the distance between grid items
+          outerOffset: 10, // Optional, the distance to the containers border
+          itemWidth: 410 // Optional, the width of a grid item
+        });
+      }
+    }
+  ]);
+*/

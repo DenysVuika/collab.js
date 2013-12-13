@@ -1,6 +1,5 @@
-div(ng-controller='WallController', ng-init="init('#{collabjs.token}', '#{account}');")
-  div(ng-controller='UserProfileController')
-    include people-profile
+div.container(ng-init="init('#{collabjs.token}', '#{account}');")
+  include people-profile
 
   div.page-header
     h3

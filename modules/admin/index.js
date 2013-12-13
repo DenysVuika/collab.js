@@ -7,16 +7,17 @@ module.exports = function (context) {
   // define path to module-specific 'views' folder
   var __views = __dirname + '/views/';
 
-// extend sidebar
-  config.ui.sidebar.administration.push({
-    text: 'Link 1',
+  // extend menu
+  config.ui.menu.links.push({
     icon: 'wrench',
-    url: '/admin/sample1'
+    url: '/admin/sample1',
+    text: 'Link 1'
   });
-  config.ui.sidebar.administration.push({
-    text: 'Link 2',
-    icon: 'wrench',
-    url: '/admin/sample2'
+
+  config.ui.menu.links.push({
+    icon: 'envelope',
+    url: '/admin/sample2',
+    text: 'Link 2'
   });
 
   // add custom routes
