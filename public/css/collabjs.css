@@ -950,7 +950,7 @@ a.comments-button {
   margin: 0;
   padding: 0;
 }
-.cards li {
+.cards li.card {
   width: 440px;
   background-color: #ffffff;
   border: 1px solid #dedede;
@@ -961,51 +961,69 @@ a.comments-button {
   /** Hide items initially to avoid a flicker effect **/
   padding: 4px;
   box-sizing: content-box;
+  /* comment list container */
 }
-.cards li.inactive {
+.cards li.card.inactive {
   visibility: hidden;
   opacity: 0;
 }
-.cards li img {
+.cards li.card img {
   display: block;
 }
-.cards li p {
+.cards li.card p {
   color: #666;
   font-size: 12px;
   margin: 7px 0 0 7px;
 }
-.cards li .status-card {
+.cards li.card .status-card {
   padding: 5px;
 }
-.cards li .status-card textarea {
+.cards li.card .status-card textarea {
   box-sizing: border-box;
   font-size: 16px;
   margin: 0;
   padding: 6px 8px;
   border-radius: 0;
 }
-.cards li .status-card .btn {
+.cards li.card .status-card .btn {
   border-radius: 0;
 }
-.cards li .card-avatar {
+.cards li.card .card-avatar {
   float: left;
   border-radius: 50%;
   box-shadow: 0 1px 0 rgba(255, 255, 255, 0.4) inset;
 }
-.cards li .card-avatar img {
+.cards li.card .card-avatar img {
   border-radius: 50%;
   box-shadow: 0 1px 3px 0px rgba(0, 0, 0, 0.3);
   vertical-align: middle;
   border: 0;
 }
-.cards li .card-content {
+.cards li.card .card-content {
   padding: 10px;
 }
-.cards li .card-header {
+.cards li.card .card-content:hover .card-options-button {
+  display: inline-block;
+}
+.cards li.card .card-options-button {
+  display: none;
+  float: right;
+}
+.cards li.card .card-options-button a {
+  color: #262626;
+}
+.cards li.card .card-options-button .dropdown-toggle {
+  box-shadow: none;
+  -webkit-box-shadow: none;
+}
+.cards li.card .card-options-button .dropdown-menu {
+  border-radius: 0;
+}
+.cards li.card .card-header {
   margin-left: 60px;
   margin-right: 50px;
 }
-.cards li .card-header h3 {
+.cards li.card .card-header h3 {
   margin: 0;
   padding: 0;
   color: #636364;
@@ -1013,16 +1031,16 @@ a.comments-button {
   font-weight: 600;
   text-shadow: 0 1px rgba(255, 255, 255, 0.5);
 }
-.cards li .card-header h3 a {
+.cards li.card .card-header h3 a {
   color: #262626;
 }
-.cards li .card-header .card-details {
+.cards li.card .card-header .card-details {
   color: #999;
   font-size: 12px;
   display: inline-block;
   outline: none;
 }
-.cards li .card-text {
+.cards li.card .card-text {
   margin: 0;
   padding: 0;
   padding-top: 40px;
@@ -1032,11 +1050,11 @@ a.comments-button {
   box-sizing: border-box;
   text-overflow: ellipsis;
 }
-.cards li .card-comments {
+.cards li.card .card-footer {
   border-top: 1px solid #e5e5e5;
-  padding: 20px 0;
+  padding: 10px 0;
 }
-.cards li .card-comments input[type='text'] {
+.cards li.card .card-footer input[type='text'] {
   width: 100%;
   border: 1px solid #ddd;
   color: #999;
@@ -1044,7 +1062,47 @@ a.comments-button {
   font-size: 12px;
   margin: 0;
   padding: 6px 8px;
+  margin-top: 5px;
 }
+.cards li.card .card-comments-button {
+  padding-top: 5px;
+  padding-bottom: 5px;
+  padding-right: 5px;
+  font-size: 12px;
+  color: #262626;
+}
+.cards li.card .card-comments-button span {
+  padding-right: 5px;
+}
+.cards li.card .card-comments {
+  overflow: visible;
+  position: relative;
+}
+.cards li.card ul.comment-list {
+  list-style-type: none;
+  position: relative;
+  margin: 0;
+  padding: 0;
+  max-height: 400px;
+  /*max-height: 100px;*/
+  overflow-y: auto;
+  /*li {
+        height: 150px;
+      }*/
+}
+/*
+.card-options-menu {
+  position: absolute;
+  display: none;
+
+  .dropdown-menu {
+    display: block;
+    position: static;
+    margin-bottom: 5px;
+    border-radius: 0;
+  }
+}
+*/
 .wookmark-placeholder {
   border-radius: 2px;
   -moz-border-radius: 2px;

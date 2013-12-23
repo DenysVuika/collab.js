@@ -155,7 +155,7 @@ a.comments-button {
   margin: 0;
   padding: 0;
 
-  li {
+  li.card {
     width: 440px;
     background-color: #ffffff;
     border: 1px solid #dedede;
@@ -212,22 +212,29 @@ a.comments-button {
       }
     }
 
-//    .card-date {
-//      float: right;
-//      color: #bbb;
-//      text-shadow: 0 1px rgba(255, 255, 255, 0.5);
-//      font-size: 14px;
-//      text-align: center;
-//
-//      span {
-//        display: block;
-//        font-size: 24px;
-//        font-weight: 600;
-//      }
-//    }
-
     .card-content {
       padding: 10px;
+
+      &:hover {
+        .card-options-button {
+          display: inline-block;
+        }
+      }
+    }
+
+    .card-options-button {
+      display: none;
+      float: right;
+      a { color: #262626; }
+
+      .dropdown-toggle {
+        box-shadow: none;
+        -webkit-box-shadow: none;
+      }
+
+      .dropdown-menu {
+        border-radius: 0;
+      }
     }
 
     .card-header {
@@ -266,10 +273,9 @@ a.comments-button {
       text-overflow: ellipsis;
     }
 
-    .card-comments {
+    .card-footer {
       border-top: 1px solid #e5e5e5;
-      //margin: 0 14px 0 14px;
-      padding: 20px 0;
+      padding: 10px 0;
 
       input[type='text'] {
         width: 100%;
@@ -279,10 +285,55 @@ a.comments-button {
         font-size: 12px;
         margin: 0;
         padding: 6px 8px;
+        margin-top: 5px;
       }
+    }
+
+    .card-comments-button {
+      padding-top: 5px;
+      padding-bottom: 5px;
+      padding-right: 5px;
+      font-size: 12px;
+      color: #262626;
+
+      span { padding-right: 5px; }
+    }
+
+    /* comment list container */
+    .card-comments {
+      overflow: visible;
+      position: relative;
+    }
+
+    ul.comment-list {
+      list-style-type: none;
+      position: relative;
+      margin: 0;
+      padding: 0;
+      max-height: 400px;
+      /*max-height: 100px;*/
+      overflow-y: auto;
+      
+      /*li {
+        height: 150px;
+      }*/
     }
   }
 }
+
+/*
+.card-options-menu {
+  position: absolute;
+  display: none;
+
+  .dropdown-menu {
+    display: block;
+    position: static;
+    margin-bottom: 5px;
+    border-radius: 0;
+  }
+}
+*/
 
 .wookmark-placeholder {
   border-radius: 2px;

@@ -240,8 +240,8 @@ angular.module('collabjs.controllers')
 ]);
 
 angular.module('collabjs.controllers')
-  .controller('NewsController', ['$scope', '$timeout', 'postsService', 'profileService',
-    function ($scope, $timeout, postsService, profileService) {
+  .controller('NewsController', ['$scope', '$compile', '$timeout', 'postsService', 'profileService',
+    function ($scope, $compile, $timeout, postsService, profileService) {
       'use strict';
       $scope.token = null;
       $scope.posts = [];
@@ -271,7 +271,7 @@ angular.module('collabjs.controllers')
           layout.wookmarkInstance.clear();
         }
 
-        layout = angular.element('.cards li');
+        layout = angular.element('.cards li.card');
 
         layout.wookmark({
           // Prepare layout options
@@ -294,13 +294,33 @@ angular.module('collabjs.controllers')
       $scope.getPostUrl = postsService.getPostUrl;
       $scope.loadPostComments = postsService.loadPostComments;
 
+      // TODO: used by old layout, ensure still needed
       $scope.deletePost = function (post) {
         if (post) {
           postsService.deletePost(post.id, $scope.token).then(function () {
             var i = $scope.posts.indexOf(post);
-            if (i >-1) {
+            if (i > -1) {
               $scope.posts.splice(i, 1);
+              // TODO: replace with collection watching
               $scope.hasNoPosts = ($scope.posts.length === 0);
+            }
+          });
+        }
+      };
+
+      $scope.mutePost = function (postId) {
+        if (postId) {
+          // remove post on server
+          postsService.deletePost(postId, $scope.token).then(function () {
+            // on successful removal update the client side collection
+            var post = $scope.posts.filter(function (p) { return p.id === postId; });
+            if (post.length > 0) {
+              var i = $scope.posts.indexOf(post[0]);
+              if (i > -1) {
+                $scope.posts.splice(i, 1);
+                // TODO: replace with collection watching
+                $scope.hasNoPosts = ($scope.posts.length === 0);
+              }
             }
           });
         }
@@ -353,8 +373,61 @@ angular.module('collabjs.controllers')
           $scope.hasNoPosts = ($scope.posts.length === 0);
         });
       };
+
+      /*
+      function createOptionsMenu(postId) {
+        var template = '' +
+          '<ul class="dropdown-menu" role="menu" ng-controller="OptionsMenuController" ng-init="init(' + postId + ')">' +
+          '<li><a tabindex="-1" href="" ng-click="mutePost(postId)">Mute post</a></li>' +
+          '</ul>';
+        return $compile(template)($scope);
+      }
+
+      $scope.showOptions = function ($event, postId) {
+        var $menu = angular.element('.card-options-menu');
+        if ($menu.length > 0) {
+
+          // build options menu content based on current post
+          var menuContent = createOptionsMenu(postId);
+          $menu.html(menuContent);
+
+          // calculate menu position (TODO: optimize)
+          var rect = $event.target.getBoundingClientRect();
+          var top = rect.top;
+          top -= parseInt($(document.body).css('padding-top'));
+          top += rect.height;
+          var left = (rect.left - $menu.width()) + rect.width;
+          if (left < 0) { left = rect.left; }
+
+          // show menu
+          $menu.css({
+            display: 'block',
+            left: left,
+            top: top
+          });
+
+          $event.stopPropagation();
+        }
+      };
+
+      $scope.hideOptions = function () {
+        var $menu = angular.element('.card-options-menu');
+        $menu.hide();
+      };
+      */
     }
 ]);
+
+/*
+angular.module('collabjs.controllers')
+  .controller('OptionsMenuController', ['$scope', function ($scope) {
+    'use strict';
+
+    $scope.init = function (postId) {
+      $scope.postId = postId;
+    };
+  }]);
+*/
 
 angular.module('collabjs.controllers')
   .controller('StatusController', ['$scope', 'postsService',
