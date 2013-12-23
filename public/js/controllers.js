@@ -292,9 +292,10 @@ angular.module('collabjs.controllers')
 
       $scope.profilePictureUrl = profileService.profilePictureUrl();
       $scope.getPostUrl = postsService.getPostUrl;
+      // TODO: used by old layout
       $scope.loadPostComments = postsService.loadPostComments;
 
-      // TODO: used by old layout, ensure still needed
+      // TODO: used by old layout
       $scope.deletePost = function (post) {
         if (post) {
           postsService.deletePost(post.id, $scope.token).then(function () {
@@ -373,61 +374,40 @@ angular.module('collabjs.controllers')
           $scope.hasNoPosts = ($scope.posts.length === 0);
         });
       };
-
-      /*
-      function createOptionsMenu(postId) {
-        var template = '' +
-          '<ul class="dropdown-menu" role="menu" ng-controller="OptionsMenuController" ng-init="init(' + postId + ')">' +
-          '<li><a tabindex="-1" href="" ng-click="mutePost(postId)">Mute post</a></li>' +
-          '</ul>';
-        return $compile(template)($scope);
-      }
-
-      $scope.showOptions = function ($event, postId) {
-        var $menu = angular.element('.card-options-menu');
-        if ($menu.length > 0) {
-
-          // build options menu content based on current post
-          var menuContent = createOptionsMenu(postId);
-          $menu.html(menuContent);
-
-          // calculate menu position (TODO: optimize)
-          var rect = $event.target.getBoundingClientRect();
-          var top = rect.top;
-          top -= parseInt($(document.body).css('padding-top'));
-          top += rect.height;
-          var left = (rect.left - $menu.width()) + rect.width;
-          if (left < 0) { left = rect.left; }
-
-          // show menu
-          $menu.css({
-            display: 'block',
-            left: left,
-            top: top
-          });
-
-          $event.stopPropagation();
-        }
-      };
-
-      $scope.hideOptions = function () {
-        var $menu = angular.element('.card-options-menu');
-        $menu.hide();
-      };
-      */
     }
 ]);
 
-/*
+/* Single card controller (used as a child of NewsController) */
 angular.module('collabjs.controllers')
-  .controller('OptionsMenuController', ['$scope', function ($scope) {
-    'use strict';
+  .controller('CardController', ['$scope', '$timeout', 'postsService',
+    function ($scope, $timeout, postsService) {
+      'use strict';
 
-    $scope.init = function (postId) {
-      $scope.postId = postId;
-    };
-  }]);
-*/
+      $scope.commentsExpanded = false;
+
+      $scope.init = function (post) {
+        $scope.post = post;
+      };
+
+      $scope.toggleComments = function ($event) {
+        if ($scope.commentsExpanded) {
+          $scope.commentsExpanded = false;
+          updateCardLayout($event.currentTarget);
+        } else {
+          postsService.loadPostComments($scope.post, function () {
+            $scope.commentsExpanded = true;
+            updateCardLayout($event.currentTarget);
+          });
+        }
+      };
+
+      // update card layout based on an element inside it
+      function updateCardLayout(element) {
+        $timeout(function () {
+          $(element).parents('.card').trigger('refreshWookmark');
+        }, 0);
+      }
+    }]);
 
 angular.module('collabjs.controllers')
   .controller('StatusController', ['$scope', 'postsService',

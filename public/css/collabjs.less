@@ -286,6 +286,10 @@ a.comments-button {
         margin: 0;
         padding: 6px 8px;
         margin-top: 5px;
+
+        &:focus {
+          color: #000;
+        }
       }
     }
 
@@ -309,31 +313,19 @@ a.comments-button {
       list-style-type: none;
       position: relative;
       margin: 0;
-      padding: 0;
-      max-height: 400px;
-      /*max-height: 100px;*/
+      padding: 5px 0;
+      /*max-height: 400px;*/
+      max-height: 100px;
       overflow-y: auto;
-      
-      /*li {
-        height: 150px;
-      }*/
+
+      /* lightweight scrollbar for comments list */
+      &::-webkit-scrollbar-track {
+        background: #fff;
+        border: none;
+      }
     }
   }
 }
-
-/*
-.card-options-menu {
-  position: absolute;
-  display: none;
-
-  .dropdown-menu {
-    display: block;
-    position: static;
-    margin-bottom: 5px;
-    border-radius: 0;
-  }
-}
-*/
 
 .wookmark-placeholder {
   border-radius: 2px;

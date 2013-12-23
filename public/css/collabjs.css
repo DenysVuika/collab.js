@@ -130,15 +130,16 @@
   width: 10px;
 }
 ::-webkit-scrollbar-track {
-  background: #FFF;
-  -webkit-box-shadow: inset 1px 1px 2px rgba(0, 0, 0, 0.1);
+  background: #fff;
+  /*-webkit-box-shadow: inset 1px 1px 2px rgba(0, 0, 0, 0.1);*/
+  border: 1px solid #ccc;
 }
 ::-webkit-scrollbar-thumb {
-  background: #CCC;
+  background: #ccc;
   -webkit-box-shadow: inset 1px 1px 2px rgba(0, 0, 0, 0.2);
 }
 ::-webkit-scrollbar-thumb:hover {
-  background: #AAA;
+  background: #aaa;
 }
 ::-webkit-scrollbar-thumb:active {
   background: #888;
@@ -1064,6 +1065,9 @@ a.comments-button {
   padding: 6px 8px;
   margin-top: 5px;
 }
+.cards li.card .card-footer input[type='text']:focus {
+  color: #000;
+}
 .cards li.card .card-comments-button {
   padding-top: 5px;
   padding-bottom: 5px;
@@ -1082,27 +1086,16 @@ a.comments-button {
   list-style-type: none;
   position: relative;
   margin: 0;
-  padding: 0;
-  max-height: 400px;
-  /*max-height: 100px;*/
+  padding: 5px 0;
+  /*max-height: 400px;*/
+  max-height: 100px;
   overflow-y: auto;
-  /*li {
-        height: 150px;
-      }*/
+  /* lightweight scrollbar for comments list */
 }
-/*
-.card-options-menu {
-  position: absolute;
-  display: none;
-
-  .dropdown-menu {
-    display: block;
-    position: static;
-    margin-bottom: 5px;
-    border-radius: 0;
-  }
+.cards li.card ul.comment-list::-webkit-scrollbar-track {
+  background: #fff;
+  border: none;
 }
-*/
 .wookmark-placeholder {
   border-radius: 2px;
   -moz-border-radius: 2px;

@@ -6,11 +6,8 @@ div.cards-container(ng-init="init('#{collabjs.token}')")
         div.text-right(style='padding-top:5px;')
           input.btn.btn-success(type='submit', value='Share')
     li.card(ng-repeat='post in posts | orderBy:"created":true')
-      div.card-content
+      div.card-content(ng-controller='CardController', ng-init='init(post)')
         div.card-options-button.btn-group
-          //-a(href='', ng-click='showOptions($event, post.id)', on-outside-element-click='hideOptions()')
-            i.fa.fa-chevron-down
-          //-div.btn-group
           a.dropdown-toggle(href='', data-toggle='dropdown')
             span.fa.fa-chevron-down
           ul.dropdown-menu.pull-right(role='menu')
@@ -29,24 +26,12 @@ div.cards-container(ng-init="init('#{collabjs.token}')")
         div.card-text
           div(ng-bind-html='post.content | twitterize')
         div.card-footer
-          a.card-comments-button(href='', ng-if='post.commentsCount > 0', ng-click='loadPostComments(post)')
-            span {{post.commentsCount}} comments
-            i.fa.fa-chevron-down
-          div.card-comments
-            //-ul.comment-list
-            ul
+          a.card-comments-button(href='', ng-if='post.commentsCount > 0', ng-click='toggleComments($event)')
+            span {{ commentsExpanded ? 'Hide comments' : post.commentsCount + ' comments'}}
+            i.fa(ng-class='{ "fa-chevron-up": commentsExpanded, "fa-chevron-down": !commentsExpanded }')
+          div.card-comments(ng-if='commentsExpanded')
+            ul.comment-list
               li(ng-repeat='comment in post.comments')
                 span {{comment.name}}
-          input(type='text', placeholder='Add a comment...')
-//- options menu
-div.dropdown.clearfix.card-options-menu
-  //-ul.dropdown-menu(role='menu')
-    li
-      a(tabindex='-1', href='') Action
-    li
-      a(tabindex='-1', href='') Another action
-    li
-      a(tabindex='-1', href='') Something else here
-    li.divider
-    li
-      a(tabindex='-1', href='') Separated link
+          form(ng-controller='CommentController', ng-init='init("#{collabjs.token}")',  ng-submit='submit()', role='form')
+            input(type='text', ng-model='content', placeholder='Add a comment...', autocomplete='off')

@@ -187,10 +187,13 @@ angular.module('collabjs.services', ['ngResource'])
           .then(function (res) { d.resolve(res); });
         return d.promise;
       },
-      loadPostComments: function (post) {
+      loadPostComments: function (post, callback) {
         if (post && post.id) {
           $http.get('/api/timeline/posts/' + post.id + '/comments').success(function (data) {
             post.comments = data || [];
+            if (callback) {
+              callback(post);
+            }
           });
         }
       }
