@@ -10,7 +10,8 @@ html(ng-app='collabjs')
 
     script(src='/lib/jquery/js/jquery.min.js')
 
-  body
+  body(ng-controller='AppController', ng-init="init('#{collabjs.token}')")
+    //- TODO: deprecate
     input(type='hidden', id='csrf_token', value=collabjs.token)
     include shared/menu
 

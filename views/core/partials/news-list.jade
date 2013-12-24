@@ -1,5 +1,5 @@
-div(ng-init="init('#{collabjs.token}');")
-  form.status-form(ng-controller='StatusController', ng-init="init('#{collabjs.token}')", ng-submit='submit()', role='form')
+div
+  form.status-form(ng-controller='StatusController', ng-submit='submit()', role='form')
     textarea.form-control(ng-model='content', name='content', rows='3', placeholder="What's on your mind?")
     div.footer
       input.btn.btn-success(type='submit', value='Post')

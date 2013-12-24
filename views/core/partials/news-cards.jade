@@ -1,7 +1,7 @@
-div.cards-container(ng-init="init('#{collabjs.token}')")
+div.cards-container
   ul.cards(infinite-scroll='loadMorePosts()', infinite-scroll-immediate-check='false')
     li.card
-      form.status-card(ng-controller='StatusController', ng-init="init('#{collabjs.token}')", ng-submit='submit()', role='form')
+      form.status-card(ng-controller='StatusController', ng-submit='submit()', role='form')
         textarea.form-control(ng-model='content', name='content', style='resize: none', rows='3', placeholder="Share what's new...")
         div.text-right(style='padding-top:5px;')
           input.btn.btn-success(type='submit', value='Share')

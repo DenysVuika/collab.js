@@ -1,4 +1,15 @@
 angular.module('collabjs.controllers')
+  // root application controller
+  .controller('AppController', ['$scope',
+    function ($scope) {
+      'use strict';
+
+      $scope.init = function (token) {
+        $scope.token = token;
+      };
+    }]);
+
+angular.module('collabjs.controllers')
   .controller('UserProfileController', ['$scope', 'peopleService',
     function ($scope, peopleService) {
       'use strict';
@@ -95,13 +106,7 @@ angular.module('collabjs.controllers')
   .controller('CommentController', ['$scope', 'postsService',
     function ($scope, postsService) {
       'use strict';
-
       $scope.content = '';
-
-      /* optional, token can be provided also with the parent scope */
-      $scope.init = function (token) {
-        $scope.token = token;
-      };
 
       $scope.submit = function () {
         if ($scope.token && $scope.content && $scope.content.length > 0) {
@@ -124,20 +129,16 @@ angular.module('collabjs.controllers')
     function ($scope, postsService, profileService) {
       'use strict';
 
-      $scope.token = '';
       $scope.posts = [];
       // user has no posts to display
       $scope.hasNoPosts = false;
 
-      $scope.init = function (token) {
-        $scope.token = token;
-        postsService.getMentions().then(function (data) {
-          if (data.feed && data.feed.length > 0) {
-            $scope.posts = data.feed;
-          }
-          $scope.hasNoPosts = ($scope.posts.length === 0);
-        });
-      };
+      postsService.getMentions().then(function (data) {
+        if (data.feed && data.feed.length > 0) {
+          $scope.posts = data.feed;
+        }
+        $scope.hasNoPosts = ($scope.posts.length === 0);
+      });
 
       $scope.profilePictureUrl = profileService.profilePictureUrl();
       $scope.getPostUrl = postsService.getPostUrl;
@@ -182,23 +183,18 @@ angular.module('collabjs.controllers')
     function ($scope, $routeParams, postsService, profileService) {
       'use strict';
 
-      $scope.token = null;
       $scope.account = $routeParams.account;
       $scope.posts = [];
       // user has no posts to display
       $scope.hasNoPosts = false;
 
-      $scope.init = function (token) {
-        $scope.token = token;
-
-        postsService.getWall($scope.account).then(function (data) {
-          $scope.profile = data.user;
-          if (data.feed && data.feed.length > 0) {
-            $scope.posts = data.feed;
-          }
-          $scope.hasNoPosts = ($scope.posts.length === 0);
-        });
-      };
+      postsService.getWall($scope.account).then(function (data) {
+        $scope.profile = data.user;
+        if (data.feed && data.feed.length > 0) {
+          $scope.posts = data.feed;
+        }
+        $scope.hasNoPosts = ($scope.posts.length === 0);
+      });
 
       $scope.profilePictureUrl = profileService.profilePictureUrl();
       $scope.getPostUrl = postsService.getPostUrl;
@@ -243,27 +239,13 @@ angular.module('collabjs.controllers')
   .controller('NewsController', ['$scope', '$compile', '$timeout', 'postsService', 'profileService',
     function ($scope, $compile, $timeout, postsService, profileService) {
       'use strict';
-      $scope.token = null;
+      var cardLayout = true;
+      $scope.templateUrl = cardLayout ? '/partials/news-cards' : '/partials/news-list';
       $scope.posts = [];
       $scope.hasNoPosts = false;
       $scope.newPostsCount = 0;
-
-      var cardLayout = true;
-      $scope.templateUrl = cardLayout ? '/partials/news-cards' : '/partials/news-list';
-
       var layout;
-
-      $scope.init = function (token) {
-        $scope.token = token;
-
-        postsService.getNews().then(function (data) {
-          $scope.posts = data;
-          $scope.hasNoPosts = (data.length === 0);
-        });
-
-        // start monitoring new updates
-        $scope.checkNewPosts();
-      };
+      var _updateChecker;
 
       function initWookmark() {
 
@@ -309,6 +291,7 @@ angular.module('collabjs.controllers')
         }
       };
 
+      // TODO: move to CardController
       $scope.mutePost = function (postId) {
         if (postId) {
           // remove post on server
@@ -327,7 +310,6 @@ angular.module('collabjs.controllers')
         }
       };
 
-      var _updateChecker = null;
       $scope.loadNewPosts = function () {
         $timeout.cancel(_updateChecker);
         // TODO: check the case when no posts are loaded
@@ -374,6 +356,14 @@ angular.module('collabjs.controllers')
           $scope.hasNoPosts = ($scope.posts.length === 0);
         });
       };
+
+      postsService.getNews().then(function (data) {
+        $scope.posts = data;
+        $scope.hasNoPosts = (data.length === 0);
+      });
+
+      // start monitoring new updates
+      $scope.checkNewPosts();
     }
 ]);
 
@@ -432,13 +422,7 @@ angular.module('collabjs.controllers')
   .controller('StatusController', ['$scope', 'postsService',
     function ($scope, postsService) {
       'use strict';
-
-      $scope.token = null;
       $scope.content = null;
-
-      $scope.init = function (token) {
-        $scope.token = token;
-      };
 
       $scope.submit = function () {
         if ($scope.token && $scope.content && $scope.content.length > 0) {
@@ -462,7 +446,6 @@ angular.module('collabjs.controllers')
       $scope.error = false;
       $scope.info = false;
 
-      $scope.token = null;
       $scope.query = $routeParams.q || null;
       $scope.source = $routeParams.src || 'unknown';
       $scope.isSaved = null;
@@ -477,15 +460,11 @@ angular.module('collabjs.controllers')
         return $scope.isSaved;
       };
 
-      $scope.init = function (token) {
-        $scope.token = token;
-
-        searchService.searchPosts($scope.query, $scope.source).then(function (data) {
-          $scope.isSaved = data.isSaved;
-          $scope.posts = data.entries;
-          $scope.hasNoPosts = ($scope.posts.length === 0);
-        });
-      };
+      searchService.searchPosts($scope.query, $scope.source).then(function (data) {
+        $scope.isSaved = data.isSaved;
+        $scope.posts = data.entries;
+        $scope.hasNoPosts = ($scope.posts.length === 0);
+      });
 
       $scope.dismissError = function () { $scope.error = false; };
       $scope.dismissInfo = function () { $scope.info = false; };
@@ -661,17 +640,12 @@ angular.module('collabjs.controllers')
     function ($scope, accountService) {
       'use strict';
 
-      $scope.token = null;
       $scope.pwdOld = '';
       $scope.pwdNew = '';
       $scope.pwdConfirm = '';
 
       $scope.error = false;
       $scope.info = false;
-
-      $scope.init = function (token) {
-        $scope.token = token;
-      };
 
       $scope.dismissError = function () { $scope.error = false; };
       $scope.dismissInfo = function () { $scope.info = false; };

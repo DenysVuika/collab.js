@@ -1,6 +1,6 @@
 !!! 5
 html
-  head
+  head(ng-app='collabjs')
     title= title
 
     include shared/_meta
@@ -10,7 +10,7 @@ html
 
     script(src='/lib/jquery/js/jquery.min.js')
 
-  body
+  body(ng-controller='AppController', ng-init="init('#{collabjs.token}')")
     include shared/menu
 
     div.container
