@@ -312,16 +312,68 @@ a.comments-button {
     ul.comment-list {
       list-style-type: none;
       position: relative;
-      margin: 0;
+      margin: 10px 0 0;
       padding: 5px 0;
-      /*max-height: 400px;*/
-      max-height: 100px;
+      max-height: 400px;
       overflow-y: auto;
 
       /* lightweight scrollbar for comments list */
       &::-webkit-scrollbar-track {
         background: #fff;
         border: none;
+      }
+
+      li.comment-content {
+        padding-bottom: 20px;
+      }
+
+      .comment-avatar {
+        float: left;
+        border-radius: 2px;
+
+        img {
+          border-radius: 2px;
+          vertical-align: middle;
+          border: 0;
+          width: 28px;
+          height: 28px;
+        }
+      }
+
+      .comment-header {
+        margin-left: 35px;
+
+        h4 {
+          margin: 0;
+          padding: 0;
+          color: #636364;
+          font-size: 13px;
+          font-weight: bold;
+          text-shadow: 0 1px rgba(255, 255, 255, 0.5);
+
+          a {
+            color: #262626;
+          }
+        }
+
+        .comment-details {
+          color: #999;
+          font-size: 12px;
+          display: inline-block;
+          outline: none;
+        }
+      }
+
+      .comment-text {
+        margin: 0;
+        margin-left: 35px;
+        margin-right: 10px;
+        padding: 0;
+        text-decoration: none;
+        outline: none;
+        box-sizing: border-box;
+        text-overflow: ellipsis;
+        font-size: 13px;
       }
     }
   }

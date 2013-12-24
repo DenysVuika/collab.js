@@ -31,7 +31,16 @@ div.cards-container(ng-init="init('#{collabjs.token}')")
             i.fa(ng-class='{ "fa-chevron-up": commentsExpanded, "fa-chevron-down": !commentsExpanded }')
           div.card-comments(ng-if='commentsExpanded')
             ul.comment-list
-              li(ng-repeat='comment in post.comments')
-                span {{comment.name}}
-          form(ng-controller='CommentController', ng-init='init("#{collabjs.token}")',  ng-submit='submit()', role='form')
-            input(type='text', ng-model='content', placeholder='Add a comment...', autocomplete='off')
+              li.comment-content(ng-repeat='comment in post.comments')
+                div.comment-avatar
+                  img(ng-src='{{comment.pictureUrl}}', alt='', width='28px', height='28px')
+                div.comment-header
+                  h4
+                    a(href='{{comment.account | wallUrl}}') {{comment.name}}
+                  span.comment-details
+                    span(am-time-ago='comment.created', title='{{comment.created | amDateFormat: "LLLL"}}')
+                div.comment-text
+                  div(ng-bind-html='comment.content | twitterize')
+
+          form(ng-submit='postComment($event)', role='form')
+            input(type='text', ng-model='comment', placeholder='Add a comment...', autocomplete='off')

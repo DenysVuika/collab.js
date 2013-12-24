@@ -96,9 +96,9 @@ angular.module('collabjs.controllers')
     function ($scope, postsService) {
       'use strict';
 
-      $scope.token = '';
       $scope.content = '';
 
+      /* optional, token can be provided also with the parent scope */
       $scope.init = function (token) {
         $scope.token = token;
       };
@@ -377,13 +377,17 @@ angular.module('collabjs.controllers')
     }
 ]);
 
-/* Single card controller (used as a child of NewsController) */
+/*
+  Single card controller (used as a child of NewsController)
+  Requires 'token' to be present within the current/parent scope
+*/
 angular.module('collabjs.controllers')
   .controller('CardController', ['$scope', '$timeout', 'postsService',
     function ($scope, $timeout, postsService) {
       'use strict';
 
       $scope.commentsExpanded = false;
+      $scope.comment = '';
 
       $scope.init = function (post) {
         $scope.post = post;
@@ -407,6 +411,21 @@ angular.module('collabjs.controllers')
           $(element).parents('.card').trigger('refreshWookmark');
         }, 0);
       }
+
+      $scope.postComment = function ($event) {
+        if ($scope.token && $scope.comment && $scope.comment.length > 0) {
+          postsService
+            .addComment($scope.token, $scope.post.id, $scope.comment)
+            .then(function (comment) {
+              var comments = $scope.post.comments || [];
+              comments.push(comment);
+              $scope.post.comments = comments;
+              $scope.post.commentsCount++;
+              $scope.comment = null;
+              updateCardLayout($event.currentTarget);
+            });
+        }
+      };
     }]);
 
 angular.module('collabjs.controllers')
@@ -730,41 +749,3 @@ angular.module('collabjs.controllers')
       });
     }
 ]);
-
-/*
-angular.module('collabjs.controllers')
-  .controller('DebugController', ['$scope', '$timeout', 'postsService',
-    function ($scope, $timeout, postsService) {
-      'use strict';
-
-      $scope.token = '';
-      $scope.posts = [];
-
-      // update the layout.
-      // handler.wookmark();
-
-      $scope.init = function (token) {
-        $scope.token = token;
-
-        postsService.getNews().then(function (posts) {
-          $scope.posts = posts;
-          $timeout(initWookmark, 0);
-        });
-      };
-
-      function initWookmark() {
-        var handler = $('.cards li');
-
-        handler.wookmark({
-          // Prepare layout options
-          autoResize: true, // This will auto-update the layout when the browser window is resized.
-          //direction: 'right',
-          container: $('.cards-container'), // Optional, used for some extra CSS styling
-          offset: 5, // Optional, the distance between grid items
-          outerOffset: 10, // Optional, the distance to the containers border
-          itemWidth: 410 // Optional, the width of a grid item
-        });
-      }
-    }
-  ]);
-*/
