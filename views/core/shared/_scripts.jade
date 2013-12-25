@@ -14,16 +14,54 @@ script(src='/lib/angular/modules/select2.js')
 script(src='/lib/angular/angular-animate.min.js')
 script(src='/lib/angular/modules/loading-bar.min.js')
 
-script(src='/js/app.js')
-script(src='/js/controllers.js')
-script(src='/js/filters.js')
-script(src='/js/directives.js')
-script(src='/js/services.js')
-
 if collabjs.env === 'development'
   script(src='/js/collabjs.js')
+  script(src='/js/app.js')
+
+  // services
+  script(src='/js/services/AccountService.js')
+  script(src='/js/services/ProfileService.js')
+  script(src='/js/services/PeopleService.js')
+  script(src='/js/services/PostsService.js')
+  script(src='/js/services/HelpService.js')
+  script(src='/js/services/SearchService.js')
+
+  // directives
+  script(src='/js/directives/menubar.js')
+  script(src='/js/directives/sidebar.js')
+  script(src='/js/directives/onDocumentClick.js')
+  script(src='/js/directives/onOutsideElementClick.js')
+
+  // filters
+  script(src='/js/filters/twitterize.js')
+  script(src='/js/filters/wallUrl.js')
+
+  // controllers
+  script(src='/js/controllers/AppController.js')
+  script(src='/js/controllers/MenuController.js')
+  script(src='/js/controllers/UserProfileController.js')
+  script(src='/js/controllers/PeopleListController.js')
+  script(src='/js/controllers/FollowingController.js')
+  script(src='/js/controllers/FollowersController.js')
+  script(src='/js/controllers/CommentController.js')
+  script(src='/js/controllers/MentionsController.js')
+  script(src='/js/controllers/WallController.js')
+  script(src='/js/controllers/NewsController.js')
+  script(src='/js/controllers/CardController.js')
+  script(src='/js/controllers/StatusController.js')
+  script(src='/js/controllers/SearchController.js')
+  script(src='/js/controllers/PostController.js')
+  script(src='/js/controllers/AccountController.js')
+  script(src='/js/controllers/PasswordController.js')
+  script(src='/js/controllers/HelpController.js')
 else
   script(src='/js/collabjs.min.js')
+  script(src='/js/app.js')
+  script(src='/js/services.min.js')
+  script(src='/js/directives.min.js')
+  script(src='/js/filters.min.js')
+  script(src='/js/controllers.min.js')
+
 
 script.
   collabjs.ui.requestPath = '#{requestPath}';

@@ -28,4 +28,7 @@ angular.module('collabjs', [
       .otherwise({ redirectTo: '/news' });
   }]);
 
+angular.module('collabjs.services', ['ngResource']);
+angular.module('collabjs.directives', []);
+angular.module('collabjs.filters', []);
 angular.module('collabjs.controllers', []);

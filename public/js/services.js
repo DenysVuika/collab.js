@@ -1,37 +1,49 @@
-angular.module('collabjs.services', ['ngResource'])
-  .service('accountService', function ($http, $q) {
+/*!
+* collab.js v0.4.0
+* Copyright (c) 2013 Denis Vuyka
+* License: MIT
+* http://www.opensource.org/licenses/mit-license.php
+*/
+angular.module('collabjs.services')
+  .service('accountService', ['$http', '$q',
+    function ($http, $q) {
+      'use strict';
+      return {
+        getAccount: function () {
+          var d = $q.defer();
+          $http.get('/api/account').success(function (data) { d.resolve(data); });
+          return d.promise;
+        },
+        updateAccount: function (token, data) {
+          var d = $q.defer()
+            , options = { headers: { 'x-csrf-token': token }, xsrfHeaderName : 'x-csrf-token' };
+          $http.post('/api/account', data, options).success(function () { d.resolve(true); });
+          return d.promise;
+        },
+        changePassword: function (token, data) {
+          var d = $q.defer()
+            , options = { headers: { 'x-csrf-token': token }, xsrfHeaderName : 'x-csrf-token' };
+          $http.post('/api/account/password', data, options)
+            .success(function (res) { console.log(res); d.resolve(res); })
+            .error(function (data) { d.reject(data); });
+          return d.promise;
+        }
+      };
+    }]);
+angular.module('collabjs.services')
+  .service('helpService', ['$http', '$q', function ($http, $q) {
     'use strict';
     return {
-      getAccount: function () {
+      getArticle: function (name) {
         var d = $q.defer();
-        $http.get('/api/account').success(function (data) { d.resolve(data); });
-        return d.promise;
-      },
-      updateAccount: function (token, data) {
-        var d = $q.defer()
-          , options = { headers: { 'x-csrf-token': token }, xsrfHeaderName : 'x-csrf-token' };
-        $http.post('/api/account', data, options).success(function () { d.resolve(true); });
-        return d.promise;
-      },
-      changePassword: function (token, data) {
-        var d = $q.defer()
-          , options = { headers: { 'x-csrf-token': token }, xsrfHeaderName : 'x-csrf-token' };
-        $http.post('/api/account/password', data, options)
-          .success(function (res) { console.log(res); d.resolve(res); })
-          .error(function (data) { d.reject(data); });
+        var query = (name) ? '/api/help/' + name : '/api/help';
+        $http.get(query).success(function (data) { d.resolve(data); });
         return d.promise;
       }
     };
-  })
-  .service('profileService', function () {
-    'use strict';
-    return {
-      profilePictureUrl: function () {
-        return  collabjs.currentUser.pictureUrl;
-      }
-    };
-  })
-  .service('peopleService', function ($http, $q) {
+  }]);
+angular.module('collabjs.services')
+  .service('peopleService', ['$http', '$q', function ($http, $q) {
     'use strict';
     var _people = [];
     return {
@@ -104,8 +116,9 @@ angular.module('collabjs.services', ['ngResource'])
         });
       }
     };
-  })
-  .service('postsService', function ($http, $q) {
+  }]);
+angular.module('collabjs.services')
+  .service('postsService', ['$http', '$q', function ($http, $q) {
     'use strict';
     return {
       getNews: function (topId) {
@@ -198,80 +211,82 @@ angular.module('collabjs.services', ['ngResource'])
         }
       }
     };
-  })
-  .service('helpService', function ($http, $q) {
-    'use strict';
-    return {
-      getArticle: function (name) {
-        var d = $q.defer();
-        var query = (name) ? '/api/help/' + name : '/api/help';
-        $http.get(query).success(function (data) { d.resolve(data); });
-        return d.promise;
-      }
-    };
-  })
-  .service('searchService', function ($rootScope, $http, $q) {
-    'use strict';
-    return {
-      getLists: function () {
-        var d = $q.defer()
-          , query = '/api/search/list';
-        $http.get(query)
-          .success(function (res) {
-            var lists = (res || []).map(function (l) {
-              l.url = '/#/search?q=' + l.q + '&src=' + l.src;
-              return l;
-            });
-            d.resolve(lists);
-          })
-          .error(function (data) { d.reject(data); });
-        return d.promise;
-      },
-      saveList: function (token, q, src) {
-        var d = $q.defer()
-          , query = '/api/search?q=' + encodeURIComponent(q) + '&src=' + src
-          , options = { headers: { 'x-csrf-token': token }, xsrfHeaderName : 'x-csrf-token' };
-        $http
-          .post(query, null, options)
-          .success(function () {
-            d.resolve(true);
-            $rootScope.$broadcast('listSaved@searchService', {
-              name: q,
-              q: encodeURIComponent(q),
-              src: src,
-              url: '/#/search?q=' + encodeURIComponent(q) + '&src=' + src
-            });
-          })
-          .error(function (err) { d.resolve(err); });
-        return d.promise;
-      },
-      deleteList: function (token, q, src) {
-        var d = $q.defer()
-          , query = '/api/search?q=' + encodeURIComponent(q) + '&src=' + src
-          , options = { headers: { 'x-csrf-token': token }, xsrfHeaderName : 'x-csrf-token' };
-        $http
-          .delete(query, options)
-          .success(function () {
-            d.resolve(true);
-            $rootScope.$broadcast('listDeleted@searchService', {
-              name: q,
-              q: encodeURIComponent(q),
-              src: src,
-              url: '/#/search?q=' + encodeURIComponent(q) + '&src=' + src
-            });
-          })
-          .error(function (err) { d.resolve(err); });
-        return d.promise;
-      },
-      searchPosts: function (q, src, topId) {
-        var d = $q.defer()
-          , query = '/api/search?q=' + encodeURIComponent(q) + '&src=' + src;
-        if (topId) { query = query + '&topId=' + topId; }
-        $http
-          .get(query)
-          .then(function (res) { d.resolve(res.data || []); });
+  }]);
+angular.module('collabjs.services')
+  .service('profileService', [
+    function () {
+      'use strict';
+      return {
+        profilePictureUrl: function () {
+          return  collabjs.currentUser.pictureUrl;
+        }
+      };
+    }
+  ]);
+angular.module('collabjs.services')
+  .service('searchService', ['$rootScope', '$http', '$q',
+      function ($rootScope, $http, $q) {
+        'use strict';
+        return {
+          getLists: function () {
+            var d = $q.defer()
+              , query = '/api/search/list';
+            $http.get(query)
+              .success(function (res) {
+                var lists = (res || []).map(function (l) {
+                  l.url = '/#/search?q=' + l.q + '&src=' + l.src;
+                  return l;
+                });
+                d.resolve(lists);
+              })
+              .error(function (data) { d.reject(data); });
+            return d.promise;
+          },
+          saveList: function (token, q, src) {
+            var d = $q.defer()
+              , query = '/api/search?q=' + encodeURIComponent(q) + '&src=' + src
+              , options = { headers: { 'x-csrf-token': token }, xsrfHeaderName : 'x-csrf-token' };
+            $http
+              .post(query, null, options)
+              .success(function () {
+                d.resolve(true);
+                $rootScope.$broadcast('listSaved@searchService', {
+                  name: q,
+                  q: encodeURIComponent(q),
+                  src: src,
+                  url: '/#/search?q=' + encodeURIComponent(q) + '&src=' + src
+                });
+              })
+              .error(function (err) { d.resolve(err); });
+            return d.promise;
+          },
+          deleteList: function (token, q, src) {
+            var d = $q.defer()
+              , query = '/api/search?q=' + encodeURIComponent(q) + '&src=' + src
+              , options = { headers: { 'x-csrf-token': token }, xsrfHeaderName : 'x-csrf-token' };
+            $http
+              .delete(query, options)
+              .success(function () {
+                d.resolve(true);
+                $rootScope.$broadcast('listDeleted@searchService', {
+                  name: q,
+                  q: encodeURIComponent(q),
+                  src: src,
+                  url: '/#/search?q=' + encodeURIComponent(q) + '&src=' + src
+                });
+              })
+              .error(function (err) { d.resolve(err); });
+            return d.promise;
+          },
+          searchPosts: function (q, src, topId) {
+            var d = $q.defer()
+              , query = '/api/search?q=' + encodeURIComponent(q) + '&src=' + src;
+            if (topId) { query = query + '&topId=' + topId; }
+            $http
+              .get(query)
+              .then(function (res) { d.resolve(res.data || []); });
 
-        return d.promise;
-      }
-    };
-  });
+            return d.promise;
+          }
+        };
+      }]);
