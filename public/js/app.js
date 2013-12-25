@@ -14,7 +14,9 @@ angular.module('collabjs', [
   .config(['$routeProvider', function ($routeProvider) {
     'use strict';
     $routeProvider
-      .when('/news', { template: '<div ng-include="templateUrl"></div>', controller: 'NewsController' })
+      // allows controller assigning template url dynamically via '$scope.templateUrl'
+      //.when('/news', { template: '<div ng-include="templateUrl"></div>', controller: 'NewsController' })
+      .when('/news', { templateUrl: '/partials/news', controller: 'NewsController' })
       .when('/people', { templateUrl: '/partials/people', controller: 'PeopleListController' })
       .when('/people/:account', { templateUrl: '/partials/wall', controller: 'WallController' })
       .when('/people/:account/following', { templateUrl: '/partials/following', controller: 'FollowingController' })

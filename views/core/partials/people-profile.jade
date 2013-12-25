@@ -27,7 +27,7 @@ div.row(ng-controller='UserProfileController')
                 em {{profile.bio}}
           a.btn.btn-default.pull-right.profile-btn(ng-show='canFollow(profile)', ng-click='follow(profile)') Follow
           a.btn.btn-danger.pull-right.profile-btn(ng-show='canUnfollow(profile)', ng-click='unfollow(profile)') Unfollow
-          a.btn.btn-success.pull-right.profile-btn(ng-show='profile.isOwnProfile', href='/account') Edit profile
+          a.btn.btn-success.pull-right.profile-btn(ng-show='profile.isOwnProfile', href='/#/account') Edit profile
 
     div.panel-footer
       ul.list-inline.profile-stats

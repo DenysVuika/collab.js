@@ -1,23 +1,23 @@
 angular.module('collabjs.controllers')
-  .controller('PostController', ['$scope', '$routeParams', 'postsService', 'profileService',
-    function ($scope, $routeParams, postsService, profileService) {
+  .controller('PostController', ['$scope', '$routeParams', 'postsService',
+    function ($scope, $routeParams, postsService) {
       'use strict';
 
       $scope.postId = $routeParams.postId;
-      $scope.post = null;
+      $scope.posts = [];
       $scope.hasPost = false;
       $scope.hasError = false;
       $scope.error = null;
 
       postsService.getPostById($scope.postId).then(function (data) {
-        $scope.post = data;
-        $scope.hasPost = (data !== undefined);
+        $scope.posts = [data];
+        $scope.hasPost = ($scope.posts.length > 0);
       }, function () {
         $scope.error = 'Post not found.';
         $scope.hasError = true;
       });
 
-      $scope.profilePictureUrl = profileService.profilePictureUrl();
-      $scope.loadPostComments = postsService.loadPostComments;
+      // do nothing here
+      $scope.loadMorePosts = function () {};
     }
   ]);

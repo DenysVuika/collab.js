@@ -1,12 +1,12 @@
 angular.module('collabjs.controllers')
-  .controller('WallController', ['$scope', '$routeParams', 'postsService', 'profileService',
-    function ($scope, $routeParams, postsService, profileService) {
+  .controller('WallController', ['$scope', '$routeParams', 'postsService',
+    function ($scope, $routeParams, postsService) {
       'use strict';
 
       $scope.account = $routeParams.account;
       $scope.posts = [];
-      // user has no posts to display
       $scope.hasNoPosts = false;
+      $scope.isLoadingMorePosts = false;
 
       postsService.getWall($scope.account).then(function (data) {
         $scope.profile = data.user;
@@ -16,26 +16,7 @@ angular.module('collabjs.controllers')
         $scope.hasNoPosts = ($scope.posts.length === 0);
       });
 
-      $scope.profilePictureUrl = profileService.profilePictureUrl();
-      $scope.getPostUrl = postsService.getPostUrl;
-      $scope.loadPostComments = postsService.loadPostComments;
-
-      $scope.deletePost = function (post) {
-        if (post) {
-          postsService.deletePost(post.id, $scope.token).then(function () {
-            var i = $scope.posts.indexOf(post);
-            if (i >-1) {
-              $scope.posts.splice(i, 1);
-              $scope.hasNoPosts = ($scope.posts.length === 0);
-            }
-          });
-        }
-      };
-
-      $scope.isLoadingMorePosts = false;
-
       $scope.loadMorePosts = function () {
-
         if ($scope.isLoadingMorePosts) { return; }
         $scope.isLoadingMorePosts = true;
 

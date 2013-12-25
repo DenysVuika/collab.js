@@ -1,6 +1,6 @@
 angular.module('collabjs.controllers')
-  .controller('SearchController', ['$scope', '$routeParams', 'searchService', 'postsService', 'profileService',
-    function ($scope, $routeParams, searchService, postsService, profileService) {
+  .controller('SearchController', ['$scope', '$routeParams', 'searchService',
+    function ($scope, $routeParams, searchService) {
       'use strict';
 
       $scope.error = false;
@@ -11,12 +11,13 @@ angular.module('collabjs.controllers')
       $scope.isSaved = null;
       $scope.hasNoPosts = null;
       $scope.posts = [];
+      $scope.isLoadingMorePosts = false;
 
-      $scope.canSave = function () {
+      $scope.canWatch = function () {
         return $scope.isSaved !== null && !$scope.isSaved && !$scope.hasNoPosts;
       };
 
-      $scope.canRemove = function () {
+      $scope.canUnwatch = function () {
         return $scope.isSaved;
       };
 
@@ -29,11 +30,7 @@ angular.module('collabjs.controllers')
       $scope.dismissError = function () { $scope.error = false; };
       $scope.dismissInfo = function () { $scope.info = false; };
 
-      $scope.profilePictureUrl = profileService.profilePictureUrl();
-      $scope.getPostUrl = postsService.getPostUrl;
-      $scope.loadPostComments = postsService.loadPostComments;
-
-      $scope.saveList = function () {
+      $scope.watch = function () {
         searchService
           .saveList($scope.token, $scope.query, $scope.source)
           .then(
@@ -45,7 +42,7 @@ angular.module('collabjs.controllers')
         );
       };
 
-      $scope.deleteList = function () {
+      $scope.unwatch = function () {
         searchService
           .deleteList($scope.token, $scope.query, $scope.source)
           .then(
@@ -57,22 +54,7 @@ angular.module('collabjs.controllers')
         );
       };
 
-      $scope.deletePost = function (post) {
-        if (post) {
-          postsService.deletePost(post.id, $scope.token).then(function () {
-            var i = $scope.posts.indexOf(post);
-            if (i >-1) {
-              $scope.posts.splice(i, 1);
-              $scope.hasNoPosts = ($scope.posts.length === 0);
-            }
-          });
-        }
-      };
-
-      $scope.isLoadingMorePosts = false;
-
       $scope.loadMorePosts = function () {
-
         if ($scope.isLoadingMorePosts) { return; }
         $scope.isLoadingMorePosts = true;
 

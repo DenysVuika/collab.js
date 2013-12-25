@@ -12,15 +12,13 @@ div.container
     button(type='button', ng-click='dismissInfo()').close &times;
     span {{info}}
 
-  div.text-right.ng-cloak(style='padding-bottom: 10px;', ng-if='canSave()')
-    button.btn.btn-success(ng-click='saveList()') Save search
+  div.text-right.ng-cloak(style='padding-bottom: 10px;', ng-if='canWatch()')
+    button.btn.btn-success(ng-click='watch()') Watch
 
-  div.text-right.ng-cloak(style='padding-bottom: 10px;', ng-if='canRemove()')
-    button.btn.btn-danger(ng-click='deleteList()') Remove saved search
+  div.text-right.ng-cloak(style='padding-bottom: 10px;', ng-if='canUnwatch()')
+    button.btn.btn-danger(ng-click='unwatch()') Unwatch
 
   p.lead.ng-cloak(ng-if='hasNoPosts') No entries found...
 
-  include posts-list
+  include _cards
   include _spinner
-
-  div.alert.alert-danger.page-error

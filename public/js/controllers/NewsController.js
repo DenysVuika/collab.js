@@ -1,33 +1,12 @@
 angular.module('collabjs.controllers')
-  .controller('NewsController', ['$scope', '$compile', '$timeout', 'postsService', 'profileService',
-    function ($scope, $compile, $timeout, postsService, profileService) {
+  .controller('NewsController', ['$scope', '$timeout', 'postsService',
+    function ($scope, $timeout, postsService) {
       'use strict';
-      // temp flag used during layout migration
-      var cardLayout = true;
-      $scope.templateUrl = cardLayout ? '/partials/news-cards' : '/partials/news-list';
       $scope.posts = [];
+      $scope.canUpdateStatus = true;
       $scope.hasNoPosts = false;
       $scope.newPostsCount = 0;
       var _updateChecker;
-
-      $scope.profilePictureUrl = profileService.profilePictureUrl();
-      $scope.getPostUrl = postsService.getPostUrl;
-      // TODO: used by old layout
-      $scope.loadPostComments = postsService.loadPostComments;
-
-      // TODO: used by old layout
-      $scope.deletePost = function (post) {
-        if (post) {
-          postsService.deletePost(post.id, $scope.token).then(function () {
-            var i = $scope.posts.indexOf(post);
-            if (i > -1) {
-              $scope.posts.splice(i, 1);
-              // TODO: replace with collection watching
-              $scope.hasNoPosts = ($scope.posts.length === 0);
-            }
-          });
-        }
-      };
 
       $scope.loadNewPosts = function () {
         $timeout.cancel(_updateChecker);

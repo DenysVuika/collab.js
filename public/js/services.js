@@ -164,6 +164,7 @@ angular.module('collabjs.services')
           .error(function (data) { d.reject(data); });
         return d.promise;
       },
+      // TODO: turn into filter
       getPostUrl: function (postId) {
         return postId ? '/timeline/posts/' + postId : null;
       },

@@ -6,9 +6,7 @@ div.container
       i.fa.fa-list-ul
       | &nbsp;Posts
 
-  p.lead(ng-show='hasNoPosts') No posts found...
+  p.lead(ng-show='hasNoPosts') This user has no public posts for the moment...
 
-  include posts-list
+  include _cards
   include _spinner
-
-  div.alert.alert-danger.page-error

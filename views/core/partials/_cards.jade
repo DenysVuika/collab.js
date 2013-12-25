@@ -1,6 +1,6 @@
 div.cards-container(ng-card-layout, ng-items='posts')
   ul.cards(infinite-scroll='loadMorePosts()', infinite-scroll-immediate-check='false')
-    li.card
+    li.card(ng-if='canUpdateStatus')
       form.status-card(ng-controller='StatusController', ng-submit='submit()', role='form')
         textarea.form-control(ng-model='content', name='content', style='resize: none', rows='3', placeholder="Share what's new...")
         div.text-right(style='padding-top:5px;')

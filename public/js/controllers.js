@@ -249,37 +249,11 @@ angular.module('collabjs.controllers')
     }
   ]);
 angular.module('collabjs.controllers')
-  .controller('MentionsController', ['$scope', 'postsService', 'profileService',
-    function ($scope, postsService, profileService) {
+  .controller('MentionsController', ['$scope', 'postsService',
+    function ($scope, postsService) {
       'use strict';
-
       $scope.posts = [];
-      // user has no posts to display
       $scope.hasNoPosts = false;
-
-      postsService.getMentions().then(function (data) {
-        if (data.feed && data.feed.length > 0) {
-          $scope.posts = data.feed;
-        }
-        $scope.hasNoPosts = ($scope.posts.length === 0);
-      });
-
-      $scope.profilePictureUrl = profileService.profilePictureUrl();
-      $scope.getPostUrl = postsService.getPostUrl;
-      $scope.loadPostComments = postsService.loadPostComments;
-
-      $scope.deletePost = function (post) {
-        if (post) {
-          postsService.deletePost(post.id, $scope.token).then(function () {
-            var i = $scope.posts.indexOf(post);
-            if (i >-1) {
-              $scope.posts.splice(i, 1);
-              $scope.hasNoPosts = ($scope.posts.length === 0);
-            }
-          });
-        }
-      };
-
       $scope.isLoadingMorePosts = false;
 
       $scope.loadMorePosts = function () {
@@ -299,6 +273,13 @@ angular.module('collabjs.controllers')
           $scope.hasNoPosts = ($scope.posts.length === 0);
         });
       };
+
+      postsService.getMentions().then(function (data) {
+        if (data.feed && data.feed.length > 0) {
+          $scope.posts = data.feed;
+        }
+        $scope.hasNoPosts = ($scope.posts.length === 0);
+      });
     }
   ]);
 angular.module('collabjs.controllers')
@@ -332,35 +313,14 @@ angular.module('collabjs.controllers')
     }
   ]);
 angular.module('collabjs.controllers')
-  .controller('NewsController', ['$scope', '$compile', '$timeout', 'postsService', 'profileService',
-    function ($scope, $compile, $timeout, postsService, profileService) {
+  .controller('NewsController', ['$scope', '$timeout', 'postsService',
+    function ($scope, $timeout, postsService) {
       'use strict';
-      // temp flag used during layout migration
-      var cardLayout = true;
-      $scope.templateUrl = cardLayout ? '/partials/news-cards' : '/partials/news-list';
       $scope.posts = [];
+      $scope.canUpdateStatus = true;
       $scope.hasNoPosts = false;
       $scope.newPostsCount = 0;
       var _updateChecker;
-
-      $scope.profilePictureUrl = profileService.profilePictureUrl();
-      $scope.getPostUrl = postsService.getPostUrl;
-      // TODO: used by old layout
-      $scope.loadPostComments = postsService.loadPostComments;
-
-      // TODO: used by old layout
-      $scope.deletePost = function (post) {
-        if (post) {
-          postsService.deletePost(post.id, $scope.token).then(function () {
-            var i = $scope.posts.indexOf(post);
-            if (i > -1) {
-              $scope.posts.splice(i, 1);
-              // TODO: replace with collection watching
-              $scope.hasNoPosts = ($scope.posts.length === 0);
-            }
-          });
-        }
-      };
 
       $scope.loadNewPosts = function () {
         $timeout.cancel(_updateChecker);
@@ -486,31 +446,31 @@ angular.module('collabjs.controllers')
   ]);
 
 angular.module('collabjs.controllers')
-  .controller('PostController', ['$scope', '$routeParams', 'postsService', 'profileService',
-    function ($scope, $routeParams, postsService, profileService) {
+  .controller('PostController', ['$scope', '$routeParams', 'postsService',
+    function ($scope, $routeParams, postsService) {
       'use strict';
 
       $scope.postId = $routeParams.postId;
-      $scope.post = null;
+      $scope.posts = [];
       $scope.hasPost = false;
       $scope.hasError = false;
       $scope.error = null;
 
       postsService.getPostById($scope.postId).then(function (data) {
-        $scope.post = data;
-        $scope.hasPost = (data !== undefined);
+        $scope.posts = [data];
+        $scope.hasPost = ($scope.posts.length > 0);
       }, function () {
         $scope.error = 'Post not found.';
         $scope.hasError = true;
       });
 
-      $scope.profilePictureUrl = profileService.profilePictureUrl();
-      $scope.loadPostComments = postsService.loadPostComments;
+      // do nothing here
+      $scope.loadMorePosts = function () {};
     }
   ]);
 angular.module('collabjs.controllers')
-  .controller('SearchController', ['$scope', '$routeParams', 'searchService', 'postsService', 'profileService',
-    function ($scope, $routeParams, searchService, postsService, profileService) {
+  .controller('SearchController', ['$scope', '$routeParams', 'searchService',
+    function ($scope, $routeParams, searchService) {
       'use strict';
 
       $scope.error = false;
@@ -521,12 +481,13 @@ angular.module('collabjs.controllers')
       $scope.isSaved = null;
       $scope.hasNoPosts = null;
       $scope.posts = [];
+      $scope.isLoadingMorePosts = false;
 
-      $scope.canSave = function () {
+      $scope.canWatch = function () {
         return $scope.isSaved !== null && !$scope.isSaved && !$scope.hasNoPosts;
       };
 
-      $scope.canRemove = function () {
+      $scope.canUnwatch = function () {
         return $scope.isSaved;
       };
 
@@ -539,11 +500,7 @@ angular.module('collabjs.controllers')
       $scope.dismissError = function () { $scope.error = false; };
       $scope.dismissInfo = function () { $scope.info = false; };
 
-      $scope.profilePictureUrl = profileService.profilePictureUrl();
-      $scope.getPostUrl = postsService.getPostUrl;
-      $scope.loadPostComments = postsService.loadPostComments;
-
-      $scope.saveList = function () {
+      $scope.watch = function () {
         searchService
           .saveList($scope.token, $scope.query, $scope.source)
           .then(
@@ -555,7 +512,7 @@ angular.module('collabjs.controllers')
         );
       };
 
-      $scope.deleteList = function () {
+      $scope.unwatch = function () {
         searchService
           .deleteList($scope.token, $scope.query, $scope.source)
           .then(
@@ -567,22 +524,7 @@ angular.module('collabjs.controllers')
         );
       };
 
-      $scope.deletePost = function (post) {
-        if (post) {
-          postsService.deletePost(post.id, $scope.token).then(function () {
-            var i = $scope.posts.indexOf(post);
-            if (i >-1) {
-              $scope.posts.splice(i, 1);
-              $scope.hasNoPosts = ($scope.posts.length === 0);
-            }
-          });
-        }
-      };
-
-      $scope.isLoadingMorePosts = false;
-
       $scope.loadMorePosts = function () {
-
         if ($scope.isLoadingMorePosts) { return; }
         $scope.isLoadingMorePosts = true;
 
@@ -639,14 +581,14 @@ angular.module('collabjs.controllers')
     }
   ]);
 angular.module('collabjs.controllers')
-  .controller('WallController', ['$scope', '$routeParams', 'postsService', 'profileService',
-    function ($scope, $routeParams, postsService, profileService) {
+  .controller('WallController', ['$scope', '$routeParams', 'postsService',
+    function ($scope, $routeParams, postsService) {
       'use strict';
 
       $scope.account = $routeParams.account;
       $scope.posts = [];
-      // user has no posts to display
       $scope.hasNoPosts = false;
+      $scope.isLoadingMorePosts = false;
 
       postsService.getWall($scope.account).then(function (data) {
         $scope.profile = data.user;
@@ -656,26 +598,7 @@ angular.module('collabjs.controllers')
         $scope.hasNoPosts = ($scope.posts.length === 0);
       });
 
-      $scope.profilePictureUrl = profileService.profilePictureUrl();
-      $scope.getPostUrl = postsService.getPostUrl;
-      $scope.loadPostComments = postsService.loadPostComments;
-
-      $scope.deletePost = function (post) {
-        if (post) {
-          postsService.deletePost(post.id, $scope.token).then(function () {
-            var i = $scope.posts.indexOf(post);
-            if (i >-1) {
-              $scope.posts.splice(i, 1);
-              $scope.hasNoPosts = ($scope.posts.length === 0);
-            }
-          });
-        }
-      };
-
-      $scope.isLoadingMorePosts = false;
-
       $scope.loadMorePosts = function () {
-
         if ($scope.isLoadingMorePosts) { return; }
         $scope.isLoadingMorePosts = true;
 
