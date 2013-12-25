@@ -1,4 +1,4 @@
-div.cards-container
+div.cards-container(ng-card-layout, ng-items='posts')
   ul.cards(infinite-scroll='loadMorePosts()', infinite-scroll-immediate-check='false')
     li.card
       form.status-card(ng-controller='StatusController', ng-submit='submit()', role='form')
@@ -12,7 +12,7 @@ div.cards-container
             span.fa.fa-chevron-down
           ul.dropdown-menu.pull-right(role='menu')
             li
-              a(href='', ng-click='mutePost(post.id)') Mute post
+              a(href='', ng-click='mute()') Mute post
         div.card-avatar
           a(ng-href='{{post.account | wallUrl}}')
             img(ng-src='{{post.pictureUrl}}', alt='', width='46px', height='46px')

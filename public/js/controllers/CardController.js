@@ -47,4 +47,23 @@ angular.module('collabjs.controllers')
             });
         }
       };
+
+      $scope.mute = function () {
+        if ($scope.post) {
+          var postId = $scope.post.id;
+          // remove post on server
+          postsService.deletePost(postId, $scope.token).then(function () {
+            // on successful removal update the client side collection
+            var post = $scope.posts.filter(function (p) { return p.id === postId; });
+            if (post.length > 0) {
+              var i = $scope.posts.indexOf(post[0]);
+              if (i > -1) {
+                $scope.posts.splice(i, 1);
+                // TODO: replace with collection watching
+                $scope.hasNoPosts = ($scope.posts.length === 0);
+              }
+            }
+          });
+        }
+      };
     }]);

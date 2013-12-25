@@ -143,6 +143,25 @@ angular.module('collabjs.controllers')
             });
         }
       };
+
+      $scope.mute = function () {
+        if ($scope.post) {
+          var postId = $scope.post.id;
+          // remove post on server
+          postsService.deletePost(postId, $scope.token).then(function () {
+            // on successful removal update the client side collection
+            var post = $scope.posts.filter(function (p) { return p.id === postId; });
+            if (post.length > 0) {
+              var i = $scope.posts.indexOf(post[0]);
+              if (i > -1) {
+                $scope.posts.splice(i, 1);
+                // TODO: replace with collection watching
+                $scope.hasNoPosts = ($scope.posts.length === 0);
+              }
+            }
+          });
+        }
+      };
     }]);
 // TODO: to be deprecated in favor of CardController implementation
 angular.module('collabjs.controllers')
@@ -316,38 +335,13 @@ angular.module('collabjs.controllers')
   .controller('NewsController', ['$scope', '$compile', '$timeout', 'postsService', 'profileService',
     function ($scope, $compile, $timeout, postsService, profileService) {
       'use strict';
+      // temp flag used during layout migration
       var cardLayout = true;
       $scope.templateUrl = cardLayout ? '/partials/news-cards' : '/partials/news-list';
       $scope.posts = [];
       $scope.hasNoPosts = false;
       $scope.newPostsCount = 0;
-      var layout;
       var _updateChecker;
-
-      function initWookmark() {
-
-        if (layout && layout.wookmarkInstance) {
-          layout.wookmarkInstance.clear();
-        }
-
-        layout = angular.element('.cards li.card');
-
-        layout.wookmark({
-          // Prepare layout options
-          autoResize: true, // This will auto-update the layout when the browser window is resized.
-          //direction: 'right',
-          container: angular.element('.cards-container'), // Optional, used for some extra CSS styling
-          offset: 15, // Optional, the distance between grid items
-          outerOffset: 10, // Optional, the distance to the containers border
-          itemWidth: 450 // Optional, the width of a grid item
-        });
-      }
-
-      $scope.$watchCollection('posts', function () {
-        if (cardLayout) {
-          $timeout(initWookmark, 0);
-        }
-      });
 
       $scope.profilePictureUrl = profileService.profilePictureUrl();
       $scope.getPostUrl = postsService.getPostUrl;
@@ -363,25 +357,6 @@ angular.module('collabjs.controllers')
               $scope.posts.splice(i, 1);
               // TODO: replace with collection watching
               $scope.hasNoPosts = ($scope.posts.length === 0);
-            }
-          });
-        }
-      };
-
-      // TODO: move to CardController
-      $scope.mutePost = function (postId) {
-        if (postId) {
-          // remove post on server
-          postsService.deletePost(postId, $scope.token).then(function () {
-            // on successful removal update the client side collection
-            var post = $scope.posts.filter(function (p) { return p.id === postId; });
-            if (post.length > 0) {
-              var i = $scope.posts.indexOf(post[0]);
-              if (i > -1) {
-                $scope.posts.splice(i, 1);
-                // TODO: replace with collection watching
-                $scope.hasNoPosts = ($scope.posts.length === 0);
-              }
             }
           });
         }
