@@ -57,6 +57,10 @@ module.exports = function (grunt) {
         src: 'public/js/collabjs.js',
         dest: 'public/js/collabjs.min.js'
       },
+      "ja-app": {
+        src: 'public/js/app.js',
+        dest: 'public/js/app.min.js'
+      },
       "js-services": {
         src: 'public/js/services.js',
         dest: 'public/js/services.min.js'

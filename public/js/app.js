@@ -11,7 +11,7 @@ angular.module('collabjs', [
     'chieffancypants.loadingBar',
     'ngAnimate'
   ])
-  .config(['$routeProvider', 'cfpLoadingBarProvider', function ($routeProvider) {
+  .config(['$routeProvider', function ($routeProvider) {
     'use strict';
     $routeProvider
       .when('/news', { template: '<div ng-include="templateUrl"></div>', controller: 'NewsController' })
