@@ -51,6 +51,7 @@ describe('collab.js routes', function () {
     };
   });
 
+  /* TODO: remove
   describe('get_login', function () {
 
     it('renders `core/login` view', function () {
@@ -67,7 +68,9 @@ describe('collab.js routes', function () {
       expect(res.locals.account).to.be('dvuyka');
     });
   });
+  */
 
+  /* TODO: remove
   describe('post_login', function () {
 
     it('saves account into cookie', function () {
@@ -89,7 +92,9 @@ describe('collab.js routes', function () {
       expect(res.redirectPath).to.be('/');
     });
   });
+  */
 
+  /* TODO: remove
   describe('logout', function () {
 
     it('logs out', function () {
@@ -111,7 +116,9 @@ describe('collab.js routes', function () {
       expect(res.redirectPath).to.be('/');
     });
   });
+  */
 
+  /* TODO: remove
   describe('get_register', function () {
 
     it('renders `core/register` view', function () {
@@ -119,7 +126,9 @@ describe('collab.js routes', function () {
       expect(res.viewName).to.be('core/register');
     });
   });
+  */
 
+  /* TODO: register
   describe('post_register', function () {
 
     it('registers new account and redirects to `/`', function () {
@@ -184,6 +193,7 @@ describe('collab.js routes', function () {
       expect(res.viewName).to.be('core/register');
     });
   });
+  */
 
   /* TODO: remove
   describe('get_account', function () {

@@ -19,7 +19,7 @@
     "boilerplate",
     "express",
     "node.js",
-    "openshift",
+    "social",
     "application"
   ],
   "dependencies": {
@@ -27,12 +27,10 @@
     "jade": "1.0.0",
     "passport": "0.1.17",
     "passport-local": "0.1.6",
-    "connect-flash": "0.1.1",
     "password-hash": "1.2.1",
     "mysql": "2.0.0-rc2",
     "marked": "0.3.0",
     "nodemailer": "0.5.15",
-    "recaptcha": "1.2.0",
     "socket.io": "0.9.16",
     "passport.socketio": "2.2.0"
   },

@@ -83,7 +83,7 @@ angular.module('collabjs.controllers')
     }
   ]);
 // root application controller
-// scope variables declared here may be accessible to all derived controllers
+// scope variables declared here may be accessible to all child controllers
 angular.module('collabjs.controllers')
   .controller('AppController', ['$scope',
     function ($scope) {
@@ -93,7 +93,6 @@ angular.module('collabjs.controllers')
         $scope.token = token;
       };
     }]);
-
 /*
  Single card controller (used as a child of NewsController)
  Requires 'token' to be present within the current/parent scope
@@ -249,6 +248,46 @@ angular.module('collabjs.controllers')
     }
   ]);
 angular.module('collabjs.controllers')
+  .controller('LoginController', ['$scope', '$location', 'authService',
+    function ($scope, $location, authService) {
+      'use strict';
+
+      $scope.error = false;
+      $scope.dismissError = function () { $scope.error = false; };
+
+      $scope.username = '';
+      $scope.password = '';
+
+      function reset() {
+        $scope.username = '';
+        $scope.password = '';
+      }
+
+      $scope.login = function () {
+        authService
+          .login($scope.token, $scope.username, $scope.password)
+          .then(
+            function () {
+              reset();
+              $location.url('/news');
+            },
+            function () {
+              reset();
+              $scope.error = 'Incorrect username or password';
+            }
+          );
+      };
+
+      $scope.logout = function () {
+        authService
+          .logout($scope.token)
+          .then(function () {
+            $location.url('/login');
+          });
+      };
+    }
+  ]);
+angular.module('collabjs.controllers')
   .controller('MentionsController', ['$scope', 'postsService',
     function ($scope, postsService) {
       'use strict';
@@ -283,23 +322,32 @@ angular.module('collabjs.controllers')
     }
   ]);
 angular.module('collabjs.controllers')
-  .controller('MenuController', ['$scope', 'searchService',
-    function ($scope, searchService) {
+  .controller('MenuController', ['$scope', 'authService', 'searchService',
+    function ($scope, authService, searchService) {
       'use strict';
 
+      $scope.visible = false;
       $scope.searchLists = [];
+      $scope.isAuthenticated = false;
 
-      searchService.getLists().then(
-        function (data) {
-          $scope.searchLists = data || [];
+      $scope.$on('$routeChangeSuccess', function () {
+        var user = authService.getCurrentUser();
+        if (user) {
+          $scope.isAuthenticated = true;
+          $scope.userName = user.name;
+
+          // TODO: optimize (called on every route change)
+          searchService.getLists().then(
+            function (data) {
+              $scope.searchLists = data || [];
+            }
+          );
+        } else {
+          $scope.isAuthenticated = false;
+          $scope.userName = null;
         }
-      );
+      });
 
-      /*
-       $scope.$on('destroy', function () {
-       console.log('SearchController is destroyed.');
-       });
-       */
 
       $scope.$on('listSaved@searchService', function (e, list) {
         $scope.searchLists.push(list);
@@ -310,6 +358,12 @@ angular.module('collabjs.controllers')
           return element.q !== list.q;
         });
       });
+
+      /*
+       $scope.$on('destroy', function () {
+       console.log('SearchController is destroyed.');
+       });
+       */
     }
   ]);
 angular.module('collabjs.controllers')
@@ -468,6 +522,33 @@ angular.module('collabjs.controllers')
       $scope.loadMorePosts = function () {};
     }
   ]);
+angular.module('collabjs.controllers')
+  .controller('RegistrationController', ['$scope', '$location', 'accountService',
+    function ($scope, $location, accountService) {
+      'use strict';
+
+      $scope.error = false;
+      $scope.dismissError = function () { $scope.error = false; };
+
+      $scope.account = '';
+      $scope.name = '';
+      $scope.email = '';
+      $scope.password = '';
+      $scope.confirmPassword = '';
+
+      $scope.register = function () {
+        accountService
+          .createAccount($scope.token, $scope.account, $scope.name, $scope.email, $scope.password)
+          .then(
+            function () { $location.path('/').replace(); },
+            function (err) {
+              $scope.error = err;
+              $scope.password = '';
+              $scope.confirmPassword = '';
+            }
+          );
+      };
+    }]);
 angular.module('collabjs.controllers')
   .controller('SearchController', ['$scope', '$routeParams', 'searchService',
     function ($scope, $routeParams, searchService) {

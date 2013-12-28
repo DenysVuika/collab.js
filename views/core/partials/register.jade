@@ -1,0 +1,43 @@
+div.container
+  div.page-header
+    h1 Register
+    small Use the form below to create a new account.
+
+  div.alert.alert-danger(ng-if='error')
+    button(type='button', ng-click='dismissError()').close &times;
+    span {{error}}
+
+  form.form-horizontal(role='form', ng-submit='register()')
+    div.form-group
+      label.col-lg-2.control-label(for='account') Account
+      div.col-lg-4
+        input.form-control(ng-model='account', type='text', required, id='account', name='account', placeholder='e.g. johndoe')
+    div.form-group
+      label.col-lg-2.control-label(for='name') Name
+      div.col-lg-4
+        input.form-control(ng-model='name', type='text', required, id='name', name='name', placeholder='e.g. John Doe')
+    div.form-group
+      label.col-lg-2.control-label(for='email') Email
+      div.col-lg-4
+        input.form-control(ng-model='email', type='email', required, id='email', name='email', placeholder='e.g. jdoe@mail.com')
+        span.help-block
+    div.form-group
+      label.col-lg-2.control-label(for='password') Password
+      div.col-lg-4
+        input.form-control(ng-model='password', type='password', required, id='password', name='password')
+    div.form-group
+      label.col-lg-2.control-label(for='password-confirm') Confirm password
+      div.col-lg-4
+        input.form-control(ng-model='confirmPassword', type='password', required, id='password-confirm',
+          data-validation-required-message='Password confirmation is required'
+          data-validation-matches-match='password',
+          data-validation-matches-message='Must match password entered above')
+        span.help-block
+    div.form-group
+      div.col-lg-offset-2.col-lg-4
+        input.btn.btn-primary(type='submit', value='Register')
+
+script.
+  $(function() {
+    $("input").not(["type=submit"]).jqBootstrapValidation();
+  });

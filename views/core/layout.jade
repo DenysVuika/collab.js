@@ -11,14 +11,13 @@ html(ng-app='collabjs')
     script(src='/lib/jquery/js/jquery.min.js')
 
   body(ng-controller='AppController', ng-init="init('#{collabjs.token}')")
-    //- TODO: deprecate
-    input(type='hidden', id='csrf_token', value=collabjs.token)
     include shared/menu
 
-    div.container(style='width:100%')
+    div.container.fill-width
       div.row
         div.col-md-12.col-lg-12
           block content
+            div.ng-view
 
     include shared/_scripts
     block scripts

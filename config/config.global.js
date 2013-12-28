@@ -17,12 +17,6 @@ config.server = {
   compression: true
 };
 
-// simple invitation code
-config.invitation = {
-  enabled: false,
-  code: '123123123'
-};
-
 // data layer
 config.data = {
   provider: 'collabjs.data.mysql',
@@ -48,13 +42,6 @@ config.smtp = {
   password: '[password]',
   // used for automatic notification purposes
   noreply: 'collab.js <noreply@collabjs.org>'
-};
-
-// recaptcha settings
-config.recaptcha = {
-  enabled: false,
-  publicKey: '6LeWatcSAAAAABpe4Xkm1-fKKOnCG3hF0Z_pfwQ1', // localhost
-  privateKey: '6LeWatcSAAAAAE6MsdnnV6gA8fzSoUmmPHG8ZSLq'
 };
 
 // ui settings

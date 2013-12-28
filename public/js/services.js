@@ -9,6 +9,15 @@ angular.module('collabjs.services')
     function ($http, $q) {
       'use strict';
       return {
+        createAccount: function (token, account, name, email, password) {
+          var d = $q.defer()
+            , data = { account: account, name: name, email: email, password: password }
+            , options = { headers: { 'x-csrf-token': token }, xsrfHeaderName : 'x-csrf-token' };
+          $http.post('/api/account/register', data, options)
+            .success(function (res) { d.resolve(res); })
+            .error(function (res) { d.reject(res); });
+          return d.promise;
+        },
         getAccount: function () {
           var d = $q.defer();
           $http.get('/api/account').success(function (data) { d.resolve(data); });
@@ -24,9 +33,59 @@ angular.module('collabjs.services')
           var d = $q.defer()
             , options = { headers: { 'x-csrf-token': token }, xsrfHeaderName : 'x-csrf-token' };
           $http.post('/api/account/password', data, options)
-            .success(function (res) { console.log(res); d.resolve(res); })
+            .success(function (res) { d.resolve(res); })
             .error(function (data) { d.reject(data); });
           return d.promise;
+        }
+      };
+    }]);
+angular.module('collabjs.services')
+  .service('authService', ['$http', '$q',
+    function ($http, $q) {
+      'use strict';
+
+      var _user = null;
+
+      return {
+        setCurrentUser: function (u) {
+          _user = u;
+        },
+        getCurrentUser: function () {
+          return _user;
+        },
+        login: function (token, username, password) {
+          var deferred = $q.defer();
+
+          $http.post('/api/auth/login',
+            { username: username, password: password },
+            { headers: { 'x-csrf-token': token }, xsrfHeaderName : 'x-csrf-token' })
+            .success(function (res) {
+              _user = res;
+              deferred.resolve(_user);
+            })
+            .error(function (data, status) {
+              // status === 401 (Unauthorized)
+              _user = false;
+              deferred.reject(null);
+            });
+
+          return deferred.promise;
+        },
+        logout: function (token) {
+          var deferred = $q.defer();
+
+          $http.post('/api/auth/logout', null,
+            { headers: { 'x-csrf-token': token }, xsrfHeaderName : 'x-csrf-token' })
+            .success(function () {
+              _user = null;
+              deferred.resolve(true);
+            })
+            .error(function (data, status) {
+              // status === 401 (Unauthorized)
+              deferred.reject(null);
+            });
+
+          return deferred.promise;
         }
       };
     }]);

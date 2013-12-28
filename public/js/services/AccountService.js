@@ -3,6 +3,15 @@ angular.module('collabjs.services')
     function ($http, $q) {
       'use strict';
       return {
+        createAccount: function (token, account, name, email, password) {
+          var d = $q.defer()
+            , data = { account: account, name: name, email: email, password: password }
+            , options = { headers: { 'x-csrf-token': token }, xsrfHeaderName : 'x-csrf-token' };
+          $http.post('/api/account/register', data, options)
+            .success(function (res) { d.resolve(res); })
+            .error(function (res) { d.reject(res); });
+          return d.promise;
+        },
         getAccount: function () {
           var d = $q.defer();
           $http.get('/api/account').success(function (data) { d.resolve(data); });
@@ -18,7 +27,7 @@ angular.module('collabjs.services')
           var d = $q.defer()
             , options = { headers: { 'x-csrf-token': token }, xsrfHeaderName : 'x-csrf-token' };
           $http.post('/api/account/password', data, options)
-            .success(function (res) { console.log(res); d.resolve(res); })
+            .success(function (res) { d.resolve(res); })
             .error(function (data) { d.reject(data); });
           return d.promise;
         }

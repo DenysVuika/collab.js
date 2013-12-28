@@ -4,12 +4,7 @@
 
 'use strict';
 
-/**
- * Module dependencies.
- */
-
 var express = require('express')
-  , flash = require('connect-flash')
   , passport = require('passport')
   , LocalStrategy = require('passport-local').Strategy
   , passwordHash = require('password-hash')
@@ -115,7 +110,7 @@ app.use(passport.session());
 
 // Use connect-flash middleware. This will add a 'req.flash()' function to
 // all requests, matching the functionality offered in Express 2.x.
-app.use(flash());
+// app.use(flash());
 
 // Custom middleware
 

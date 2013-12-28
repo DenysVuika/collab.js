@@ -20,7 +20,8 @@ describe('collab.js web.api', function () {
     pictureId: '00000000000000000000000000000000'
   };
 
-  app.use(express.bodyParser());
+  app.use(express.json());
+  app.use(express.urlencoded());
   // make application always authenticated for test purposes
   app.use(function (req, res, next) {
     req.user = testUser;

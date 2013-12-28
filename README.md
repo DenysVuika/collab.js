@@ -6,7 +6,7 @@ collab.js is a starter kit for modern, extensible and social-enabled web applica
 [![Build Status](https://travis-ci.org/DenisVuyka/collab.js.png?branch=master)](https://travis-ci.org/DenisVuyka/collab.js)
 [![Dependency Status](https://gemnasium.com/DenisVuyka/collab.js.png)](https://gemnasium.com/DenisVuyka/collab.js)
 
-sponsored by  [Raythos Interactive](http://raythos.com/)
+sponsored by [Raythos Interactive](http://raythos.com/)
 
 [![Raythos Interactive](public/img/raythos.png)](http://raythos.com)
 
@@ -24,7 +24,7 @@ Please refer to [Wiki](https://github.com/DenisVuyka/collab.js/wiki) for more de
 
 ## Major features
 
-- Account registration with [reCaptcha](http://www.google.com/recaptcha) support
+- Account creation
 - User account settings and [Gravatar](http://www.gravatar.com) support
 - News timeline with user posts (status updates)
 - Public user profiles

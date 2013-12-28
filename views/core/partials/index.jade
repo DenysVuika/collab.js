@@ -1,0 +1,18 @@
+style.
+  body { background: #ffffff; }
+
+div.jumbotron(style='text-align: center; background: none')
+    div.container
+      div.page-header
+        h1= collabjs.config.ui.brand
+          small.project-status= collabjs.config.ui.status
+        p= collabjs.config.ui.description
+      div(style='margin-left:-40px')
+        a.btn.btn-primary.btn-lg(href='/#/register') Register
+        a.btn.btn-success.btn-lg(href='/#/login', style='margin-left:5px;') Sign in
+
+div(style='text-align:right;margin-right:10px;')
+  small Sponsored by
+  p
+    a(href='http://raythos.com/')
+      img(src='/img/raythos.png')

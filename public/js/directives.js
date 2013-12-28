@@ -41,10 +41,7 @@ angular.module('collabjs.directives')
         var onClass = attrs.menubar || 'on'
           , subpaths = attrs.subpaths || false;
 
-        //scope.$on('$routeChangeStart', function() { });
-
-        scope.$on('$routeChangeSuccess', function () {
-
+        function updateSelection() {
           element.find('li').removeClass(onClass);
 
           var urlMap = mapLinks(element);
@@ -65,7 +62,13 @@ angular.module('collabjs.directives')
               pathLink.parents('li').addClass(onClass);
             }
           }
+        }
+
+        scope.$on('$routeChangeSuccess', function () {
+          updateSelection();
         });
+
+        updateSelection();
       };
     }]);
 /*

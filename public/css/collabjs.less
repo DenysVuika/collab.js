@@ -1,8 +1,30 @@
-@import "scrollbar";
+/* Custom scrollbar for webkit */
 
-/*
-  Main collab.js stylesheet
-*/
+::-webkit-scrollbar {
+  width: 10px;
+}
+
+::-webkit-scrollbar-track {
+  background: #fff;
+  /*-webkit-box-shadow: inset 1px 1px 2px rgba(0, 0, 0, 0.1);*/
+  border: 1px solid #ccc;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #ccc;
+  -webkit-box-shadow: inset 1px 1px 2px rgba(0, 0, 0, 0.2);
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #aaa;
+}
+
+::-webkit-scrollbar-thumb:active {
+  background: #888;
+  -webkit-box-shadow: inset 1px 1px 2px rgba(0, 0, 0, 0.3);
+}
+
+/* Main collab.js stylesheet */
 
 body {
   padding-top: 70px;
@@ -11,6 +33,10 @@ body {
   background: #f5f5f5;
   /* IE 11 scrollbar fix */
   -ms-overflow-style: scrollbar;
+}
+
+.fill-width {
+  width: 100%;
 }
 
 small.project-status {

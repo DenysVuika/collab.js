@@ -10,9 +10,51 @@ module.exports = function (context) {
     , config = context.config
     , repository = context.data
     , authenticate = context.auth.requireAuthenticated
-    , noCache = utils.noCache;
+    , noCache = utils.noCache
+    , passport = require('passport');
 
   context.once('app.init.routes', function (app) {
+
+    app.post('/api/auth/login', passport.authenticate('local'), function (req, res) {
+        res.send({ name: req.user.name });
+      });
+
+    app.get('/api/auth/check', function(req, res) {
+      res.send(req.isAuthenticated() ? { name: req.user.name } : '0');
+    });
+
+    app.post('/api/auth/logout', function (req, res) {
+      req.logout();
+      //req.session.destroy();
+      res.send(200);
+    });
+
+    app.post('/api/account/register', function (req, res) {
+      var body = req.body;
+      // TODO: introduce better validation
+      if (body.account && body.name && body.email && body.password) {
+        var hashedPassword = passwordHash.generate(body.password);
+
+        var user = {
+          account: body.account,
+          name: body.name,
+          password: hashedPassword,
+          email: body.email
+        };
+
+        repository.createAccount(user, function (err, result) {
+          if (err) { res.send(400, err); }
+          else {
+            req.login({ id: result.id, username: user.account, password: hashedPassword }, function (err) {
+              if (err) { res.send(400, 'Error authenticating user.'); }
+              else { res.send(200); }
+            });
+          }
+        });
+      } else {
+        res.send(400, 'Error creating account.');
+      }
+    });
 
     app.get('/api/account', authenticate, noCache, function (req, res) {
       res.json(200, {
