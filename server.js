@@ -5,24 +5,39 @@
 'use strict';
 
 var express = require('express')
+  , http = require('http')
+  , https = require('https')
   , passport = require('passport')
   , LocalStrategy = require('passport-local').Strategy
+  , passportSocketIo = require('passport.socketio')
   , passwordHash = require('password-hash')
-  , db = require('./data')
   , config = require('./config')
   , utils = require('./collabjs.utils')
   , runtime = require('./collabjs.runtime')
   , RuntimeEvents = runtime.RuntimeEvents
   , runtimeContext = new runtime.RuntimeContext()
-  , http = require('http');
+  , db = require('./data')
+  , sessionStore = new db.SessionStore();
 
 // Create server
 
 var app = express()
-  , sessionStore = new db.SessionStore()
-  , server = http.createServer(app)
-  , io = require('socket.io').listen(server)
-  , passportSocketIo = require('passport.socketio');
+  , server;
+
+// HTTPS
+if (config.server.https.enabled) {
+  app.set('port', config.server.https.port);
+  app.set('host', config.server.https.host);
+  server = https.createServer(config.server.https.options, app);
+}
+// HTTP
+else {
+  app.set('port', config.env.port);
+  app.set('host', config.env.host);
+  server = http.createServer(app);
+}
+
+var io = require('socket.io').listen(server);
 
 /*
  * Authentication Layer
@@ -73,7 +88,6 @@ require('./modules')(runtimeContext);
 // Configuration
 
 app.enable('trust proxy');
-app.set('port', config.env.port);
 app.set('views', __dirname + '/views');
 app.set('view engine', 'jade');
 
@@ -107,10 +121,6 @@ if (config.server.csrf) {
 // persistent Login sessions (recommended).
 app.use(passport.initialize());
 app.use(passport.session());
-
-// Use connect-flash middleware. This will add a 'req.flash()' function to
-// all requests, matching the functionality offered in Express 2.x.
-// app.use(flash());
 
 // Custom middleware
 
@@ -231,11 +241,9 @@ app.get('/500', function(req, res, next){
   next(new Error('keyboard cat!'));
 });
 
-
-
 // Server startup
 
 // Notify external modules that application is about to start
 runtimeContext.emit(RuntimeEvents.app_start, app);
-server.listen(config.env.port, config.env.ipaddress);
-console.log("collab.js server listening on port %d in %s mode", config.env.port, app.settings.env);
+server.listen(app.get('port'), app.get('host'));
+console.log("collab.js server listening on port %d in %s mode", app.get('port'), app.settings.env);
