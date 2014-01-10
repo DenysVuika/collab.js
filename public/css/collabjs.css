@@ -801,16 +801,23 @@ a.comments-button {
   border-bottom: 1px blue solid;
 }
 /* Login */
-.login-box {
+.login-box,
+.register-box {
   margin-top: 80px;
 }
-.login-box a.register-link {
+.login-box a.link,
+.register-box a.link {
   text-decoration: none;
   color: #78808a;
   font-size: 12px;
 }
-.login-box a.register-link:hover {
+.login-box a.link:hover,
+.register-box a.link:hover {
   color: #5a6573;
+}
+.login-box .panel-title,
+.register-box .panel-title {
+  color: #636363;
 }
 /* card layout */
 .cards-container {

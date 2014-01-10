@@ -1,41 +1,48 @@
 div.container
-  div.page-header
-    h1 Register
-    small Use the form below to create a new account.
-
-  div.alert.alert-danger(ng-if='error')
-    button(type='button', ng-click='dismissError()').close &times;
-    span {{error}}
-
-  form.form-horizontal(role='form', ng-submit='register()')
-    div.form-group
-      label.col-lg-2.control-label(for='account') Account
-      div.col-lg-4
-        input.form-control(ng-model='account', type='text', required, id='account', name='account', placeholder='e.g. johndoe')
-    div.form-group
-      label.col-lg-2.control-label(for='name') Name
-      div.col-lg-4
-        input.form-control(ng-model='name', type='text', required, id='name', name='name', placeholder='e.g. John Doe')
-    div.form-group
-      label.col-lg-2.control-label(for='email') Email
-      div.col-lg-4
-        input.form-control(ng-model='email', type='email', required, id='email', name='email', placeholder='e.g. jdoe@mail.com')
-        span.help-block
-    div.form-group
-      label.col-lg-2.control-label(for='password') Password
-      div.col-lg-4
-        input.form-control(ng-model='password', type='password', required, id='password', name='password')
-    div.form-group
-      label.col-lg-2.control-label(for='password-confirm') Confirm password
-      div.col-lg-4
-        input.form-control(ng-model='confirmPassword', type='password', required, id='password-confirm',
-          data-validation-required-message='Password confirmation is required'
-          data-validation-matches-match='password',
-          data-validation-matches-message='Must match password entered above')
-        span.help-block
-    div.form-group
-      div.col-lg-offset-2.col-lg-4
-        input.btn.btn-primary(type='submit', value='Register')
+  div.row
+    div.col-md-4.col-md-offset-4
+      div.panel.panel-default.login-box
+        div.panel-heading
+          h3.panel-title Sign Up
+        div.panel-body
+          p.text-danger.ng-cloak(ng-if='error') {{error}}
+          form(role='form', ng-submit='register()')
+            div.form-group
+              div.input-group
+                span.input-group-addon @
+                input.form-control(ng-model='account', type='text', required, id='account', name='account', placeholder='account')
+            div.form-group
+              div.input-group
+                span.input-group-addon
+                  i.fa.fa-user
+                input.form-control(ng-model='name', type='text', required, id='name', name='name', placeholder='username')
+            div.form-group
+              div.input-group
+                span.input-group-addon
+                  i.fa.fa-envelope
+                input.form-control(ng-model='email', type='email', required, id='email', name='email', placeholder='email')
+              span.help-block
+            div.form-group
+              div.input-group
+                span.input-group-addon
+                  i.fa.fa-key
+                input.form-control(ng-model='password', type='password', required, id='password', name='password', placeholder='password')
+            div.form-group
+              div.input-group
+                span.input-group-addon
+                  i.fa.fa-key
+                input.form-control(ng-model='confirmPassword', type='password', required, id='password-confirm', placeholder='confirm password'
+                  data-validation-required-message='Password confirmation is required'
+                  data-validation-matches-match='password',
+                  data-validation-matches-message='Must match password entered above')
+              span.help-block
+            div.form-group
+              button.btn.btn-primary.btn-block(type='submit')
+                | Sign Up&nbsp;
+                i.fa.fa-check
+            a(href='/#/login').link
+              | Already have an account?
+              strong Sign In
 
 script.
   $(function() {

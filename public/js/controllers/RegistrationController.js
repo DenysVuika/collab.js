@@ -4,8 +4,6 @@ angular.module('collabjs.controllers')
       'use strict';
 
       $scope.error = false;
-      $scope.dismissError = function () { $scope.error = false; };
-
       $scope.account = '';
       $scope.name = '';
       $scope.email = '';
