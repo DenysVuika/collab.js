@@ -1,27 +1,25 @@
 div.container
-  div.page-header
-    h1 Sign In
-    small
-      | Please enter your user name and password.&nbsp;
-      a(href='/#/register') Register
-      | &nbsp;if you don't have an account.
-
-  div.alert.alert-danger.ng-cloak(ng-if='error')
-    button(type='button', ng-click='dismissError()').close &times;
-    span {{error}}
-
-  form.form-horizontal(role='form', ng-submit='login()')
-    div.form-group
-      label(for='username').col-lg-2.control-label Account
-      div.col-lg-4.input-group
-        span.input-group-addon @
-        input.form-control(ng-model='username', type='text', id='username', name='username', required, placeholder='e.g. johndoe')
-    div.form-group
-      label(for='password').col-lg-2.control-label Password
-      div.col-lg-4.input-group
-        span.input-group-addon
-          i.fa.fa-key
-        input.form-control(ng-model='password', type='password', id='password', name='password', required, placeholder='type password')
-    div.form-group
-      div.col-lg-offset-2.col-lg-4
-        input.btn.btn-success(type='submit', value='Sign In')
+  div.row
+    div.col-md-4.col-md-offset-4
+      div.panel.panel-default.login-box
+        div.panel-heading
+          h3.panel-title Login
+        div.panel-body
+          p.text-danger.ng-cloak(ng-if='error') {{error}}
+          form(role='form', ng-submit='login()')
+            div.form-group
+              div.input-group
+                span.input-group-addon @
+                input.form-control(ng-model='username', type='text', id='username', name='username', required, placeholder='username')
+            div.form-group
+              div.input-group
+                span.input-group-addon
+                  i.fa.fa-key
+                input.form-control(ng-model='password', type='password', id='password', name='password', required, placeholder='password')
+            div.form-group
+              button.btn.btn-info.btn-block(type='submit')
+                | Login&nbsp;
+                i.fa.fa-sign-in
+            a(href='/#/register').register-link
+              | Don't have an account?
+              strong Sign Up

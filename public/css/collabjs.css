@@ -800,6 +800,18 @@ a.comments-button {
 .menu-actions > li.active {
   border-bottom: 1px blue solid;
 }
+/* Login */
+.login-box {
+  margin-top: 80px;
+}
+.login-box a.register-link {
+  text-decoration: none;
+  color: #78808a;
+  font-size: 12px;
+}
+.login-box a.register-link:hover {
+  color: #5a6573;
+}
 /* card layout */
 .cards-container {
   margin: 30px 0;
