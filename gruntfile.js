@@ -7,7 +7,7 @@ module.exports = function (grunt) {
       options: {
         banner: '/*!\n' +
                 '* <%= pkg.name %> v<%= pkg.version %>\n' +
-                '* Copyright (c) <%= grunt.template.today("yyyy") %> <%= pkg.author %>\n' +
+                '* Copyright (c) 2013-<%= grunt.template.today("yyyy") %> <%= pkg.author %>\n' +
                 '* License: MIT\n' +
                 '* http://www.opensource.org/licenses/mit-license.php\n' +
                 '*/\n'
@@ -21,7 +21,7 @@ module.exports = function (grunt) {
       options: {
         banner: '/*!\n' +
           '* <%= pkg.name %> v<%= pkg.version %>\n' +
-          '* Copyright (c) <%= grunt.template.today("yyyy") %> <%= pkg.author %>\n' +
+          '* Copyright (c) 2013-<%= grunt.template.today("yyyy") %> <%= pkg.author %>\n' +
           '* License: MIT\n' +
           '* http://www.opensource.org/licenses/mit-license.php\n' +
           '*/\n'
@@ -48,7 +48,7 @@ module.exports = function (grunt) {
         mangle: false,
         banner: '/*!\n' +
           '* <%= pkg.name %> v<%= pkg.version %>\n' +
-          '* Copyright (c) <%= grunt.template.today("yyyy") %> <%= pkg.author %>\n' +
+          '* Copyright (c) 2013-<%= grunt.template.today("yyyy") %> <%= pkg.author %>\n' +
           '* License: MIT\n' +
           '* http://www.opensource.org/licenses/mit-license.php\n' +
           '*/\n'

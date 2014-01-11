@@ -16,11 +16,19 @@ module.exports = function (context) {
   context.once('app.init.routes', function (app) {
 
     app.post('/api/auth/login', passport.authenticate('local'), function (req, res) {
-        res.send({ name: req.user.name });
+        res.send({
+          account: req.user.account,
+          name: req.user.name,
+          pictureUrl: config.env.avatarServer + '/avatar/' + req.user.pictureId
+        });
       });
 
     app.get('/api/auth/check', function(req, res) {
-      res.send(req.isAuthenticated() ? { name: req.user.name } : '0');
+      res.send(req.isAuthenticated() ? {
+        account: req.user.account,
+        name: req.user.name,
+        pictureUrl: config.env.avatarServer + '/avatar/' + req.user.pictureId
+      } : '0');
     });
 
     app.post('/api/auth/logout', function (req, res) {

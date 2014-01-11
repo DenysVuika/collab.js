@@ -23,7 +23,6 @@ angular.module('collabjs.services')
               deferred.resolve(_user);
             })
             .error(function (data, status) {
-              // status === 401 (Unauthorized)
               _user = false;
               deferred.reject(null);
             });

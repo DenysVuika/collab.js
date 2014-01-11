@@ -800,6 +800,26 @@ a.comments-button {
 .menu-actions > li.active {
   border-bottom: 1px blue solid;
 }
+.settings-menu-item {
+  text-align: center;
+  margin-top: 15px;
+  margin-bottom: 15px;
+}
+.settings-menu-item img.user-avatar {
+  display: inline-block;
+  border: 4px solid #fff;
+  max-width: 100px;
+  max-height: 100px;
+  border-radius: 50%;
+  box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.3);
+}
+.settings-menu-item .user-account {
+  display: block;
+  color: #9EA1AA;
+  margin-top: 15px;
+  text-shadow: 0 1px white;
+  font-size: 16px;
+}
 /* Login */
 .login-box,
 .register-box {

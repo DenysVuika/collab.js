@@ -12,6 +12,8 @@ angular.module('collabjs.controllers')
         if (user) {
           $scope.isAuthenticated = true;
           $scope.userName = user.name;
+          $scope.userPictureUrl = user.pictureUrl;
+          $scope.userAccount = user.account;
 
           // TODO: optimize (called on every route change)
           searchService.getLists().then(

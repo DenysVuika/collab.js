@@ -1,6 +1,6 @@
 /*!
 * collab.js v0.4.0
-* Copyright (c) 2013 Denis Vuyka
+* Copyright (c) 2013-2014 Denis Vuyka
 * License: MIT
 * http://www.opensource.org/licenses/mit-license.php
 */
@@ -253,8 +253,6 @@ angular.module('collabjs.controllers')
       'use strict';
 
       $scope.error = false;
-      $scope.dismissError = function () { $scope.error = false; };
-
       $scope.username = '';
       $scope.password = '';
 
@@ -335,6 +333,8 @@ angular.module('collabjs.controllers')
         if (user) {
           $scope.isAuthenticated = true;
           $scope.userName = user.name;
+          $scope.userPictureUrl = user.pictureUrl;
+          $scope.userAccount = user.account;
 
           // TODO: optimize (called on every route change)
           searchService.getLists().then(
@@ -528,8 +528,6 @@ angular.module('collabjs.controllers')
       'use strict';
 
       $scope.error = false;
-      $scope.dismissError = function () { $scope.error = false; };
-
       $scope.account = '';
       $scope.name = '';
       $scope.email = '';

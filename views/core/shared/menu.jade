@@ -12,23 +12,22 @@ div.navbar.navbar-default.navbar-fixed-top(role='navigation', ng-controller='Men
           span {{userName}}
           b.caret
         ul.dropdown-menu
+          li.settings-menu-item
+            div
+              img.user-avatar(ng-src='{{userPictureUrl}}')
+              span.user-account {{userAccount}}
+          li.divider
           li
             a(href='/#/account')
               i.fa.fa-user.fa-fw
-              | &nbsp;Edit profile
-          li.divider
+              | &nbsp;Profile
           li
             a(href='/#/help')
               i.fa.fa-flag.fa-fw
               | &nbsp;Help
-          li
-            a(href='/#/about')
-              i.fa.fa-question-circle.fa-fw
-              | &nbsp;About
-          li.divider
           li(ng-controller='LoginController')
             a(href='', ng-click='logout()')
-              i.fa.fa-sign-out.fa-fw
+              i.fa.fa-power-off.fa-fw
               | &nbsp;Logout
 
     ul.nav.navbar-nav.menu-actions.ng-cloak(menubar='active', data-subpaths='true')
