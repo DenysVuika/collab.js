@@ -862,7 +862,13 @@ a.comments-button {
   /** Hide items initially to avoid a flicker effect **/
   padding: 4px;
   box-sizing: content-box;
+  /* @media (max-width: 480px) { */
   /* comment list container */
+}
+@media (max-width: 768px) {
+  .cards li.card {
+    width: 100%;
+  }
 }
 .cards li.card.inactive {
   visibility: hidden;
@@ -1048,3 +1054,10 @@ a.comments-button {
   border: 1px solid #dedede;
   z-index: -1;
 }
+/* @media (max-width: 768px) { */
+/*
+@media (max-width: 480px) {
+  .cards li.card {
+    width: 100%;
+  }
+}*/

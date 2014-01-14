@@ -32,8 +32,8 @@ angular.module('collabjs.directives')
               //direction: 'right',
               container: element,     // Optional, used for some extra CSS styling
               offset: 15,             // Optional, the distance between grid items
-              outerOffset: 10,        // Optional, the distance to the containers border
-              itemWidth: 450          // Optional, the width of a grid item
+              outerOffset: 10//,        // Optional, the distance to the containers border
+              //itemWidth: 450          // Optional, the width of a grid item
             });
           }
 
