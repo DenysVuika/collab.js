@@ -1054,10 +1054,12 @@ a.comments-button {
   border: 1px solid #dedede;
   z-index: -1;
 }
-/* @media (max-width: 768px) { */
-/*
-@media (max-width: 480px) {
-  .cards li.card {
-    width: 100%;
+/* Additional Bootstrap helpers */
+.visible-xs-i {
+  display: none !important;
+}
+@media (max-width: 767px) {
+  .visible-xs-i {
+    display: inline !important;
   }
-}*/
+}

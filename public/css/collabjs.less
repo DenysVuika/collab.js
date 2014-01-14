@@ -442,10 +442,12 @@ a.comments-button {
   z-index: -1;
 }
 
-/* @media (max-width: 768px) { */
-/*
-@media (max-width: 480px) {
-  .cards li.card {
-    width: 100%;
+/* Additional Bootstrap helpers */
+
+.visible-xs-i {
+  display: none !important;
+
+  @media (max-width: 767px) {
+    display: inline !important;
   }
-}*/
+}

@@ -34,15 +34,19 @@ div.navbar.navbar-default.navbar-fixed-top(role='navigation', ng-controller='Men
       li
         a(href='/#/news')
           i.fa.fa-th-large.fa-lg
+          span.visible-xs-i &nbsp;News
       li
         a(href='/#/mentions')
           i.fa.fa-globe.fa-lg
+          span.visible-xs-i &nbsp;Mentions
       li
         a(href='/#/people')
           i.fa.fa-group.fa-lg
+          span.visible-xs-i &nbsp;People
       li.dropdown
         a.dropdown-toggle(href='', data-toggle='dropdown')
           i.fa-lg #
+          span.visible-xs-i &nbsp;Searches
           b.caret
         ul.dropdown-menu
           li(ng-repeat='list in searchLists')
