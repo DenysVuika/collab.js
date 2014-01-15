@@ -63,7 +63,7 @@ config.ui = {
   brand: 'collab.js',
   status: 'beta',
   description: 'Starter kit for modern, extensible and social-enabled web applications.',
-  copyright: '2013 Denis Vuyka',
+  favicon: '/favicon.ico',
   menu: {
     links: [
       /*

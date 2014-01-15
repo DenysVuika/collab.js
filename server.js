@@ -17,7 +17,8 @@ var express = require('express')
   , RuntimeEvents = runtime.RuntimeEvents
   , runtimeContext = new runtime.RuntimeContext()
   , db = require('./data')
-  , sessionStore = new db.SessionStore();
+  , sessionStore = new db.SessionStore()
+  , path = require('path');
 
 // Create server
 
@@ -100,8 +101,7 @@ app.use(express.logger('dev'));
 app.use(express.static(__dirname + '/public', { maxAge: 86400000})); // one day
 runtimeContext.emit(RuntimeEvents.app_init_static, app);
 
-//app.use(express.favicon());
-app.use(express.favicon(__dirname + '/favicon.ico'));
+app.use(express.favicon(path.join(__dirname, config.ui.favicon || '/favicon.ico')));
 app.use(express.cookieParser(config.server.cookieSecret));
 app.use(express.json());
 app.use(express.urlencoded());
