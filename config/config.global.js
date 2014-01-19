@@ -22,7 +22,8 @@ config.server = {
   },
   https: {
     enabled: false,
-    port: process.env.PORT || 443,
+    port: process.env.PORT || 3000,
+    //port: process.env.PORT || 443,
     host: '0.0.0.0',
     options: {
       key: fs.readFileSync('./config/ssl/dev-key.pem'),    // SHOULD BE CHANGED IN PRODUCTION
