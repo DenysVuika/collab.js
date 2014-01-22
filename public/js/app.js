@@ -71,12 +71,12 @@ angular.module('collabjs', [
         resolve: { isLoggedIn: defaultRedirect }
       })
       .when('/login', {
-        templateUrl: '/partials/login',
+        templateUrl: '/templates/login.html',
         controller: 'LoginController',
         resolve: { isLoggedIn: defaultRedirect }
       })
       .when('/register', {
-        templateUrl: '/partials/register',
+        templateUrl: '/templates/register.html',
         controller: 'RegistrationController',
         resolve: { isLoggedIn: defaultRedirect }
       })
@@ -86,7 +86,7 @@ angular.module('collabjs', [
         resolve: { isLoggedIn: auth }
       })
       .when('/people', {
-        templateUrl: '/partials/people',
+        templateUrl: '/templates/people.html',
         controller: 'PeopleListController',
         resolve: { isLoggedIn: auth }
       })
@@ -96,12 +96,12 @@ angular.module('collabjs', [
         resolve: { isLoggedIn: auth }
       })
       .when('/people/:account/following', {
-        templateUrl: '/partials/following',
+        templateUrl: '/templates/following.html',
         controller: 'FollowingController',
         resolve: { isLoggedIn: auth }
       })
       .when('/people/:account/followers', {
-        templateUrl: '/partials/followers',
+        templateUrl: '/templates/followers.html',
         controller: 'FollowersController',
         resolve: { isLoggedIn: auth }
       })
@@ -131,7 +131,7 @@ angular.module('collabjs', [
         resolve: { isLoggedIn: auth }
       })
       .when('/help/:article?', {
-        templateUrl: '/partials/help',
+        templateUrl: '/templates/help.html',
         controller: 'HelpController'
       })
       .otherwise({ redirectTo: '/news' });

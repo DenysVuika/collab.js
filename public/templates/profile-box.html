@@ -1,0 +1,49 @@
+<div class="row" ng-controller="UserProfileController">
+  <div class="panel panel-primary">
+    <div class="panel-heading">
+      <h3 class="panel-title">{{profile.name + ' @' + profile.account}}</h3>
+    </div>
+    <div class="panel-body">
+      <div class="media">
+        <div class="pull-left">
+          <img class="media-object avatar" ng-src="{{profile.pictureUrl}}" alt="">
+        </div>
+        <div class="media-body">
+          <h4 class="media-heading">
+            <span>{{profile.name}}</span>
+            <small>{{' @' + profile.account}}</small>
+          </h4>
+          <ul class="list-unstyled">
+            <li>
+              <span style="display: block">
+                <i class="flag-icon-16 flag-{{profile.location.toLowerCase()}}"></i>{{getCountryName(profile)}}
+              </span>
+            </li>
+            <li>
+              <span>
+                <i class="fa fa-globe"></i>
+                <a ng-href="{{profile.website}}" target="_blank">{{profile.website}}</a>
+              </span>
+            </li>
+            <li>
+              <span>
+                <i class="fa fa-pencil"></i>
+                <em>{{profile.bio}}</em>
+              </span>
+            </li>
+          </ul>
+          <a class="btn btn-default pull-right profile-btn" ng-show="canFollow(profile)" ng-click="follow(profile)">Follow</a>
+          <a class="btn btn-danger pull-right profile-btn" ng-show="canUnfollow(profile)" ng-click="unfollow(profile)">Unfollow</a>
+          <a class="btn btn-success pull-right profile-btn" ng-show="profile.isOwnProfile" href="/#/account">Edit profile</a>
+        </div>
+      </div>
+    </div>
+    <div class="panel-footer">
+      <ul class="list-inline profile-stats">
+        <a class="blue" ng-href="{{profile | wallUrl}}">{{profile.posts + ' posts'}}</a>
+        <a class="blue" ng-href="{{getFollowingUrl(profile)}}">{{profile.following + ' following'}}</a>
+        <a class="blue" ng-href="{{getFollowersUrl(profile)}}">{{profile.followers + ' followers'}}</a>
+      </ul>
+    </div>
+  </div>
+</div>

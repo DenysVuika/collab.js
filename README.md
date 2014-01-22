@@ -27,6 +27,7 @@ Please refer to [Wiki](https://github.com/DenisVuyka/collab.js/wiki) for more de
 - Account creation
 - User account settings and [Gravatar](http://www.gravatar.com) support
 - News timeline with user posts (status updates)
+- Card layout
 - Public user profiles
 - Following/Unfollowing users
 - Personal feeds and "twitterization" of content (account links, hash tags, etc.)
