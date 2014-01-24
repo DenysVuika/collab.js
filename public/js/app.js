@@ -81,7 +81,7 @@ angular.module('collabjs', [
         resolve: { isLoggedIn: defaultRedirect }
       })
       .when('/news', {
-        templateUrl: '/partials/news',
+        templateUrl: '/templates/news.html',
         controller: 'NewsController',
         resolve: { isLoggedIn: auth }
       })
@@ -91,7 +91,7 @@ angular.module('collabjs', [
         resolve: { isLoggedIn: auth }
       })
       .when('/people/:account', {
-        templateUrl: '/partials/wall',
+        templateUrl: '/templates/wall.html',
         controller: 'WallController',
         resolve: { isLoggedIn: auth }
       })
@@ -106,27 +106,27 @@ angular.module('collabjs', [
         resolve: { isLoggedIn: auth }
       })
       .when('/mentions', {
-        templateUrl: '/partials/mentions',
+        templateUrl: '/templates/mentions.html',
         controller: 'MentionsController',
         resolve: { isLoggedIn: auth }
       })
       .when('/posts/:postId', {
-        templateUrl: '/partials/post',
+        templateUrl: '/templates/post.html',
         controller: 'PostController',
         resolve: { isLoggedIn: auth }
       })
       .when('/account', {
-        templateUrl: '/partials/account',
+        templateUrl: '/templates/account-profile.html',
         controller: 'AccountController',
         resolve: { isLoggedIn: auth }
       })
       .when('/account/password', {
-        templateUrl: '/partials/password',
+        templateUrl: '/templates/account-password.html',
         controller: 'PasswordController',
         resolve: { isLoggedIn: auth }
       })
       .when('/search', {
-        templateUrl: '/partials/search',
+        templateUrl: '/templates/search-posts.html',
         controller: 'SearchController',
         resolve: { isLoggedIn: auth }
       })

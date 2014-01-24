@@ -189,9 +189,7 @@ angular.module('collabjs.directives')
           , subpaths = attrs.subpaths || false
           , currentLink;
 
-        //scope.$on('$routeChangeStart', function() { });
-
-        scope.$on('$routeChangeSuccess', function () {
+        function updateSelection() {
           if (currentLink) {
             currentLink.removeClass(onClass);
           }
@@ -212,6 +210,12 @@ angular.module('collabjs.directives')
             currentLink = pathLink;
             currentLink.addClass(onClass);
           }
+        }
+
+        scope.$on('$routeChangeSuccess', function () {
+          updateSelection();
         });
+
+        updateSelection();
       };
     }]);

@@ -1,0 +1,67 @@
+<div class="cards-container" ng-card-layout ng-items="posts">
+  <ul class="cards" infinite-scroll="loadMorePosts()" infinite-scroll-immediate-check="false">
+    <li class="card" ng-if="canUpdateStatus">
+      <form class="status-card" ng-controller="StatusController" ng-submit="submit()" role="form">
+        <textarea class="form-control" ng-model="content" name="content" rows="3" style="resize: none;" placeholder="Share what's new..."></textarea>
+        <div class="text-right" style="padding-top: 5px;">
+          <input class="btn btn-success" type="submit" value="Share">
+        </div>
+      </form>
+    </li>
+    <li class="card" ng-repeat="post in posts | orderBy:'created':true">
+      <div class="card-content" ng-controller="CardController" ng-init="init(post)">
+        <div class="card-options-button btn-group">
+          <a class="dropdown-toggle" href="" data-toggle="dropdown">
+            <span class="fa fa-chevron-down"></span>
+          </a>
+          <ul class="dropdown-menu pull-right" role="menu">
+            <li>
+              <a href="" ng-click="mute()">Mute post</a>
+            </li>
+          </ul>
+        </div>
+        <div class="card-avatar">
+          <a ng-href="{{post.account | wallUrl}}">
+            <img ng-src="{{post.pictureUrl}}" alt="" width="46px" height="46px">
+          </a>
+        </div>
+        <div class="card-header">
+          <h3><a ng-href="{{post.account | wallUrl}}">{{post.name}}</a></h3>
+          <span class="card-details">
+            <span>Shared publicly - </span>
+            <span am-time-ago="post.created" title="{{post.created | amDateFormat: 'LLLL'}}"></span>
+          </span>
+        </div>
+        <div class="card-text">
+          <div ng-bind-html="post.content | twitterize"></div>
+        </div>
+        <div class="card-footer">
+          <a href="" class="card-comments-button" ng-if="post.commentsCount > 0" ng-click="toggleComments($event)">
+            <span>{{commentsExpanded ? 'Hide comments' : post.commentsCount + ' comments'}}</span><i class="fa" ng-class="{'fa-chevron-up': commentsExpanded, 'fa-chevron-down': !commentsExpanded}"></i>
+          </a>
+          <div class="card-comments" ng-if="commentsExpanded">
+            <ul class="comment-list">
+              <li class="comment-content" ng-repeat="comment in post.comments">
+                <div class="comment-avatar">
+                  <img ng-src="{{comment.pictureUrl}}" alt="" width="28px" height="28px">
+                </div>
+                <div class="comment-header">
+                  <h4><a href="{{comment.account | wallUrl}}">{{comment.name}}</a></h4>
+                  <span class="comment-details">
+                    <span am-time-ago="comment.created" title="{{comment.created | amDateFormat: 'LLLL'}}"></span>
+                  </span>
+                </div>
+                <div class="comment-text">
+                  <div ng-bind-html="comment.content | twitterize"></div>
+                </div>
+              </li>
+            </ul>
+          </div>
+          <form ng-submit="postComment($event)" role="form">
+            <input type="text" ng-model="comment" autocomplete="off" placeholder="Add a comment...">
+          </form>
+        </div>
+      </div>
+    </li>
+  </ul>
+</div>

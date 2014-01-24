@@ -980,6 +980,10 @@ a.comments-button {
   padding-right: 5px;
   font-size: 12px;
   color: #262626;
+  text-decoration: none;
+}
+.cards li.card .card-comments-button:hover {
+  text-decoration: underline;
 }
 .cards li.card .card-comments-button span {
   padding-right: 5px;

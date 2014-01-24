@@ -1,0 +1,69 @@
+<div class="container">
+  <div class="row">
+    <div class="col-md-3" ng-include="'/templates/account-sidebar.html'"></div>
+    <div class="col-md-9">
+
+      <div class="page-header">
+        <h3><i class="fa fa-user"></i> Account Settings</h3>
+      </div>
+
+      <div class="alert alert-danger" ng-if="error">
+        <button class="close" type="button" ng-click="dismissError()">&times;</button>
+        <span>{{error}}</span>
+      </div>
+
+      <div class="alert alert-success" ng-if="info">
+        <button class="close" type="button" ng-click="dismissInfo()">&times;</button>
+        <span>{{info}}</span>
+      </div>
+
+      <form class="form-horizontal" role="form" ng-submit="submit()">
+        <div class="form-group">
+          <label class="col-lg-2 control-label">Picture</label>
+          <div class="col-lg-10">
+            <a target="_blank" ng-href="{{avatarServer}}">
+              <img alt="" ng-src="{{pictureUrl}}">
+            </a>
+            <span class="help-block">Click the picture to edit your avatar</span>
+          </div>
+        </div>
+        <div class="form-group">
+          <label class="col-lg-2 control-label" for="name">Name</label>
+          <div class="col-lg-10">
+            <input class="form-control" ng-model="name" id="name" type="text" required="required">
+            <span class="help-block">Enter your real name, so people you know can recognize you.</span>
+          </div>
+        </div>
+        <div class="form-group">
+          <label class="col-lg-2 control-label" for="location">Location</label>
+          <div class="col-lg-10">
+            <select class="form-control" ui-select2="select2Options" ng-model="location" id="location">
+              <option value=""></option>
+              <option ng-repeat="country in countries" value="{{country.id}}">{{country.text}}</option>
+            </select>
+            <span class="help-block">Where in the world are you?</span>
+          </div>
+        </div>
+        <div class="form-group">
+          <label class="col-lg-2 control-label" for="website">Website</label>
+          <div class="col-lg-10">
+            <input class="form-control" ng-model="website" type="text" id="website">
+            <span class="help-block">Have a homepage or a blog? Put the address here.</span>
+          </div>
+        </div>
+        <div class="form-group">
+          <label class="col-lg-2 control-label" for="bio">Bio</label>
+          <div class="col-lg-10">
+            <textarea class="form-control v-resize" ng-model="bio" id="bio" rows="3"></textarea>
+            <span class="help-block">About yourself in 160 characters or less. <span class="bio-counter-label" id="bio_counter"></span></span>
+          </div>
+        </div>
+        <div class="form-group">
+          <div class="col-lg-offset-2 col-lg-4">
+            <button class="btn btn-primary" type="submit">Update</button>
+          </div>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
