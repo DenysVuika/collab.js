@@ -2,8 +2,7 @@
 
 var expect = require('expect.js')
   , runtime = require('../collabjs.runtime')
-  , context = new runtime.RuntimeContext()
-  , routes = require('../routes');
+  , context = new runtime.RuntimeContext();
 
 describe('collab.js routes', function () {
 

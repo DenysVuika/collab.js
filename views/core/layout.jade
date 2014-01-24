@@ -1,8 +1,8 @@
 doctype html
-html(ng-app='collabjs')
+html(ng-app='collabjs', ng-controller='AppController', ng-init="init('#{collabjs.token}')")
   head
-    title= title
-    
+    title(ng-bind="title + ' | collab.js'")
+
     include shared/_meta
     include shared/_styles
 
@@ -10,7 +10,7 @@ html(ng-app='collabjs')
 
     script(src='/lib/jquery/js/jquery.min.js')
 
-  body(ng-controller='AppController', ng-init="init('#{collabjs.token}')")
+  body
     include shared/menu
 
     div.container.fill-width

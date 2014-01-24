@@ -62,8 +62,6 @@ config.smtp = {
 // ui settings
 config.ui = {
   brand: 'collab.js',
-  status: 'beta',
-  description: 'Starter kit for modern, extensible and social-enabled web applications.',
   favicon: '/favicon.ico',
   menu: {
     links: [

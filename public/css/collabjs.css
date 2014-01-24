@@ -32,6 +32,7 @@ body {
 }
 small.project-status {
   vertical-align: top;
+  font-size: 16px;
 }
 .field-validation-error {
   color: #B94A48;

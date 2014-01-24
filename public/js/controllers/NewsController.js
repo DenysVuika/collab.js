@@ -2,6 +2,7 @@ angular.module('collabjs.controllers')
   .controller('NewsController', ['$scope', '$timeout', 'postsService',
     function ($scope, $timeout, postsService) {
       'use strict';
+
       $scope.posts = [];
       $scope.canUpdateStatus = true;
       $scope.hasNoPosts = false;
