@@ -61,7 +61,6 @@ config.smtp = {
 
 // ui settings
 config.ui = {
-  brand: 'collab.js',
   favicon: '/favicon.ico',
   menu: {
     links: [

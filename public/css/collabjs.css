@@ -20,6 +20,7 @@
 }
 /* Main collab.js stylesheet */
 body {
+  font-family: 'Roboto', "Helvetica Neue", Helvetica, Arial, sans-serif;
   padding-top: 70px;
   padding-bottom: 70px;
   color: #383e4b;

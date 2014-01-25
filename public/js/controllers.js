@@ -89,6 +89,8 @@ angular.module('collabjs.controllers')
     function ($scope) {
       'use strict';
 
+      $scope.appName = 'collab.js';
+
       $scope.init = function (token) {
         $scope.token = token;
       };

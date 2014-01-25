@@ -1,7 +1,7 @@
 doctype html
 html(ng-app='collabjs', ng-controller='AppController', ng-init="init('#{collabjs.token}')")
   head
-    title(ng-bind="title + ' | collab.js'")
+    title(ng-bind="title + ' | ' + appName")
 
     include shared/_meta
     include shared/_styles
