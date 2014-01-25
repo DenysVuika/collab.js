@@ -1,0 +1,82 @@
+<div class="navbar navbar-default navbar-fixed-top" ng-controller="MenuController" role="navigation">
+
+  <div class="navbar-header">
+    <button class="navbar-toggle" type="button" data-toggle="collapse" data-target=".navbar-ex1-collapse">
+      <span class="sr-only">Toggle Navigation</span>
+      <span class="fa fa-bars"></span>
+    </button>
+    <a class="navbar-brand" ng-href="{{isAuthenticated ? '/#/news' : '/#/'}}" ng-bind="appName"></a>
+  </div>
+
+  <div class="collapse navbar-collapse navbar-ex1-collapse" ng-if="isAuthenticated">
+
+    <ul class="nav navbar-nav navbar-right ng-cloak">
+      <li class="dropdown">
+        <a class="dropdown-toggle" href="" data-toggle="dropdown">
+          <span ng-bind="userName"></span>
+          <b class="caret"></b>
+        </a>
+        <ul class="dropdown-menu">
+          <li class="settings-menu-item">
+            <div>
+              <img class="user-avatar" ng-src="{{userPictureUrl}}">
+              <span class="user-account">{{userAccount}}</span>
+            </div>
+          </li>
+          <li class="divider"></li>
+          <li>
+            <a href="/#/account"><i class="fa fa-user fa-fw"></i> Profile</a>
+          </li>
+          <li>
+            <a href="/#/help"><i class="fa fa-flag fa-fw"></i> Help</a>
+          </li>
+          <li ng-controller="LoginController">
+            <a href="" ng-click="logout()"><i class="fa fa-power-off fa-fw"></i> Logout</a>
+          </li>
+        </ul>
+      </li>
+    </ul>
+
+    <ul class="nav navbar-nav menu-actions ng-cloak" menubar="active" data-subpaths="true">
+      <li>
+        <a href="/#/news">
+          <i class="fa fa-th-large fa-lg"></i>
+          <span class="visible-xs-i"> News</span>
+        </a>
+      </li>
+      <li>
+        <a href="/#/mentions">
+          <i class="fa fa-globe fa-lg"></i>
+          <span class="visible-xs-i"> Mentions</span>
+        </a>
+      </li>
+      <li>
+        <a href="/#/people">
+          <i class="fa fa-group fa-lg"></i>
+          <span class="visible-xs-i"> People</span>
+        </a>
+      </li>
+      <li class="dropdown">
+        <a class="dropdown-toggle" href="" data-toggle="dropdown">
+          <i class="fa-lg">#</i>
+          <span class="visible-xs-i"> Searches</span>
+          <b class="caret"></b>
+        </a>
+        <ul class="dropdown-menu">
+          <li ng-repeat="list in searchLists">
+            <a ng-href="{{list.url}}">{{list.name}}</a>
+          </li>
+        </ul>
+      </li>
+
+      <!-- custom menu items -->
+      <li ng-repeat="item in items">
+        <a ng-href="{{item.url}}" title="{{item.title}}">
+          <i class="fa fa-lg {{item.icon}}"></i>
+          <span class="visible-xs-i"> {{item.title}}</span>
+        </a>
+      </li>
+    </ul>
+
+  </div>
+</div>
