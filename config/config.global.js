@@ -59,18 +59,12 @@ config.smtp = {
   noreply: 'collab.js <noreply@collabjs.org>'
 };
 
+config.client = {
+  js: [],   // JavaScript files to be automatically embedded
+  css: []   // CSS files to be automatically embedded
+};
+
 // ui settings
 config.ui = {
-  favicon: '/favicon.ico',
-  menu: {
-    links: [
-      /*
-      {
-        text: 'People',
-        url: '/people',
-        icon: 'group'
-      }
-      */
-    ]
-  }
+  favicon: '/favicon.ico'
 };

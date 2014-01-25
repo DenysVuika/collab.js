@@ -92,6 +92,8 @@
     "after"      : false,
     "afterEach"  : false,
     // Angular
-    "angular"    : false
+    "angular"    : false,
+    // collab.js
+    "collabjs"   : false
   }
 }

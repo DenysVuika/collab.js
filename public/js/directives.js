@@ -5,8 +5,8 @@
 * http://www.opensource.org/licenses/mit-license.php
 */
 angular.module('collabjs.directives')
-  .directive('menubar', ['$location',
-    function ($location) {
+  .directive('menubar', ['$location', '$timeout',
+    function ($location, $timeout) {
       'use strict';
 
       function mapLinks(element) {
@@ -68,7 +68,7 @@ angular.module('collabjs.directives')
           updateSelection();
         });
 
-        updateSelection();
+        $timeout(updateSelection, 0);
       };
     }]);
 /*
@@ -154,8 +154,8 @@ angular.module('collabjs.directives')
     }
   ]);
 angular.module('collabjs.directives')
-  .directive('sidebar', ['$location',
-    function ($location) {
+  .directive('sidebar', ['$location', '$timeout',
+    function ($location, $timeout) {
       'use strict';
 
       function mapLinks(element) {
@@ -216,6 +216,6 @@ angular.module('collabjs.directives')
           updateSelection();
         });
 
-        updateSelection();
+        $timeout(updateSelection, 0);
       };
     }]);

@@ -26,6 +26,7 @@ if collabjs.env === 'development'
   script(src='/js/services/PostsService.js')
   script(src='/js/services/HelpService.js')
   script(src='/js/services/SearchService.js')
+  script(src='/js/services/MenuService.js')
 
   // directives
   script(src='/js/directives/menubar.js')
@@ -66,6 +67,10 @@ else
   script(src='/js/filters.min.js')
   script(src='/js/controllers.min.js')
 
+
+//- Load additional JavaScript files
+each js in collabjs.config.client.js
+  script(src=js)
 
 script.
   collabjs.ui.requestPath = '#{requestPath}';

@@ -36,6 +36,32 @@ angular.module('collabjs', [
       return deferred.promise;
     };
 
+    var isAdmin = function ($q, $timeout, $http, $location, authService) {
+      var d = $q.defer();
+
+      // Make an AJAX call to check if the user is logged in
+      $http.get('/api/auth/check').success(function(user){
+        // Authenticated
+        if (user !== '0') {
+          authService.setCurrentUser(user);
+
+          if (user.roles && user.roles.indexOf('administrator') > -1) {
+            $timeout(function() { d.resolve(true); }, 0);
+          } else {
+            $timeout(function() { d.resolve(false); }, 0);
+          }
+        }
+        // Not Authenticated
+        else {
+          authService.setCurrentUser(null);
+          $timeout(function(){ d.reject(null); }, 0);
+          $location.url('/login');
+        }
+      });
+
+      return d.promise;
+    };
+
     var defaultRedirect = function ($q, $http, $location, $timeout, authService) {
       var deferred = $q.defer();
       var user = authService.getCurrentUser();
@@ -62,6 +88,10 @@ angular.module('collabjs', [
       }
       return deferred.promise;
     };
+
+    collabjs.auth = auth;
+    collabjs.defaultRedirect = defaultRedirect;
+    collabjs.isAdmin = isAdmin;
 
     $routeProvider
       // allows controller assigning template url dynamically via '$scope.templateUrl'

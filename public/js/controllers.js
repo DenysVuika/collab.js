@@ -322,13 +322,14 @@ angular.module('collabjs.controllers')
     }
   ]);
 angular.module('collabjs.controllers')
-  .controller('MenuController', ['$scope', 'authService', 'searchService',
-    function ($scope, authService, searchService) {
+  .controller('MenuController', ['$scope', 'authService', 'menuService', 'searchService',
+    function ($scope, authService, menuService, searchService) {
       'use strict';
 
       $scope.visible = false;
       $scope.searchLists = [];
       $scope.isAuthenticated = false;
+      $scope.items = [];
 
       $scope.$on('$routeChangeSuccess', function () {
         var user = authService.getCurrentUser();
@@ -344,6 +345,12 @@ angular.module('collabjs.controllers')
               $scope.searchLists = data || [];
             }
           );
+
+          // load menu items
+          menuService.getMenuItems().then(function (items) {
+            $scope.items = items || [];
+          });
+
         } else {
           $scope.isAuthenticated = false;
           $scope.userName = null;

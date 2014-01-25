@@ -15,20 +15,27 @@ module.exports = function (context) {
 
   context.once('app.init.routes', function (app) {
 
-    app.post('/api/auth/login', passport.authenticate('local'), function (req, res) {
-        res.send({
-          account: req.user.account,
-          name: req.user.name,
-          pictureUrl: config.env.avatarServer + '/avatar/' + req.user.pictureId
-        });
-      });
-
-    app.get('/api/auth/check', function(req, res) {
-      res.send(req.isAuthenticated() ? {
+    function getUser(req) {
+      var user = {
         account: req.user.account,
         name: req.user.name,
+        roles: [],
         pictureUrl: config.env.avatarServer + '/avatar/' + req.user.pictureId
-      } : '0');
+      };
+
+      if (req.user.roles) {
+        user.roles = req.user.roles.split(',');
+      }
+
+      return user;
+    }
+
+    app.post('/api/auth/login', passport.authenticate('local'), function (req, res) {
+      res.send(getUser(req));
+    });
+
+    app.get('/api/auth/check', function(req, res) {
+      res.send(req.isAuthenticated() ? getUser(req) : '0');
     });
 
     app.post('/api/auth/logout', function (req, res) {

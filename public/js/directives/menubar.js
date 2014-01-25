@@ -1,6 +1,6 @@
 angular.module('collabjs.directives')
-  .directive('menubar', ['$location',
-    function ($location) {
+  .directive('menubar', ['$location', '$timeout',
+    function ($location, $timeout) {
       'use strict';
 
       function mapLinks(element) {
@@ -62,6 +62,6 @@ angular.module('collabjs.directives')
           updateSelection();
         });
 
-        updateSelection();
+        $timeout(updateSelection, 0);
       };
     }]);

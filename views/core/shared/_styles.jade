@@ -10,3 +10,7 @@ if collabjs.env === 'development'
   link(rel='stylesheet', href='/css/collabjs.css')
 else
   link(rel='stylesheet', href='/css/collabjs.min.css')
+
+//- Load additional CSS files
+each css in collabjs.config.client.css
+  link(rel='stylesheet', href=css)

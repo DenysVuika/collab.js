@@ -52,12 +52,8 @@ div.navbar.navbar-default.navbar-fixed-top(role='navigation', ng-controller='Men
           li(ng-repeat='list in searchLists')
             a(ng-href='{{list.url}}') {{list.name}}
 
-      //- dynamic links
-      each link in collabjs.config.ui.menu.links
-        li
-          a(href='#{link.url}', title='#{link.text}')
-            span
-              if (link.icon)
-                i(class='fa fa-#{link.icon}')
-              if (link.text)
-                | &nbsp;#{link.text}
+      //- menu items
+      li(ng-repeat='item in items')
+        a(ng-href='{{item.url}}', title='{{item.title}}')
+          i(class='fa fa-lg {{item.icon}}')
+          span.visible-xs-i &nbsp;{{item.title}}
