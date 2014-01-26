@@ -359,7 +359,7 @@ BEGIN
   IF (liked = 0) THEN
     SELECT 1 INTO subscribed FROM posts AS p
       WHERE p.id = postId AND EXISTS (
-        SELECT f.userId FROM `following` AS f WHERE f.targetId = p.userId AND f.userId = userId
+        SELECT f.userId FROM `following` AS f WHERE f.targetId = p.userId AND f.userId = userId)
     LIMIT 1;
 
     IF (subscribed = 1) THEN
