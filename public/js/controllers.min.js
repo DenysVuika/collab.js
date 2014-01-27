@@ -1,5 +1,5 @@
 /*!
-* collab.js v0.4.0
+* collab.js v0.5.0-alpha
 * Copyright (c) 2013-2014 Denis Vuyka
 * License: MIT
 * http://www.opensource.org/licenses/mit-license.php

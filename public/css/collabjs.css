@@ -20,7 +20,6 @@
 }
 /* Main collab.js stylesheet */
 body {
-  font-family: 'Roboto', "Helvetica Neue", Helvetica, Arial, sans-serif;
   padding-top: 70px;
   padding-bottom: 70px;
   color: #383e4b;
@@ -845,6 +844,7 @@ a.comments-button {
 .cards-container {
   margin: 30px 0;
   position: relative;
+  font-family: 'Roboto', "Helvetica Neue", Helvetica, Arial, sans-serif;
 }
 .cards {
   list-style-type: none;
@@ -937,7 +937,7 @@ a.comments-button {
   padding: 0;
   color: #636364;
   font-size: 14px;
-  font-weight: 600;
+  font-weight: 500;
   text-shadow: 0 1px rgba(255, 255, 255, 0.5);
 }
 .cards li.card .card-header h3 a {
