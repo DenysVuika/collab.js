@@ -7,6 +7,7 @@
 var express = require('express')
   , http = require('http')
   , https = require('https')
+  , fs = require('fs')
   , passport = require('passport')
   , LocalStrategy = require('passport-local').Strategy
   , passportSocketIo = require('passport.socketio')
@@ -29,7 +30,11 @@ var app = express()
 if (config.server.https.enabled) {
   app.set('port', config.server.https.port);
   app.set('host', config.server.https.host);
-  server = https.createServer(config.server.https.options, app);
+  var options = {
+    key: fs.readFileSync(config.server.https.options.key),
+    cert: fs.readFileSync(config.server.https.options.cert)
+  };
+  server = https.createServer(options, app);
 }
 // HTTP
 else {
