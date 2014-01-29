@@ -27,7 +27,9 @@ angular.module('collabjs.services')
         var d = $q.defer()
           , query = '/api/people/' + account + '/timeline';
         if (topId) { query = query + '?topId=' + topId; }
-        $http.get(query).success(function (data) { d.resolve(data); });
+        $http.get(query)
+          .success(function (data) { d.resolve(data); })
+          .error(function (data) { d.reject(data); });
         return d.promise;
       },
       getMentions: function (topId) {

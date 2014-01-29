@@ -6,7 +6,7 @@ config.env = {
   host: '0.0.0.0',
   // used by web sockets and to generate 'back' urls in emails,
   // helps solving issues with load balancers and proxies
-  hostname: 'http://localhost:3000',
+  hostname: 'http://localhost:3000',  // Note: this setting is not used for the moment
   avatarServer: 'https://www.gravatar.com'
 };
 
@@ -20,6 +20,7 @@ config.server = {
     port: process.env.PORT || 3000,
     host: '0.0.0.0'
   },
+  // Note: you can leave https switched off in case of using Nginx with SSL configuration
   https: {
     enabled: false,
     port: process.env.PORT || 3000,

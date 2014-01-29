@@ -11,8 +11,8 @@ angular.module('collabjs.controllers')
       $scope.getFollowingUrl = peopleService.getFollowingUrl;
       $scope.getFollowersUrl = peopleService.getFollowersUrl;
 
-      $scope.init = function (profile) {
+      /*$scope.init = function (profile) {
         $scope.profile = profile;
-      };
+      };*/
     }
   ]);

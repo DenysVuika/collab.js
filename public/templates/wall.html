@@ -1,11 +1,8 @@
 <div class="container">
   <div ng-include="'/templates/profile-box.html'"></div>
 
-  <div class="page-header">
-    <h3><i class="fa fa-list-ul"></i> Posts</h3>
-  </div>
-
-  <p class="lead" ng-show="hasNoPosts">This user has no public posts for the moment...</p>
+  <p class="lead" ng-if="error">{{error}}</p>
+  <p class="lead" ng-if="hasNoPosts">This user has no public posts for the moment...</p>
 
   <div ng-include="'/templates/card-layout.html'"></div>
 
