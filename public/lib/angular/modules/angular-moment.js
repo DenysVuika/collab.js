@@ -1,23 +1,25 @@
-/* angular-moment.js / v0.4.0 / (c) 2013 Uri Shaked / MIT Licence */
+/* angular-moment.js / v0.6.0 / (c) 2013 Uri Shaked / MIT Licence */
 
 angular.module('angularMoment', [])
-	.directive('amTimeAgo', ['$window', '$timeout', function ($window, $timeout) {
+	.constant('amTimeAgoConfig', { withoutSuffix: false})
+	.directive('amTimeAgo', ['$window', 'amTimeAgoConfig', function ($window, amTimeAgoConfig) {
 		'use strict';
 
 		return function (scope, element, attr) {
 			var activeTimeout = null;
 			var currentValue;
 			var currentFormat;
+			var withoutSuffix = amTimeAgoConfig.withoutSuffix;
 
 			function cancelTimer() {
 				if (activeTimeout) {
-					$timeout.cancel(activeTimeout);
+					$window.clearTimeout(activeTimeout);
 					activeTimeout = null;
 				}
 			}
 
 			function updateTime(momentInstance) {
-				element.text(momentInstance.fromNow());
+				element.text(momentInstance.fromNow(withoutSuffix));
 				var howOld = $window.moment().diff(momentInstance, 'minute');
 				var secondsUntilUpdate = 3600;
 				if (howOld < 1) {
@@ -28,9 +30,9 @@ angular.module('angularMoment', [])
 					secondsUntilUpdate = 300;
 				}
 
-				activeTimeout = $timeout(function () {
+				activeTimeout = $window.setTimeout(function () {
 					updateTime(momentInstance);
-				}, secondsUntilUpdate * 1000, false);
+				}, secondsUntilUpdate * 1000);
 			}
 
 			function updateMoment() {
@@ -58,6 +60,17 @@ angular.module('angularMoment', [])
 				updateMoment();
 			});
 
+			if (angular.isDefined(attr.amWithoutSuffix)) {
+				scope.$watch(attr.amWithoutSuffix, function (value) {
+					if (typeof value === 'boolean') {
+						withoutSuffix = value;
+						updateMoment();
+					} else {
+						withoutSuffix = amTimeAgoConfig.withoutSuffix;
+					}
+				});
+			}
+
 			attr.$observe('amFormat', function (format) {
 				currentFormat = format;
 				if (currentValue) {
@@ -68,6 +81,23 @@ angular.module('angularMoment', [])
 			scope.$on('$destroy', function () {
 				cancelTimer();
 			});
+		};
+	}])
+	.filter('amCalendar', ['$window', function ($window) {
+		'use strict';
+
+		return function (value) {
+			if (typeof value === 'undefined' || value === null) {
+				return '';
+			}
+
+			if (!isNaN(parseFloat(value)) && isFinite(value)) {
+				// Milliseconds since the epoch
+				value = new Date(parseInt(value, 10));
+			}
+			// else assume the given value is already a date
+
+			return $window.moment(value).calendar();
 		};
 	}])
 	.filter('amDateFormat', ['$window', function ($window) {
@@ -85,5 +115,17 @@ angular.module('angularMoment', [])
 			// else assume the given value is already a date
 
 			return $window.moment(value).format(format);
+		};
+	}])
+	.filter('amDurationFormat', ['$window', function ($window) {
+		'use strict';
+
+		return function (value, format, suffix) {
+			if (typeof value === 'undefined' || value === null) {
+				return '';
+			}
+
+			// else assume the given value is already a duration in a format (miliseconds, etc)
+			return $window.moment.duration(value, format).humanize(suffix);
 		};
 	}]);
