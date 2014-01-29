@@ -664,9 +664,9 @@ angular.module('collabjs.controllers')
       $scope.getFollowingUrl = peopleService.getFollowingUrl;
       $scope.getFollowersUrl = peopleService.getFollowersUrl;
 
-      $scope.init = function (profile) {
+      /*$scope.init = function (profile) {
         $scope.profile = profile;
-      };
+      };*/
     }
   ]);
 angular.module('collabjs.controllers')
@@ -674,18 +674,24 @@ angular.module('collabjs.controllers')
     function ($scope, $routeParams, postsService) {
       'use strict';
 
+      $scope.error = false;
       $scope.account = $routeParams.account;
       $scope.posts = [];
       $scope.hasNoPosts = false;
       $scope.isLoadingMorePosts = false;
 
-      postsService.getWall($scope.account).then(function (data) {
-        $scope.profile = data.user;
-        if (data.feed && data.feed.length > 0) {
-          $scope.posts = data.feed;
-        }
-        $scope.hasNoPosts = ($scope.posts.length === 0);
-      });
+      postsService.getWall($scope.account).then(
+        function (data) {
+          $scope.profile = data.user;
+          if (data.feed && data.feed.length > 0) {
+            $scope.posts = data.feed;
+            $scope.hasNoPosts = ($scope.posts.length === 0);
+          }
+          $scope.hasNoPosts = ($scope.posts.length === 0);
+        },
+        function () {
+          $scope.error = 'THE RESOURCE YOU ARE LOOKING FOR HAS BEEN REMOVED, HAD ITS NAME CHANGED, OR IS TEMPORARILY UNAVAILABLE.';
+        });
 
       $scope.loadMorePosts = function () {
         if ($scope.isLoadingMorePosts) { return; }
