@@ -45,6 +45,12 @@ module.exports = function (context) {
     });
 
     app.post('/api/account/register', function (req, res) {
+
+      if (!config.server.allowUserRegistration) {
+        res.send(400, 'Registration is not allowed with current configuration.');
+        return;
+      }
+
       var body = req.body;
       // TODO: introduce better validation
       if (body.account && body.name && body.email && body.password) {

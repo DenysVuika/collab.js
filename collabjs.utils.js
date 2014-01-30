@@ -38,8 +38,7 @@ function commonLocals(req, res, next) {
     token: config.server.csrf ? req.csrfToken() : null,
     user: req.user,
     isAuthenticated: req.isAuthenticated(),
-    isAdministrator: auth.isUserInRole(req.user, 'administrator'),
-    requestPath: ''
+    isAdministrator: auth.isUserInRole(req.user, 'administrator')
   };
   next();
 }

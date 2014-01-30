@@ -6,6 +6,7 @@ angular.module('collabjs.controllers')
       'use strict';
 
       $scope.appName = 'collab.js';
+      $scope.appConfig = collabjs.config;
 
       $scope.init = function (token) {
         $scope.token = token;

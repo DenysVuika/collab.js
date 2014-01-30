@@ -62,6 +62,14 @@ angular.module('collabjs', [
       return d.promise;
     };
 
+    /*var canRegister = function ($q, $timeout, $location) {
+      if (collabjs.allowUserRegistration) {
+        return true;
+      }
+
+
+    };*/
+
     var defaultRedirect = function ($q, $http, $location, $timeout, authService) {
       var deferred = $q.defer();
       var user = authService.getCurrentUser();
@@ -81,6 +89,10 @@ angular.module('collabjs', [
           else {
             authService.setCurrentUser(null);
             $timeout(deferred.resolve, 0);
+
+            if ($location.path() === '/register' && !collabjs.config.allowUserRegistration) {
+              $location.path('/').replace();
+            }
             //$timeout(function(){ deferred.reject(null); }, 0);
             //$location.url('/login')
           }

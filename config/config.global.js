@@ -30,7 +30,8 @@ config.server = {
       key: './config/ssl/dev-key.pem',    // SHOULD BE CHANGED IN PRODUCTION
       cert: './config/ssl/dev-cert.pem'   // SHOULD BE CHANGED IN PRODUCTION
     }
-  }
+  },
+  allowUserRegistration: true
 };
 
 // data layer

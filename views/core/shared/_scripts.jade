@@ -67,13 +67,12 @@ else
   script(src='/js/filters.min.js')
   script(src='/js/controllers.min.js')
 
-
 //- Load additional JavaScript files
 each js in collabjs.config.client.js
   script(src=js)
 
 script.
-  collabjs.ui.requestPath = '#{requestPath}';
+  collabjs.config.allowUserRegistration = #{collabjs.config.server.allowUserRegistration};
 
 if (collabjs.user)
   script.
