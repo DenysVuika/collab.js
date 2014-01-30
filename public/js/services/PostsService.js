@@ -58,29 +58,24 @@ angular.module('collabjs.services')
         });
         return d.promise;
       },
-      createPost: function (token, content) {
-        var d = $q.defer()
-          , post = { _csrf: token, content: content }
-          , options = { headers: { 'x-csrf-token': token }, xsrfHeaderName : 'x-csrf-token' };
+      createPost: function (content) {
+        var d = $q.defer();
         $http
-          .post('/api/timeline/posts', post, options)
+          .post('/api/timeline/posts', { content: content })
           .then(function (res) { d.resolve(res.data); });
         return d.promise;
       },
-      addComment: function (token, postId, content) {
-        var d = $q.defer()
-          , comment = { _csrf: token, postId: postId, content: content }
-          , options = { headers: { 'x-csrf-token': token }, xsrfHeaderName : 'x-csrf-token' };
+      addComment: function (postId, content) {
+        var d = $q.defer();
         $http
-          .post('/api/timeline/comments', comment, options)
+          .post('/api/timeline/comments', { postId: postId, content: content })
           .then(function (res) { d.resolve(res.data); });
         return d.promise;
       },
-      deletePost: function (postId, token) {
-        var d = $q.defer()
-          , options = { headers: { 'x-csrf-token': token }, xsrfHeaderName : 'x-csrf-token' };
+      deletePost: function (postId) {
+        var d = $q.defer();
         $http
-          .delete('/api/timeline/posts/' + postId, options)
+          .delete('/api/timeline/posts/' + postId)
           .then(function (res) { d.resolve(res); });
         return d.promise;
       },

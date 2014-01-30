@@ -4,9 +4,8 @@ angular.module('collabjs.services')
         'use strict';
         return {
           getLists: function () {
-            var d = $q.defer()
-              , query = '/api/search/list';
-            $http.get(query)
+            var d = $q.defer();
+            $http.get('/api/search/list')
               .success(function (res) {
                 var lists = (res || []).map(function (l) {
                   l.url = '/#/search?q=' + l.q + '&src=' + l.src;
@@ -17,12 +16,11 @@ angular.module('collabjs.services')
               .error(function (data) { d.reject(data); });
             return d.promise;
           },
-          saveList: function (token, q, src) {
+          saveList: function (q, src) {
             var d = $q.defer()
-              , query = '/api/search?q=' + encodeURIComponent(q) + '&src=' + src
-              , options = { headers: { 'x-csrf-token': token }, xsrfHeaderName : 'x-csrf-token' };
+              , query = '/api/search?q=' + encodeURIComponent(q) + '&src=' + src;
             $http
-              .post(query, null, options)
+              .post(query, null)
               .success(function () {
                 d.resolve(true);
                 $rootScope.$broadcast('listSaved@searchService', {
@@ -35,12 +33,11 @@ angular.module('collabjs.services')
               .error(function (err) { d.resolve(err); });
             return d.promise;
           },
-          deleteList: function (token, q, src) {
+          deleteList: function (q, src) {
             var d = $q.defer()
-              , query = '/api/search?q=' + encodeURIComponent(q) + '&src=' + src
-              , options = { headers: { 'x-csrf-token': token }, xsrfHeaderName : 'x-csrf-token' };
+              , query = '/api/search?q=' + encodeURIComponent(q) + '&src=' + src;
             $http
-              .delete(query, options)
+              .delete(query)
               .success(function () {
                 d.resolve(true);
                 $rootScope.$broadcast('listDeleted@searchService', {

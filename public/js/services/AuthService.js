@@ -12,12 +12,10 @@ angular.module('collabjs.services')
         getCurrentUser: function () {
           return _user;
         },
-        login: function (token, username, password) {
+        login: function (username, password) {
           var deferred = $q.defer();
 
-          $http.post('/api/auth/login',
-            { username: username, password: password },
-            { headers: { 'x-csrf-token': token }, xsrfHeaderName : 'x-csrf-token' })
+          $http.post('/api/auth/login', { username: username, password: password })
             .success(function (res) {
               _user = res;
               deferred.resolve(_user);
@@ -29,11 +27,10 @@ angular.module('collabjs.services')
 
           return deferred.promise;
         },
-        logout: function (token) {
+        logout: function () {
           var deferred = $q.defer();
 
-          $http.post('/api/auth/logout', null,
-            { headers: { 'x-csrf-token': token }, xsrfHeaderName : 'x-csrf-token' })
+          $http.post('/api/auth/logout', null)
             .success(function () {
               _user = null;
               deferred.resolve(true);

@@ -5,8 +5,8 @@
 * http://www.opensource.org/licenses/mit-license.php
 */
 angular.module('collabjs.controllers')
-  .controller('AccountController', ['$scope', '$timeout', 'accountService',
-    function ($scope, $timeout, accountService) {
+  .controller('AccountController', ['$scope', '$timeout', '$http', 'accountService',
+    function ($scope, $timeout, $http, accountService) {
       'use strict';
 
       $scope.error = false;
@@ -51,7 +51,8 @@ angular.module('collabjs.controllers')
       };
 
       accountService.getAccount().then(function (account) {
-        $scope.token = account.token;
+        // TODO: verify whether needed
+        $http.defaults.headers.common['x-csrf-token'] = account.token;
         $scope.avatarServer = account.avatarServer;
         $scope.pictureUrl = account.pictureUrl;
         $scope.name = account.name;
@@ -67,7 +68,6 @@ angular.module('collabjs.controllers')
 
       $scope.submit = function () {
         var account = {
-          _csrf: $scope.token, // TODO: verify whether still needed
           name: $scope.name,
           location: $scope.location,
           website: $scope.website,
@@ -75,30 +75,32 @@ angular.module('collabjs.controllers')
         };
 
         accountService
-          .updateAccount($scope.token, account)
+          .updateAccount(account)
           .then(function () {
             $scope.info = 'Account settings have been successfully updated.';
           });
       };
     }
   ]);
-// root application controller
-// scope variables declared here may be accessible to all child controllers
+/*
+root application controller
+ scope variables declared here may be accessible to all child controllers
+*/
 angular.module('collabjs.controllers')
-  .controller('AppController', ['$scope',
-    function ($scope) {
+  .controller('AppController', ['$scope', '$http',
+    function ($scope, $http) {
       'use strict';
 
       $scope.appName = 'collab.js';
       $scope.appConfig = collabjs.config;
 
       $scope.init = function (token) {
-        $scope.token = token;
+        // set default csrf token for all requests
+        $http.defaults.headers.common['x-csrf-token'] = token;
       };
     }]);
 /*
  Single card controller (used as a child of NewsController)
- Requires 'token' to be present within the current/parent scope
  */
 angular.module('collabjs.controllers')
   .controller('CardController', ['$scope', '$timeout', 'postsService',
@@ -132,9 +134,9 @@ angular.module('collabjs.controllers')
       }
 
       $scope.postComment = function ($event) {
-        if ($scope.token && $scope.comment && $scope.comment.length > 0) {
+        if ($scope.comment && $scope.comment.length > 0) {
           postsService
-            .addComment($scope.token, $scope.post.id, $scope.comment)
+            .addComment($scope.post.id, $scope.comment)
             .then(function (comment) {
               var comments = $scope.post.comments || [];
               comments.push(comment);
@@ -150,7 +152,7 @@ angular.module('collabjs.controllers')
         if ($scope.post) {
           var postId = $scope.post.id;
           // remove post on server
-          postsService.deletePost(postId, $scope.token).then(function () {
+          postsService.deletePost(postId).then(function () {
             // on successful removal update the client side collection
             var post = $scope.posts.filter(function (p) { return p.id === postId; });
             if (post.length > 0) {
@@ -165,29 +167,6 @@ angular.module('collabjs.controllers')
         }
       };
     }]);
-// TODO: to be deprecated in favor of CardController implementation
-angular.module('collabjs.controllers')
-  .controller('CommentController', ['$scope', 'postsService',
-    function ($scope, postsService) {
-      'use strict';
-      $scope.content = '';
-
-      $scope.submit = function () {
-        if ($scope.token && $scope.content && $scope.content.length > 0) {
-          postsService
-            .addComment($scope.token, $scope.post.id, $scope.content)
-            .then(function (comment) {
-              var comments = $scope.post.comments || [];
-              comments.push(comment);
-              $scope.post.comments = comments;
-              $scope.post.commentsCount++;
-              $scope.content = null;
-            });
-        }
-      };
-    }
-  ]);
-
 angular.module('collabjs.controllers')
   .controller('FollowersController', ['$scope', '$routeParams', 'peopleService',
     function ($scope, $routeParams, peopleService) {
@@ -266,7 +245,7 @@ angular.module('collabjs.controllers')
 
       $scope.login = function () {
         authService
-          .login($scope.token, $scope.username, $scope.password)
+          .login($scope.username, $scope.password)
           .then(
             function () {
               reset();
@@ -280,11 +259,7 @@ angular.module('collabjs.controllers')
       };
 
       $scope.logout = function () {
-        authService
-          .logout($scope.token)
-          .then(function () {
-            $location.url('/login');
-          });
+        authService.logout().then(function () { $location.url('/login'); });
       };
     }
   ]);
@@ -472,7 +447,7 @@ angular.module('collabjs.controllers')
         };
 
         accountService
-          .changePassword($scope.token, settings)
+          .changePassword(settings)
           .then(
           function () {
             $scope.info = 'Password has been successfully changed.';
@@ -547,7 +522,7 @@ angular.module('collabjs.controllers')
 
       $scope.register = function () {
         accountService
-          .createAccount($scope.token, $scope.account, $scope.name, $scope.email, $scope.password)
+          .createAccount($scope.name, $scope.email, $scope.password)
           .then(
             function () { $location.path('/').replace(); },
             function (err) {
@@ -592,7 +567,7 @@ angular.module('collabjs.controllers')
 
       $scope.watch = function () {
         searchService
-          .saveList($scope.token, $scope.query, $scope.source)
+          .saveList($scope.query, $scope.source)
           .then(
           function () {
             $scope.isSaved = true;
@@ -604,7 +579,7 @@ angular.module('collabjs.controllers')
 
       $scope.unwatch = function () {
         searchService
-          .deleteList($scope.token, $scope.query, $scope.source)
+          .deleteList($scope.query, $scope.source)
           .then(
           function () {
             $scope.isSaved = false;
@@ -640,9 +615,9 @@ angular.module('collabjs.controllers')
       $scope.content = null;
 
       $scope.submit = function () {
-        if ($scope.token && $scope.content && $scope.content.length > 0) {
+        if ($scope.content && $scope.content.length > 0) {
           postsService
-            .createPost($scope.token, $scope.content)
+            .createPost($scope.content)
             .then(function (post) {
               $scope.content = null;
               // access and modify parent scope items

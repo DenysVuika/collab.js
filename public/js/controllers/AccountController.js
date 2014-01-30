@@ -1,6 +1,6 @@
 angular.module('collabjs.controllers')
-  .controller('AccountController', ['$scope', '$timeout', 'accountService',
-    function ($scope, $timeout, accountService) {
+  .controller('AccountController', ['$scope', '$timeout', '$http', 'accountService',
+    function ($scope, $timeout, $http, accountService) {
       'use strict';
 
       $scope.error = false;
@@ -45,7 +45,8 @@ angular.module('collabjs.controllers')
       };
 
       accountService.getAccount().then(function (account) {
-        $scope.token = account.token;
+        // TODO: verify whether needed
+        $http.defaults.headers.common['x-csrf-token'] = account.token;
         $scope.avatarServer = account.avatarServer;
         $scope.pictureUrl = account.pictureUrl;
         $scope.name = account.name;
@@ -61,7 +62,6 @@ angular.module('collabjs.controllers')
 
       $scope.submit = function () {
         var account = {
-          _csrf: $scope.token, // TODO: verify whether still needed
           name: $scope.name,
           location: $scope.location,
           website: $scope.website,
@@ -69,7 +69,7 @@ angular.module('collabjs.controllers')
         };
 
         accountService
-          .updateAccount($scope.token, account)
+          .updateAccount(account)
           .then(function () {
             $scope.info = 'Account settings have been successfully updated.';
           });

@@ -5,9 +5,9 @@ angular.module('collabjs.controllers')
       $scope.content = null;
 
       $scope.submit = function () {
-        if ($scope.token && $scope.content && $scope.content.length > 0) {
+        if ($scope.content && $scope.content.length > 0) {
           postsService
-            .createPost($scope.token, $scope.content)
+            .createPost($scope.content)
             .then(function (post) {
               $scope.content = null;
               // access and modify parent scope items

@@ -12,7 +12,7 @@ angular.module('collabjs.controllers')
 
       $scope.register = function () {
         accountService
-          .createAccount($scope.token, $scope.account, $scope.name, $scope.email, $scope.password)
+          .createAccount($scope.name, $scope.email, $scope.password)
           .then(
             function () { $location.path('/').replace(); },
             function (err) {

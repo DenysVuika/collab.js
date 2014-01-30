@@ -14,7 +14,7 @@ angular.module('collabjs.controllers')
 
       $scope.login = function () {
         authService
-          .login($scope.token, $scope.username, $scope.password)
+          .login($scope.username, $scope.password)
           .then(
             function () {
               reset();
@@ -28,11 +28,7 @@ angular.module('collabjs.controllers')
       };
 
       $scope.logout = function () {
-        authService
-          .logout($scope.token)
-          .then(function () {
-            $location.url('/login');
-          });
+        authService.logout().then(function () { $location.url('/login'); });
       };
     }
   ]);

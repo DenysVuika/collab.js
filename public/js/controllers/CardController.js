@@ -1,6 +1,5 @@
 /*
  Single card controller (used as a child of NewsController)
- Requires 'token' to be present within the current/parent scope
  */
 angular.module('collabjs.controllers')
   .controller('CardController', ['$scope', '$timeout', 'postsService',
@@ -34,9 +33,9 @@ angular.module('collabjs.controllers')
       }
 
       $scope.postComment = function ($event) {
-        if ($scope.token && $scope.comment && $scope.comment.length > 0) {
+        if ($scope.comment && $scope.comment.length > 0) {
           postsService
-            .addComment($scope.token, $scope.post.id, $scope.comment)
+            .addComment($scope.post.id, $scope.comment)
             .then(function (comment) {
               var comments = $scope.post.comments || [];
               comments.push(comment);
@@ -52,7 +51,7 @@ angular.module('collabjs.controllers')
         if ($scope.post) {
           var postId = $scope.post.id;
           // remove post on server
-          postsService.deletePost(postId, $scope.token).then(function () {
+          postsService.deletePost(postId).then(function () {
             // on successful removal update the client side collection
             var post = $scope.posts.filter(function (p) { return p.id === postId; });
             if (post.length > 0) {

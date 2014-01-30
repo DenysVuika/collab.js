@@ -9,11 +9,10 @@ angular.module('collabjs.services')
     function ($http, $q) {
       'use strict';
       return {
-        createAccount: function (token, account, name, email, password) {
+        createAccount: function (account, name, email, password) {
           var d = $q.defer()
-            , data = { account: account, name: name, email: email, password: password }
-            , options = { headers: { 'x-csrf-token': token }, xsrfHeaderName : 'x-csrf-token' };
-          $http.post('/api/account/register', data, options)
+            , data = { account: account, name: name, email: email, password: password };
+          $http.post('/api/account/register', data)
             .success(function (res) { d.resolve(res); })
             .error(function (res) { d.reject(res); });
           return d.promise;
@@ -23,16 +22,15 @@ angular.module('collabjs.services')
           $http.get('/api/account').success(function (data) { d.resolve(data); });
           return d.promise;
         },
-        updateAccount: function (token, data) {
-          var d = $q.defer()
-            , options = { headers: { 'x-csrf-token': token }, xsrfHeaderName : 'x-csrf-token' };
-          $http.post('/api/account', data, options).success(function () { d.resolve(true); });
+        updateAccount: function (data) {
+          var d = $q.defer();
+          $http.post('/api/account', data)
+            .success(function () { d.resolve(true); });
           return d.promise;
         },
-        changePassword: function (token, data) {
-          var d = $q.defer()
-            , options = { headers: { 'x-csrf-token': token }, xsrfHeaderName : 'x-csrf-token' };
-          $http.post('/api/account/password', data, options)
+        changePassword: function (data) {
+          var d = $q.defer();
+          $http.post('/api/account/password', data)
             .success(function (res) { d.resolve(res); })
             .error(function (data) { d.reject(data); });
           return d.promise;
@@ -53,12 +51,10 @@ angular.module('collabjs.services')
         getCurrentUser: function () {
           return _user;
         },
-        login: function (token, username, password) {
+        login: function (username, password) {
           var deferred = $q.defer();
 
-          $http.post('/api/auth/login',
-            { username: username, password: password },
-            { headers: { 'x-csrf-token': token }, xsrfHeaderName : 'x-csrf-token' })
+          $http.post('/api/auth/login', { username: username, password: password })
             .success(function (res) {
               _user = res;
               deferred.resolve(_user);
@@ -70,11 +66,10 @@ angular.module('collabjs.services')
 
           return deferred.promise;
         },
-        logout: function (token) {
+        logout: function () {
           var deferred = $q.defer();
 
-          $http.post('/api/auth/logout', null,
-            { headers: { 'x-csrf-token': token }, xsrfHeaderName : 'x-csrf-token' })
+          $http.post('/api/auth/logout', null)
             .success(function () {
               _user = null;
               deferred.resolve(true);
@@ -319,29 +314,24 @@ angular.module('collabjs.services')
         });
         return d.promise;
       },
-      createPost: function (token, content) {
-        var d = $q.defer()
-          , post = { _csrf: token, content: content }
-          , options = { headers: { 'x-csrf-token': token }, xsrfHeaderName : 'x-csrf-token' };
+      createPost: function (content) {
+        var d = $q.defer();
         $http
-          .post('/api/timeline/posts', post, options)
+          .post('/api/timeline/posts', { content: content })
           .then(function (res) { d.resolve(res.data); });
         return d.promise;
       },
-      addComment: function (token, postId, content) {
-        var d = $q.defer()
-          , comment = { _csrf: token, postId: postId, content: content }
-          , options = { headers: { 'x-csrf-token': token }, xsrfHeaderName : 'x-csrf-token' };
+      addComment: function (postId, content) {
+        var d = $q.defer();
         $http
-          .post('/api/timeline/comments', comment, options)
+          .post('/api/timeline/comments', { postId: postId, content: content })
           .then(function (res) { d.resolve(res.data); });
         return d.promise;
       },
-      deletePost: function (postId, token) {
-        var d = $q.defer()
-          , options = { headers: { 'x-csrf-token': token }, xsrfHeaderName : 'x-csrf-token' };
+      deletePost: function (postId) {
+        var d = $q.defer();
         $http
-          .delete('/api/timeline/posts/' + postId, options)
+          .delete('/api/timeline/posts/' + postId)
           .then(function (res) { d.resolve(res); });
         return d.promise;
       },
@@ -374,9 +364,8 @@ angular.module('collabjs.services')
         'use strict';
         return {
           getLists: function () {
-            var d = $q.defer()
-              , query = '/api/search/list';
-            $http.get(query)
+            var d = $q.defer();
+            $http.get('/api/search/list')
               .success(function (res) {
                 var lists = (res || []).map(function (l) {
                   l.url = '/#/search?q=' + l.q + '&src=' + l.src;
@@ -387,12 +376,11 @@ angular.module('collabjs.services')
               .error(function (data) { d.reject(data); });
             return d.promise;
           },
-          saveList: function (token, q, src) {
+          saveList: function (q, src) {
             var d = $q.defer()
-              , query = '/api/search?q=' + encodeURIComponent(q) + '&src=' + src
-              , options = { headers: { 'x-csrf-token': token }, xsrfHeaderName : 'x-csrf-token' };
+              , query = '/api/search?q=' + encodeURIComponent(q) + '&src=' + src;
             $http
-              .post(query, null, options)
+              .post(query, null)
               .success(function () {
                 d.resolve(true);
                 $rootScope.$broadcast('listSaved@searchService', {
@@ -405,12 +393,11 @@ angular.module('collabjs.services')
               .error(function (err) { d.resolve(err); });
             return d.promise;
           },
-          deleteList: function (token, q, src) {
+          deleteList: function (q, src) {
             var d = $q.defer()
-              , query = '/api/search?q=' + encodeURIComponent(q) + '&src=' + src
-              , options = { headers: { 'x-csrf-token': token }, xsrfHeaderName : 'x-csrf-token' };
+              , query = '/api/search?q=' + encodeURIComponent(q) + '&src=' + src;
             $http
-              .delete(query, options)
+              .delete(query)
               .success(function () {
                 d.resolve(true);
                 $rootScope.$broadcast('listDeleted@searchService', {

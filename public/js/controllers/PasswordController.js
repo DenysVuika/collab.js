@@ -27,7 +27,7 @@ angular.module('collabjs.controllers')
         };
 
         accountService
-          .changePassword($scope.token, settings)
+          .changePassword(settings)
           .then(
           function () {
             $scope.info = 'Password has been successfully changed.';

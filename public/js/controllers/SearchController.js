@@ -32,7 +32,7 @@ angular.module('collabjs.controllers')
 
       $scope.watch = function () {
         searchService
-          .saveList($scope.token, $scope.query, $scope.source)
+          .saveList($scope.query, $scope.source)
           .then(
           function () {
             $scope.isSaved = true;
@@ -44,7 +44,7 @@ angular.module('collabjs.controllers')
 
       $scope.unwatch = function () {
         searchService
-          .deleteList($scope.token, $scope.query, $scope.source)
+          .deleteList($scope.query, $scope.source)
           .then(
           function () {
             $scope.isSaved = false;
