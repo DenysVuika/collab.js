@@ -183,6 +183,7 @@ module.exports = function (context) {
       });
     });
 
+    // TODO: rename to '/api/people/:account/wall:topId?' or '/api/wall/:account:top?'
     app.get('/api/people/:account/timeline:topId?', authenticate, noCache, function (req, res) {
       repository.getPublicProfile(req.user.id, req.params.account, function (err, result) {
         if (err || !result) {
@@ -192,7 +193,7 @@ module.exports = function (context) {
 
         var profile = result;
 
-        repository.getTimeline(req.user.id, req.params.account, getTopId(req), function (err, result) {
+        repository.getWall(profile.id, getTopId(req), function (err, result) {
           if (err || !result) { res.send(400); }
           else {
             res.json(200, {
@@ -236,13 +237,13 @@ module.exports = function (context) {
       });
     });
 
-    // TODO: rename to '/api/news'
+    // TODO: rename to '/api/news:topId?'
     app.get('/api/timeline/posts:topId?', authenticate, noCache, function (req, res) {
-      repository.getMainTimeline(req.user.id, getTopId(req), handleJsonResult(res));
+      repository.getNews(req.user.id, getTopId(req), handleJsonResult(res));
     });
 
-    app.del('/api/timeline/posts/:id', authenticate, function (req, res) {
-      repository.deletePost(req.params.id, req.user.id, function (err, result) {
+    app.del('/api/wall/:postId', authenticate, function (req, res) {
+      repository.deleteWallPost(req.user.id, req.params.postId,  function (err, result) {
         if (err || !result) { res.send(400); }
         else {
           res.writeHead(200);
@@ -251,12 +252,24 @@ module.exports = function (context) {
       });
     });
 
-    app.get('/api/timeline/updates/count:topId?', authenticate, noCache, function (req, res) {
-      repository.getTimelineUpdatesCount(req.user.id, getTopId(req), handleJsonResult(res));
+    app.del('/api/news/:postId', authenticate, function (req, res) {
+      repository.deleteNewsPost(req.user.id, req.params.postId, function (err, result) {
+        if (err || !result) { res.send(400); }
+        else {
+          res.writeHead(200);
+          res.end();
+        }
+      });
     });
 
+    // TODO: rename to '/api/news/updates/count:topId?'
+    app.get('/api/timeline/updates/count:topId?', authenticate, noCache, function (req, res) {
+      repository.checkNewsUpdates(req.user.id, getTopId(req), handleJsonResult(res));
+    });
+
+    // TODO: rename to '/api/timeline/updates:topId?'
     app.get('/api/timeline/updates:topId?', authenticate, noCache, function (req, res) {
-      repository.getTimelineUpdates(req.user.id, getTopId(req), handleJsonResult(res));
+      repository.getNewsUpdates(req.user.id, getTopId(req), handleJsonResult(res));
     });
 
     app.post('/api/timeline/comments', authenticate, function (req, res) {

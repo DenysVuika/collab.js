@@ -157,14 +157,13 @@ module.exports.getFollowing = function (callerId, targetId, callback) {
 };
 
 /**
- * Get personal timeline feed for the given account name.
- * @param {number} callerId Originator account id.
- * @param {string} targetAccount Target account name.
+ * Get personal wall feed for the given account name.
+ * @param {number} userId Target account id.
  * @param {number} topId Position of the first entry from the top (used for paging).
  * @param {function(err, result)} callback Callback function.
  */
-module.exports.getTimeline = function (callerId, targetAccount, topId, callback) {
-	provider.getTimeline(callerId, targetAccount, topId, callback);
+module.exports.getWall = function (userId, topId, callback) {
+  provider.getWall(userId, topId, callback);
 };
 
 /**
@@ -183,43 +182,53 @@ module.exports.addPost = function (json, callback) {
 };
 
 /**
- * Get main (home page) timeline feed for the given account id.
+ * Get News feed for the given account id.
  * @param {number} userId User account id.
  * @param {number} topId Position of the first entry from the top (used for paging).
  * @param {function(err, callback)} callback Callback function.
  */
-module.exports.getMainTimeline = function (userId, topId, callback) {
-	provider.getMainTimeline(userId, topId, callback);
+module.exports.getNews = function (userId, topId, callback) {
+  provider.getNews(userId, topId, callback);
 };
 
 /**
- * Delete specific post created by the given user.
- * @param postId Id of the post to delete.
- * @param userId Account id of the post author.
- * @param {function(err, result)}callback Callback function.
+ * Delete (mute) post from News.
+ * @param {number} userId User account id.
+ * @param {number} postId Post id.
+ * @param {function(err, result)} callback Callback function.
  */
-module.exports.deletePost = function (postId, userId, callback) {
-  provider.deletePost(postId, userId, callback);
+module.exports.deleteNewsPost = function (userId, postId, callback) {
+  provider.deleteNewsPost(userId, postId, callback);
 };
 
 /**
- * Get number of new posts that have appeared since last timeline fetch.
+ * Delete post from personal Wall, News and followers' News.
+ * @param {number} userId User account id.
+ * @param {number} postId Post id.
+ * @param {function(err, result)} callback Callback function.
+ */
+module.exports.deleteWallPost = function (userId, postId, callback) {
+  provider.deleteWallPost(userId, postId, callback);
+};
+
+/**
+ * Get number of new posts that have appeared since last news fetch.
  * @param {number} userId User account id.
  * @param {number} topId Position of the first entry from the top (used for paging).
  * @param {function(err, result)} callback Callback function.
  */
-module.exports.getTimelineUpdatesCount = function (userId, topId, callback) {
-	provider.getTimelineUpdatesCount(userId, topId, callback);
+module.exports.checkNewsUpdates = function (userId, topId, callback) {
+  provider.checkNewsUpdates(userId, topId, callback);
 };
 
 /**
- * Get posts that have appeared since last timeline fetch.
+ * Get posts that have appeared since last news fetch.
  * @param {number} userId User account id.
  * @param {number} topId Position of the first entry from the top (used for paging).
  * @param {function(err, result)} callback Callback function.
  */
-module.exports.getTimelineUpdates = function (userId, topId, callback) {
-	provider.getTimelineUpdates(userId, topId, callback);
+module.exports.getNewsUpdates = function (userId, topId, callback) {
+  provider.getNewsUpdates(userId, topId, callback);
 };
 
 /**

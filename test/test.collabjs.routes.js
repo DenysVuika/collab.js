@@ -380,16 +380,6 @@ describe('collab.js routes', function () {
   */
 
   /* TODO: remove
-  describe('get_timeline', function () {
-
-    it('renders `core/timeline` view', function () {
-      routes.get_timeline(req, res);
-      expect(res.viewName).to.be('core/timeline');
-    });
-  });
-  */
-
-  /* TODO: remove
   describe('get_post', function () {
 
     it('renders `core/post` view', function () {

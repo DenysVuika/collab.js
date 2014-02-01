@@ -103,8 +103,8 @@ angular.module('collabjs.controllers')
  Single card controller (used as a child of NewsController)
  */
 angular.module('collabjs.controllers')
-  .controller('CardController', ['$scope', '$timeout', 'postsService',
-    function ($scope, $timeout, postsService) {
+  .controller('CardController', ['$scope', '$timeout', 'authService', 'postsService',
+    function ($scope, $timeout, authService, postsService) {
       'use strict';
 
       $scope.commentsExpanded = false;
@@ -112,6 +112,7 @@ angular.module('collabjs.controllers')
 
       $scope.init = function (post) {
         $scope.post = post;
+        $scope.contextActions = getContextActions(post);
       };
 
       $scope.toggleComments = function ($event) {
@@ -148,24 +149,71 @@ angular.module('collabjs.controllers')
         }
       };
 
-      $scope.mute = function () {
-        if ($scope.post) {
-          var postId = $scope.post.id;
-          // remove post on server
-          postsService.deletePost(postId).then(function () {
-            // on successful removal update the client side collection
-            var post = $scope.posts.filter(function (p) { return p.id === postId; });
-            if (post.length > 0) {
-              var i = $scope.posts.indexOf(post[0]);
-              if (i > -1) {
-                $scope.posts.splice(i, 1);
-                // TODO: replace with collection watching
-                $scope.hasNoPosts = ($scope.posts.length === 0);
+      // Context Actions
+
+      function deleteWallPost(post) {
+        if (post && post.id) {
+          postsService.deleteWallPost(post.id)
+            .then(function () {
+              // on successful removal update the client side collection
+              var toRemove = $scope.posts.filter(function (p) { return p.id === post.id; });
+              if (toRemove.length > 0) {
+                var i = $scope.posts.indexOf(toRemove[0]);
+                if (i > -1) {
+                  $scope.posts.splice(i, 1);
+                  // TODO: replace with collection watching
+                  $scope.hasNoPosts = ($scope.posts.length === 0);
+                }
               }
-            }
-          });
+            });
         }
-      };
+      }
+
+      function deleteNewsPost(post) {
+        if (post && post.id) {
+          postsService.deleteNewsPost(post.id)
+            .then(function () {
+              // on successful removal update the client side collection
+              var toRemove = $scope.posts.filter(function (p) { return p.id === post.id; });
+              if (toRemove.length > 0) {
+                var i = $scope.posts.indexOf(toRemove[0]);
+                if (i > -1) {
+                  $scope.posts.splice(i, 1);
+                  // TODO: replace with collection watching
+                  $scope.hasNoPosts = ($scope.posts.length === 0);
+                }
+              }
+            });
+        }
+      }
+
+      function getContextActions(post) {
+        var actions = [];
+        var currentUser = authService.getCurrentUser();
+
+        if (!currentUser || !post || !post.account) {
+          return actions;
+        }
+
+        var options = $scope.contextMenuOptions || {
+          allowMute: true
+        };
+
+        // actions for the owner of the feed
+        if (currentUser.account === post.account) {
+          actions.push({ name: 'Delete post', invoke: deleteWallPost });
+          actions.push({ name: '(todo) Link to post', invoke: function () {}});
+          actions.push({ name: '(todo) Disable comments', invoke: function () {}});
+        }
+        // actions for guests
+        else {
+          if (options.allowMute) { actions.push({ name: 'Mute post', invoke: deleteNewsPost }); }
+          actions.push({ name: '(todo) Link to post', invoke: function () {}});
+          actions.push({ name: '(todo) Report spam or abuse', invoke: function () {}});
+        }
+
+        return actions;
+      }
     }]);
 angular.module('collabjs.controllers')
   .controller('FollowersController', ['$scope', '$routeParams', 'peopleService',
@@ -655,6 +703,11 @@ angular.module('collabjs.controllers')
       $scope.posts = [];
       $scope.hasNoPosts = false;
       $scope.isLoadingMorePosts = false;
+
+      // allows switching on/off various context menu actions
+      $scope.contextMenuOptions = {
+        allowMute: false  // switches off 'Mute' action for Wall guests
+      };
 
       postsService.getWall($scope.account).then(
         function (data) {

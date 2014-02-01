@@ -1,3 +1,6 @@
+/*
+Simple test to check mandatory API availability
+ */
 'use strict';
 
 var data = require('../data')
@@ -64,28 +67,32 @@ describe('collab.js data layer', function () {
       expect(data.getFollowing).to.be.a('function');
     });
 
-    it('.getTimeline', function () {
-      expect(data.getTimeline).to.be.a('function');
-    });
-
     it('.addPost', function () {
       expect(data.addPost).to.be.a('function');
     });
 
-    it('.getMainTimeline', function () {
-      expect(data.getMainTimeline).to.be.a('function');
+    it('.deleteNewsPost', function () {
+      expect(data.deleteNewsPost).to.be.a('function');
     });
 
-    it('.deletePost', function () {
-      expect(data.deletePost).to.be.a('function');
+    it('.deleteWallPost', function () {
+      expect(data.deleteWallPost).to.be.a('function');
     });
 
-    it('.getTimelineUpdatesCount', function () {
-      expect(data.getTimelineUpdatesCount).to.be.a('function');
+    it('.getWall', function () {
+      expect(data.getWall).to.be.a('function');
     });
 
-    it('.getTimelineUpdates', function () {
-      expect(data.getTimelineUpdates).to.be.a('function');
+    it('.getNews', function () {
+      expect(data.getNews).to.be.a('function');
+    });
+
+    it('.checkNewsUpdates', function () {
+      expect(data.checkNewsUpdates).to.be.a('function');
+    });
+
+    it('.getNewsUpdates', function () {
+      expect(data.getNewsUpdates).to.be.a('function');
     });
 
     it('.getPostsByHashTag', function () {

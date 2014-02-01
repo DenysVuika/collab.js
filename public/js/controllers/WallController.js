@@ -9,6 +9,11 @@ angular.module('collabjs.controllers')
       $scope.hasNoPosts = false;
       $scope.isLoadingMorePosts = false;
 
+      // allows switching on/off various context menu actions
+      $scope.contextMenuOptions = {
+        allowMute: false  // switches off 'Mute' action for Wall guests
+      };
+
       postsService.getWall($scope.account).then(
         function (data) {
           $scope.profile = data.user;

@@ -9,12 +9,12 @@ function Provider() {}
 
 Provider.prototype = {
   getAccountById: function (id, callback) {
-    var command = "SELECT u.*, emailHash as pictureId, GROUP_CONCAT(r.loweredName separator ',') AS roles " +
-      "FROM users AS u " +
-      "LEFT JOIN user_roles AS ur on ur.userId = u.id " +
-      "LEFT JOIN roles AS r ON r.id = ur.roleId " +
-      "WHERE u.id = ? GROUP BY u.id LIMIT 1";
     pool.getConnection(function (err, connection) {
+      var command = "SELECT u.*, emailHash as pictureId, GROUP_CONCAT(r.loweredName separator ',') AS roles " +
+        "FROM users AS u " +
+        "LEFT JOIN user_roles AS ur on ur.userId = u.id " +
+        "LEFT JOIN roles AS r ON r.id = ur.roleId " +
+        "WHERE u.id = ? GROUP BY u.id LIMIT 1";
       connection.query(command, [id], function (err, result) {
         connection.release();
         if (err) { return callback(err, null); }
@@ -27,12 +27,12 @@ Provider.prototype = {
     });
   },
   getAccount: function (account, callback) {
-    var command = "SELECT u.*, emailHash as pictureId, GROUP_CONCAT(r.loweredName separator ',') AS roles " +
-      "FROM users AS u " +
-      "LEFT JOIN user_roles AS ur on ur.userId = u.id " +
-      "LEFT JOIN roles AS r ON r.id = ur.roleId " +
-      "WHERE u.account = ? GROUP BY u.id LIMIT 1";
     pool.getConnection(function (err, connection) {
+      var command = "SELECT u.*, emailHash as pictureId, GROUP_CONCAT(r.loweredName separator ',') AS roles " +
+        "FROM users AS u " +
+        "LEFT JOIN user_roles AS ur on ur.userId = u.id " +
+        "LEFT JOIN roles AS r ON r.id = ur.roleId " +
+        "WHERE u.account = ? GROUP BY u.id LIMIT 1";
       connection.query(command, [account], function (err, result) {
         connection.release();
         if (err) { return callback(err, null); }
@@ -45,8 +45,8 @@ Provider.prototype = {
     });
   },
   createAccount: function (json, callback) {
-    json.emailHash = crypto.createHash('md5').update(json.email.trim().toLowerCase()).digest('hex');
     pool.getConnection(function (err, connection) {
+      json.emailHash = crypto.createHash('md5').update(json.email.trim().toLowerCase()).digest('hex');
       connection.query('INSERT INTO users SET ?', json, function (err, result) {
         connection.release();
         if (err) {
@@ -101,12 +101,12 @@ Provider.prototype = {
     }
   },
   getPublicProfile: function (callerId, targetAccount, callback) {
-    var command = 'SELECT u.id, u.account, u.name, u.website, u.bio, u.emailHash AS pictureId, u.location, u.posts, u.following, u.followers, ' +
-      '(SELECT IF(u.id = ?, TRUE, FALSE)) AS isOwnProfile, ' +
-      '(SELECT IF ((SELECT COUNT(userId) FROM `following` AS f WHERE f.userId = ? AND f.targetId = u.id LIMIT 1) > 0, TRUE, FALSE)) AS isFollowed ' +
-      'FROM users AS u ' +
-      'WHERE u.account = ? LIMIT 1';
     pool.getConnection(function (err, connection) {
+      var command = 'SELECT u.id, u.account, u.name, u.website, u.bio, u.emailHash AS pictureId, u.location, u.posts, u.following, u.followers, ' +
+        '(SELECT IF(u.id = ?, TRUE, FALSE)) AS isOwnProfile, ' +
+        '(SELECT IF ((SELECT COUNT(userId) FROM `following` AS f WHERE f.userId = ? AND f.targetId = u.id LIMIT 1) > 0, TRUE, FALSE)) AS isFollowed ' +
+        'FROM users AS u ' +
+        'WHERE u.account = ? LIMIT 1';
       connection.query(command, [callerId, callerId, targetAccount], function (err, result) {
         connection.release();
         if (err || result.length === 0) { callback(err, null); }
@@ -119,8 +119,8 @@ Provider.prototype = {
     });
   },
   followAccount: function (callerId, targetAccount, callback) {
-    var command = 'CALL subscribe_account(?,?)';
     pool.getConnection(function (err, connection) {
+      var command = 'CALL subscribe_account(?,?)';
       connection.query(command, [callerId, targetAccount], function (err, result) {
         connection.release();
         callback(err, result);
@@ -128,8 +128,8 @@ Provider.prototype = {
     });
   },
   unfollowAccount: function (callerId, targetAccount, callback) {
-    var command = 'CALL unsubscribe_account(?,?)';
     pool.getConnection(function (err, connection) {
+      var command = 'CALL unsubscribe_account(?,?)';
       connection.query(command, [callerId, targetAccount], function (err, result) {
         connection.release();
         callback(err, result);
@@ -137,9 +137,9 @@ Provider.prototype = {
     });
   },
   getMentions: function (callerId, account, topId, callback) {
-    var command = 'CALL get_mentions(?,?,?)'
-      , params = [callerId, account, topId];
     pool.getConnection(function (err, connection) {
+      var command = 'CALL get_mentions(?,?,?)'
+        , params = [callerId, account, topId];
       connection.query(command, params, function (err, result) {
         connection.release();
         if (err) { callback(err, null); }
@@ -157,8 +157,8 @@ Provider.prototype = {
     });
   },
   getPeople: function (callerId, topId, callback) {
-    var command = 'CALL get_people(?,?)';
     pool.getConnection(function (err, connection) {
+      var command = 'CALL get_people(?,?)';
       connection.query(command, [callerId, topId], function (err, result) {
         connection.release();
         if (err) { callback(err, null); }
@@ -176,13 +176,13 @@ Provider.prototype = {
     });
   },
   getFollowers: function (callerId, targetId, callback) {
-    var command = 'SELECT u.id, u.account, u.name, u.website, u.location, u.bio, u.emailHash as pictureId, u.posts, u.following, u.followers' +
-      ', (SELECT IF(u.id = ?, TRUE, FALSE)) AS isOwnProfile ' +
-      ', (SELECT IF ((SELECT COUNT(sub.userId) FROM following AS sub WHERE sub.userId = ? AND sub.targetId = u.id) > 0, TRUE, FALSE )) AS isFollowed ' +
-      'FROM following AS f ' +
-      'LEFT JOIN users AS u ON u.id = f.userId ' +
-      'WHERE f.targetId = ?';
     pool.getConnection(function (err, connection) {
+      var command = 'SELECT u.id, u.account, u.name, u.website, u.location, u.bio, u.emailHash as pictureId, u.posts, u.following, u.followers' +
+        ', (SELECT IF(u.id = ?, TRUE, FALSE)) AS isOwnProfile ' +
+        ', (SELECT IF ((SELECT COUNT(sub.userId) FROM following AS sub WHERE sub.userId = ? AND sub.targetId = u.id) > 0, TRUE, FALSE )) AS isFollowed ' +
+        'FROM following AS f ' +
+        'LEFT JOIN users AS u ON u.id = f.userId ' +
+        'WHERE f.targetId = ?';
       connection.query(command, [callerId, callerId, targetId], function (err, result) {
         connection.release();
         // init picture urls
@@ -196,14 +196,13 @@ Provider.prototype = {
     });
   },
   getFollowing: function (callerId, targetId, callback) {
-    var command = 'SELECT u.id, u.account, u.name, u.website, u.location, u.bio, u.emailHash as pictureId, u.posts, u.following, u.followers' +
-      ', (SELECT IF(u.id = ?, TRUE, FALSE)) AS isOwnProfile' +
-      ', (SELECT IF ((SELECT COUNT(sub.userId) FROM following AS sub WHERE sub.userId = ? AND sub.targetId = u.id) > 0, TRUE, FALSE)) AS isFollowed ' +
-      'FROM following AS f ' +
-      'LEFT JOIN users AS u ON u.id = f.targetId ' +
-      'WHERE f.userId = ?';
-
     pool.getConnection(function (err, connection) {
+      var command = 'SELECT u.id, u.account, u.name, u.website, u.location, u.bio, u.emailHash as pictureId, u.posts, u.following, u.followers' +
+        ', (SELECT IF(u.id = ?, TRUE, FALSE)) AS isOwnProfile' +
+        ', (SELECT IF ((SELECT COUNT(sub.userId) FROM following AS sub WHERE sub.userId = ? AND sub.targetId = u.id) > 0, TRUE, FALSE)) AS isFollowed ' +
+        'FROM following AS f ' +
+        'LEFT JOIN users AS u ON u.id = f.targetId ' +
+        'WHERE f.userId = ?';
       connection.query(command, [callerId, callerId, targetId], function (err, result) {
         connection.release();
         // init picture urls
@@ -216,11 +215,10 @@ Provider.prototype = {
       });
     });
   },
-  // TODO: rename to 'getWall'
-  getTimeline: function (callerId, targetAccount, topId, callback) {
-    var command = 'CALL get_timeline(?,?,?)'
-      , params = [callerId, targetAccount, topId];
+  getWall: function (userId, topId, callback) {
     pool.getConnection(function (err, connection) {
+      var command = 'CALL get_wall(?,?)'
+        , params = [userId, topId];
       connection.query(command, params, function (err, result) {
         connection.release();
         if (err) { callback(err, null); }
@@ -238,21 +236,23 @@ Provider.prototype = {
     });
   },
   addPost: function (json, callback) {
-    var command = 'INSERT INTO posts (userId, content, created)  VALUES (?, ?, ?)'
-      , params = [json.userId, json.content, json.created];
     pool.getConnection(function (err, connection) {
+      var command = 'CALL add_post (?,?,?)'
+        , params = [json.userId, json.content, json.created];
       connection.query(command, params, function (err, result) {
         connection.release();
         if (err) { callback(err, null); }
-        else { callback(err, result.insertId); }
+        else {
+          var rows = result[0];
+          callback(err, rows[0].insertId);
+        }
       });
     });
   },
-  // TODO: rename to getNews
-  getMainTimeline: function (userId, topId, callback) {
-    var command = 'CALL get_main_timeline(?, ?)'
-      , params = [userId, topId];
+  getNews: function (userId, topId, callback) {
     pool.getConnection(function (err, connection) {
+      var command = 'CALL get_news (?, ?)'
+        , params = [userId, topId];
       connection.query(command, params, function (err, result) {
         connection.release();
         if (err) { callback(err, null); }
@@ -269,10 +269,11 @@ Provider.prototype = {
       });
     });
   },
-  deletePost: function (postId, userId, callback) {
-    var command = 'CALL delete_post (?,?)'
-      , params = [userId, postId];
+  // deletes/mutes News post, this action is individual
+  deleteNewsPost: function (userId, postId, callback) {
     pool.getConnection(function (err, connection) {
+      var command = 'CALL delete_news_post (?,?)'
+        , params = [userId, postId];
       connection.query(command, params, function (err, result) {
         connection.release();
         if (err || !result) { callback(err, false); }
@@ -280,10 +281,22 @@ Provider.prototype = {
       });
     });
   },
-  getTimelineUpdatesCount: function (userId, topId, callback) {
-    var command = 'CALL get_timeline_updates_count(?,?)'
-      , params = [userId, topId];
+  // deletes post from personal Wall, News and followers' News
+  deleteWallPost: function (userId, postId, callback) {
     pool.getConnection(function (err, connection) {
+      var command = 'CALL delete_wall_post (?,?)'
+        , params = [userId, postId];
+      connection.query(command, params, function (err, result) {
+        connection.release();
+        if (err || !result) { callback(err, false); }
+        else { callback(err, true); }
+      });
+    });
+  },
+  checkNewsUpdates: function (userId, topId, callback) {
+    pool.getConnection(function (err, connection) {
+      var command = 'CALL check_news_updates (?,?)'
+        , params = [userId, topId];
       connection.query(command, params, function (err, result) {
         connection.release();
         if (err) { callback(err, null); }
@@ -294,10 +307,10 @@ Provider.prototype = {
       });
     });
   },
-  getTimelineUpdates: function (userId, topId, callback) {
-    var command = 'CALL get_timeline_updates(?,?)'
-      , params = [userId, topId];
+  getNewsUpdates: function (userId, topId, callback) {
     pool.getConnection(function (err, connection) {
+      var command = 'CALL get_news_updates (?,?)'
+        , params = [userId, topId];
       connection.query(command, params, function (err, result) {
         connection.release();
         if (err) { callback(err, null); }
@@ -338,9 +351,9 @@ Provider.prototype = {
     });
   },
   addComment: function (json, callback) {
-    var command = 'CALL add_comment (?,?,?,?)'
-      , params = [json.userId, json.postId, json.created, json.content];
     pool.getConnection(function (err, connection) {
+      var command = 'CALL add_comment (?,?,?,?)'
+        , params = [json.userId, json.postId, json.created, json.content];
       connection.query(command, params, function (err, result) {
         connection.release();
         if (err) { callback(err, null); }
@@ -349,9 +362,9 @@ Provider.prototype = {
     });
   },
   getPostWithComments: function (postId, callback) {
-    var command = 'CALL get_post_full(?)'
-      , params = [postId];
     pool.getConnection(function (err, connection) {
+      var command = 'CALL get_post_full(?)'
+        , params = [postId];
       connection.query(command, params, function (err, result) {
         connection.release();
         if (err) { callback(err, null); }
@@ -379,11 +392,11 @@ Provider.prototype = {
     });
   },
   getComments: function (postId, callback) {
-    var command = 'SELECT c.*, u.account, u.name, u.emailHash as pictureId ' +
-      'FROM comments AS c ' +
-      'LEFT JOIN users AS u ON u.id = c.userId ' +
-      'WHERE c.postId = ? ORDER BY created ASC';
     pool.getConnection(function (err, connection) {
+      var command = 'SELECT c.*, u.account, u.name, u.emailHash as pictureId ' +
+        'FROM comments AS c ' +
+        'LEFT JOIN users AS u ON u.id = c.userId ' +
+        'WHERE c.postId = ? ORDER BY created ASC';
       connection.query(command, [postId], function (err, result) {
         connection.release();
         if (err) { callback(err, null); }
@@ -400,11 +413,11 @@ Provider.prototype = {
     });
   },
   getPostAuthor: function (postId, callback) {
-    var command = 'SELECT u.id, u.account, u.name, u.email, u.emailHash AS pictureId ' +
-      'FROM posts AS p ' +
-      'LEFT JOIN users AS u ON u.id = p.userId ' +
-      'WHERE p.id = ? LIMIT 1';
     pool.getConnection(function (err, connection) {
+      var command = 'SELECT u.id, u.account, u.name, u.email, u.emailHash AS pictureId ' +
+        'FROM posts AS p ' +
+        'LEFT JOIN users AS u ON u.id = p.userId ' +
+        'WHERE p.id = ? LIMIT 1';
       connection.query(command, [postId], function (err, result) {
         connection.release();
         if (err) {
@@ -432,8 +445,8 @@ Provider.prototype = {
     });
   },
   getSavedSearches: function (userId, callback) {
-    var command = 'SELECT s.name, s.query AS q, s.source AS src FROM search_lists AS s WHERE s.userId = ?';
     pool.getConnection(function (err, connection) {
+      var command = 'SELECT s.name, s.query AS q, s.source AS src FROM search_lists AS s WHERE s.userId = ?';
       connection.query(command, [userId], function (err, result) {
         connection.release();
         if (err) { callback(err, null); }
@@ -442,9 +455,9 @@ Provider.prototype = {
     });
   },
   addSavedSearch: function (json, callback) {
-    var command = 'INSERT IGNORE INTO `search_lists` (name, userId, query, source) VALUES (?,?,?,?)'
-      , params = [json.name, json.userId, json.q, json.src];
     pool.getConnection(function (err, connection) {
+      var command = 'INSERT IGNORE INTO `search_lists` (name, userId, query, source) VALUES (?,?,?,?)'
+        , params = [json.name, json.userId, json.q, json.src];
       connection.query(command, params, function (err) {
         connection.release();
         callback(err);
@@ -452,8 +465,8 @@ Provider.prototype = {
     });
   },
   deleteSavedSearch: function (userId, name, callback) {
-    var command = 'DELETE FROM search_lists WHERE userId = ? AND name = ?';
     pool.getConnection(function (err, connection) {
+      var command = 'DELETE FROM search_lists WHERE userId = ? AND name = ?';
       connection.query(command, [userId, name], function (err) {
         connection.release();
         callback(err);

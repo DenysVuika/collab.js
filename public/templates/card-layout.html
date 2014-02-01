@@ -10,13 +10,13 @@
     </li>
     <li class="card" ng-repeat="post in posts | orderBy:'created':true">
       <div class="card-content" ng-controller="CardController" ng-init="init(post)">
-        <div class="card-options-button btn-group">
+        <div class="card-options-button btn-group" ng-if="contextActions.length > 0">
           <a class="dropdown-toggle" href="" data-toggle="dropdown">
             <span class="fa fa-chevron-down"></span>
           </a>
           <ul class="dropdown-menu pull-right" role="menu">
-            <li>
-              <a href="" ng-click="mute()">Mute post</a>
+            <li ng-repeat="action in contextActions">
+              <a href="" ng-click="action.invoke(post)">{{action.name}}</a>
             </li>
           </ul>
         </div>

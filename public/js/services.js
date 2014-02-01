@@ -328,10 +328,17 @@ angular.module('collabjs.services')
           .then(function (res) { d.resolve(res.data); });
         return d.promise;
       },
-      deletePost: function (postId) {
+      deleteNewsPost: function (postId) {
         var d = $q.defer();
         $http
-          .delete('/api/timeline/posts/' + postId)
+          .delete('/api/news/' + postId)
+          .then(function (res) { d.resolve(res); });
+        return d.promise;
+      },
+      deleteWallPost: function (postId) {
+        var d = $q.defer();
+        $http
+          .delete('/api/wall/' + postId)
           .then(function (res) { d.resolve(res); });
         return d.promise;
       },

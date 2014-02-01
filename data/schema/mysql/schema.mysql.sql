@@ -1,4 +1,4 @@
--- v.0.4.0
+-- v.0.5.0-alpha
 
 /*!40101 SET @OLD_CHARACTER_SET_CLIENT=@@CHARACTER_SET_CLIENT */;
 /*!40101 SET NAMES utf8 */;
@@ -22,30 +22,6 @@ CREATE TABLE IF NOT EXISTS `comments` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 
 DELIMITER //
-CREATE PROCEDURE `get_main_timeline`(
-  IN `originatorId` INT,
-  IN topId INT)
-BEGIN
-  SELECT result.* FROM
-  (
-    SELECT p.*, u.name, u.account, u.emailHash as pictureId
-    FROM posts AS p
-      LEFT JOIN users AS u ON u.id = p.userId
-    WHERE p.userId IN (
-      SELECT f.targetId FROM `following` AS f WHERE f.userId = originatorId
-      UNION SELECT originatorId
-    )
-    AND NOT EXISTS (SELECT id FROM hidden_posts AS hp WHERE hp.userId = originatorId AND hp.postId = p.id)
-    AND EXISTS (SELECT id FROM posts WHERE id = topId OR topId = 0)
-    GROUP BY p.id
-    ORDER BY p.created DESC
-  ) as result
-  WHERE (topId <= 0 || result.id < topId)
-  LIMIT 20;
-END//
-DELIMITER ;
-
-DELIMITER //
 CREATE PROCEDURE `get_mentions`(
   IN `originatorId` INT,
   IN `originatorAccount` VARCHAR(50),
@@ -59,7 +35,6 @@ BEGIN
     FROM posts AS p
       LEFT JOIN users AS u ON u.id = p.userId
     WHERE u.account != originatorAccount AND p.content LIKE term
-    AND NOT EXISTS (SELECT id FROM hidden_posts AS hp WHERE hp.userId = originatorId AND hp.postId = p.id)
     AND EXISTS (select id from posts where id = topId OR topId = 0)
     GROUP BY p.id
     ORDER BY p.created DESC
@@ -105,70 +80,6 @@ BEGIN
     LEFT JOIN users AS u ON u.id = c.userId
   WHERE c.postId = postId
   ORDER BY created ASC;
-END//
-DELIMITER ;
-
-DELIMITER //
-CREATE PROCEDURE `get_timeline`(
-  IN `originatorId` INT,
-  IN `targetAccount` VARCHAR(50),
-  IN topId INT)
-BEGIN
-  SELECT result.* FROM
-  (
-    SELECT p.*, u.name, u.account, u.emailHash as pictureId
-    FROM posts AS p
-      LEFT JOIN users AS u ON u.id = p.userId
-    WHERE u.account = targetAccount
-    AND NOT EXISTS (SELECT id FROM hidden_posts AS hp WHERE hp.userId = originatorId AND hp.postId = p.id)
-    AND EXISTS (select id from posts where userId = p.userId AND (id = topId OR topId = 0))
-    GROUP BY p.id
-    ORDER BY p.created DESC
-  ) AS result
-  WHERE (topId <= 0 || result.id < topId)
-  LIMIT 20;
-END//
-DELIMITER ;
-
-DELIMITER //
-CREATE PROCEDURE `get_timeline_updates`(
-  IN `originatorId` INT,
-  IN topId INT)
-BEGIN
-  SELECT result.* FROM
-  (
-    SELECT p.*, u.name, u.account, u.emailHash as pictureId
-    FROM posts AS p
-      LEFT JOIN users AS u ON u.id = p.userId
-    WHERE p.userId IN (
-      SELECT f.targetId FROM `following` AS f WHERE f.userId = originatorId
-      UNION SELECT originatorId
-    )
-    GROUP BY p.id
-    ORDER BY p.created ASC
-  ) as result
-  WHERE result.id > topId AND topId > 0;
-END//
-DELIMITER ;
-
-DELIMITER //
-CREATE PROCEDURE `get_timeline_updates_count`(
-  IN `originatorId` INT,
-  IN topId INT)
-BEGIN
-  SELECT COUNT(result.id) as posts FROM
-  (
-    SELECT p.*, u.name, u.account
-    FROM posts AS p
-      LEFT JOIN users AS u ON u.id = p.userId
-    WHERE p.userId IN (
-      SELECT f.targetId FROM `following` AS f WHERE f.userId = originatorId
-      UNION SELECT originatorId
-    )
-    GROUP BY p.id
-    ORDER BY p.created DESC
-  ) as result
-  WHERE result.id > topId AND topId > 0;
 END//
 DELIMITER ;
 
@@ -262,31 +173,12 @@ BEGIN
     FROM posts AS p
       LEFT JOIN users AS u ON u.id = p.userId
     WHERE p.content LIKE term
-    AND NOT EXISTS (SELECT id FROM hidden_posts AS hp WHERE hp.userId = originatorId AND hp.postId = p.id)
     AND EXISTS (SELECT id FROM posts WHERE id = topId OR topId = 0)
     GROUP BY p.id
     ORDER BY p.created DESC
   ) AS result
   WHERE (topId <= 0 || result.id < topId)
   LIMIT 20;
-END//
-DELIMITER ;
-
-DELIMITER //
-CREATE PROCEDURE `delete_post`(
-  IN userId INT,
-  IN postId INT)
-BEGIN
-  DECLARE hidden int DEFAULT 0;
-  DELETE FROM posts WHERE posts.id = postId AND posts.userId = userId;
-  IF (ROW_COUNT() = 0) THEN
-    SELECT 1 INTO hidden FROM hidden_posts AS hp
-      WHERE hp.userId = userId AND hp.postId = postId;
-    IF (hidden = 0) THEN
-      INSERT INTO hidden_posts (`userId`, `postId`)
-        VALUES (userId, postId);
-    END IF;
-  END IF;
 END//
 DELIMITER ;
 
@@ -321,12 +213,6 @@ INSERT INTO roles (`name`, `loweredName`)
 SELECT 'Administrator', 'administrator' FROM DUAL
 WHERE NOT EXISTS (SELECT * FROM `roles` WHERE `loweredName` = 'administrator')
 LIMIT 1;
-
-CREATE  TABLE `hidden_posts` (
-  `id` INT NOT NULL AUTO_INCREMENT ,
-  `userId` INT NOT NULL ,
-  `postId` INT NOT NULL ,
-  PRIMARY KEY (`id`) );
 
 CREATE TABLE `search_lists` (
   `name` varchar(45) COLLATE utf8_unicode_ci NOT NULL,
@@ -429,6 +315,133 @@ CREATE TRIGGER `following_removed` AFTER DELETE ON `following`
   END$$
 DELIMITER ;
 
+CREATE TABLE `wall` (
+  `userId` int(11) NOT NULL,
+  `postId` int(11) NOT NULL,
+  PRIMARY KEY (`userId`,`postId`),
+  KEY `FK_Wall_Posts_idx` (`postId`),
+  CONSTRAINT `FK_Wall_Posts` FOREIGN KEY (`postId`) REFERENCES `posts` (`id`) ON DELETE CASCADE ON UPDATE NO ACTION,
+  CONSTRAINT `FK_Wall_Users` FOREIGN KEY (`userId`) REFERENCES `users` (`id`) ON DELETE CASCADE ON UPDATE NO ACTION
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
+
+CREATE TABLE `news` (
+  `userId` int(11) NOT NULL,
+  `postId` int(11) NOT NULL,
+  PRIMARY KEY (`userId`,`postId`),
+  KEY `FK_News_Posts_idx` (`postId`),
+  CONSTRAINT `FK_News_Posts` FOREIGN KEY (`postId`) REFERENCES `posts` (`id`) ON DELETE CASCADE ON UPDATE NO ACTION,
+  CONSTRAINT `FK_News_Users` FOREIGN KEY (`userId`) REFERENCES `users` (`id`) ON DELETE CASCADE ON UPDATE NO ACTION
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
+
+DELIMITER $$
+CREATE PROCEDURE `add_post`(
+	IN userId INT,
+	IN content TEXT,
+	IN created TIMESTAMP
+)
+BEGIN
+	DECLARE postId INT DEFAULT 0;
+
+	INSERT INTO `posts` (userId, content, created)  VALUES (userId, content, created);
+	SET postId = last_insert_id();
+
+	IF (postId > 0) THEN
+		INSERT INTO `wall` (userId, postId) VALUES (userId, postId);
+		INSERT INTO `news` (userId, postId) VALUES (userId, postId);
+		INSERT INTO `news` (userId, postId)
+			SELECT f.userId, postId AS `postId` FROM `following` AS f WHERE f.targetId = userId;
+	END IF;
+
+	SELECT postId AS `insertId`;
+END$$
+DELIMITER ;
+
+DELIMITER $$
+CREATE PROCEDURE `get_news`(
+	IN userId INT,
+	IN topId INT
+)
+BEGIN
+	SELECT p.*, u.name, u.account, u.emailHash as pictureId
+	FROM news AS n
+		LEFT JOIN posts AS p ON p.id = n.postId
+		LEFT JOIN users AS u ON u.id = p.userId
+	WHERE n.userId = userId AND (topId <= 0 || p.id < topId)
+	ORDER BY p.created DESC
+	LIMIT 20;
+END$$
+DELIMITER ;
+
+DELIMITER $$
+CREATE PROCEDURE `get_wall`(
+	IN userId INT,
+	IN topId INT
+)
+BEGIN
+	SELECT p.*, u.name, u.account, u.emailHash as pictureId
+	FROM wall AS w
+		LEFT JOIN posts AS p ON p.id = w.postId
+		LEFT JOIN users AS u ON u.Id = p.userId
+	WHERE w.userId = userId AND (topId <= 0 || p.id < topId)
+	ORDER BY p.created DESC
+	LIMIT 20;
+END$$
+DELIMITER ;
+
+DELIMITER $$
+CREATE PROCEDURE `get_news_updates`(
+	IN userId INT,
+	IN topId INT
+)
+BEGIN
+	SELECT p.*, u.name, u.account, u.emailHash as pictureId
+	FROM news AS n
+		LEFT JOIN posts AS p ON p.id = n.postId
+		LEFT JOIN users AS u ON u.id = p.userId
+	WHERE n.userId = userId AND (p.id > topId AND topId > 0)
+	ORDER BY p.created DESC;
+END$$
+DELIMITER ;
+
+-- TODO: add `created` field for the `wall` to avoid join on `posts`
+DELIMITER $$
+CREATE PROCEDURE `check_news_updates`(
+	IN userId INT,
+	IN topId INT
+)
+BEGIN
+	SELECT COUNT(p.id) AS posts
+	FROM news AS n
+		LEFT JOIN posts AS p ON p.id = n.postId
+	WHERE n.userId = userId AND (p.id > topId AND topId > 0)
+	ORDER BY p.created DESC;
+END$$
+DELIMITER ;
+
+DELIMITER $$
+CREATE PROCEDURE `delete_news_post`(
+	IN userId INT,
+	IN postId INT
+)
+BEGIN
+	DELETE FROM news WHERE news.userId = userId AND news.postId = postId;
+END$$
+DELIMITER ;
+
+-- TODO: consider using trigger on `wall` to automate `news` cleanup
+DELIMITER $$
+CREATE PROCEDURE `delete_wall_post`(
+	IN userId INT,
+	IN postId INT
+)
+BEGIN
+	-- delete post from wall, news and from followers' news
+	DELETE FROM wall WHERE wall.userId = userId AND wall.postId = postId;
+	IF (ROW_COUNT() > 0) THEN
+		DELETE FROM news WHERE news.postId = postId;
+	END IF;
+END$$
+DELIMITER ;
 
 /*!40101 SET SQL_MODE=IFNULL(@OLD_SQL_MODE, '') */;
 /*!40014 SET FOREIGN_KEY_CHECKS=IF(@OLD_FOREIGN_KEY_CHECKS IS NULL, 1, @OLD_FOREIGN_KEY_CHECKS) */;

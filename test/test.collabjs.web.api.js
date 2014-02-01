@@ -339,7 +339,7 @@ describe('collab.js web.api', function () {
     });
   });
 
-  describe('getTimeline: GET /api/people/:account/timeline:topId?', function () {
+  describe('getWall: GET /api/people/:account/timeline:topId?', function () {
 
     it('gets error for profile', function (done) {
       context.data.getPublicProfile = function (callerId, targetAccount, callback) {
@@ -360,7 +360,7 @@ describe('collab.js web.api', function () {
     });
 
     it('allows query without `topId`', function (done) {
-      context.data.getTimeline = function (callerId, targetAccount, topId, callback) {
+      context.data.getWall = function (userId, topId, callback) {
         if (topId === 0) { callback(null, []); }
         else { callback('Error'); }
       };
@@ -373,7 +373,7 @@ describe('collab.js web.api', function () {
 
     it('gets data from repository', function (done) {
       var data = [{id:1}];
-      context.data.getTimeline = function (callerId, targetAccount, topId, callback) {
+      context.data.getWall = function (userId, topId, callback) {
         callback(null, data);
       };
 
@@ -388,7 +388,7 @@ describe('collab.js web.api', function () {
     });
 
     it('gets no data from repository', function (done) {
-      context.data.getTimeline = function (callerId, targetAccount, topId, callback) {
+      context.data.getWall = function (userId, topId, callback) {
         callback(null, null);
       };
 
@@ -398,7 +398,7 @@ describe('collab.js web.api', function () {
     });
 
     it('gets error from repository', function (done) {
-      context.data.getTimeline = function (callerId, targetAccount, topId, callback) {
+      context.data.getWall = function (userId, topId, callback) {
         callback('Error');
       };
 
@@ -407,10 +407,16 @@ describe('collab.js web.api', function () {
         .expect(400, done);
     });
 
-    it('gets data by account', function (done) {
+    /*it('gets data by account', function (done) {
       var data = [ { id: 1 } ];
-      context.data.getTimeline = function (callerId, targetAccount, topId, callback) {
-        if (targetAccount === 'johndoe') { callback(null, data); }
+
+      context.data.getPublicProfile = function (userId, targetAccount, callback) {
+        if (targetAccount === 'johndoe') { callback({ id: 10 }); }
+        else { callback(null, null); }
+      };
+
+      context.data.getWall = function (userId, topId, callback) {
+        if (userId === 10) { callback(null, data); }
         else { callback(null, null); }
       };
 
@@ -422,7 +428,7 @@ describe('collab.js web.api', function () {
           expect(res.body.feed).to.eql(data);
           done();
         });
-    });
+    });*/
   });
 
   describe('getPublicProfile: GET /api/accounts/:account/profile', function () {
@@ -519,10 +525,10 @@ describe('collab.js web.api', function () {
     });
   });
 
-  describe('getMainTimeline: GET /api/timeline/posts:topId?', function () {
+  describe('getNews: GET /api/timeline/posts:topId?', function () {
 
     it('allows query without `topId`', function (done) {
-      context.data.getMainTimeline = function (userId, topId, callback) {
+      context.data.getNews = function (userId, topId, callback) {
         if (topId === 0) { callback(null, []); }
         else { callback('Error'); }
       };
@@ -535,7 +541,7 @@ describe('collab.js web.api', function () {
 
     it('gets data from repository', function(done) {
       var data = [{id:1}];
-      context.data.getMainTimeline = function (userId, topId, callback) {
+      context.data.getNews = function (userId, topId, callback) {
         callback(null, data);
       };
 
@@ -546,7 +552,7 @@ describe('collab.js web.api', function () {
     });
 
     it('gets no data from repository', function (done) {
-      context.data.getMainTimeline = function (userId, topId, callback) {
+      context.data.getNews = function (userId, topId, callback) {
         callback(null, null);
       };
 
@@ -556,7 +562,7 @@ describe('collab.js web.api', function () {
     });
 
     it('gets error from repository', function (done) {
-      context.data.getMainTimeline = function (userId, topId, callback) {
+      context.data.getNews = function (userId, topId, callback) {
         callback('Error');
       };
 
@@ -566,7 +572,7 @@ describe('collab.js web.api', function () {
     });
   });
 
-  describe('deletePost: DELETE /api/timeline/posts/:id', function () {
+  /*describe('deletePost: DELETE /api/timeline/posts/:id', function () {
 
     it('deletes post', function (done) {
       context.data.deletePost = function (postId, userId, callback) {
@@ -597,12 +603,12 @@ describe('collab.js web.api', function () {
         .del('/api/timeline/posts/100')
         .expect(400, done);
     });
-  });
+  });*/
 
-  describe('getTimelineUpdatesCount: GET /api/timeline/updates/count:topId?', function () {
+  describe('chekNewsUpdates: GET /api/timeline/updates/count:topId?', function () {
 
     it('allows query without `topId`', function (done) {
-      context.data.getTimelineUpdatesCount = function (userId, topId, callback) {
+      context.data.checkNewsUpdates = function (userId, topId, callback) {
         if (topId === 0) { callback(null, []); }
         else { callback('Error'); }
       };
@@ -615,7 +621,7 @@ describe('collab.js web.api', function () {
 
     it('gets data from repository', function (done) {
       var data = [{id:1}];
-      context.data.getTimelineUpdatesCount = function (userId, topId, callback) {
+      context.data.checkNewsUpdates = function (userId, topId, callback) {
         callback(null, data);
       };
 
@@ -626,7 +632,7 @@ describe('collab.js web.api', function () {
     });
 
     it('gets no data from repository', function (done) {
-      context.data.getTimelineUpdatesCount = function (userId, topId, callback) {
+      context.data.checkNewsUpdates = function (userId, topId, callback) {
         callback(null, null);
       };
 
@@ -636,7 +642,7 @@ describe('collab.js web.api', function () {
     });
 
     it('gets error from repository', function (done) {
-      context.data.getTimelineUpdatesCount = function (userId, topId, callback) {
+      context.data.checkNewsUpdates = function (userId, topId, callback) {
         callback('Error');
       };
 
@@ -646,10 +652,10 @@ describe('collab.js web.api', function () {
     });
   });
 
-  describe('getTimelineUpdates: GET /api/timeline/updates:topId?', function () {
+  describe('getNewsUpdates: GET /api/timeline/updates:topId?', function () {
 
     it('allows query without `topId`', function (done) {
-      context.data.getTimelineUpdates = function (userId, topId, callback) {
+      context.data.getNewsUpdates = function (userId, topId, callback) {
         if (topId === 0) { callback(null, []); }
         else { callback('Error'); }
       };
@@ -662,7 +668,7 @@ describe('collab.js web.api', function () {
 
     it('gets data from repository', function (done) {
       var data = [{id:1}];
-      context.data.getTimelineUpdates = function (userId, topId, callback) {
+      context.data.getNewsUpdates = function (userId, topId, callback) {
         callback(null, data);
       };
 
@@ -673,7 +679,7 @@ describe('collab.js web.api', function () {
     });
 
     it('gets no data from repository', function (done) {
-      context.data.getTimelineUpdates = function (userId, topId, callback) {
+      context.data.getNewsUpdates = function (userId, topId, callback) {
         callback(null, null);
       };
 
@@ -683,7 +689,7 @@ describe('collab.js web.api', function () {
     });
 
     it('gets error from repository', function (done) {
-      context.data.getTimelineUpdates = function (userId, topId, callback) {
+      context.data.getNewsUpdates = function (userId, topId, callback) {
         callback('Error');
       };
 
