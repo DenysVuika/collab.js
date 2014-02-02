@@ -59,12 +59,7 @@ if collabjs.env === 'development'
   script(src='/js/controllers/PasswordController.js')
   script(src='/js/controllers/HelpController.js')
 else
-  script(src='/js/collabjs.min.js')
-  script(src='/js/app.min.js')
-  script(src='/js/services.min.js')
-  script(src='/js/directives.min.js')
-  script(src='/js/filters.min.js')
-  script(src='/js/controllers.min.js')
+  script(src='/js/collabjs.core.min.js')
 
 //- Load additional JavaScript files
 each js in collabjs.config.client.js
