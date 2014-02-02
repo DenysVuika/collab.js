@@ -53,7 +53,15 @@ function isUrlLocalToHost(url) {
       (url.length > 1 && url[0] === '~' && url[1] === '/' )); // "~/" or "~/foo"
 }
 
+function addHttp(url) {
+  if (url && !/^(f|ht)tps?:\/\//i.test(url)) {
+    url = "http://" + url;
+  }
+  return url;
+}
+
 module.exports.detectMobileBrowser = detectMobileBrowser;
 module.exports.commonLocals = commonLocals;
 module.exports.isUrlLocalToHost = isUrlLocalToHost;
 module.exports.noCache = noCache;
+module.exports.addHttp = addHttp;

@@ -1,6 +1,7 @@
 'use strict';
 
 var config = require('../../config')
+  , utils = require('../../collabjs.utils')
   , pool = require('./collabjs.pool.mysql').pool
   , passwordHash = require('password-hash')
   , crypto = require('crypto');
@@ -63,9 +64,9 @@ Provider.prototype = {
   },
   updateAccount: function (id, json, callback) {
     var fields = {
-      location: json.location || '',  // update or reset user.location
-      website: json.website || '',    // update or reset user.website
-      bio: json.bio || ''             // update or reset user.bio
+      location: json.location || '',                  // update or reset user.location
+      website: utils.addHttp(json.website || ''),     // update or reset user.website
+      bio: json.bio || ''                             // update or reset user.bio
     };
 
     // update user.name
