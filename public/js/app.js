@@ -155,12 +155,6 @@ angular.module('collabjs', [
         resolve: { isLoggedIn: auth },
         title: 'Followers'
       })
-      .when('/mentions', {
-        templateUrl: '/templates/mentions.html',
-        controller: 'MentionsController',
-        resolve: { isLoggedIn: auth },
-        title: 'Mentions'
-      })
       .when('/posts/:postId', {
         templateUrl: '/templates/post.html',
         controller: 'PostController',

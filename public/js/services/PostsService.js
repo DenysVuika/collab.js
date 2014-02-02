@@ -32,13 +32,6 @@ angular.module('collabjs.services')
           .error(function (data) { d.reject(data); });
         return d.promise;
       },
-      getMentions: function (topId) {
-        var d = $q.defer()
-          , query = '/api/mentions';
-        if (topId) { query = query + '?topId=' + topId; }
-        $http.get(query).success(function (data) { d.resolve(data || []); });
-        return d.promise;
-      },
       getPostById: function (postId) {
         var d = $q.defer()
           , query = '/api/timeline/posts/' + postId;

@@ -51,10 +51,6 @@ describe('collab.js data layer', function () {
       expect(data.unfollowAccount).to.be.a('function');
     });
 
-    it('.getMentions', function () {
-      expect(data.getMentions).to.be.a('function');
-    });
-
     it('.getPeople', function () {
       expect(data.getPeople).to.be.a('function');
     });

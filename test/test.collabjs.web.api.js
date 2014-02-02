@@ -40,53 +40,6 @@ describe('collab.js web.api', function () {
   // raise 'app.init.routes' event for web.api to initialize routes
   context.emit(RuntimeEvents.app_init_routes, app);
 
-  describe('getMentions: GET /api/mentions:topId?', function () {
-
-    it('allows query without `topId`', function (done) {
-      context.data.getMentions = function (callerId, account, topId, callback) {
-        if (topId === 0) { callback(null, []); }
-        else { callback('Error'); }
-      };
-
-      request(app)
-        .get('/api/mentions')
-        .expect('Content-Type', /json/)
-        .expect(200, done);
-    });
-
-    it('gets data from repository', function (done) {
-      var data = [{id:1}];
-      context.data.getMentions = function (callerId, account, topId, callback) {
-        callback(null, data);
-      };
-
-      request(app)
-        .get('/api/mentions?topId=10')
-        .expect('Content-Type', /json/)
-        .expect(200, {feed: data}, done);
-    });
-
-    it('gets no data from repository', function (done) {
-      context.data.getMentions = function (caller, account, topId, callback) {
-        callback(null, null);
-      };
-
-      request(app)
-        .get('/api/mentions?topId=10')
-        .expect(400, done);
-    });
-
-    it('gets error from repository', function (done) {
-      context.data.getMentions = function (caller, account, topId, callback) {
-        callback('Error');
-      };
-
-      request(app)
-        .get('/api/mentions?topId=10')
-        .expect(400, done);
-    });
-  });
-
   describe('getPeople: GET /api/people:topId?', function () {
 
     it('allows query without `topId`', function (done) {

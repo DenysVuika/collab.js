@@ -22,29 +22,6 @@ CREATE TABLE IF NOT EXISTS `comments` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 
 DELIMITER //
-CREATE PROCEDURE `get_mentions`(
-  IN `originatorId` INT,
-  IN `originatorAccount` VARCHAR(50),
-  IN topId INT)
-BEGIN
-  DECLARE term VARCHAR(51);
-  SET term = CONCAT('%@', originatorAccount, '%');
-  SELECT result.* FROM
-  (
-    SELECT p.*, u.name, u.account, u.emailHash as pictureId
-    FROM posts AS p
-      LEFT JOIN users AS u ON u.id = p.userId
-    WHERE u.account != originatorAccount AND p.content LIKE term
-    AND EXISTS (select id from posts where id = topId OR topId = 0)
-    GROUP BY p.id
-    ORDER BY p.created DESC
-  ) AS result
-  WHERE (topId <= 0 || result.id < topId)
-  LIMIT 20;
-END//
-DELIMITER ;
-
-DELIMITER //
 CREATE PROCEDURE `get_people`(
   IN `originatorId` INT,
   IN topId INT)

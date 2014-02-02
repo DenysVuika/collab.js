@@ -116,17 +116,6 @@ module.exports.unfollowAccount = function (callerId, targetAccount, callback) {
 };
 
 /**
- * Get a list of mentions for the given user.
- * @param {number} callerId Originator account id.
- * @param {string} account Target account name.
- * @param {number} topId Position of the first entry from the top (used for paging).
- * @param {function(err, result)} callback Callback function.
- */
-module.exports.getMentions = function (callerId, account, topId, callback) {
-	provider.getMentions(callerId, account, topId, callback);
-};
-
-/**
  * Get a list of registered people for the given user id.
  * @param {number} callerId Originator account id.
  * @param {number} topId Position of the first entry from the top (used for paging).

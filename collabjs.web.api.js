@@ -129,13 +129,6 @@ module.exports = function (context) {
       });
     });
 
-    app.get('/api/mentions:topId?', authenticate, noCache, function (req, res) {
-      repository.getMentions(req.user.id, req.user.account, getTopId(req), function (err, result) {
-        if (err || !result) { res.send(400); }
-        else { res.json(200, { feed: result }); }
-      });
-    });
-
     app.get('/api/people:topId?', authenticate, noCache, function (req, res) {
       repository.getPeople(req.user.id, getTopId(req), function (err, result) {
         if (err || !result) { res.send(400); }
