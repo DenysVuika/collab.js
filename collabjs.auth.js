@@ -44,7 +44,7 @@ module.exports.ensureRole = function (role) {
     } else if (req.user && req.user.roles && req.user.roles.split(',').indexOf(role) >= 0) {
       return next();
     } else {
-      return res.render('core/403', {
+      return res.render('403', {
         user: req.user,
         title: 'Forbidden'
       });

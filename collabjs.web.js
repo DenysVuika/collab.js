@@ -4,7 +4,7 @@ module.exports = function (context) {
   context.once('app.init.routes', function (app) {
 
     app.get('/', function (req, res) {
-      res.render('core/index', {
+      res.render('index', {
         title: 'collab.js',
         user: req.user
       });

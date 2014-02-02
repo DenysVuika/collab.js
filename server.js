@@ -188,7 +188,7 @@ app.use(function (req, res, next) {
 
   // respond with html page
   if (req.accepts('html')) {
-    res.render('core/404', {
+    res.render('404', {
       title: 'Not found',
       url: req.url
     });
@@ -224,7 +224,7 @@ app.use(function(err, req, res, next){
   // here and next(err) appropriately, or if
   // we possibly recovered from the error, simply next().
   res.status(err.status || 500);
-  res.render('core/500', { error: err });
+  res.render('500', { error: err });
 });
 
 app.get('/404', function (req, res, next) {

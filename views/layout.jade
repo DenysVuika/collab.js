@@ -3,8 +3,8 @@ html(ng-app='collabjs', ng-controller='AppController', ng-init="init('#{collabjs
   head
     title(ng-bind="title + ' | ' + appName")
 
-    include shared/_meta
-    include shared/_styles
+    include _meta
+    include _styles
 
     block styles
 
@@ -19,5 +19,5 @@ html(ng-app='collabjs', ng-controller='AppController', ng-init="init('#{collabjs
           block content
             div.ng-view
 
-    include shared/_scripts
+    include _scripts
     block scripts

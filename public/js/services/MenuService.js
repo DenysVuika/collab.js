@@ -5,7 +5,7 @@ angular.module('collabjs.services')
 
       var menuItems = {};
 
-      // Typical menu item sample:
+      // Menu item sample:
       /*
        {
           id: 'collabjs.menu.item1',

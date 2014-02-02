@@ -33,7 +33,8 @@ module.exports = function (grunt) {
           'public/js/services/*Service.js',
           'public/js/directives/*.js',
           'public/js/filters/*.js',
-          'public/js/controllers/*Controller.js'],
+          'public/js/controllers/*Controller.js'
+        ],
         dest: 'temp/collabjs.core.js'
       }
     },
