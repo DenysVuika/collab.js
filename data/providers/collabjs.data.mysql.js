@@ -218,14 +218,33 @@ Provider.prototype = {
   },
   addPost: function (json, callback) {
     pool.getConnection(function (err, connection) {
-      var command = 'CALL add_post (?,?,?)'
-        , params = [json.userId, json.content, json.created];
-      connection.query(command, params, function (err, result) {
-        connection.release();
-        if (err) { callback(err, null); }
+      var params = [json.userId, json.content, json.created];
+      connection.query('CALL add_post (?,?,?)', params, function (err, result) {
+        if (err) {
+          connection.release();
+          callback(err, null);
+        }
         else {
           var rows = result[0];
-          callback(err, rows[0].insertId);
+          var postId = rows[0].insertId;
+
+          // try adding post for mentioned users' News
+          if (postId && postId > 0) {
+            var accounts = utils.parseAccountNames(json.content);
+            if (accounts && accounts.length > 0) {
+              connection.query('CALL add_mentions (?,?)', [accounts.join(','), postId], function (err) {
+                connection.release();
+                callback(err, postId);
+              });
+            } else {
+              connection.release();
+              callback(err, postId);
+            }
+          }
+          else {
+            connection.release();
+            callback(err, false);
+          }
         }
       });
     });

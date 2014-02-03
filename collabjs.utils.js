@@ -60,8 +60,20 @@ function addHttp(url) {
   return url;
 }
 
+function parseAccountNames(text) {
+  var accounts = [];
+  var rule = (/[@]+[A-Za-z0-9-_]+/g);
+  var match;
+  while ((match = rule.exec(text)) !== null) {
+    // strip leading '@' symbol
+    accounts.push(match[0].substr(1));
+  }
+  return accounts;
+}
+
 module.exports.detectMobileBrowser = detectMobileBrowser;
 module.exports.commonLocals = commonLocals;
 module.exports.isUrlLocalToHost = isUrlLocalToHost;
 module.exports.noCache = noCache;
 module.exports.addHttp = addHttp;
+module.exports.parseAccountNames = parseAccountNames;
