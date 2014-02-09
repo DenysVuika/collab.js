@@ -1,7 +1,6 @@
 'use strict';
 
-var config = require('../../config')
-  , utils = require('../../collabjs.utils')
+var utils = require('../../collabjs.utils')
   , pool = require('./collabjs.pool.mysql').pool
   , passwordHash = require('password-hash')
   , crypto = require('crypto');
@@ -20,7 +19,7 @@ Provider.prototype = {
         connection.release();
         if (err) { return callback(err, null); }
         if (result.length > 0) {
-          result[0].pictureUrl = config.env.avatarServer + '/avatar/' + result[0].pictureId;
+          result[0].pictureUrl = utils.getAvatarUrl(result[0].pictureId);
           return callback(err, result[0]);
         }
         else { return callback(err, null); }
@@ -38,7 +37,7 @@ Provider.prototype = {
         connection.release();
         if (err) { return callback(err, null); }
         if (result.length > 0) {
-          result[0].pictureUrl = config.env.avatarServer + '/avatar/' + result[0].pictureId;
+          result[0].pictureUrl = utils.getAvatarUrl(result[0].pictureId);
           return callback(err, result[0]);
         }
         else { return callback(err, null); }
@@ -113,7 +112,7 @@ Provider.prototype = {
         if (err || result.length === 0) { callback(err, null); }
         else {
           var profile = result[0];
-          profile.pictureUrl = config.env.avatarServer + '/avatar/' + profile.pictureId;
+          profile.pictureUrl = utils.getAvatarUrl(profile.pictureId);
           callback(err, profile);
         }
       });
@@ -148,7 +147,7 @@ Provider.prototype = {
           // init picture urls
           if (rows.length > 0) {
             for (var i = 0; i < rows.length; i++) {
-              rows[i].pictureUrl = config.env.avatarServer + '/avatar/' + rows[i].pictureId;
+              rows[i].pictureId = utils.getAvatarUrl(rows[i].pictureId);
             }
           }
           callback(err, rows);
@@ -169,7 +168,7 @@ Provider.prototype = {
         // init picture urls
         if (result.length > 0) {
           for (var i = 0; i < result.length; i++) {
-            result[i].pictureUrl = config.env.avatarServer + '/avatar/' + result[i].pictureId;
+            result[i].pictureUrl = utils.getAvatarUrl(result[i].pictureId);
           }
         }
         callback(err, result);
@@ -189,7 +188,7 @@ Provider.prototype = {
         // init picture urls
         if (result.length > 0) {
           for (var i = 0; i < result.length; i++) {
-            result[i].pictureUrl = config.env.avatarServer + '/avatar/' + result[i].pictureId;
+            result[i].pictureUrl = utils.getAvatarUrl(result[i].pictureId);
           }
         }
         callback(err, result);
@@ -208,7 +207,7 @@ Provider.prototype = {
           // init picture urls
           if (rows.length > 0) {
             for (var i = 0; i < rows.length; i++) {
-              rows[i].pictureUrl = config.env.avatarServer + '/avatar/' + rows[i].pictureId;
+              rows[i].pictureUrl = utils.getAvatarUrl(rows[i].pictureId);
             }
           }
           callback(err, rows);
@@ -261,7 +260,7 @@ Provider.prototype = {
           // init picture urls
           if (rows.length > 0) {
             for (var i = 0; i < rows.length; i++) {
-              rows[i].pictureUrl = config.env.avatarServer + '/avatar/' + rows[i].pictureId;
+              rows[i].pictureUrl = utils.getAvatarUrl(rows[i].pictureId);
             }
           }
           callback(err, rows);
@@ -319,7 +318,7 @@ Provider.prototype = {
           // init picture urls
           if (rows.length > 0) {
             for (var i = 0; i < rows.length; i++) {
-              rows[i].pictureUrl = config.env.avatarServer + '/avatar/' + rows[i].pictureId;
+              rows[i].pictureUrl = utils.getAvatarUrl(rows[i].pictureId);
             }
           }
           callback(err, rows);
@@ -342,7 +341,7 @@ Provider.prototype = {
           // init picture urls
           if (rows.length > 0) {
             for (var i = 0; i < rows.length; i++) {
-              rows[i].pictureUrl = config.env.avatarServer + '/avatar/' + rows[i].pictureId;
+              rows[i].pictureUrl = utils.getAvatarUrl(rows[i].pictureId);
             }
           }
           callback(err, rows);
@@ -374,12 +373,12 @@ Provider.prototype = {
             callback(err, null);
           } else {
             var post = rows[0];
-            post.pictureUrl = config.env.avatarServer + '/avatar/' + post.pictureId;
+            post.pictureUrl = utils.getAvatarUrl(post.pictureId);
             if (result[1] && result[1].length > 0) {
               post.commentsCount = result[1].length;
               post.comments = result[1];
               for (var i = 0; i < post.comments.length; i++) {
-                post.comments[i].pictureUrl = config.env.avatarServer + '/avatar/' + post.comments[i].pictureId;
+                post.comments[i].pictureUrl = utils.getAvatarUrl(post.comments[i].pictureId);
               }
             } else {
               post.commentsCount = 0;
@@ -404,7 +403,7 @@ Provider.prototype = {
           // init picture urls
           if (result.length > 0) {
             for (var i = 0; i < result.length; i++) {
-              result[i].pictureUrl = config.env.avatarServer + '/avatar/' + result[i].pictureId;
+              result[i].pictureUrl = utils.getAvatarUrl(result[i].pictureId);
             }
           }
           callback(err, result);

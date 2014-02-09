@@ -71,9 +71,18 @@ function parseAccountNames(text) {
   return accounts;
 }
 
+function getAvatarUrl(pictureId, size) {
+  var result = config.env.avatarServer + '/avatar/' + pictureId;
+  if (size) {
+    result += '?s=' + size;
+  }
+  return result;
+}
+
 module.exports.detectMobileBrowser = detectMobileBrowser;
 module.exports.commonLocals = commonLocals;
 module.exports.isUrlLocalToHost = isUrlLocalToHost;
 module.exports.noCache = noCache;
 module.exports.addHttp = addHttp;
 module.exports.parseAccountNames = parseAccountNames;
+module.exports.getAvatarUrl = getAvatarUrl;

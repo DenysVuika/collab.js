@@ -20,7 +20,7 @@ module.exports = function (context) {
         account: req.user.account,
         name: req.user.name,
         roles: [],
-        pictureUrl: config.env.avatarServer + '/avatar/' + req.user.pictureId
+        pictureUrl: utils.getAvatarUrl(req.user.pictureId)
       };
 
       if (req.user.roles) {
@@ -220,7 +220,7 @@ module.exports = function (context) {
             account: req.user.account,
             name: req.user.name,
             pictureId: req.user.pictureId,
-            pictureUrl: config.env.avatarServer + '/avatar/' + req.user.pictureId,
+            pictureUrl: utils.getAvatarUrl(req.user.pictureId),
             content: req.body.content,
             created: date,
             commentsCount: 0,
@@ -283,7 +283,7 @@ module.exports = function (context) {
           comment.account = req.user.account;
           comment.name = req.user.name;
           comment.pictureId = req.user.pictureId;
-          comment.pictureUrl = config.env.avatarServer + '/avatar/' + comment.pictureId;
+          comment.pictureUrl = utils.getAvatarUrl(comment.pictureId);
           res.json(200, comment);
           // send email notification
           notifyOnPostCommented(req, comment);
@@ -376,7 +376,11 @@ module.exports = function (context) {
     // UTILS
 
     function getTopId(req) {
-      return (req.query && req.query.topId && req.query.topId > 0) ? req.query.topId : 0;
+      if (req.query && req.query.topId) {
+        var topId = parseInt(req.query.topId);
+        return isNaN(topId) || topId < 0 ? 0 : topId;
+      }
+      return 0;
     }
 
     function handleJsonResult(res) {
@@ -408,7 +412,7 @@ module.exports = function (context) {
         if (user.id === req.user.id) { return; }
         var html = template_comment({
           user: req.user.name,
-          profilePictureUrl: config.env.avatarServer + '/avatar/' + req.user.pictureId + '?s=48',
+          profilePictureUrl: utils.getAvatarUrl(req.user.pictureId, 48),
           timelineUrl: config.hostname + '/people/' + req.user.account + '/timeline',
           postUrl: config.hostname + '/timeline/posts/' + comment.postId,
           content: comment.content
