@@ -244,10 +244,28 @@ module.exports = function (context) {
       });
     });
 
-    // TODO: rename to '/api/news'
-    // TODO: move 'topId' to http header
-    app.get('/api/timeline/posts:topId?', authenticate, noCache, function (req, res) {
-      repository.getNews(req.user.id, getTopId(req), handleJsonResult(res));
+    app.get('/api/news', authenticate, noCache, function (req, res) {
+      var lastId = parseInt(req.header('last-known-id'));
+      if (isNaN(lastId) || lastId < 0) {
+        lastId = 0;
+      }
+      // check for 'retrieve-mode' header
+      var mode = req.header('retrieve-mode');
+      if (mode) {
+        mode = mode.toLowerCase();
+        // only updates count should be returned
+        if (mode === 'count-updates') {
+          repository.checkNewsUpdates(req.user.id, lastId, handleJsonResult(res));
+        }
+        // updates should be returned
+        else if (mode === 'get-updates') {
+          repository.getNewsUpdates(req.user.id, lastId, handleJsonResult(res));
+        }
+      }
+      // just return the regular News content
+      else {
+        repository.getNews(req.user.id, lastId, handleJsonResult(res));
+      }
     });
 
     // TODO: rename to '/api/posts/:postId'

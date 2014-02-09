@@ -4,23 +4,37 @@ angular.module('collabjs.services')
     return {
       getNews: function (topId) {
         var d = $q.defer()
-          , query = '/api/timeline/posts';
-        if (topId) { query = query + '?topId=' + topId; }
-        $http.get(query).success(function (data) { d.resolve(data || []); });
+          , options = {
+            headers: { 'last-known-id': topId }
+          };
+
+        $http.get('/api/news', options)
+          .success(function (data) { d.resolve(data || []); });
         return d.promise;
       },
       getNewsUpdatesCount: function (topId) {
         var d = $q.defer()
-          , query = '/api/timeline/updates/count?topId=' + topId;
-        $http.get(query)
+          , options = {
+            headers: {
+              'last-known-id': topId,
+              'retrieve-mode': 'count-updates'
+            }
+          };
+        $http.get('/api/news', options)
           .success(function (data) { d.resolve(data.posts || 0); })
           .error(function () { d.resolve(0); });
         return d.promise;
       },
       getNewsUpdates: function (topId) {
         var d = $q.defer()
-          , query = '/api/timeline/updates?topId=' + topId;
-        $http.get(query).success(function (data) { d.resolve(data || []); });
+          , options = {
+            headers: {
+              'last-known-id': topId,
+              'retrieve-mode': 'get-updates'
+            }
+          };
+        $http.get('/api/news', options)
+          .success(function (data) { d.resolve(data || []); });
         return d.promise;
       },
       getWall: function (account, topId) {

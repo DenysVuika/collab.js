@@ -478,9 +478,9 @@ describe('collab.js web.api', function () {
     });
   });
 
-  describe('getNews: GET /api/timeline/posts:topId?', function () {
+  describe('getNews: GET /api/news', function () {
 
-    it('allows query without `topId`', function (done) {
+    /*it('allows query without `topId`', function (done) {
       context.data.getNews = function (userId, topId, callback) {
         if (topId === 0) { callback(null, []); }
         else { callback('Error'); }
@@ -490,7 +490,7 @@ describe('collab.js web.api', function () {
         .get('/api/timeline/posts')
         .expect('Content-Type', /json/)
         .expect(200, done);
-    });
+    });*/
 
     it('gets data from repository', function(done) {
       var data = [{id:1}];
@@ -499,7 +499,7 @@ describe('collab.js web.api', function () {
       };
 
       request(app)
-        .get('/api/timeline/posts')
+        .get('/api/news')
         .expect('Content-Type', /json/)
         .expect(200, data, done);
     });
@@ -510,7 +510,7 @@ describe('collab.js web.api', function () {
       };
 
       request(app)
-        .get('/api/timeline/posts')
+        .get('/api/news')
         .expect(400, done);
     });
 
@@ -520,7 +520,7 @@ describe('collab.js web.api', function () {
       };
 
       request(app)
-        .get('/api/timeline/posts')
+        .get('/api/news')
         .expect(400, done);
     });
   });
