@@ -67,6 +67,7 @@ CREATE TABLE IF NOT EXISTS `posts` (
   `created` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
   `commentsCount` int(11) NOT NULL DEFAULT '0',
   `likesCount` int(11) NOT NULL DEFAULT '0',
+  `type` smallint(6) NOT NULL DEFAULT '0',
   PRIMARY KEY (`id`),
   KEY `FK_Posts_Users_idx` (`userId`),
   CONSTRAINT `FK_Posts_Users` FOREIGN KEY (`userId`) REFERENCES `users` (`Id`) ON DELETE CASCADE ON UPDATE NO ACTION
