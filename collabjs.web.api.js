@@ -77,6 +77,7 @@ module.exports = function (context) {
       }
     });
 
+    // TODO: rename to '/api/profile'
     app.get('/api/account', authenticate, noCache, function (req, res) {
       res.json(200, {
         token: config.server.csrf ? req.csrfToken() : null,
@@ -89,6 +90,7 @@ module.exports = function (context) {
       });
     });
 
+    // TODO: rename to '/api/profile'
     app.post('/api/account', authenticate, function (req, res) {
       repository.updateAccount(req.user.id, req.body, function (err) {
         if (err) { res.send(400); }
@@ -96,6 +98,7 @@ module.exports = function (context) {
       });
     });
 
+    // TODO: rename to '/api/profile/password'
     app.post('/api/account/password', authenticate, function(req, res) {
       var settings = req.body;
 
@@ -129,6 +132,7 @@ module.exports = function (context) {
       });
     });
 
+    // TODO: move 'topId' to http header
     app.get('/api/people:topId?', authenticate, noCache, function (req, res) {
       repository.getPeople(req.user.id, getTopId(req), function (err, result) {
         if (err || !result) { res.send(400); }
@@ -136,14 +140,20 @@ module.exports = function (context) {
       });
     });
 
+    // TODO: rename to '/api/u/:account/follow
+    // TODO: change from GET to POST
     app.get('/api/people/:account/follow', authenticate, noCache, function (req, res) {
       repository.followAccount(req.user.id, req.params.account, handleHtmlResult(res));
     });
 
+    // TODO: rename to '/api/u/:account/unfollow
+    // TODO: change from GET to POST
     app.get('/api/people/:account/unfollow', authenticate, noCache, function (req, res) {
       repository.unfollowAccount(req.user.id, req.params.account, handleHtmlResult(res));
     });
 
+    // TODO: rename to '/api/u/:account/followers:topId?'
+    // TODO: move 'topId' to http header
     app.get('/api/people/:account/followers:topId?', authenticate, noCache, function (req, res) {
       repository.getPublicProfile(req.user.id, req.params.account, function (err, result) {
         if (err || !result) {
@@ -160,6 +170,8 @@ module.exports = function (context) {
       });
     });
 
+    // TODO: rename to '/api/u/:account/following:topId?'
+    // TODO: move 'topId' to http header
     app.get('/api/people/:account/following:topId?', authenticate, noCache, function (req, res) {
       repository.getPublicProfile(req.user.id, req.params.account, function (err, result) {
         if (err || !result) {
@@ -176,7 +188,8 @@ module.exports = function (context) {
       });
     });
 
-    // TODO: rename to '/api/people/:account/wall:topId?' or '/api/wall/:account:top?'
+    // TODO: rename to '/api/u/:account/posts'
+    // TODO: move 'topId' to http header
     app.get('/api/people/:account/timeline:topId?', authenticate, noCache, function (req, res) {
       repository.getPublicProfile(req.user.id, req.params.account, function (err, result) {
         if (err || !result) {
@@ -199,11 +212,12 @@ module.exports = function (context) {
       });
     });
 
+    // TODO: rename to '/api/u/:account/profile'
     app.get('/api/accounts/:account/profile', authenticate, noCache, function (req, res) {
       repository.getPublicProfile(req.user.id, req.params.account, handleJsonResult(res));
     });
 
-    // TODO: rename to '/api/news'
+    // TODO: rename to '/api/wall' or '/api/posts'
     app.post('/api/timeline/posts', authenticate, function (req, res) {
       var date = new Date();
       var post = {
@@ -230,11 +244,14 @@ module.exports = function (context) {
       });
     });
 
-    // TODO: rename to '/api/news:topId?'
+    // TODO: rename to '/api/news'
+    // TODO: move 'topId' to http header
     app.get('/api/timeline/posts:topId?', authenticate, noCache, function (req, res) {
       repository.getNews(req.user.id, getTopId(req), handleJsonResult(res));
     });
 
+    // TODO: rename to '/api/posts/:postId'
+    // Delete post from personal wall and followers' News
     app.del('/api/wall/:postId', authenticate, function (req, res) {
       repository.deleteWallPost(req.user.id, req.params.postId,  function (err, result) {
         if (err || !result) { res.send(400); }
@@ -245,6 +262,7 @@ module.exports = function (context) {
       });
     });
 
+    // Delete (mute) post from personal News
     app.del('/api/news/:postId', authenticate, function (req, res) {
       repository.deleteNewsPost(req.user.id, req.params.postId, function (err, result) {
         if (err || !result) { res.send(400); }
@@ -255,16 +273,19 @@ module.exports = function (context) {
       });
     });
 
-    // TODO: rename to '/api/news/updates/count:topId?'
+    // TODO: merge functionality with GET '/api/news'
+    // TODO: introduce special http header to get only 'count' instead of real values
     app.get('/api/timeline/updates/count:topId?', authenticate, noCache, function (req, res) {
       repository.checkNewsUpdates(req.user.id, getTopId(req), handleJsonResult(res));
     });
 
-    // TODO: rename to '/api/timeline/updates:topId?'
+    // TODO: merge functionality with GET '/api/news'
+    // TODO: move 'topId' to http header
     app.get('/api/timeline/updates:topId?', authenticate, noCache, function (req, res) {
       repository.getNewsUpdates(req.user.id, getTopId(req), handleJsonResult(res));
     });
 
+    // TODO: rename to '/api/posts/:p/comments'
     app.post('/api/timeline/comments', authenticate, function (req, res) {
       if (!req.body.content || req.body.content.length === 0) {
         res.send(400);
@@ -291,10 +312,12 @@ module.exports = function (context) {
       });
     });
 
+    // TODO: rename to '/api/posts/:p
     app.get('/api/timeline/posts/:id', authenticate, noCache, function (req, res) {
       repository.getPostWithComments(req.params.id, handleJsonResult(res));
     });
 
+    // TODO: rename to '/api/posts/:p/comments
     app.get('/api/timeline/posts/:id/comments', authenticate, noCache, function (req, res) {
       repository.getComments(req.params.id, handleJsonResult(res));
     });
