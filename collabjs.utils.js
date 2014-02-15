@@ -60,7 +60,13 @@ function addHttp(url) {
   return url;
 }
 
-function parseAccountNames(text) {
+/**
+ * Parses text and returns array of account names, or a delimited string if delimiter parameter is provided.
+ * @param {string} text Input string.
+ * @param {string} [delimiter] Delimiter to be used for a string output.
+ * @returns {Array|string} Array or String (if delimiter is provided) containing account names.
+ */
+function parseAccountNames(text, delimiter) {
   var accounts = [];
   var rule = (/[@]+[A-Za-z0-9-_]+/g);
   var match;
@@ -68,7 +74,24 @@ function parseAccountNames(text) {
     // strip leading '@' symbol
     accounts.push(match[0].substr(1));
   }
-  return accounts;
+  return delimiter ? accounts.join(delimiter) : accounts;
+}
+
+/**
+ * Parses text and returns array of hash tags, or a delimited string if delimiter parameter is provided.
+ * @param {string} text Input string.
+ * @param {string} [delimiter] Delimiter to be used for a string output.
+ * @returns {Array|string} Array or String (if delimiter is provided) containing hash tags.
+ */
+function parseHashTags(text, delimiter) {
+  var tags = [];
+  var rule = (/[#]+[A-Za-z0-9-_]+/g);
+  var match;
+  while ((match = rule.exec(text)) !== null) {
+    // strip leading '#' symbol
+    tags.push(match[0].substr(1));
+  }
+  return delimiter ? tags.join(delimiter) : tags;
 }
 
 function getAvatarUrl(pictureId, size) {
@@ -85,4 +108,5 @@ module.exports.isUrlLocalToHost = isUrlLocalToHost;
 module.exports.noCache = noCache;
 module.exports.addHttp = addHttp;
 module.exports.parseAccountNames = parseAccountNames;
+module.exports.parseHashTags = parseHashTags;
 module.exports.getAvatarUrl = getAvatarUrl;

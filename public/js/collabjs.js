@@ -299,9 +299,10 @@ String.prototype.parseUrls = function () {
 String.prototype.parseHashTags = function () {
   'use strict';
   return this.replace(/[#]+[A-Za-z0-9-_]+/g, function (t) {
-    var tag = t.replace("#", "%23");
-    //return t.link("http://search.twitter.com/search?q=" + tag);
-    return t.link('/#/search?q=' + tag + '&src=hash');
+    //var tag = t.replace("#", "%23");
+    //return t.link('/#/search?q=' + tag + '&src=hash');
+    var tag = t.replace('#', '');
+    return t.link('/#/explore/' + tag);
   });
 };
 

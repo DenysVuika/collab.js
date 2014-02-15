@@ -131,6 +131,12 @@ angular.module('collabjs', [
         resolve: { isLoggedIn: auth },
         title: 'News'
       })
+      .when('/explore/:tag?', {
+        templateUrl: '/templates/explore.html',
+        controller: 'ExploreController',
+        resolve: { isLoggedIn: auth },
+        title: 'Explore'
+      })
       .when('/people', {
         templateUrl: '/templates/people.html',
         controller: 'PeopleListController',
@@ -172,12 +178,6 @@ angular.module('collabjs', [
         controller: 'PasswordController',
         resolve: { isLoggedIn: auth },
         title: 'Change Password'
-      })
-      .when('/search', {
-        templateUrl: '/templates/search-posts.html',
-        controller: 'SearchController',
-        resolve: { isLoggedIn: auth },
-        title: 'Search'
       })
       .when('/help/:article?', {
         templateUrl: '/templates/help.html',

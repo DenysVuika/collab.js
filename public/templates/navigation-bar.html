@@ -50,17 +50,11 @@
           <span class="visible-xs-i"> People</span>
         </a>
       </li>
-      <li class="dropdown" ng-if="searchLists.length > 0">
-        <a class="dropdown-toggle" href="" data-toggle="dropdown">
+      <li>
+        <a href="/#/explore">
           <i class="fa-lg">#</i>
-          <span class="visible-xs-i"> Searches</span>
-          <b class="caret"></b>
+          <span class="visible-xs-i"> Explore</span>
         </a>
-        <ul class="dropdown-menu">
-          <li ng-repeat="list in searchLists">
-            <a ng-href="{{list.url}}">{{list.name}}</a>
-          </li>
-        </ul>
       </li>
 
       <!-- custom menu items -->

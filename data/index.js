@@ -18,7 +18,7 @@ var provider = new Provider();
 
 /**
  * Overrides current provider value with new instance.
- * @param instance New provider instance.
+ * @param {object} instance New provider instance.
  */
 module.exports.setProvider = function (instance) {
   provider = instance;
@@ -272,43 +272,4 @@ module.exports.getComments = function (postId, callback) {
  */
 module.exports.getPostAuthor = function (postId, callback) {
 	provider.getPostAuthor(postId, callback);
-};
-
-/**
- * Save search results to the personal collection.
- *
- * This function requires at least the following parameters (passed as a json object):
- * - name (list name)
- * - userId (list owner account id)
- * - q (list query)
- * - src (list query source)
- *
- * @param {Object} json Parameters as json object.
- * @param {function(err, result)} callback Callback function.
- */
-module.exports.addSavedSearch = function (json, callback) {
-  provider.addSavedSearch(json, callback);
-};
-
-/**
- * Get all saved searches from the personal collection
- * @param {number} userId User account id.
- * @param {function(err, result)} callback Callback function.
- */
-module.exports.getSavedSearches = function (userId, callback) {
-  provider.getSavedSearches(userId, callback);
-};
-
-/**
- * Remove saved search results from the personal collection.
- * @param {number} userId User account id.
- * @param {string} name Saved search list name.
- * @param {function(err, result)} callback Callback function.
- */
-module.exports.deleteSavedSearch = function (userId, name, callback) {
-  provider.deleteSavedSearch(userId, name, callback);
-};
-
-module.exports.hasSavedSearch = function (userId, name, callback) {
-  provider.hasSavedSearch(userId, name, callback);
 };

@@ -8,7 +8,60 @@
 CREATE DATABASE IF NOT EXISTS `collabjs` /*!40100 DEFAULT CHARACTER SET utf8 COLLATE utf8_unicode_ci */;
 USE `collabjs`;
 
-CREATE TABLE IF NOT EXISTS `comments` (
+--------------------------------------
+-- TABLES
+--------------------------------------
+
+CREATE TABLE `users` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `account` varchar(50) COLLATE utf8_unicode_ci NOT NULL,
+  `name` varchar(45) COLLATE utf8_unicode_ci NOT NULL,
+  `created` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `password` varchar(128) COLLATE utf8_unicode_ci NOT NULL,
+  `email` varchar(256) COLLATE utf8_unicode_ci NOT NULL,
+  `emailHash` varchar(32) NOT NULL DEFAULT '00000000000000000000000000000000',
+  `location` varchar(50) COLLATE utf8_unicode_ci DEFAULT NULL,
+  `website` varchar(256) COLLATE utf8_unicode_ci DEFAULT NULL,
+  `bio` varchar(160) COLLATE utf8_unicode_ci DEFAULT NULL,
+  `posts` int(11) NOT NULL DEFAULT '0',
+  `comments` varchar(45) NOT NULL DEFAULT '0',
+  `following` int(11) NOT NULL DEFAULT '0',
+  `followers` int(11) NOT NULL DEFAULT '0',
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `account` (`account`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
+
+CREATE TABLE `roles` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `name` varchar(256) COLLATE utf8_unicode_ci NOT NULL,
+  `loweredName` varchar(256) COLLATE utf8_unicode_ci NOT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
+
+CREATE TABLE `user_roles` (
+  `userId` int(11) NOT NULL,
+  `roleId` int(11) NOT NULL,
+  PRIMARY KEY (`userId`,`roleId`),
+  KEY `FK_ur_user_idx` (`userId`),
+  KEY `FK_ur_role_idx` (`roleId`),
+  CONSTRAINT `FK_ur_user` FOREIGN KEY (`userId`) REFERENCES `users` (`id`) ON DELETE NO ACTION ON UPDATE NO ACTION,
+  CONSTRAINT `FK_ur_role` FOREIGN KEY (`roleId`) REFERENCES `roles` (`id`) ON DELETE NO ACTION ON UPDATE NO ACTION
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
+
+CREATE TABLE `posts` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `userId` int(11) NOT NULL,
+  `content` text COLLATE utf8_unicode_ci NOT NULL,
+  `created` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `commentsCount` int(11) NOT NULL DEFAULT '0',
+  `likesCount` int(11) NOT NULL DEFAULT '0',
+  `type` smallint(6) NOT NULL DEFAULT '0',
+  PRIMARY KEY (`id`),
+  KEY `FK_Posts_Users_idx` (`userId`),
+  CONSTRAINT `FK_Posts_Users` FOREIGN KEY (`userId`) REFERENCES `users` (`Id`) ON DELETE CASCADE ON UPDATE NO ACTION
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
+
+CREATE TABLE `comments` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `userId` int(11) NOT NULL,
   `postId` int(11) NOT NULL,
@@ -21,6 +74,190 @@ CREATE TABLE IF NOT EXISTS `comments` (
   CONSTRAINT `FK_Comments_Users` FOREIGN KEY (`userId`) REFERENCES `users` (`Id`) ON DELETE CASCADE ON UPDATE NO ACTION
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 
+CREATE TABLE `likes` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `userId` int(11) NOT NULL,
+  `postId` int(11) NOT NULL,
+  `created` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
+
+CREATE TABLE `following` (
+  `userId` int(11) NOT NULL,
+  `targetId` int(11) NOT NULL,
+  PRIMARY KEY (`userId`,`targetId`),
+  KEY `FK_following_users_user_idx` (`userId`),
+  KEY `FK_following_users_target_idx` (`targetId`),
+  CONSTRAINT `FK_following_users_target` FOREIGN KEY (`targetId`) REFERENCES `users` (`id`) ON DELETE CASCADE ON UPDATE NO ACTION,
+  CONSTRAINT `FK_following_users_user` FOREIGN KEY (`userId`) REFERENCES `users` (`id`) ON DELETE CASCADE ON UPDATE NO ACTION
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
+
+CREATE TABLE `wall` (
+  `userId` int(11) NOT NULL,
+  `postId` int(11) NOT NULL,
+  PRIMARY KEY (`userId`,`postId`),
+  KEY `FK_Wall_Posts_idx` (`postId`),
+  CONSTRAINT `FK_Wall_Posts` FOREIGN KEY (`postId`) REFERENCES `posts` (`id`) ON DELETE CASCADE ON UPDATE NO ACTION,
+  CONSTRAINT `FK_Wall_Users` FOREIGN KEY (`userId`) REFERENCES `users` (`id`) ON DELETE CASCADE ON UPDATE NO ACTION
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
+
+CREATE TABLE `news` (
+  `userId` int(11) NOT NULL,
+  `postId` int(11) NOT NULL,
+  PRIMARY KEY (`userId`,`postId`),
+  KEY `FK_News_Posts_idx` (`postId`),
+  CONSTRAINT `FK_News_Posts` FOREIGN KEY (`postId`) REFERENCES `posts` (`id`) ON DELETE CASCADE ON UPDATE NO ACTION,
+  CONSTRAINT `FK_News_Users` FOREIGN KEY (`userId`) REFERENCES `users` (`id`) ON DELETE CASCADE ON UPDATE NO ACTION
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
+
+CREATE TABLE `tags` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `content` varchar(255) COLLATE utf8_unicode_ci NOT NULL,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `content_UNIQUE` (`content`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
+
+CREATE TABLE `post_tags` (
+  `postId` int(11) NOT NULL,
+  `tagId` int(11) NOT NULL,
+  PRIMARY KEY (`postId`,`tagId`),
+  KEY `FK_pt_tag_idx` (`tagId`),
+  CONSTRAINT `FK_pt_tag` FOREIGN KEY (`tagId`) REFERENCES `tags` (`id`) ON DELETE NO ACTION ON UPDATE NO ACTION,
+  CONSTRAINT `FK_pt_post` FOREIGN KEY (`postId`) REFERENCES `posts` (`id`) ON DELETE CASCADE ON UPDATE NO ACTION
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
+
+--------------------------------------
+-- FUNCTIONS
+--------------------------------------
+
+DELIMITER $$
+CREATE FUNCTION `USER_ROLES`(
+  uid INT
+) RETURNS TEXT CHARSET utf8 COLLATE utf8_unicode_ci
+BEGIN
+  DECLARE result TEXT;
+  SET result =
+  (
+    SELECT GROUP_CONCAT(r.loweredName separator ',') AS roles
+    FROM roles AS r, user_roles AS ur
+    WHERE r.id = ur.roleId AND ur.userId = uid
+    ORDER BY r.loweredName
+  );
+  RETURN result;
+END$$
+DELIMITER ;
+
+CREATE FUNCTION `POST_TAGS`(
+  postId INT
+) RETURNS text CHARSET utf8 COLLATE utf8_unicode_ci
+BEGIN
+	DECLARE RESULT TEXT;
+	SET RESULT =
+	(
+		SELECT GROUP_CONCAT(t.content separator ',') FROM posts AS p
+		LEFT JOIN post_tags AS pt ON pt.postId = p.id
+		LEFT JOIN tags AS t ON t.id = pt.tagId
+		WHERE p.Id = postId
+	);
+	RETURN RESULT;
+END
+
+DELIMITER $$
+CREATE FUNCTION `SPLIT_STR`(
+	str TEXT,
+	delim VARCHAR(12),
+	pos INT
+) RETURNS text CHARSET utf8 COLLATE utf8_unicode_ci
+    DETERMINISTIC
+BEGIN
+	DECLARE output TEXT;
+
+	SET output = REPLACE(SUBSTRING(SUBSTRING_INDEX(str, delim, pos),
+       LENGTH(SUBSTRING_INDEX(str, delim, pos - 1)) + 1),
+       delim, '');
+
+	IF output = '' THEN SET output = null; END IF;
+	RETURN output;
+END$$
+DELIMITER ;
+
+--------------------------------------
+-- VIEWS
+--------------------------------------
+
+CREATE OR REPLACE VIEW `vw_accounts` AS
+  SELECT
+    u.id,
+    u.account,
+    u.name,
+    u.created,
+    u.email,
+    u.password,
+    u.emailHash as pictureId,
+    u.location,
+    u.website,
+    u.bio,
+    u.posts,
+    u.comments,
+    u.following,
+    u.followers,
+    USER_ROLES(u.id) as roles
+  FROM users AS u
+;
+
+CREATE OR REPLACE VIEW `vw_users` AS
+  SELECT
+    u.id,
+    u.account,
+    u.name,
+    u.created,
+    u.email,
+    u.emailHash as pictureId,
+    u.location,
+    u.website,
+    u.bio,
+    u.posts,
+    u.comments,
+    u.following,
+    u.followers
+  FROM users AS u
+;
+
+CREATE OR REPLACE VIEW `vw_posts` AS
+  SELECT
+    p.id,
+    p.userId,
+    u.name,
+    u.account,
+    u.emailHash as pictureId,
+    p.content,
+    p.created,
+    p.commentsCount,
+    p.likesCount,
+    p.type,
+    POST_TAGS(p.id) AS tags
+  FROM posts AS p
+  LEFT JOIN users AS u ON u.id = p.userId
+  ORDER BY p.created DESC
+;
+
+CREATE OR REPLACE VIEW `vw_news` AS
+  SELECT p.*, n.userId as targetId
+  FROM news AS n
+  LEFT JOIN vw_posts AS p on p.id = n.postId
+;
+
+CREATE  OR REPLACE VIEW `vw_wall` AS
+  SELECT p.*, w.userId as targetId
+  FROM wall AS w
+  LEFT JOIN vw_posts AS p on p.id = w.postId
+;
+
+--------------------------------------
+-- PROCEDURES
+--------------------------------------
+
+-- TODO: review
 DELIMITER //
 CREATE PROCEDURE `get_people`(
   IN `originatorId` INT,
@@ -41,6 +278,7 @@ BEGIN
 END//
 DELIMITER ;
 
+-- TODO: review
 DELIMITER //
 CREATE PROCEDURE `get_post_full`(
   IN `postId` INT)
@@ -60,26 +298,8 @@ BEGIN
 END//
 DELIMITER ;
 
-CREATE TABLE IF NOT EXISTS `posts` (
-  `id` int(11) NOT NULL AUTO_INCREMENT,
-  `userId` int(11) NOT NULL,
-  `content` text COLLATE utf8_unicode_ci NOT NULL,
-  `created` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
-  `commentsCount` int(11) NOT NULL DEFAULT '0',
-  `likesCount` int(11) NOT NULL DEFAULT '0',
-  `type` smallint(6) NOT NULL DEFAULT '0',
-  PRIMARY KEY (`id`),
-  KEY `FK_Posts_Users_idx` (`userId`),
-  CONSTRAINT `FK_Posts_Users` FOREIGN KEY (`userId`) REFERENCES `users` (`Id`) ON DELETE CASCADE ON UPDATE NO ACTION
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
-
-CREATE TABLE IF NOT EXISTS `roles` (
-  `id` int(11) NOT NULL AUTO_INCREMENT,
-  `name` varchar(256) COLLATE utf8_unicode_ci NOT NULL,
-  `loweredName` varchar(256) COLLATE utf8_unicode_ci NOT NULL,
-  PRIMARY KEY (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
-
+-- TODO: review
+-- TODO: rename to 'follow'
 DELIMITER //
 CREATE PROCEDURE `subscribe_account`(
   IN `originatorId` INT,
@@ -94,6 +314,8 @@ BEGIN
 END//
 DELIMITER ;
 
+-- TODO: review
+-- TODO: rename to 'unfollow'
 DELIMITER //
 CREATE PROCEDURE `unsubscribe_account`(
   IN `originatorId` INT,
@@ -107,59 +329,18 @@ BEGIN
 END//
 DELIMITER ;
 
-CREATE TABLE IF NOT EXISTS `users` (
-  `id` int(11) NOT NULL AUTO_INCREMENT,
-  `account` varchar(50) COLLATE utf8_unicode_ci NOT NULL,
-  `name` varchar(45) COLLATE utf8_unicode_ci NOT NULL,
-  `created` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
-  `password` varchar(128) COLLATE utf8_unicode_ci NOT NULL,
-  `email` varchar(256) COLLATE utf8_unicode_ci NOT NULL,
-  `emailHash` varchar(32) NOT NULL DEFAULT '00000000000000000000000000000000',
-  `location` varchar(50) COLLATE utf8_unicode_ci DEFAULT NULL,
-  `website` varchar(256) COLLATE utf8_unicode_ci DEFAULT NULL,
-  `bio` varchar(160) COLLATE utf8_unicode_ci DEFAULT NULL,
-  `posts` int(11) NOT NULL DEFAULT '0',
-  `comments` varchar(45) NOT NULL DEFAULT '0',
-  `following` int(11) NOT NULL DEFAULT '0',
-  `followers` int(11) NOT NULL DEFAULT '0',
-  PRIMARY KEY (`id`),
-  UNIQUE KEY `account` (`account`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
-
-CREATE TABLE IF NOT EXISTS `user_roles` (
-  `userId` int(11) NOT NULL,
-  `roleId` int(11) NOT NULL,
-  PRIMARY KEY (`userId`,`roleId`),
-  KEY `FK_ur_user_idx` (`userId`),
-  KEY `FK_ur_role_idx` (`roleId`),
-  CONSTRAINT `FK_ur_user` FOREIGN KEY (`userId`) REFERENCES `users` (`id`) ON DELETE NO ACTION ON UPDATE NO ACTION,
-  CONSTRAINT `FK_ur_role` FOREIGN KEY (`roleId`) REFERENCES `roles` (`id`) ON DELETE NO ACTION ON UPDATE NO ACTION
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
-
-DELIMITER //
-CREATE PROCEDURE get_posts_by_hashtag (
-  IN `originatorId` INT,
-	IN `tag` VARCHAR(250),
-	IN `topId` INT
-)
+DELIMITER $$
+CREATE PROCEDURE `get_posts_by_tag`(IN tag TEXT)
 BEGIN
-  DECLARE term VARCHAR(256);
-  SET term = CONCAT('%', `tag`, '%');
-  SELECT result.* FROM
-  (
-    SELECT p.*, u.name, u.account, u.emailHash as pictureId
-    FROM posts AS p
-      LEFT JOIN users AS u ON u.id = p.userId
-    WHERE p.content LIKE term
-    AND EXISTS (SELECT id FROM posts WHERE id = topId OR topId = 0)
-    GROUP BY p.id
-    ORDER BY p.created DESC
-  ) AS result
-  WHERE (topId <= 0 || result.id < topId)
+	SELECT p.* FROM vw_posts as p
+  	LEFT JOIN post_tags AS pt ON pt.postId = p.id
+  	LEFT JOIN tags AS t ON t.id = pt.tagId
+  WHERE t.content = tag AND (topId <= 0 || p.id < topId)
   LIMIT 20;
-END//
+END$$
 DELIMITER ;
 
+-- TODO: review
 DELIMITER //
 CREATE PROCEDURE `add_comment` (
 	IN userId INT,
@@ -187,26 +368,7 @@ BEGIN
 END//
 DELIMITER ;
 
-INSERT INTO roles (`name`, `loweredName`)
-SELECT 'Administrator', 'administrator' FROM DUAL
-WHERE NOT EXISTS (SELECT * FROM `roles` WHERE `loweredName` = 'administrator')
-LIMIT 1;
-
-CREATE TABLE `search_lists` (
-  `name` varchar(45) COLLATE utf8_unicode_ci NOT NULL,
-  `userId` int(11) NOT NULL,
-  `query` text COLLATE utf8_unicode_ci NOT NULL,
-  `source` varchar(45) COLLATE utf8_unicode_ci NOT NULL,
-  PRIMARY KEY (`name`,`userId`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
-
-CREATE  TABLE `likes` (
-  `id` INT NOT NULL AUTO_INCREMENT ,
-  `userId` INT NOT NULL ,
-  `postId` INT NOT NULL ,
-  `created` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ,
-  PRIMARY KEY (`id`) );
-
+-- TODO: review
 DELIMITER //
 CREATE PROCEDURE `add_like` (
 	IN userId INT,
@@ -234,6 +396,7 @@ BEGIN
 END//
 DELIMITER ;
 
+-- TODO: review
 DELIMITER //
 CREATE PROCEDURE `delete_like` (
 	IN userId INT,
@@ -246,70 +409,6 @@ BEGIN
 	END IF;
 END//
 DELIMITER ;
-
-DELIMITER //
-CREATE TRIGGER post_inserted AFTER INSERT ON `posts` FOR EACH ROW
-  UPDATE `users` SET posts = posts + 1 WHERE id = NEW.userId;//
-DELIMITER ;
-
-DELIMITER //
-CREATE TRIGGER post_deleted AFTER DELETE ON `posts` FOR EACH ROW
-	UPDATE `users` SET posts = posts - 1 WHERE id = OLD.userId;//
-DELIMITER ;
-
-DELIMITER //
-CREATE TRIGGER comment_inserted AFTER INSERT ON `comments` FOR EACH ROW
-	UPDATE `posts` SET commentsCount = commentsCount + 1 WHERE id = NEW.postId;//
-DELIMITER ;
-
-DELIMITER //
-CREATE TRIGGER comment_deleted AFTER DELETE ON `comments` FOR EACH ROW
-	UPDATE `posts` SET commentsCount = commentsCount - 1 WHERE id = OLD.postId;//
-DELIMITER ;
-
-CREATE TABLE `following` (
-  `userId` int(11) NOT NULL,
-  `targetId` int(11) NOT NULL,
-  PRIMARY KEY (`userId`,`targetId`),
-  KEY `FK_following_users_user_idx` (`userId`),
-  KEY `FK_following_users_target_idx` (`targetId`),
-  CONSTRAINT `FK_following_users_target` FOREIGN KEY (`targetId`) REFERENCES `users` (`id`) ON DELETE CASCADE ON UPDATE NO ACTION,
-  CONSTRAINT `FK_following_users_user` FOREIGN KEY (`userId`) REFERENCES `users` (`id`) ON DELETE CASCADE ON UPDATE NO ACTION
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
-
-DELIMITER $$
-CREATE TRIGGER following_added AFTER INSERT ON `following`
-  FOR EACH ROW BEGIN
-	  UPDATE `users` SET following = following + 1 WHERE id = NEW.userId;
-	  UPDATE `users` SET followers = followers + 1 WHERE id = NEW.targetId;
-  END$$
-DELIMITER ;
-
-DELIMITER $$
-CREATE TRIGGER `following_removed` AFTER DELETE ON `following`
-  FOR EACH ROW BEGIN
-	  UPDATE `users` SET following = following - 1 WHERE id = OLD.userId;
-	  UPDATE `users` SET followers = followers - 1 WHERE id = OLD.targetId;
-  END$$
-DELIMITER ;
-
-CREATE TABLE `wall` (
-  `userId` int(11) NOT NULL,
-  `postId` int(11) NOT NULL,
-  PRIMARY KEY (`userId`,`postId`),
-  KEY `FK_Wall_Posts_idx` (`postId`),
-  CONSTRAINT `FK_Wall_Posts` FOREIGN KEY (`postId`) REFERENCES `posts` (`id`) ON DELETE CASCADE ON UPDATE NO ACTION,
-  CONSTRAINT `FK_Wall_Users` FOREIGN KEY (`userId`) REFERENCES `users` (`id`) ON DELETE CASCADE ON UPDATE NO ACTION
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
-
-CREATE TABLE `news` (
-  `userId` int(11) NOT NULL,
-  `postId` int(11) NOT NULL,
-  PRIMARY KEY (`userId`,`postId`),
-  KEY `FK_News_Posts_idx` (`postId`),
-  CONSTRAINT `FK_News_Posts` FOREIGN KEY (`postId`) REFERENCES `posts` (`id`) ON DELETE CASCADE ON UPDATE NO ACTION,
-  CONSTRAINT `FK_News_Users` FOREIGN KEY (`userId`) REFERENCES `users` (`id`) ON DELETE CASCADE ON UPDATE NO ACTION
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 
 DELIMITER $$
 CREATE PROCEDURE `add_post`(
@@ -334,65 +433,55 @@ BEGIN
 END$$
 DELIMITER ;
 
+-- TODO: replace with inline query
 DELIMITER $$
 CREATE PROCEDURE `get_news`(
 	IN userId INT,
 	IN topId INT
 )
 BEGIN
-	SELECT p.*, u.name, u.account, u.emailHash as pictureId
-	FROM news AS n
-		LEFT JOIN posts AS p ON p.id = n.postId
-		LEFT JOIN users AS u ON u.id = p.userId
-	WHERE n.userId = userId AND (topId <= 0 || p.id < topId)
-	ORDER BY p.created DESC
-	LIMIT 20;
+  SELECT * FROM vw_news
+  WHERE targetId = userId AND (topId <= 0 || id < topId)
+  LIMIT 20;
 END$$
 DELIMITER ;
 
+-- TODO: replace with inline query
 DELIMITER $$
 CREATE PROCEDURE `get_wall`(
 	IN userId INT,
 	IN topId INT
 )
 BEGIN
-	SELECT p.*, u.name, u.account, u.emailHash as pictureId
-	FROM wall AS w
-		LEFT JOIN posts AS p ON p.id = w.postId
-		LEFT JOIN users AS u ON u.Id = p.userId
-	WHERE w.userId = userId AND (topId <= 0 || p.id < topId)
-	ORDER BY p.created DESC
-	LIMIT 20;
+	SELECT * FROM vw_wall
+  WHERE targetId = userId AND (topId <= 0 || id < topId)
+  LIMIT 20;
 END$$
 DELIMITER ;
 
+-- TODO: replace with inline query
 DELIMITER $$
 CREATE PROCEDURE `get_news_updates`(
 	IN userId INT,
 	IN topId INT
 )
 BEGIN
-	SELECT p.*, u.name, u.account, u.emailHash as pictureId
-	FROM news AS n
-		LEFT JOIN posts AS p ON p.id = n.postId
-		LEFT JOIN users AS u ON u.id = p.userId
-	WHERE n.userId = userId AND (p.id > topId AND topId > 0)
-	ORDER BY p.created DESC;
+	SELECT * FROM vw_news
+  WHERE targetId = userId AND (id > topId AND topId > 0)
+  LIMIT 20;
 END$$
 DELIMITER ;
 
--- TODO: add `created` field for the `wall` to avoid join on `posts`
+-- TODO: replace with inline query
 DELIMITER $$
 CREATE PROCEDURE `check_news_updates`(
 	IN userId INT,
 	IN topId INT
 )
 BEGIN
-	SELECT COUNT(p.id) AS posts
-	FROM news AS n
-		LEFT JOIN posts AS p ON p.id = n.postId
-	WHERE n.userId = userId AND (p.id > topId AND topId > 0)
-	ORDER BY p.created DESC;
+  SELECT COUNT(id) AS posts FROM vw_news
+  WHERE targetId = userId AND (id > topId AND topId > 0)
+  LIMIT 20;
 END$$
 DELIMITER ;
 
@@ -423,14 +512,86 @@ DELIMITER ;
 
 DELIMITER $$
 CREATE PROCEDURE `add_mentions`(
-	IN accounts TEXT,
-	IN postId INT
+	IN postId INT,
+	IN accounts TEXT
 )
 BEGIN
 	INSERT IGNORE INTO `news` (`userId`, `postId`)
 		SELECT users.id AS `userId`, postId FROM users WHERE FIND_IN_SET(users.account, accounts);
 END$$
 DELIMITER ;
+
+DELIMITER $$
+CREATE PROCEDURE `assign_tags`(
+	IN postId INT,
+	IN str TEXT
+)
+BEGIN
+	DECLARE i INTEGER;
+	DECLARE tag VARCHAR(255);
+	SET i = 1;
+	REPEAT
+		SET tag = SPLIT_STR(str, ',', i);
+		IF tag IS NOT NULL THEN
+			INSERT IGNORE INTO `tags` (`content`) VALUES (tag);
+			SET i = i + 1;
+		END IF;
+		UNTIL tag IS NULL
+	END REPEAT;
+
+	INSERT IGNORE INTO `post_tags` (`postId`, `tagId`)
+		SELECT postId, t.id FROM `tags` AS t WHERE FIND_IN_SET(t.content, str);
+END$$
+DELIMITER ;
+
+--------------------------------------
+-- TRIGGERS
+--------------------------------------
+
+DELIMITER $$
+CREATE TRIGGER following_added AFTER INSERT ON `following`
+  FOR EACH ROW BEGIN
+	  UPDATE `users` SET following = following + 1 WHERE id = NEW.userId;
+	  UPDATE `users` SET followers = followers + 1 WHERE id = NEW.targetId;
+  END$$
+DELIMITER ;
+
+DELIMITER $$
+CREATE TRIGGER `following_removed` AFTER DELETE ON `following`
+  FOR EACH ROW BEGIN
+	  UPDATE `users` SET following = following - 1 WHERE id = OLD.userId;
+	  UPDATE `users` SET followers = followers - 1 WHERE id = OLD.targetId;
+  END$$
+DELIMITER ;
+
+DELIMITER //
+CREATE TRIGGER post_inserted AFTER INSERT ON `posts` FOR EACH ROW
+  UPDATE `users` SET posts = posts + 1 WHERE id = NEW.userId;//
+DELIMITER ;
+
+DELIMITER //
+CREATE TRIGGER post_deleted AFTER DELETE ON `posts` FOR EACH ROW
+	UPDATE `users` SET posts = posts - 1 WHERE id = OLD.userId;//
+DELIMITER ;
+
+DELIMITER //
+CREATE TRIGGER comment_inserted AFTER INSERT ON `comments` FOR EACH ROW
+	UPDATE `posts` SET commentsCount = commentsCount + 1 WHERE id = NEW.postId;//
+DELIMITER ;
+
+DELIMITER //
+CREATE TRIGGER comment_deleted AFTER DELETE ON `comments` FOR EACH ROW
+	UPDATE `posts` SET commentsCount = commentsCount - 1 WHERE id = OLD.postId;//
+DELIMITER ;
+
+--------------------------------------
+-- DEFAULT DATA
+--------------------------------------
+
+INSERT INTO roles (`name`, `loweredName`)
+  SELECT 'Administrator', 'administrator' FROM DUAL
+    WHERE NOT EXISTS (SELECT * FROM `roles` WHERE `loweredName` = 'administrator')
+  LIMIT 1;
 
 /*!40101 SET SQL_MODE=IFNULL(@OLD_SQL_MODE, '') */;
 /*!40014 SET FOREIGN_KEY_CHECKS=IF(@OLD_FOREIGN_KEY_CHECKS IS NULL, 1, @OLD_FOREIGN_KEY_CHECKS) */;

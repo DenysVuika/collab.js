@@ -340,60 +340,13 @@ module.exports = function (context) {
       repository.getComments(req.params.id, handleJsonResult(res));
     });
 
-    app.get('/api/search/list', authenticate, noCache, function (req, res) {
-      repository.getSavedSearches(req.user.id, function (err, result) {
-        if (err) { res.send(400, 'Error getting search lists.'); }
-        else { res.json(200, result); }
-      });
-    });
-
-    app.get('/api/search', authenticate, noCache, function (req, res) {
-      var userId = req.user.id
-        , q = req.query.q
-        , src = req.query.src;
-
-      if (!userId || !q || !src) {
-        res.send(400);
-        return;
+    app.get('/api/explore/:tag', authenticate, function (req, res) {
+      var lastId = parseInt(req.header('last-known-id'));
+      if (isNaN(lastId) || lastId < 0) {
+        lastId = 0;
       }
-      repository.getPostsByHashTag(userId, q, getTopId(req), function (err, result) {
-        if (err || !result) { res.send(400); }
-        else {
-          repository.hasSavedSearch(userId, q, function (err, isSaved) {
-            res.json(200, {
-              isSaved: isSaved,
-              entries: result
-            });
-          });
-        }
-      });
-    });
 
-    app.post('/api/search', authenticate, function (req, res) {
-      if (req.query.q) {
-        repository.addSavedSearch({
-          userId: req.user.id,
-          name: req.query.q,
-          q: encodeURIComponent(req.query.q),
-          src: req.query.src || 'unknown'
-        }, function (err) {
-          if (err) { res.send(400, 'Error saving search list.'); }
-          else { res.send(200); }
-        });
-      } else {
-        res.send(400, 'Error saving search list.');
-      }
-    });
-
-    app.del('/api/search', authenticate, function (req, res) {
-      if (req.query.q) {
-        repository.deleteSavedSearch(req.user.id, decodeURIComponent(req.query.q), function (err) {
-          if (err) { res.send(400, 'Error deleting search list. '); }
-          else { res.send(200); }
-        });
-      } else {
-        res.send(400, 'Error deleting search list.');
-      }
+      repository.getPostsByHashTag(req.user.id, req.params.tag, lastId, handleJsonResult(res));
     });
 
     app.get('/api/help/:article?', authenticate, function (req, res) {

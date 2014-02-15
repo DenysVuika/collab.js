@@ -5,9 +5,50 @@ var utils = require('../../collabjs.utils')
   , passwordHash = require('password-hash')
   , crypto = require('crypto');
 
+/**
+ * Creates mentions for the given post.
+ * @param {object} connection Database connection.
+ * @param {number} postId Post id.
+ * @param {string} content Post content.
+ * @param {function(object)} callback Callback function.
+ */
+function addMentions(connection, postId, content, callback) {
+  var accounts = utils.parseAccountNames(content, ',');
+  if (accounts) {
+    connection.query('CALL add_mentions (?,?)', [postId, accounts], function (err) {
+      callback(err);
+    });
+  } else {
+    callback(false);
+  }
+}
+
+/**
+ * Adds or creates hash tags for the given post.
+ * @param {Object} connection Database connection.
+ * @param {number} postId Post id.
+ * @param {string} content Post content.
+ * @param {function(object)} callback Callback function.
+ */
+function addHashTags(connection, postId, content, callback) {
+  var tags = utils.parseHashTags(content, ',');
+  if (tags) {
+    connection.query('CALL assign_tags (?,?)', [postId, tags], function (err) {
+      callback(err);
+    });
+  } else {
+    callback(false);
+  }
+}
+
+/**
+ * MySQL provider implementation.
+ * @constructor
+ */
 function Provider() {}
 
 Provider.prototype = {
+  // TODO: review
   getAccountById: function (id, callback) {
     pool.getConnection(function (err, connection) {
       var command = "SELECT u.*, emailHash as pictureId, GROUP_CONCAT(r.loweredName separator ',') AS roles " +
@@ -26,6 +67,7 @@ Provider.prototype = {
       });
     });
   },
+  // TODO: review
   getAccount: function (account, callback) {
     pool.getConnection(function (err, connection) {
       var command = "SELECT u.*, emailHash as pictureId, GROUP_CONCAT(r.loweredName separator ',') AS roles " +
@@ -100,6 +142,7 @@ Provider.prototype = {
       });
     }
   },
+  // TODO: review
   getPublicProfile: function (callerId, targetAccount, callback) {
     pool.getConnection(function (err, connection) {
       var command = 'SELECT u.id, u.account, u.name, u.website, u.bio, u.emailHash AS pictureId, u.location, u.posts, u.following, u.followers, ' +
@@ -155,6 +198,7 @@ Provider.prototype = {
       });
     });
   },
+  // TODO: review
   getFollowers: function (callerId, targetId, callback) {
     pool.getConnection(function (err, connection) {
       var command = 'SELECT u.id, u.account, u.name, u.website, u.location, u.bio, u.emailHash as pictureId, u.posts, u.following, u.followers' +
@@ -175,6 +219,7 @@ Provider.prototype = {
       });
     });
   },
+  // TODO: review
   getFollowing: function (callerId, targetId, callback) {
     pool.getConnection(function (err, connection) {
       var command = 'SELECT u.id, u.account, u.name, u.website, u.location, u.bio, u.emailHash as pictureId, u.posts, u.following, u.followers' +
@@ -227,20 +272,16 @@ Provider.prototype = {
           var rows = result[0];
           var postId = rows[0].insertId;
 
-          // try adding post for mentioned users' News
           if (postId && postId > 0) {
-            var accounts = utils.parseAccountNames(json.content);
-            if (accounts && accounts.length > 0) {
-              connection.query('CALL add_mentions (?,?)', [accounts.join(','), postId], function (err) {
+            // process mentions
+            addMentions(connection, postId, json.content, function () {
+              // process hashtags
+              addHashTags(connection, postId, json.content, function () {
                 connection.release();
                 callback(err, postId);
               });
-            } else {
-              connection.release();
-              callback(err, postId);
-            }
-          }
-          else {
+            });
+          } else {
             connection.release();
             callback(err, false);
           }
@@ -327,15 +368,10 @@ Provider.prototype = {
     });
   },
   getPostsByHashTag: function (callerId, hashtag, topId, callback) {
-    if (hashtag.indexOf('#') !== 0) {
-      hashtag = '#' + hashtag;
-    }
-    var command = 'CALL get_posts_by_hashtag(?,?,?)'
-      , params = [callerId, hashtag, topId];
     pool.getConnection(function (err, connection) {
-      connection.query(command, params, function (err, result) {
+      connection.query('CALL get_posts_by_tag (?,?)', [hashtag, topId], function (err, result) {
         connection.release();
-        if (err) { callback(err, null); }
+        if (err) { callback (err, null); }
         else {
           var rows = result[0];
           // init picture urls
@@ -360,6 +396,7 @@ Provider.prototype = {
       });
     });
   },
+  // TODO: review
   getPostWithComments: function (postId, callback) {
     pool.getConnection(function (err, connection) {
       var command = 'CALL get_post_full(?)'
@@ -390,6 +427,7 @@ Provider.prototype = {
       });
     });
   },
+  // TODO: review
   getComments: function (postId, callback) {
     pool.getConnection(function (err, connection) {
       var command = 'SELECT c.*, u.account, u.name, u.emailHash as pictureId ' +
@@ -411,6 +449,7 @@ Provider.prototype = {
       });
     });
   },
+  // TODO: review
   getPostAuthor: function (postId, callback) {
     pool.getConnection(function (err, connection) {
       var command = 'SELECT u.id, u.account, u.name, u.email, u.emailHash AS pictureId ' +
@@ -430,45 +469,6 @@ Provider.prototype = {
         }
 
         callback(err, result[0]);
-      });
-    });
-  },
-  hasSavedSearch: function (userId, name, callback) {
-    pool.getConnection(function (err, connection) {
-      var command = 'SELECT 1 FROM search_lists WHERE userId = ? AND name = ? LIMIT 1';
-      connection.query(command, [userId, name], function (err, result) {
-        connection.release();
-        if (err) { callback(err, false); }
-        else { callback(null, result.length > 0); }
-      });
-    });
-  },
-  getSavedSearches: function (userId, callback) {
-    pool.getConnection(function (err, connection) {
-      var command = 'SELECT s.name, s.query AS q, s.source AS src FROM search_lists AS s WHERE s.userId = ?';
-      connection.query(command, [userId], function (err, result) {
-        connection.release();
-        if (err) { callback(err, null); }
-        else { callback(null, result || []); }
-      });
-    });
-  },
-  addSavedSearch: function (json, callback) {
-    pool.getConnection(function (err, connection) {
-      var command = 'INSERT IGNORE INTO `search_lists` (name, userId, query, source) VALUES (?,?,?,?)'
-        , params = [json.name, json.userId, json.q, json.src];
-      connection.query(command, params, function (err) {
-        connection.release();
-        callback(err);
-      });
-    });
-  },
-  deleteSavedSearch: function (userId, name, callback) {
-    pool.getConnection(function (err, connection) {
-      var command = 'DELETE FROM search_lists WHERE userId = ? AND name = ?';
-      connection.query(command, [userId, name], function (err) {
-        connection.release();
-        callback(err);
       });
     });
   }

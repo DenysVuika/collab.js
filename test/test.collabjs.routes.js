@@ -401,16 +401,6 @@ describe('collab.js routes', function () {
   */
 
   /* TODO: remove
-  describe('get_mentions', function () {
-
-    it('renders `core/mentions` view', function () {
-      routes.get_mentions(req, res);
-      expect(res.viewName).to.be('core/mentions');
-    });
-  });
-  */
-
-  /* TODO: remove
   describe('get_search', function () {
 
     it('renders `core/search-posts` view', function () {
