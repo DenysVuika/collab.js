@@ -110,21 +110,5 @@ describe('collab.js data layer', function () {
     it('.getPostAuthor', function () {
       expect(data.getPostAuthor).to.be.a('function');
     });
-
-    it('.addSavedSearch', function () {
-      expect(data.addSavedSearch).to.be.a('function');
-    });
-
-    it('.getSavedSearches', function () {
-      expect(data.getSavedSearches).to.be.a('function');
-    });
-
-    it('.deleteSavedSearch', function () {
-      expect(data.deleteSavedSearch).to.be.a('function');
-    });
-
-    it('.hasSavedSearch', function () {
-      expect(data.hasSavedSearch).to.be.a('function');
-    });
   });
 });

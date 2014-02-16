@@ -781,7 +781,7 @@ describe('collab.js web.api', function () {
     });
   });
 
-  describe('getPostsByHashTag: GET /api/search?q={q}&src={src}&topId={topId}', function () {
+  /*describe('getPostsByHashTag: GET /api/search?q={q}&src={src}&topId={topId}', function () {
 
     it('requires `query` and `source` parameters', function (done) {
       request(app)
@@ -842,5 +842,5 @@ describe('collab.js web.api', function () {
         .get('/api/search?q=test&src=hash')
         .expect(400, done);
     });
-  });
+  });*/
 });
