@@ -137,16 +137,23 @@ module.exports = function (context) {
       });
     });
 
-    // TODO: rename to '/api/u/:account/follow
-    // TODO: change from GET to POST
-    app.get('/api/people/:account/follow', authenticate, noCache, function (req, res) {
-      repository.followAccount(req.user.id, req.params.account, handleHtmlResult(res));
+
+    app.post('/api/u/:account/follow', authenticate, function (req, res) {
+      var account = req.params.account;
+      if (account) {
+        repository.followAccount(req.user.id, account, handleHtmlResult(res));
+      } else {
+        res.send(400);
+      }
     });
 
-    // TODO: rename to '/api/u/:account/unfollow
-    // TODO: change from GET to POST
-    app.get('/api/people/:account/unfollow', authenticate, noCache, function (req, res) {
-      repository.unfollowAccount(req.user.id, req.params.account, handleHtmlResult(res));
+    app.post('/api/u/:account/unfollow', authenticate, function (req, res) {
+      var account  = req.params.account;
+      if (account) {
+        repository.unfollowAccount(req.user.id, account, handleHtmlResult(res));
+      } else {
+        res.send(400);
+      }
     });
 
     // TODO: rename to '/api/u/:account/followers:topId?'
@@ -286,18 +293,6 @@ module.exports = function (context) {
           res.end();
         }
       });
-    });
-
-    // TODO: merge functionality with GET '/api/news'
-    // TODO: introduce special http header to get only 'count' instead of real values
-    app.get('/api/timeline/updates/count:topId?', authenticate, noCache, function (req, res) {
-      repository.checkNewsUpdates(req.user.id, getTopId(req), handleJsonResult(res));
-    });
-
-    // TODO: merge functionality with GET '/api/news'
-    // TODO: move 'topId' to http header
-    app.get('/api/timeline/updates:topId?', authenticate, noCache, function (req, res) {
-      repository.getNewsUpdates(req.user.id, getTopId(req), handleJsonResult(res));
     });
 
     // TODO: rename to '/api/posts/:p/comments'

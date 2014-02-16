@@ -87,7 +87,7 @@ describe('collab.js web.api', function () {
     });
   });
 
-  describe('followAccount: GET /api/people/:account/follow', function () {
+  describe('followAccount: GET /api/u/:account/follow', function () {
 
     it('follows account', function (done) {
       context.data.followAccount = function (callerId, targetAccount, callback) {
@@ -95,7 +95,7 @@ describe('collab.js web.api', function () {
       };
 
       request(app)
-        .get('/api/people/johndoe/follow')
+        .post('/api/u/johndoe/follow')
         .expect(200, done);
     });
 
@@ -105,12 +105,12 @@ describe('collab.js web.api', function () {
       };
 
       request(app)
-        .get('/api/people/johndoe/follow')
+        .post('/api/u/johndoe/follow')
         .expect(400, done);
     });
   });
 
-  describe('unfollowAccount: GET /api/people/:account/unfollow', function () {
+  describe('unfollowAccount: GET /api/u/:account/unfollow', function () {
 
     it('unfollows account', function (done) {
       context.data.unfollowAccount = function (callerId, targetAccount, callback) {
@@ -118,7 +118,7 @@ describe('collab.js web.api', function () {
       };
 
       request(app)
-        .get('/api/people/johndoe/unfollow')
+        .post('/api/u/johndoe/unfollow')
         .expect(200, done);
     });
 
@@ -128,7 +128,7 @@ describe('collab.js web.api', function () {
       };
 
       request(app)
-        .get('/api/people/johndoe/unfollow')
+        .post('/api/u/johndoe/unfollow')
         .expect(400, done);
     });
   });
@@ -521,133 +521,6 @@ describe('collab.js web.api', function () {
 
       request(app)
         .get('/api/news')
-        .expect(400, done);
-    });
-  });
-
-  /*describe('deletePost: DELETE /api/timeline/posts/:id', function () {
-
-    it('deletes post', function (done) {
-      context.data.deletePost = function (postId, userId, callback) {
-        callback(null, []);
-      };
-
-      request(app)
-        .del('/api/timeline/posts/100')
-        .expect(200, done);
-    });
-
-    it('gets no data from repository', function (done) {
-      context.data.deletePost = function (postId, userId, callback) {
-        callback(null, null);
-      };
-
-      request(app)
-        .del('/api/timeline/posts/100')
-        .expect(400, done);
-    });
-
-    it('gets error from repository', function (done) {
-      context.data.deletePost = function (postId, userId, callback) {
-        callback('Error');
-      };
-
-      request(app)
-        .del('/api/timeline/posts/100')
-        .expect(400, done);
-    });
-  });*/
-
-  describe('chekNewsUpdates: GET /api/timeline/updates/count:topId?', function () {
-
-    it('allows query without `topId`', function (done) {
-      context.data.checkNewsUpdates = function (userId, topId, callback) {
-        if (topId === 0) { callback(null, []); }
-        else { callback('Error'); }
-      };
-
-      request(app)
-        .get('/api/timeline/updates/count')
-        .expect('Content-Type', /json/)
-        .expect(200, done);
-    });
-
-    it('gets data from repository', function (done) {
-      var data = [{id:1}];
-      context.data.checkNewsUpdates = function (userId, topId, callback) {
-        callback(null, data);
-      };
-
-      request(app)
-        .get('/api/timeline/updates/count')
-        .expect('Content-Type', /json/)
-        .expect(200, data, done);
-    });
-
-    it('gets no data from repository', function (done) {
-      context.data.checkNewsUpdates = function (userId, topId, callback) {
-        callback(null, null);
-      };
-
-      request(app)
-        .get('/api/timeline/updates/count')
-        .expect(400, done);
-    });
-
-    it('gets error from repository', function (done) {
-      context.data.checkNewsUpdates = function (userId, topId, callback) {
-        callback('Error');
-      };
-
-      request(app)
-        .get('/api/timeline/updates/count')
-        .expect(400, done);
-    });
-  });
-
-  describe('getNewsUpdates: GET /api/timeline/updates:topId?', function () {
-
-    it('allows query without `topId`', function (done) {
-      context.data.getNewsUpdates = function (userId, topId, callback) {
-        if (topId === 0) { callback(null, []); }
-        else { callback('Error'); }
-      };
-
-      request(app)
-        .get('/api/timeline/updates')
-        .expect('Content-Type', /json/)
-        .expect(200, done);
-    });
-
-    it('gets data from repository', function (done) {
-      var data = [{id:1}];
-      context.data.getNewsUpdates = function (userId, topId, callback) {
-        callback(null, data);
-      };
-
-      request(app)
-        .get('/api/timeline/updates')
-        .expect('Content-Type', /json/)
-        .expect(200, data, done);
-    });
-
-    it('gets no data from repository', function (done) {
-      context.data.getNewsUpdates = function (userId, topId, callback) {
-        callback(null, null);
-      };
-
-      request(app)
-        .get('/api/timeline/updates')
-        .expect(400, done);
-    });
-
-    it('gets error from repository', function (done) {
-      context.data.getNewsUpdates = function (userId, topId, callback) {
-        callback('Error');
-      };
-
-      request(app)
-        .get('/api/timeline/updates')
         .expect(400, done);
     });
   });

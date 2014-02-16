@@ -59,14 +59,14 @@ angular.module('collabjs.services')
         return profile ? '/#/people/' + profile.account + '/followers' : null;
       },
       follow: function (profile) {
-        var followAction = '/api/people/' + profile.account + '/follow';
-        $http.get(followAction).success(function () {
+        var uri = '/api/u/' + profile.account + '/follow';
+        $http.post(uri).success(function () {
           profile.isFollowed = true;
         });
       },
       unfollow: function (profile) {
-        var unfollowAction = '/api/people/' + profile.account + '/unfollow';
-        $http.get(unfollowAction).success(function () {
+        var uri = '/api/u/' + profile.account + '/unfollow';
+        $http.post(uri).success(function () {
           profile.isFollowed = false;
         });
       }
