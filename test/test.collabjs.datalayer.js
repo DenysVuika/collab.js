@@ -106,9 +106,5 @@ describe('collab.js data layer', function () {
     it('.getComments', function () {
       expect(data.getComments).to.be.a('function');
     });
-
-    it('.getPostAuthor', function () {
-      expect(data.getPostAuthor).to.be.a('function');
-    });
   });
 });

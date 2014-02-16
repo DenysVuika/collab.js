@@ -247,38 +247,62 @@ CREATE OR REPLACE VIEW `vw_news` AS
   LEFT JOIN vw_posts AS p on p.id = n.postId
 ;
 
-CREATE  OR REPLACE VIEW `vw_wall` AS
+CREATE OR REPLACE VIEW `vw_wall` AS
   SELECT p.*, w.userId as targetId
   FROM wall AS w
   LEFT JOIN vw_posts AS p on p.id = w.postId
+;
+
+CREATE OR REPLACE VIEW `vw_people` AS
+  SELECT
+    u.id,
+    u.account,
+    u.name,
+    u.created,
+    u.website,
+    u.location,
+    u.bio,
+    u.emailHash as pictureId,
+    u.posts,
+    u.following,
+    u.followers
+  FROM users AS u
+  ORDER BY u.created ASC
+;
+
+CREATE OR REPLACE VIEW `vw_comments` AS
+  SELECT
+    c.id,
+    c.postId,
+    c.userId,
+    u.name,
+    u.account,
+    u.emailHash as pictureId,
+    c.content,
+    c.created
+  FROM comments AS c
+  LEFT JOIN users AS u ON u.id = c.userId
+  ORDER BY c.created ASC
 ;
 
 --------------------------------------
 -- PROCEDURES
 --------------------------------------
 
--- TODO: review
-DELIMITER //
+-- TODO: replace with inline query
+DELIMITER $$
 CREATE PROCEDURE `get_people`(
-  IN `originatorId` INT,
-  IN topId INT)
+  IN topId INT
+)
 BEGIN
-  SELECT result.* FROM
-  (
-    SELECT u.id, u.account, u.name, u.website, u.location, u.bio, u.emailHash as pictureId, u.posts, u.following, u.followers,
-    (SELECT IF(u.id = originatorId, TRUE, FALSE)) AS isOwnProfile,
-    (SELECT IF ((SELECT COUNT(userId) FROM `following` WHERE userId = originatorId AND targetId = u.id) > 0, TRUE, FALSE)) AS isFollowed
-    FROM users AS u
-    WHERE EXISTS (select id from users where id = topId OR topId = 0)
-    GROUP BY u.id
-    ORDER BY u.created ASC
-  ) AS result
-  WHERE (topId <= 0 || result.id > topId)
+  SELECT p.* FROM vw_people AS p
+  WHERE (topId <= 0 || p.id > topId)
   LIMIT 20;
-END//
+END$$
 DELIMITER ;
 
 -- TODO: review
+-- TODO: split into 2 separate calls
 DELIMITER //
 CREATE PROCEDURE `get_post_full`(
   IN `postId` INT)
@@ -299,9 +323,8 @@ END//
 DELIMITER ;
 
 -- TODO: review
--- TODO: rename to 'follow'
 DELIMITER //
-CREATE PROCEDURE `subscribe_account`(
+CREATE PROCEDURE `follow`(
   IN `originatorId` INT,
   IN `targetAccount` VARCHAR(50))
 BEGIN
@@ -315,9 +338,8 @@ END//
 DELIMITER ;
 
 -- TODO: review
--- TODO: rename to 'unfollow'
 DELIMITER //
-CREATE PROCEDURE `unsubscribe_account`(
+CREATE PROCEDURE `unfollow`(
   IN `originatorId` INT,
   IN `targetAccount` VARCHAR(50))
 BEGIN

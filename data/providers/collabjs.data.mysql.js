@@ -42,6 +42,24 @@ function addHashTags(connection, postId, content, callback) {
 }
 
 /**
+ * Get list of user ids followed by current user.
+ * @param {object} connection Database connection.
+ * @param {number} userId Current user id.
+ * @param {function(Object,Array)} callback Callback function.
+ */
+function getFollowedUsers(connection, userId, callback) {
+  var command = "SELECT GROUP_CONCAT(f.targetId separator ',') as list FROM following AS f WHERE f.userId = ?";
+  connection.query(command, [userId], function (err, result) {
+    if (err) { callback(err, []); }
+    else {
+      var list = result[0].list;
+      var ids = list.split(',').map(Number);
+      callback(false, ids);
+    }
+  });
+}
+
+/**
  * MySQL provider implementation.
  * @constructor
  */
@@ -163,7 +181,7 @@ Provider.prototype = {
   },
   followAccount: function (callerId, targetAccount, callback) {
     pool.getConnection(function (err, connection) {
-      var command = 'CALL subscribe_account(?,?)';
+      var command = 'CALL follow (?,?)';
       connection.query(command, [callerId, targetAccount], function (err, result) {
         connection.release();
         callback(err, result);
@@ -172,7 +190,7 @@ Provider.prototype = {
   },
   unfollowAccount: function (callerId, targetAccount, callback) {
     pool.getConnection(function (err, connection) {
-      var command = 'CALL unsubscribe_account(?,?)';
+      var command = 'CALL unfollow(?,?)';
       connection.query(command, [callerId, targetAccount], function (err, result) {
         connection.release();
         callback(err, result);
@@ -181,20 +199,25 @@ Provider.prototype = {
   },
   getPeople: function (callerId, topId, callback) {
     pool.getConnection(function (err, connection) {
-      var command = 'CALL get_people(?,?)';
-      connection.query(command, [callerId, topId], function (err, result) {
-        connection.release();
-        if (err) { callback(err, null); }
-        else {
-          var rows = result[0];
-          // init picture urls
-          if (rows.length > 0) {
-            for (var i = 0; i < rows.length; i++) {
-              rows[i].pictureId = utils.getAvatarUrl(rows[i].pictureId);
+      getFollowedUsers(connection, callerId, function(err, followed) {
+        var command = 'CALL get_people (?)';
+        connection.query(command, [topId], function (err, result) {
+          connection.release();
+          if (err) { callback(err, null); }
+          else {
+            var rows = result[0], row;
+            // init additional properties
+            if (rows.length > 0) {
+              for (var i = 0; i < rows.length; i++) {
+                row = rows[i];
+                row.pictureId = utils.getAvatarUrl(row.pictureId);
+                row.isOwnProfile = (row.id === callerId);
+                row.isFollowed = (followed.indexOf(row.id) > -1);
+              }
             }
+            callback(err, rows);
           }
-          callback(err, rows);
-        }
+        });
       });
     });
   },
@@ -427,13 +450,10 @@ Provider.prototype = {
       });
     });
   },
-  // TODO: review
+  // TODO: review execution plan
   getComments: function (postId, callback) {
     pool.getConnection(function (err, connection) {
-      var command = 'SELECT c.*, u.account, u.name, u.emailHash as pictureId ' +
-        'FROM comments AS c ' +
-        'LEFT JOIN users AS u ON u.id = c.userId ' +
-        'WHERE c.postId = ? ORDER BY created ASC';
+      var command = 'SELECT * FROM vw_comments WHERE postId = ?';
       connection.query(command, [postId], function (err, result) {
         connection.release();
         if (err) { callback(err, null); }
@@ -446,29 +466,6 @@ Provider.prototype = {
           }
           callback(err, result);
         }
-      });
-    });
-  },
-  // TODO: review
-  getPostAuthor: function (postId, callback) {
-    pool.getConnection(function (err, connection) {
-      var command = 'SELECT u.id, u.account, u.name, u.email, u.emailHash AS pictureId ' +
-        'FROM posts AS p ' +
-        'LEFT JOIN users AS u ON u.id = p.userId ' +
-        'WHERE p.id = ? LIMIT 1';
-      connection.query(command, [postId], function (err, result) {
-        connection.release();
-        if (err) {
-          callback(err, null);
-          return;
-        }
-
-        if (!result || result.length === 0) {
-          callback(err, null);
-          return;
-        }
-
-        callback(err, result[0]);
       });
     });
   }

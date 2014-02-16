@@ -1,10 +1,7 @@
 module.exports = function (context) {
   'use strict';
 
-  var email = require('./collabjs.email.js')
-    , jade = require('jade')
-    , fs = require('fs')
-    , passwordHash = require('password-hash')
+  var passwordHash = require('password-hash')
     , marked = require('marked')
     , utils = require('./collabjs.utils')
     , config = context.config
@@ -136,7 +133,7 @@ module.exports = function (context) {
     app.get('/api/people:topId?', authenticate, noCache, function (req, res) {
       repository.getPeople(req.user.id, getTopId(req), function (err, result) {
         if (err || !result) { res.send(400); }
-        else { res.json(200, { feed: result }); }
+        else { res.json(200, result); }
       });
     });
 
@@ -324,8 +321,6 @@ module.exports = function (context) {
           comment.pictureId = req.user.pictureId;
           comment.pictureUrl = utils.getAvatarUrl(comment.pictureId);
           res.json(200, comment);
-          // send email notification
-          notifyOnPostCommented(req, comment);
         }
       });
     });
@@ -391,38 +386,4 @@ module.exports = function (context) {
       };
     }
   }); // app.init.routes
-
-  var template_comment;
-
-  // TODO: fix
-  function notifyOnPostCommented(req, comment) {
-    // send email notification (if enabled)
-    if (config.smtp.enabled) {
-      // init template comment if it was not previously
-      template_comment = template_comment || jade.compile(fs.readFileSync(__dirname + '/config/templates/comment.jade', 'utf8'));
-      // get author of the post
-      repository.getPostAuthor(comment.postId, function (err, user) {
-        if (err || !user) { return; }
-        if (user.id === req.user.id) { return; }
-        var html = template_comment({
-          user: req.user.name,
-          profilePictureUrl: utils.getAvatarUrl(req.user.pictureId, 48),
-          timelineUrl: config.hostname + '/people/' + req.user.account + '/timeline',
-          postUrl: config.hostname + '/timeline/posts/' + comment.postId,
-          content: comment.content
-        });
-        var notification = {
-          from: config.smtp.noreply,
-          to: user.email,
-          subject: req.user.name + ' commented on your post',
-          generateTextFromHTML: true,
-          html: html
-        };
-        email.sendMail(notification, function (err, response) {
-          if (err) { console.log(err); }
-          else { console.log('Message sent: ' + response.message); }
-        });
-      });
-    }
-  }
 }; // module.exports

@@ -63,7 +63,7 @@ describe('collab.js web.api', function () {
       request(app)
         .get('/api/people?topId=10')
         .expect('Content-Type', /json/)
-        .expect(200, {feed:data}, done);
+        .expect(200, data, done);
     });
 
     it('gets no data from repository', function (done) {

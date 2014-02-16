@@ -8,8 +8,7 @@ angular.module('collabjs.services')
 
         if (_people.length === 0) {
           $http.get('/api/people').success(function (data) {
-            // TODO: return array instead of object
-            _people = data.feed || [];
+            _people = data || [];
             deferred.resolve(_people);
           });
         } else {

@@ -264,12 +264,3 @@ module.exports.getPostWithComments = function (postId, callback) {
 module.exports.getComments = function (postId, callback) {
 	provider.getComments(postId, callback);
 };
-
-/**
- * Get user information based on the post.
- * @param {number} postId Post id.
- * @param {function(err, result)} callback Callback function.
- */
-module.exports.getPostAuthor = function (postId, callback) {
-	provider.getPostAuthor(postId, callback);
-};
