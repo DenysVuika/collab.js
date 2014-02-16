@@ -253,6 +253,7 @@ CREATE OR REPLACE VIEW `vw_wall` AS
   LEFT JOIN vw_posts AS p on p.id = w.postId
 ;
 
+-- TODO: review execution plan
 CREATE OR REPLACE VIEW `vw_people` AS
   SELECT
     u.id,
