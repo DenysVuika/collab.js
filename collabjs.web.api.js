@@ -156,9 +156,7 @@ module.exports = function (context) {
       }
     });
 
-    // TODO: rename to '/api/u/:account/followers:topId?'
-    // TODO: move 'topId' to http header
-    app.get('/api/people/:account/followers:topId?', authenticate, noCache, function (req, res) {
+    app.get('/api/u/:account/followers', authenticate, noCache, function (req, res) {
       repository.getPublicProfile(req.user.id, req.params.account, function (err, result) {
         if (err || !result) {
           res.send(400);
@@ -174,9 +172,7 @@ module.exports = function (context) {
       });
     });
 
-    // TODO: rename to '/api/u/:account/following:topId?'
-    // TODO: move 'topId' to http header
-    app.get('/api/people/:account/following:topId?', authenticate, noCache, function (req, res) {
+    app.get('/api/u/:account/following', authenticate, noCache, function (req, res) {
       repository.getPublicProfile(req.user.id, req.params.account, function (err, result) {
         if (err || !result) {
           res.send(400);
@@ -214,11 +210,6 @@ module.exports = function (context) {
         });
 
       });
-    });
-
-    // TODO: rename to '/api/u/:account/profile'
-    app.get('/api/accounts/:account/profile', authenticate, noCache, function (req, res) {
-      repository.getPublicProfile(req.user.id, req.params.account, handleJsonResult(res));
     });
 
     // TODO: rename to '/api/wall' or '/api/posts'

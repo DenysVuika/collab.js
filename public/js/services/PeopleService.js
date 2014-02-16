@@ -19,13 +19,13 @@ angular.module('collabjs.services')
       },
       getFollowing: function (account) {
         var d = $q.defer()
-          , query = '/api/people/' + account + '/following';
+          , query = '/api/u/' + account + '/following';
         $http.get(query).success(function(data) { d.resolve(data); });
         return d.promise;
       },
       getFollowers: function (account) {
         var d = $q.defer()
-          , query = '/api/people/' + account + '/followers';
+          , query = '/api/u/' + account + '/followers';
         $http.get(query).success(function(data) { d.resolve(data); });
         return d.promise;
       },
@@ -41,16 +41,6 @@ angular.module('collabjs.services')
         } else {
           return '';
         }
-      },
-      // TODO: moved to 'wallUrl' filter
-      getProfileFeed: function (profile) {
-        if (typeof profile === 'string') {
-          return '/people/' + profile + '/timeline';
-        }
-        if (profile && profile.account) {
-          return '/people/' + profile.account + '/timeline';
-        }
-        return null;
       },
       getFollowingUrl: function (profile) {
         return profile ? '/#/people/' + profile.account + '/following' : null;

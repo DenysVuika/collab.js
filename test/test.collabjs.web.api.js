@@ -133,14 +133,14 @@ describe('collab.js web.api', function () {
     });
   });
 
-  describe('getFollowers: GET /api/people/:account/followers:topId?', function () {
+  describe('getFollowers: GET /api/u/:account/followers', function () {
 
     it('gets error for profile', function (done) {
       context.data.getPublicProfile = function (callerId, targetAccount, callback) {
         callback('Error');
       };
       request(app)
-        .get('/api/people/johndoe/followers')
+        .get('/api/u/johndoe/followers')
         .expect(400, done);
     });
 
@@ -149,19 +149,8 @@ describe('collab.js web.api', function () {
         callback(null, null);
       };
       request(app)
-        .get('/api/people/johndoe/followers')
+        .get('/api/u/johndoe/followers')
         .expect(400, done);
-    });
-
-    it('allows query without `topId`', function (done) {
-      context.data.getFollowers = function (callerId, targetId, callback) {
-        callback(null, []);
-      };
-
-      request(app)
-        .get('/api/people/johndoe/followers')
-        .expect('Content-Type', /json/)
-        .expect(200, done);
     });
 
     it('gets data from repository', function (done) {
@@ -171,7 +160,7 @@ describe('collab.js web.api', function () {
       };
 
       request(app)
-        .get('/api/people/johndoe/followers?topId=10')
+        .get('/api/u/johndoe/followers')
         .expect('Content-Type', /json/)
         .expect(200)
         .end(function (err, res) {
@@ -186,7 +175,7 @@ describe('collab.js web.api', function () {
       };
 
       request(app)
-        .get('/api/people/johndoe/followers?topId=10')
+        .get('/api/u/johndoe/followers')
         .expect(400, done);
     });
 
@@ -196,7 +185,7 @@ describe('collab.js web.api', function () {
       };
 
       request(app)
-        .get('/api/people/johndoe/followers?topId=10')
+        .get('/api/u/johndoe/followers')
         .expect(400, done);
     });
 
@@ -208,7 +197,7 @@ describe('collab.js web.api', function () {
       };
 
       request(app)
-        .get('/api/people/johndoe/followers?topId=10')
+        .get('/api/u/johndoe/followers')
         .expect('Content-Type', /json/)
         .expect(200)
         .end(function (err, res) {
@@ -218,14 +207,14 @@ describe('collab.js web.api', function () {
     });
   });
 
-  describe('getFollowing: GET /api/people/:account/following:topId?', function () {
+  describe('getFollowing: GET /api/u/:account/following', function () {
 
     it('gets error for profile', function (done) {
       context.data.getPublicProfile = function (callerId, targetAccount, callback) {
         callback('Error');
       };
       request(app)
-        .get('/api/people/johndoe/following')
+        .get('/api/u/johndoe/following')
         .expect(400, done);
     });
 
@@ -234,7 +223,7 @@ describe('collab.js web.api', function () {
         callback(null, null);
       };
       request(app)
-        .get('/api/people/johndoe/following')
+        .get('/api/u/johndoe/following')
         .expect(400, done);
     });
 
@@ -245,7 +234,7 @@ describe('collab.js web.api', function () {
       };
 
       request(app)
-        .get('/api/people/johndoe/following?topId=10')
+        .get('/api/u/johndoe/following')
         .expect('Content-Type', /json/)
         .expect(200)
         .end(function (err, res) {
@@ -260,7 +249,7 @@ describe('collab.js web.api', function () {
       };
 
       request(app)
-        .get('/api/people/johndoe/following?topId=10')
+        .get('/api/u/johndoe/following')
         .expect(400, done);
     });
 
@@ -270,7 +259,7 @@ describe('collab.js web.api', function () {
       };
 
       request(app)
-        .get('/api/people/johndoe/following?topId=10')
+        .get('/api/u/johndoe/following')
         .expect(400, done);
     });
 
@@ -282,7 +271,7 @@ describe('collab.js web.api', function () {
       };
 
       request(app)
-        .get('/api/people/johndoe/following?topId=10')
+        .get('/api/u/johndoe/following')
         .expect('Content-Type', /json/)
         .expect(200)
         .end(function (err, res) {
@@ -384,7 +373,7 @@ describe('collab.js web.api', function () {
     });*/
   });
 
-  describe('getPublicProfile: GET /api/accounts/:account/profile', function () {
+  /*describe('getPublicProfile: GET /api/accounts/:account/profile', function () {
 
     it('gets data from repository', function (done) {
       var data = [{id:1}];
@@ -430,7 +419,7 @@ describe('collab.js web.api', function () {
         .expect('Content-Type', /json/)
         .expect(200, data, done);
     });
-  });
+  });*/
 
   describe('addPost: POST /api/timeline/posts', function () {
 
