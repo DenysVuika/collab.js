@@ -4,9 +4,7 @@ angular.module('collabjs.services')
     return {
       getNews: function (topId) {
         var d = $q.defer()
-          , options = {
-            headers: { 'last-known-id': topId }
-          };
+          , options = { headers: { 'last-known-id': topId } };
 
         $http.get('/api/news', options)
           .success(function (data) { d.resolve(data || []); });
@@ -39,9 +37,9 @@ angular.module('collabjs.services')
       },
       getWall: function (account, topId) {
         var d = $q.defer()
-          , query = '/api/u/' + account + '/posts';
-        if (topId) { query = query + '?topId=' + topId; }
-        $http.get(query)
+          , query = '/api/u/' + account + '/posts'
+          , options = { headers: { 'last-known-id': topId } };
+        $http.get(query, options)
           .success(function (data) { d.resolve(data); })
           .error(function (data) { d.reject(data); });
         return d.promise;

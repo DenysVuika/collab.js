@@ -191,10 +191,7 @@ module.exports = function (context) {
       });
     });
 
-    // TODO: rename to '/api/u/:account/posts'
-    // TODO: move 'topId' to http header
-    //app.get('/api/people/:account/timeline:topId?', authenticate, noCache, function (req, res) {
-    app.get('/api/u/:account/posts:topId?', authenticate, noCache, function (req, res) {
+    app.get('/api/u/:account/posts', authenticate, noCache, function (req, res) {
       repository.getPublicProfile(req.user.id, req.params.account, function (err, result) {
         if (err || !result) {
           res.send(400);
@@ -203,7 +200,12 @@ module.exports = function (context) {
 
         var profile = result;
 
-        repository.getWall(profile.id, getTopId(req), function (err, result) {
+        var lastId = parseInt(req.header('last-known-id'));
+        if (isNaN(lastId) || lastId < 0) {
+          lastId = 0;
+        }
+
+        repository.getWall(profile.id, lastId, function (err, result) {
           if (err || !result) { res.send(400); }
           else {
             res.json(200, {
@@ -355,14 +357,6 @@ module.exports = function (context) {
     });
 
     // UTILS
-
-    function getTopId(req) {
-      if (req.query && req.query.topId) {
-        var topId = parseInt(req.query.topId);
-        return isNaN(topId) || topId < 0 ? 0 : topId;
-      }
-      return 0;
-    }
 
     function handleJsonResult(res) {
       return function (err, result) {
