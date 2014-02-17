@@ -171,6 +171,15 @@ module.exports.addPost = function (json, callback) {
 };
 
 /**
+ * Get post by id.
+ * @param {number} postId Post id.
+ * @param {function(err, result)} callback Callback function.
+ */
+module.exports.getPost = function (postId, callback) {
+  provider.getPost(postId, callback);
+};
+
+/**
  * Get News feed for the given account id.
  * @param {number} userId User account id.
  * @param {number} topId Position of the first entry from the top (used for paging).
@@ -245,15 +254,6 @@ module.exports.getPostsByHashTag = function (callerId, hashtag, topId, callback)
  */
 module.exports.addComment = function (json, callback) {
 	provider.addComment(json, callback);
-};
-
-/**
- * Get specific post with list of comments.
- * @param {number} postId Post id.
- * @param {function(err, result)} callback Callback function.
- */
-module.exports.getPostWithComments = function (postId, callback) {
-	provider.getPostWithComments(postId, callback);
 };
 
 /**

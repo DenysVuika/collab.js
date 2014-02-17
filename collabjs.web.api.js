@@ -129,9 +129,12 @@ module.exports = function (context) {
       });
     });
 
-    // TODO: move 'topId' to http header
-    app.get('/api/people:topId?', authenticate, noCache, function (req, res) {
-      repository.getPeople(req.user.id, getTopId(req), function (err, result) {
+    app.get('/api/people', authenticate, noCache, function (req, res) {
+      var lastId = parseInt(req.header('last-known-id'));
+      if (isNaN(lastId) || lastId < 0) {
+        lastId = 0;
+      }
+      repository.getPeople(req.user.id, lastId, function (err, result) {
         if (err || !result) { res.send(400); }
         else { res.json(200, result); }
       });
@@ -190,7 +193,8 @@ module.exports = function (context) {
 
     // TODO: rename to '/api/u/:account/posts'
     // TODO: move 'topId' to http header
-    app.get('/api/people/:account/timeline:topId?', authenticate, noCache, function (req, res) {
+    //app.get('/api/people/:account/timeline:topId?', authenticate, noCache, function (req, res) {
+    app.get('/api/u/:account/posts:topId?', authenticate, noCache, function (req, res) {
       repository.getPublicProfile(req.user.id, req.params.account, function (err, result) {
         if (err || !result) {
           res.send(400);
@@ -212,8 +216,7 @@ module.exports = function (context) {
       });
     });
 
-    // TODO: rename to '/api/wall' or '/api/posts'
-    app.post('/api/timeline/posts', authenticate, function (req, res) {
+    app.post('/api/u/posts', authenticate, function (req, res) {
       var date = new Date();
       var post = {
         userId: req.user.id,
@@ -263,9 +266,8 @@ module.exports = function (context) {
       }
     });
 
-    // TODO: rename to '/api/posts/:postId'
     // Delete post from personal wall and followers' News
-    app.del('/api/wall/:postId', authenticate, function (req, res) {
+    app.del('/api/posts/:postId', authenticate, function (req, res) {
       repository.deleteWallPost(req.user.id, req.params.postId,  function (err, result) {
         if (err || !result) { res.send(400); }
         else {
@@ -286,15 +288,21 @@ module.exports = function (context) {
       });
     });
 
-    // TODO: rename to '/api/posts/:p/comments'
-    app.post('/api/timeline/comments', authenticate, function (req, res) {
-      if (!req.body.content || req.body.content.length === 0) {
+    app.post('/api/posts/:id/comments', authenticate, function (req, res) {
+      if (!req.body.content) {
         res.send(400);
         return;
       }
+
+      var postId = parseInt(req.params.id);
+      if (isNaN(postId) || postId < 0) {
+        res.send(400);
+        return;
+      }
+
       var comment = {
         userId: req.user.id,
-        postId: req.body.postId,
+        postId: postId,
         created: new Date(),
         content: req.body.content
       };
@@ -311,13 +319,11 @@ module.exports = function (context) {
       });
     });
 
-    // TODO: rename to '/api/posts/:p
-    app.get('/api/timeline/posts/:id', authenticate, noCache, function (req, res) {
-      repository.getPostWithComments(req.params.id, handleJsonResult(res));
+    app.get('/api/posts/:id', authenticate, noCache, function (req, res) {
+      repository.getPost(req.params.id, handleJsonResult(res));
     });
 
-    // TODO: rename to '/api/posts/:p/comments
-    app.get('/api/timeline/posts/:id/comments', authenticate, noCache, function (req, res) {
+    app.get('/api/posts/:id/comments', authenticate, noCache, function (req, res) {
       repository.getComments(req.params.id, handleJsonResult(res));
     });
 

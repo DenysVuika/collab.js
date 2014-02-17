@@ -281,14 +281,14 @@ describe('collab.js web.api', function () {
     });
   });
 
-  describe('getWall: GET /api/people/:account/timeline:topId?', function () {
+  describe('getWall: GET /api/u/:account/posts:topId?', function () {
 
     it('gets error for profile', function (done) {
       context.data.getPublicProfile = function (callerId, targetAccount, callback) {
         callback('Error');
       };
       request(app)
-        .get('/api/people/johndoe/timeline')
+        .get('/api/u/johndoe/posts')
         .expect(400, done);
     });
 
@@ -297,7 +297,7 @@ describe('collab.js web.api', function () {
         callback(null, null);
       };
       request(app)
-        .get('/api/people/johndoe/timeline')
+        .get('/api/u/johndoe/posts')
         .expect(400, done);
     });
 
@@ -308,7 +308,7 @@ describe('collab.js web.api', function () {
       };
 
       request(app)
-        .get('/api/people/johndoe/timeline')
+        .get('/api/u/johndoe/posts')
         .expect('Content-Type', /json/)
         .expect(200, done);
     });
@@ -320,7 +320,7 @@ describe('collab.js web.api', function () {
       };
 
       request(app)
-        .get('/api/people/johndoe/timeline')
+        .get('/api/u/johndoe/posts')
         .expect('Content-Type', /json/)
         .expect(200)
         .end(function (err, res) {
@@ -335,7 +335,7 @@ describe('collab.js web.api', function () {
       };
 
       request(app)
-        .get('/api/people/johndoe/timeline')
+        .get('/api/u/johndoe/posts')
         .expect(400, done);
     });
 
@@ -345,83 +345,12 @@ describe('collab.js web.api', function () {
       };
 
       request(app)
-        .get('/api/people/johndoe/timeline')
+        .get('/api/u/johndoe/posts')
         .expect(400, done);
     });
-
-    /*it('gets data by account', function (done) {
-      var data = [ { id: 1 } ];
-
-      context.data.getPublicProfile = function (userId, targetAccount, callback) {
-        if (targetAccount === 'johndoe') { callback({ id: 10 }); }
-        else { callback(null, null); }
-      };
-
-      context.data.getWall = function (userId, topId, callback) {
-        if (userId === 10) { callback(null, data); }
-        else { callback(null, null); }
-      };
-
-      request(app)
-        .get('/api/people/johndoe/timeline?topId=10')
-        .expect('Content-Type', /json/)
-        .expect(200)
-        .end(function (err, res) {
-          expect(res.body.feed).to.eql(data);
-          done();
-        });
-    });*/
   });
 
-  /*describe('getPublicProfile: GET /api/accounts/:account/profile', function () {
-
-    it('gets data from repository', function (done) {
-      var data = [{id:1}];
-      context.data.getPublicProfile = function (callerId, targetAccount, callback) {
-        callback(null, data);
-      };
-
-      request(app)
-        .get('/api/accounts/johndoe/profile')
-        .expect('Content-Type', /json/)
-        .expect(200, data, done);
-    });
-
-    it('gets no data from repository', function (done) {
-      context.data.getPublicProfile = function (callerId, targetAccount, callback) {
-        callback(null, null);
-      };
-
-      request(app)
-        .get('/api/accounts/johndoe/profile')
-        .expect(400, done);
-    });
-
-    it('gets error from repository', function (done) {
-      context.data.getPublicProfile = function (callerId, targetAccount, callback) {
-        callback('Error');
-      };
-
-      request(app)
-        .get('/api/accounts/johndoe/profile')
-        .expect(400, done);
-    });
-
-    it('gets data by account', function (done) {
-      var data = [ { id: 1 } ];
-      context.data.getPublicProfile = function (callerId, targetAccount, callback) {
-        if (targetAccount === 'johndoe') { callback(null, data); }
-        else { callback(null, null); }
-      };
-
-      request(app)
-        .get('/api/accounts/johndoe/profile')
-        .expect('Content-Type', /json/)
-        .expect(200, data, done);
-    });
-  });*/
-
-  describe('addPost: POST /api/timeline/posts', function () {
+  describe('addPost: POST /api/u/posts', function () {
 
     it('creates post', function (done) {
       context.data.addPost = function (json, callback) {
@@ -429,7 +358,7 @@ describe('collab.js web.api', function () {
       };
 
       request(app)
-        .post('/api/timeline/posts')
+        .post('/api/u/posts')
         .send({ content: 'hello world' })
         .expect('Content-Type', /json/)
         .expect(200)
@@ -450,7 +379,7 @@ describe('collab.js web.api', function () {
       };
 
       request(app)
-        .post('/api/timeline/posts')
+        .post('/api/u/posts')
         .send({ content: 'hello world' })
         .expect(400, done);
     });
@@ -461,25 +390,13 @@ describe('collab.js web.api', function () {
       };
 
       request(app)
-        .post('/api/timeline/posts')
+        .post('/api/u/posts')
         .send({ content: 'hello world' })
         .expect(400, done);
     });
   });
 
   describe('getNews: GET /api/news', function () {
-
-    /*it('allows query without `topId`', function (done) {
-      context.data.getNews = function (userId, topId, callback) {
-        if (topId === 0) { callback(null, []); }
-        else { callback('Error'); }
-      };
-
-      request(app)
-        .get('/api/timeline/posts')
-        .expect('Content-Type', /json/)
-        .expect(200, done);
-    });*/
 
     it('gets data from repository', function(done) {
       var data = [{id:1}];
@@ -514,11 +431,11 @@ describe('collab.js web.api', function () {
     });
   });
 
-  describe('addComment: POST /api/timeline/comments', function () {
+  describe('addComment: POST /api/posts/:id/comments', function () {
 
     it('receives no content', function (done) {
       request(app)
-        .post('/api/timeline/comments')
+        .post('/api/posts/1/comments')
         .expect(400, done);
     });
 
@@ -533,7 +450,7 @@ describe('collab.js web.api', function () {
       };
 
       request(app)
-        .post('/api/timeline/comments')
+        .post('/api/posts/1/comments')
         .send(comment)
         .expect('Content-Type', /json/)
         .expect(200)
@@ -556,7 +473,7 @@ describe('collab.js web.api', function () {
       };
 
       request(app)
-        .post('/api/timeline/comments')
+        .post('/api/posts/1/comments')
         .send({ id: 1, content: 'comment' })
         .expect(400, done);
     });
@@ -567,48 +484,48 @@ describe('collab.js web.api', function () {
       };
 
       request(app)
-        .post('/api/timeline/comments')
+        .post('/api/posts/1/comments')
         .send({ id: 1, content: 'comment' })
         .expect(400, done);
     });
   });
 
-  describe('getPostWithComments: GET /api/timeline/posts/:id', function () {
+  describe('getPost: GET /api/posts/:id', function () {
 
     it('gets data from repository', function (done) {
       var data = [{id:1}];
-      context.data.getPostWithComments = function (postId, callback) {
+      context.data.getPost = function (postId, callback) {
         callback(null, data);
       };
 
       request(app)
-        .get('/api/timeline/posts/10')
+        .get('/api/posts/10')
         .expect('Content-Type', /json/)
         .expect(200, data, done);
     });
 
     it('gets no data from repository', function (done) {
-      context.data.getPostWithComments = function (postId, callback) {
+      context.data.getPost = function (postId, callback) {
         callback(null, null);
       };
 
       request(app)
-        .get('/api/timeline/posts/10')
+        .get('/api/posts/10')
         .expect(400, done);
     });
 
     it('gets error from repository', function (done) {
-      context.data.getPostWithComments = function (postId, callback) {
+      context.data.getPost = function (postId, callback) {
         callback('Error');
       };
 
       request(app)
-        .get('/api/timeline/posts/10')
+        .get('/api/posts/10')
         .expect(400, done);
     });
   });
 
-  describe('getComments: GET /api/timeline/posts/:id/comments', function () {
+  describe('getComments: GET /api/posts/:id/comments', function () {
 
     it('gets data from repository', function (done) {
       var data = [{id:1}];
@@ -617,7 +534,7 @@ describe('collab.js web.api', function () {
       };
 
       request(app)
-        .get('/api/timeline/posts/10/comments')
+        .get('/api/posts/10/comments')
         .expect('Content-Type', /json/)
         .expect(200, data, done);
     });
@@ -628,7 +545,7 @@ describe('collab.js web.api', function () {
       };
 
       request(app)
-        .get('/api/timeline/posts/10/comments')
+        .get('/api/posts/10/comments')
         .expect(400, done);
     });
 
@@ -638,7 +555,7 @@ describe('collab.js web.api', function () {
       };
 
       request(app)
-        .get('/api/timeline/posts/10/comments')
+        .get('/api/posts/10/comments')
         .expect(400, done);
     });
   });

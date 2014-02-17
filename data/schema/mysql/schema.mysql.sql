@@ -238,7 +238,6 @@ CREATE OR REPLACE VIEW `vw_posts` AS
     POST_TAGS(p.id) AS tags
   FROM posts AS p
   LEFT JOIN users AS u ON u.id = p.userId
-  ORDER BY p.created DESC
 ;
 
 CREATE OR REPLACE VIEW `vw_news` AS
@@ -253,7 +252,6 @@ CREATE OR REPLACE VIEW `vw_wall` AS
   LEFT JOIN vw_posts AS p on p.id = w.postId
 ;
 
--- TODO: review execution plan
 CREATE OR REPLACE VIEW `vw_people` AS
   SELECT
     u.id,
@@ -268,7 +266,6 @@ CREATE OR REPLACE VIEW `vw_people` AS
     u.following,
     u.followers
   FROM users AS u
-  ORDER BY u.created ASC
 ;
 
 CREATE OR REPLACE VIEW `vw_comments` AS
@@ -283,7 +280,6 @@ CREATE OR REPLACE VIEW `vw_comments` AS
     c.created
   FROM comments AS c
   LEFT JOIN users AS u ON u.id = c.userId
-  ORDER BY c.created ASC
 ;
 
 --------------------------------------
@@ -300,27 +296,6 @@ BEGIN
   WHERE (topId <= 0 || p.id > topId)
   LIMIT 20;
 END$$
-DELIMITER ;
-
--- TODO: review
--- TODO: split into 2 separate calls
-DELIMITER //
-CREATE PROCEDURE `get_post_full`(
-  IN `postId` INT)
-BEGIN
-  SELECT p.*, u.name, u.account, u.emailHash as pictureId
-  FROM posts AS p
-    LEFT JOIN users AS u ON u.id = p.userId
-    LEFT JOIN comments AS c ON c.postId = p.id
-  WHERE p.id = postId
-  ORDER BY p.id;
-
-  SELECT c.*, u.account, u.name, u.emailHash as pictureId
-  FROM comments AS c
-    LEFT JOIN users AS u ON u.id = c.userId
-  WHERE c.postId = postId
-  ORDER BY created ASC;
-END//
 DELIMITER ;
 
 -- TODO: review
@@ -465,6 +440,7 @@ CREATE PROCEDURE `get_news`(
 BEGIN
   SELECT * FROM vw_news
   WHERE targetId = userId AND (topId <= 0 || id < topId)
+  ORDER BY created DESC
   LIMIT 20;
 END$$
 DELIMITER ;
@@ -478,6 +454,7 @@ CREATE PROCEDURE `get_wall`(
 BEGIN
 	SELECT * FROM vw_wall
   WHERE targetId = userId AND (topId <= 0 || id < topId)
+  ORDER BY created DESC
   LIMIT 20;
 END$$
 DELIMITER ;

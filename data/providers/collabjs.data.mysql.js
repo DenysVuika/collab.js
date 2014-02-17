@@ -2,17 +2,7 @@
 
 var utils = require('../../collabjs.utils')
   , pool = require('./collabjs.pool.mysql').pool
-  , passwordHash = require('password-hash')
-  , crypto = require('crypto');
-
-/**
- * Creates hash from string.
- * @param {string} str Input string.
- * @returns {string} String hash.
- */
-function createHash(str) {
-  return crypto.createHash('md5').update(str.trim().toLowerCase()).digest('hex');
-}
+  , passwordHash = require('password-hash');
 
 /**
  * Creates mentions for the given post.
@@ -108,7 +98,7 @@ Provider.prototype = {
   },
   createAccount: function (json, callback) {
     pool.getConnection(function (err, connection) {
-      json.emailHash = createHash(json.email);
+      json.emailHash = utils.createHash(json.email);
       connection.query('INSERT INTO users SET ?', json, function (err, result) {
         connection.release();
         if (err) {
@@ -273,7 +263,7 @@ Provider.prototype = {
         if (err) { callback(err, null); }
         else {
           var rows = result[0];
-          // init picture urls
+          // init additional properties
           if (rows.length > 0) {
             var post;
             for (var i = 0; i < rows.length; i++) {
@@ -315,6 +305,19 @@ Provider.prototype = {
       });
     });
   },
+  getPost: function (postId, callback) {
+    pool.getConnection(function (err, connection) {
+      connection.query('SELECT * FROM vw_posts WHERE id = ? LIMIT 1', [postId], function (err, result) {
+        connection.release();
+        if (err || result.length === 0) { callback(err, null); }
+        else {
+          var post = result[0];
+          post.pictureUrl = utils.getAvatarUrl(post.pictureId);
+          callback(err, post);
+        }
+      });
+    });
+  },
   getNews: function (userId, topId, callback) {
     pool.getConnection(function (err, connection) {
       var command = 'CALL get_news (?, ?)'
@@ -324,7 +327,7 @@ Provider.prototype = {
         if (err) { callback(err, null); }
         else {
           var rows = result[0];
-          // init picture urls
+          // init additional properties
           if (rows.length > 0) {
             var post;
             for (var i = 0; i < rows.length; i++) {
@@ -380,7 +383,7 @@ Provider.prototype = {
         if (err) { callback(err, null); }
         else {
           var rows = result[0];
-          // init picture urls
+          // init additional properties
           if (rows.length > 0) {
             var post;
             for (var i = 0; i < rows.length; i++) {
@@ -400,7 +403,7 @@ Provider.prototype = {
         if (err) { callback (err, null); }
         else {
           var rows = result[0];
-          // init picture urls
+          // init additional properties
           if (rows.length > 0) {
             var post;
             for (var i = 0; i < rows.length; i++) {
@@ -424,37 +427,6 @@ Provider.prototype = {
       });
     });
   },
-  // TODO: review
-  getPostWithComments: function (postId, callback) {
-    pool.getConnection(function (err, connection) {
-      var command = 'CALL get_post_full(?)'
-        , params = [postId];
-      connection.query(command, params, function (err, result) {
-        connection.release();
-        if (err) { callback(err, null); }
-        else {
-          var rows = result[0];
-          if (!rows || rows.length === 0 || !rows[0] || rows[0].length === 0) {
-            callback(err, null);
-          } else {
-            var post = rows[0];
-            post.pictureUrl = utils.getAvatarUrl(post.pictureId);
-            if (result[1] && result[1].length > 0) {
-              post.commentsCount = result[1].length;
-              post.comments = result[1];
-              for (var i = 0; i < post.comments.length; i++) {
-                post.comments[i].pictureUrl = utils.getAvatarUrl(post.comments[i].pictureId);
-              }
-            } else {
-              post.commentsCount = 0;
-              post.comments = [];
-            }
-            callback(err, post);
-          }
-        }
-      });
-    });
-  },
   // TODO: review execution plan
   getComments: function (postId, callback) {
     pool.getConnection(function (err, connection) {
@@ -463,7 +435,7 @@ Provider.prototype = {
         connection.release();
         if (err) { callback(err, null); }
         else {
-          // init picture urls
+          // init additional properties
           if (result.length > 0) {
             var comment;
             for (var i = 0; i < result.length; i++) {

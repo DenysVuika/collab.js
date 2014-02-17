@@ -41,7 +41,7 @@
           </a>
           <div class="card-comments" ng-if="commentsExpanded">
             <ul class="comment-list">
-              <li class="comment-content" ng-repeat="comment in post.comments">
+              <li class="comment-content" ng-repeat="comment in post.comments| orderBy:'created':false">
                 <div class="comment-avatar">
                   <img ng-src="{{comment.pictureUrl}}" alt="" width="28px" height="28px">
                 </div>

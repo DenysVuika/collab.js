@@ -39,7 +39,7 @@ angular.module('collabjs.services')
       },
       getWall: function (account, topId) {
         var d = $q.defer()
-          , query = '/api/people/' + account + '/timeline';
+          , query = '/api/u/' + account + '/posts';
         if (topId) { query = query + '?topId=' + topId; }
         $http.get(query)
           .success(function (data) { d.resolve(data); })
@@ -48,7 +48,7 @@ angular.module('collabjs.services')
       },
       getPostById: function (postId) {
         var d = $q.defer()
-          , query = '/api/timeline/posts/' + postId;
+          , query = '/api/posts/' + postId;
         $http.get(query)
           .success(function (res) { d.resolve(res); })
           .error(function (data) { d.reject(data); });
@@ -61,13 +61,9 @@ angular.module('collabjs.services')
           .success(function (data) { d.resolve(data || []); });
         return d.promise;
       },
-      // TODO: turn into filter
-      getPostUrl: function (postId) {
-        return postId ? '/timeline/posts/' + postId : null;
-      },
       getPostComments: function (postId) {
         var d = $q.defer();
-        $http.get('/api/timeline/posts/' + postId + '/comments').success(function (data) {
+        $http.get('/api/posts/' + postId + '/comments').success(function (data) {
           d.resolve(data);
         });
         return d.promise;
@@ -75,14 +71,14 @@ angular.module('collabjs.services')
       createPost: function (content) {
         var d = $q.defer();
         $http
-          .post('/api/timeline/posts', { content: content })
+          .post('/api/u/posts', { content: content })
           .then(function (res) { d.resolve(res.data); });
         return d.promise;
       },
       addComment: function (postId, content) {
         var d = $q.defer();
         $http
-          .post('/api/timeline/comments', { postId: postId, content: content })
+          .post('/api/posts/' + postId + '/comments', { content: content })
           .then(function (res) { d.resolve(res.data); });
         return d.promise;
       },
@@ -96,13 +92,13 @@ angular.module('collabjs.services')
       deleteWallPost: function (postId) {
         var d = $q.defer();
         $http
-          .delete('/api/wall/' + postId)
+          .delete('/api/posts/' + postId)
           .then(function (res) { d.resolve(res); });
         return d.promise;
       },
       loadPostComments: function (post, callback) {
         if (post && post.id) {
-          $http.get('/api/timeline/posts/' + post.id + '/comments').success(function (data) {
+          $http.get('/api/posts/' + post.id + '/comments').success(function (data) {
             post.comments = data || [];
             if (callback) {
               callback(post);

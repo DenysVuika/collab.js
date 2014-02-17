@@ -1,7 +1,8 @@
 'use strict';
 
 var auth = require('./collabjs.auth')
-  , config = require('./config');
+  , config = require('./config')
+  , crypto = require('crypto');
 
 function noCache (req, res, next) {
   res.header("Cache-Control", "no-cache, no-store, must-revalidate");
@@ -102,6 +103,15 @@ function getAvatarUrl(pictureId, size) {
   return result;
 }
 
+/**
+ * Creates hash from string.
+ * @param {string} str Input string.
+ * @returns {string} String hash.
+ */
+function createHash(str) {
+  return crypto.createHash('md5').update(str.trim().toLowerCase()).digest('hex');
+}
+
 module.exports.detectMobileBrowser = detectMobileBrowser;
 module.exports.commonLocals = commonLocals;
 module.exports.isUrlLocalToHost = isUrlLocalToHost;
@@ -110,3 +120,4 @@ module.exports.addHttp = addHttp;
 module.exports.parseAccountNames = parseAccountNames;
 module.exports.parseHashTags = parseHashTags;
 module.exports.getAvatarUrl = getAvatarUrl;
+module.exports.createHash = createHash;

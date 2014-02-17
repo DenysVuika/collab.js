@@ -83,6 +83,10 @@ describe('collab.js data layer', function () {
       expect(data.getNews).to.be.a('function');
     });
 
+    it('.getPost', function () {
+      expect(data.getPost).to.be.a('function');
+    });
+
     it('.checkNewsUpdates', function () {
       expect(data.checkNewsUpdates).to.be.a('function');
     });
@@ -97,10 +101,6 @@ describe('collab.js data layer', function () {
 
     it('.addComment', function () {
       expect(data.addComment).to.be.a('function');
-    });
-
-    it('.getPostWithComments', function () {
-      expect(data.getPostWithComments).to.be.a('function');
     });
 
     it('.getComments', function () {

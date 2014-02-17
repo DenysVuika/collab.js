@@ -39,7 +39,7 @@ angular.module('collabjs.controllers')
         }
 
         postsService.getWall($scope.account, bottomPostId).then(function (data) {
-          $scope.posts.push.apply($scope.posts, data || []);
+          $scope.posts.push.apply($scope.posts, data.feed || []);
           $scope.isLoadingMorePosts = false;
           $scope.hasNoPosts = ($scope.posts.length === 0);
         });

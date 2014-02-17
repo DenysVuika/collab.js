@@ -1,7 +1,7 @@
 <p class="lead" ng-show="hasNoPeople">No people found...</p>
 
 <ul class="media-list">
-  <li class="media post" ng-repeat="profile in people" ng-hide="hasNoPeople">
+  <li class="media post" ng-repeat="profile in people | orderBy:'created':false" ng-hide="hasNoPeople">
     <img class="pull-left avatar" ng-src="{{profile.pictureUrl}}" alt="">
     <div class="media-body">
       <div class="media-heading" style="font-weight: normal;">
