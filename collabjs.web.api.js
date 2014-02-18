@@ -74,8 +74,7 @@ module.exports = function (context) {
       }
     });
 
-    // TODO: rename to '/api/profile'
-    app.get('/api/account', authenticate, noCache, function (req, res) {
+    app.get('/api/profile', authenticate, noCache, function (req, res) {
       res.json(200, {
         token: config.server.csrf ? req.csrfToken() : null,
         avatarServer: config.env.avatarServer,
@@ -87,16 +86,14 @@ module.exports = function (context) {
       });
     });
 
-    // TODO: rename to '/api/profile'
-    app.post('/api/account', authenticate, function (req, res) {
+    app.post('/api/profile', authenticate, function (req, res) {
       repository.updateAccount(req.user.id, req.body, function (err) {
         if (err) { res.send(400); }
         else { res.send(200); }
       });
     });
 
-    // TODO: rename to '/api/profile/password'
-    app.post('/api/account/password', authenticate, function(req, res) {
+    app.post('/api/profile/password', authenticate, function(req, res) {
       var settings = req.body;
 
       // verify fields

@@ -13,18 +13,19 @@ angular.module('collabjs.services')
         },
         getAccount: function () {
           var d = $q.defer();
-          $http.get('/api/account').success(function (data) { d.resolve(data); });
+          $http.get('/api/profile')
+            .success(function (data) { d.resolve(data); });
           return d.promise;
         },
         updateAccount: function (data) {
           var d = $q.defer();
-          $http.post('/api/account', data)
+          $http.post('/api/profile', data)
             .success(function () { d.resolve(true); });
           return d.promise;
         },
         changePassword: function (data) {
           var d = $q.defer();
-          $http.post('/api/account/password', data)
+          $http.post('/api/profile/password', data)
             .success(function (res) { d.resolve(res); })
             .error(function (data) { d.reject(data); });
           return d.promise;
