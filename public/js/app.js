@@ -6,7 +6,6 @@ angular.module('collabjs', [
     'collabjs.directives',
     'collabjs.controllers',
     'angularMoment',
-    'infinite-scroll',
     'ui.select2',
     'chieffancypants.loadingBar',
     'ngAnimate'
@@ -66,8 +65,6 @@ angular.module('collabjs', [
       if (collabjs.allowUserRegistration) {
         return true;
       }
-
-
     };*/
 
     var defaultRedirect = function ($q, $http, $location, $timeout, authService) {

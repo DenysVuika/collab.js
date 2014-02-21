@@ -26,13 +26,29 @@
 
 /* Main collab.js stylesheet */
 
+html, body {
+  height: 100%;
+  overflow: hidden;
+}
+
 body {
-  padding-top: 70px;
-  padding-bottom: 70px;
+  /*padding-top: 70px;*/
+  /*padding-bottom: 70px;*/
+  padding-top: 51px;
+  padding-bottom: 0;
   color: #383e4b;
   background: #f5f5f5;
   /* IE 11 scrollbar fix */
   -ms-overflow-style: scrollbar;
+
+  & > .container {
+    height: 100%;
+    overflow: auto;
+  }
+}
+
+.content-container {
+  margin-top: 20px;
 }
 
 .fill-width {
