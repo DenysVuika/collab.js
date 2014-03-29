@@ -201,7 +201,7 @@ Provider.prototype = {
             if (rows.length > 0) {
               for (var i = 0; i < rows.length; i++) {
                 row = rows[i];
-                row.pictureId = utils.getAvatarUrl(row.pictureId);
+                row.pictureUrl = utils.getAvatarUrl(row.pictureId);
                 row.isOwnProfile = (row.id === callerId);
                 row.isFollowed = (followed.indexOf(row.id) > -1);
               }
