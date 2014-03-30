@@ -1,53 +1,64 @@
 <p class="lead" ng-show="hasNoPeople">No people found...</p>
 
-<ul class="media-list">
-  <li class="media post" ng-repeat="profile in people | orderBy:'created':false" ng-hide="hasNoPeople">
-    <img class="pull-left avatar" ng-src="{{profile.pictureUrl}}" alt="">
-    <div class="media-body">
-      <div class="media-heading" style="font-weight: normal;">
-        <span>
-          <a ng-href="{{profile | wallUrl}}">
-            <strong>{{profile.name}}</strong>
+<div class="cards-container" ng-card-layout ng-items="people">
+  <ul class="cards">
+    <li class="card" ng-repeat="profile in people | orderBy:'created':false">
+      <div class="card-content">
+        <div class="card-avatar">
+          <a ng-href="{{profile.account | wallUrl}}">
+            <img ng-src="{{profile.pictureUrl}}" alt="" width="46px" height="46px">
           </a>
-          <a ng-href="{{profile | wallUrl}}" style="color:grey; font-weight: normal; font-size: 90%; padding-left: 5px;">@{{profile.account}}</a>
-        </span>
-        <a class="btn btn-default pull-right profile-btn" ng-show="canFollow(profile)" ng-click="follow(profile)">Follow</a>
-        <a class="btn btn-danger pull-right profile-btn" ng-show="canUnfollow(profile)" ng-click="unfollow(profile)">Unfollow</a>
-        <a class="btn btn-success pull-right profile-btn" ng-show="profile.isOwnProfile" href="/#/account">Edit profile</a>
-      </div>
-      <ul class="list-unstyled">
-        <li>
-          <span style="display: block">
-            <i class="flag-icon-16 flag-{{profile.location.toLowerCase()}}"></i>{{getCountryName(profile)}}
+        </div>
+        <div class="card-header">
+          <h3><a ng-href="{{profile.account | wallUrl}}">{{profile.name}}</a></h3>
+          <span class="card-details">
+            <span>Registered - </span>
+            <span am-time-ago="profile.created" title="{{profile.created | amDateFormat: 'LLLL'}}"></span>
           </span>
-        </li>
-        <li>
-          <a ng-href="{{profile.website}}" target="_blank">{{profile.website}}</a>
-        </li>
-        <li>
-          <em>{{profile.bio}}</em>
-        </li>
-      </ul>
-      <ul class="list-inline profile-stats">
-        <li>
-          <a ng-href="{{profile | wallUrl}}">
-            <strong>{{profile.posts}}</strong> posts
-          </a>
-        </li>
-        <li>
-          <a ng-href="{{getFollowingUrl(profile)}}">
-            <strong>{{profile.following}}</strong> following
-          </a>
-        </li>
-        <li>
-          <a ng-href="{{getFollowersUrl(profile)}}">
-            <strong>{{profile.followers}}</strong> followers
-          </a>
-        </li>
-      </ul>
-    </div>
-  </li>
-</ul>
+        </div>
+        <div class="card-text">
+          <ul class="list-unstyled">
+            <li>
+              <span style="display: block">
+                <i class="flag-icon-16 flag-{{profile.location.toLowerCase()}}"></i>{{getCountryName(profile)}}
+              </span>
+            </li>
+            <li>
+              <a ng-href="{{profile.website}}" target="_blank">{{profile.website}}</a>
+            </li>
+            <li>
+              <em>{{profile.bio}}</em>
+            </li>
+          </ul>
+          <div class="text-right">
+            <a class="btn btn-default profile-btn" ng-show="canFollow(profile)" ng-click="follow(profile)">Follow</a>
+            <a class="btn btn-danger profile-btn" ng-show="canUnfollow(profile)" ng-click="unfollow(profile)">Unfollow</a>
+            <a class="btn btn-success profile-btn" ng-show="profile.isOwnProfile" href="/#/account">Edit profile</a>
+          </div>
+        </div>
+        <div class="card-footer">
+          <ul class="list-inline profile-stats text-right">
+            <li>
+              <a ng-href="{{profile | wallUrl}}">
+                <strong>{{profile.posts}}</strong> posts
+              </a>
+            </li>
+            <li>
+              <a ng-href="{{getFollowingUrl(profile)}}">
+                <strong>{{profile.following}}</strong> following
+              </a>
+            </li>
+            <li>
+              <a ng-href="{{getFollowersUrl(profile)}}">
+                <strong>{{profile.followers}}</strong> followers
+              </a>
+            </li>
+          </ul>
+        </div>
+      </div>
+    </li>
+  </ul>
+</div>
 
 <div class="page-spinner">
   <i class="fa fa-spinner fa-2x fa-spin"></i>
