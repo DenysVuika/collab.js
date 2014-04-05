@@ -2,8 +2,8 @@
  Single card controller (used as a child of NewsController)
  */
 angular.module('collabjs.controllers')
-  .controller('CardController', ['$scope', '$timeout', 'authService', 'postsService',
-    function ($scope, $timeout, authService, postsService) {
+  .controller('CardController', ['$scope', '$timeout', '$location', 'authService', 'postsService', 'dialogService',
+    function ($scope, $timeout, $location, authService, postsService, dialogService) {
       'use strict';
 
       $scope.commentsExpanded = false;
@@ -86,6 +86,30 @@ angular.module('collabjs.controllers')
         }
       }
 
+      function showLinkDialog(post) {
+        var location = $location;
+        var port = location.port();
+        var link = location.protocol() +
+          '://' + location.host() +
+          ((port && port !== 80 && port !== 443) ? (':' + port) : '') +
+          '/#/posts/' + post.id;
+
+        dialogService.showDialog({
+          title: 'Link to this post',
+          template: '/templates/dlg-post-link.html',
+          context: {
+            post: post,
+            link: link
+          },
+          submit: {
+            title: 'Done'
+          },
+          cancel: {
+            enabled: false
+          }
+        });
+      }
+
       function getContextActions(post) {
         var actions = [];
         var currentUser = authService.getCurrentUser();
@@ -101,13 +125,17 @@ angular.module('collabjs.controllers')
         // actions for the owner of the feed
         if (currentUser.account === post.account) {
           actions.push({ name: 'Delete post', invoke: deleteWallPost });
-          actions.push({ name: '(todo) Link to post', invoke: function () {}});
+          actions.push({ name: 'Link to post', invoke: function () {
+            showLinkDialog(post);
+          }});
           actions.push({ name: '(todo) Disable comments', invoke: function () {}});
         }
         // actions for guests
         else {
           if (options.allowMute) { actions.push({ name: 'Mute post', invoke: deleteNewsPost }); }
-          actions.push({ name: '(todo) Link to post', invoke: function () {}});
+          actions.push({ name: 'Link to post', invoke: function () {
+            showLinkDialog(post);
+          }});
           actions.push({ name: '(todo) Report spam or abuse', invoke: function () {}});
         }
 
