@@ -321,10 +321,28 @@ String.prototype.getHashTags = function () {
   return result ? result : [];
 };
 
-String.prototype.twitterize = function () {
+String.prototype.twitterize = function (youtube) {
   'use strict';
-  return this
+
+  var result = this
     .parseUrls()
     .parseAccountTags()
     .parseHashTags();
+
+  if (youtube) {
+    // try converting first YouTube link to preview image
+    var urlYoutube = /(?:youtube\.com\/(?:[^\/]+\/.+\/|(?:v|e(?:mbed)?)\/|.*[?&]v=)|youtu\.be\/)([^"&?\/ ]{11})/i;
+    var match = this.match(urlYoutube);
+    if (match) {
+      var vid = match[1];
+      var preview =
+        '<div class="youtube-container">' +
+        '<img class="youtube-thumbnail img-responsive" data-video-id="' + vid + '" src="https://i.ytimg.com/vi/' + vid + '/hqdefault.jpg">' +
+        '<div class="youtube-play-button" data-video-id="' + vid + '"></div>' +
+        '</div>';
+      result += preview;
+    }
+  }
+
+  return result;
 };
