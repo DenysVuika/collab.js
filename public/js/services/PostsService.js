@@ -1,13 +1,30 @@
 angular.module('collabjs.services')
-  .service('postsService', ['$http', '$q', function ($http, $q) {
+  .service('postsService', ['$http', '$q', '$sce', function ($http, $q, $sce) {
     'use strict';
+
+    function processHtmlContent(items, youtube) {
+      var array = Array.isArray(items);
+      if (!array) {
+        items = [items];
+      }
+
+      for (var i = 0; i < items.length; i++) {
+        var entry = items[i];
+        if (entry.content) {
+          entry.html = $sce.trustAsHtml(entry.content.twitterize(youtube));
+        }
+      }
+
+      return array ? items : items[0];
+    }
+
     return {
       getNews: function (topId) {
         var d = $q.defer()
           , options = { headers: { 'last-known-id': topId } };
 
         $http.get('/api/news', options)
-          .success(function (data) { d.resolve(data || []); });
+          .success(function (data) { d.resolve(processHtmlContent(data, true)); });
         return d.promise;
       },
       getNewsUpdatesCount: function (topId) {
@@ -32,7 +49,7 @@ angular.module('collabjs.services')
             }
           };
         $http.get('/api/news', options)
-          .success(function (data) { d.resolve(data || []); });
+          .success(function (data) { d.resolve(processHtmlContent(data, true)); });
         return d.promise;
       },
       getWall: function (account, topId) {
@@ -40,7 +57,7 @@ angular.module('collabjs.services')
           , query = '/api/u/' + account + '/posts'
           , options = { headers: { 'last-known-id': topId } };
         $http.get(query, options)
-          .success(function (data) { d.resolve(data); })
+          .success(function (data) { d.resolve(processHtmlContent(data, true)); })
           .error(function (data) { d.reject(data); });
         return d.promise;
       },
@@ -48,7 +65,7 @@ angular.module('collabjs.services')
         var d = $q.defer()
           , query = '/api/posts/' + postId;
         $http.get(query)
-          .success(function (res) { d.resolve(res); })
+          .success(function (res) { d.resolve(processHtmlContent(res, true)); })
           .error(function (data) { d.reject(data); });
         return d.promise;
       },
@@ -56,28 +73,27 @@ angular.module('collabjs.services')
         var d = $q.defer()
           , options = { headers: { 'last-known-id': topId } };
         $http.get('/api/explore/' + tag, options)
-          .success(function (data) { d.resolve(data || []); });
+          .success(function (data) { d.resolve(processHtmlContent(data, true)); });
         return d.promise;
       },
       getPostComments: function (postId) {
         var d = $q.defer();
-        $http.get('/api/posts/' + postId + '/comments').success(function (data) {
-          d.resolve(data);
-        });
+        $http.get('/api/posts/' + postId + '/comments')
+          .success(function (data) { d.resolve(processHtmlContent(data)); });
         return d.promise;
       },
       createPost: function (content) {
         var d = $q.defer();
         $http
           .post('/api/u/posts', { content: content })
-          .then(function (res) { d.resolve(res.data); });
+          .then(function (res) { d.resolve(processHtmlContent(res.data, true)); });
         return d.promise;
       },
       addComment: function (postId, content) {
         var d = $q.defer();
         $http
           .post('/api/posts/' + postId + '/comments', { content: content })
-          .then(function (res) { d.resolve(res.data); });
+          .then(function (res) { d.resolve(processHtmlContent(res.data)); });
         return d.promise;
       },
       deleteNewsPost: function (postId) {
@@ -97,7 +113,7 @@ angular.module('collabjs.services')
       loadPostComments: function (post, callback) {
         if (post && post.id) {
           $http.get('/api/posts/' + post.id + '/comments').success(function (data) {
-            post.comments = data || [];
+            post.comments = processHtmlContent(data);
             if (callback) {
               callback(post);
             }

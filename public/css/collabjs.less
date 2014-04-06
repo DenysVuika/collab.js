@@ -255,8 +255,6 @@ a.comments-button {
   font-family: 'Roboto', "Helvetica Neue", Helvetica, Arial, sans-serif;
 }
 
-/* CARD LAYOUT */
-
 .cards {
   list-style-type: none;
   position: relative; /** Needed to ensure items are laid out relative to this container **/
@@ -502,6 +500,40 @@ a.comments-button {
   background-color: #eee;
   border: 1px solid #dedede;
   z-index: -1;
+}
+
+/* YouTube embedding */
+
+.youtube-container {
+  padding-top: 10px;
+  position: relative;
+
+  img.youtube-thumbnail {
+    /*width: auto;
+    height: auto;
+    max-width: 420px;
+    max-height: 360px;*/
+    cursor: pointer;
+  }
+
+  iframe.youtube-video {
+    border: none;
+    margin: 0;
+    vertical-align: bottom;
+  }
+
+  .youtube-play-button {
+    /* TODO: see official brand icons http://www.youtube.com/yt/brand/downloads.html */
+    background: no-repeat url('../img/youtube-sprites.png') -49px 0;
+    cursor: pointer;
+    height: 72px;
+    width: 72px;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    margin-left: -36px;
+    margin-top: -36px;
+  }
 }
 
 /* Additional Bootstrap helpers */
