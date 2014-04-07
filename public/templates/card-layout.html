@@ -1,6 +1,3 @@
-<!--<div id="img-container">
-  <img src="http://i.ytimg.com/vi/GZYGPn9iN1Y/hqdefault.jpg">
-</div>-->
 <div class="cards-container" ng-card-layout ng-items="posts" when-scrolled="loadMorePosts()">
   <ul class="cards">
     <li class="card" ng-if="canUpdateStatus">
@@ -36,7 +33,6 @@
           </span>
         </div>
         <div class="card-text">
-          <!--<div ng-bind-html="post.content | twitterize"></div>-->
           <div ng-bind-html="post.html"></div>
         </div>
         <div class="card-footer">
@@ -56,7 +52,6 @@
                   </span>
                 </div>
                 <div class="comment-text">
-                  <!--<div ng-bind-html="comment.content | twitterize"></div>-->
                   <div ng-bind-html="comment.html"></div>
                 </div>
               </li>
