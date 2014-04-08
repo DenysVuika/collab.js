@@ -65,7 +65,11 @@ module.exports = function (context) {
           else {
             req.login({ id: result.id, username: user.account, password: hashedPassword }, function (err) {
               if (err) { res.send(400, 'Error authenticating user.'); }
-              else { res.send(200); }
+              else {
+                // notify running modules on user registration
+                context.emit(context.events.userRegistered, { id: result.id, account: user.account });
+                res.send(200);
+              }
             });
           }
         });

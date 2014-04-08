@@ -14,6 +14,13 @@ module.exports = function (context) {
     app.use('/admin/public', express.static(__dirname + '/public', { maxAge: 86400000}));
   });
 
+  /* SAMPLE: tracking user registration
+  context.on(context.events.userRegistered, function (user) {
+    console.log('User registered:');
+    console.log(user);
+  });
+  */
+
   // define path to module-specific 'views' folder
   // var __views = __dirname + '/views/';
 
