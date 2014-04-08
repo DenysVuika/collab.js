@@ -9,7 +9,7 @@ var express = require('express')
 describe('collab.js web.api', function () {
 
   var app = express()
-    , context = new runtime.RuntimeContext()
+    , context = runtime.RuntimeContext
     , webApi = require('../collabjs.web.api')(context);
 
   // user to authenticate requests
