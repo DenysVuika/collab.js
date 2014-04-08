@@ -892,7 +892,6 @@ a.comments-button {
   /** Hide items initially to avoid a flicker effect **/
   padding: 4px;
   box-sizing: content-box;
-  /* @media (max-width: 480px) { */
   /* comment list container */
 }
 @media (max-width: 768px) {
@@ -943,8 +942,13 @@ a.comments-button {
   display: inline-block;
 }
 .cards li.card .card-options-button {
-  display: none;
+  display: inline-block;
   float: right;
+}
+@media (min-width: 992px) {
+  .cards li.card .card-options-button {
+    display: none;
+  }
 }
 .cards li.card .card-options-button a {
   color: #262626;

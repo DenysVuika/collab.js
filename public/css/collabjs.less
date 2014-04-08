@@ -251,7 +251,6 @@ a.comments-button {
     padding: 4px;
     box-sizing: content-box;
 
-    /* @media (max-width: 480px) { */
     @media (max-width: 768px) {
       width: 100%;
     }
@@ -312,8 +311,13 @@ a.comments-button {
     }
 
     .card-options-button {
-      display: none;
+      display: inline-block;
       float: right;
+
+      @media (min-width: 992px) {
+        display: none;
+      }
+
       a { color: #262626; }
 
       .dropdown-toggle {
