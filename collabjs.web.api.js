@@ -322,6 +322,29 @@ module.exports = function (context) {
       });
     });
 
+    app.post('/api/posts/:id/lock', authenticate, function (req, res) {
+      console.log('Lock post ' + req.params.id);
+      var postId = parseInt(req.params.id);
+      if (isNaN(postId) || postId < 0) {
+        res.send(400);
+        return;
+      }
+      repository.lockPost(req.user.id, postId, function () {
+        res.send(200);
+      });
+    });
+
+    app.post('/api/posts/:id/unlock', authenticate, function (req, res) {
+      var postId = parseInt(req.params.id);
+      if (isNaN(postId) || postId < 0) {
+        res.send(400);
+        return;
+      }
+      repository.unlockPost(req.user.id, postId, function (err, result) {
+        res.send(200);
+      });
+    });
+
     app.get('/api/posts/:id', authenticate, noCache, function (req, res) {
       repository.getPost(req.params.id, handleJsonResult(res));
     });

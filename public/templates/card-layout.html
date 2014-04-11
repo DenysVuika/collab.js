@@ -15,7 +15,7 @@
             <span class="fa fa-chevron-down"></span>
           </a>
           <ul class="dropdown-menu pull-right" role="menu">
-            <li ng-repeat="action in contextActions">
+            <li ng-repeat="action in contextActions | filter:{'visible':true}">
               <a href="" ng-click="action.invoke(post)">{{action.name}}</a>
             </li>
           </ul>
@@ -35,8 +35,8 @@
         <div class="card-text">
           <div ng-bind-html="post.html"></div>
         </div>
-        <div class="card-footer">
-          <a href="" class="card-comments-button" ng-if="post.commentsCount > 0" ng-click="toggleComments($event)">
+        <div class="card-footer" ng-if="!post.readonly">
+          <a href="" class="card-comments-button" ng-if="post.commentsCount > 0" ng-click="toggleComments()">
             <span>{{commentsExpanded ? 'Hide comments' : post.commentsCount + ' comments'}}</span><i class="fa" ng-class="{'fa-chevron-up': commentsExpanded, 'fa-chevron-down': !commentsExpanded}"></i>
           </a>
           <div class="card-comments" ng-if="commentsExpanded">
@@ -57,8 +57,8 @@
               </li>
             </ul>
           </div>
-          <form ng-submit="postComment($event)" role="form">
-            <input type="text" ng-model="comment" autocomplete="off" placeholder="Add a comment...">
+          <form ng-submit="postComment()" role="form">
+            <input type="text" ng-model="$parent.comment" autocomplete="off" placeholder="Add a comment...">
           </form>
         </div>
       </div>

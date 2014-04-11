@@ -56,6 +56,7 @@ CREATE TABLE `posts` (
   `commentsCount` int(11) NOT NULL DEFAULT '0',
   `likesCount` int(11) NOT NULL DEFAULT '0',
   `type` smallint(6) NOT NULL DEFAULT '0',
+  `readonly` tinyint(1) NOT NULL DEFAULT '0',
   PRIMARY KEY (`id`),
   KEY `FK_Posts_Users_idx` (`userId`),
   CONSTRAINT `FK_Posts_Users` FOREIGN KEY (`userId`) REFERENCES `users` (`Id`) ON DELETE CASCADE ON UPDATE NO ACTION
@@ -235,6 +236,7 @@ CREATE OR REPLACE VIEW `vw_posts` AS
     p.commentsCount,
     p.likesCount,
     p.type,
+    p.readonly,
     POST_TAGS(p.id) AS tags
   FROM posts AS p
   LEFT JOIN users AS u ON u.id = p.userId
@@ -339,31 +341,34 @@ END$$
 DELIMITER ;
 
 -- TODO: review
-DELIMITER //
-CREATE PROCEDURE `add_comment` (
+DELIMITER $$
+CREATE PROCEDURE `add_comment`(
 	IN userId INT,
 	IN postId INT,
 	IN created TIMESTAMP,
 	IN content TEXT)
 BEGIN
-  DECLARE subscribed INT DEFAULT 0;
-  	DECLARE result INT default 0;
-  	SELECT 1 INTO subscribed FROM posts AS p
-  		WHERE p.id = postId
-  			AND (EXISTS (
-  				SELECT f.userId FROM `following` AS f
-  				WHERE f.targetId = p.userId AND f.userId = userId)
-  			OR p.userId = userId)
-  	LIMIT 1;
+	DECLARE canComment INT DEFAULT 0;
+	DECLARE result INT default 0;
+	SELECT 1 INTO canComment FROM posts AS p
+		WHERE p.id = postId
+			-- ensure post is not readonly
+			AND p.readonly = 0
+			-- ensure caller is following the author of the post
+			AND (EXISTS (
+				SELECT f.userId FROM `following` AS f
+				WHERE f.targetId = p.userId AND f.userId = userId)
+			  OR p.userId = userId)
+	LIMIT 1;
 
-  	IF (subscribed = 1) THEN
-  		INSERT INTO comments (userId, postId, created, content)
-  			VALUES (userId, postId, created, content);
-  		SET result = last_insert_id();
-  	END IF;
+	IF (canComment = 1) THEN
+		INSERT INTO comments (userId, postId, created, content)
+			VALUES (userId, postId, created, content);
+		SET result = last_insert_id();
+	END IF;
 
-  	SELECT result AS `insertId`;
-END//
+	SELECT result AS `insertId`;
+END$$
 DELIMITER ;
 
 -- TODO: review

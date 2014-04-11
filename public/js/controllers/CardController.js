@@ -2,38 +2,40 @@
  Single card controller (used as a child of NewsController)
  */
 angular.module('collabjs.controllers')
-  .controller('CardController', ['$scope', '$timeout', '$location', 'authService', 'postsService', 'dialogService',
-    function ($scope, $timeout, $location, authService, postsService, dialogService) {
+  .controller('CardController', ['$rootScope', '$scope', '$timeout', '$location', 'authService', 'postsService', 'dialogService',
+    function ($rootScope, $scope, $timeout, $location, authService, postsService, dialogService) {
       'use strict';
+
+      var disableCommentsAction;
+      var enableCommentsAction;
 
       $scope.commentsExpanded = false;
       $scope.comment = '';
+      $scope.contextActions = [];
+
+      function requestLayoutUpdate() {
+        // TODO: extract into a separate UI service
+        $rootScope.$broadcast('updateLayout@collab.js');
+      }
 
       $scope.init = function (post) {
         $scope.post = post;
-        $scope.contextActions = getContextActions(post);
+        $scope.contextActions = setupContextActions(post);
       };
 
-      $scope.toggleComments = function ($event) {
+      $scope.toggleComments = function () {
         if ($scope.commentsExpanded) {
           $scope.commentsExpanded = false;
-          updateCardLayout($event.currentTarget);
+          requestLayoutUpdate();
         } else {
           postsService.loadPostComments($scope.post, function () {
             $scope.commentsExpanded = true;
-            updateCardLayout($event.currentTarget);
+            requestLayoutUpdate();
           });
         }
       };
 
-      // update card layout based on an element inside it
-      function updateCardLayout(element) {
-        $timeout(function () {
-          $(element).parents('.card').trigger('refreshWookmark');
-        }, 0);
-      }
-
-      $scope.postComment = function ($event) {
+      $scope.postComment = function () {
         if ($scope.comment && $scope.comment.length > 0) {
           postsService
             .addComment($scope.post.id, $scope.comment)
@@ -43,7 +45,9 @@ angular.module('collabjs.controllers')
               $scope.post.comments = comments;
               $scope.post.commentsCount++;
               $scope.comment = null;
-              updateCardLayout($event.currentTarget);
+              if ($scope.commentsExpanded) {
+                requestLayoutUpdate();
+              }
             });
         }
       };
@@ -110,7 +114,31 @@ angular.module('collabjs.controllers')
         });
       }
 
-      function getContextActions(post) {
+      $scope.$watch("post.readonly", function (newValue) {
+        var readonly = newValue ? true : false;
+        if (disableCommentsAction) {
+          disableCommentsAction.visible = !readonly;
+        }
+        if (enableCommentsAction) {
+          enableCommentsAction.visible = readonly;
+        }
+      });
+
+      function disableComments(post) {
+        postsService.lockPost(post.id).then(function () {
+          post.readonly = true;
+          $rootScope.$broadcast('updateLayout@collab.js');
+        });
+      }
+
+      function enableComments(post) {
+        postsService.unlockPost(post.id).then(function () {
+          post.readonly = false;
+          requestLayoutUpdate();
+        });
+      }
+
+      function setupContextActions(post) {
         var actions = [];
         var currentUser = authService.getCurrentUser();
 
@@ -122,21 +150,23 @@ angular.module('collabjs.controllers')
           allowMute: true
         };
 
+        var readonly = post.readonly ? true : false;
+        var linkToPostAction = { name: 'Link to post', visible: true, invoke: showLinkDialog };
+        disableCommentsAction = { name: 'Disable comments', visible: !readonly, invoke: disableComments };
+        enableCommentsAction = { name: 'Enable comments', visible: readonly, invoke: enableComments };
+
         // actions for the owner of the feed
         if (currentUser.account === post.account) {
-          actions.push({ name: 'Delete post', invoke: deleteWallPost });
-          actions.push({ name: 'Link to post', invoke: function () {
-            showLinkDialog(post);
-          }});
-          actions.push({ name: '(todo) Disable comments', invoke: function () {}});
+          actions.push({ name: 'Delete post', visible: true, invoke: deleteWallPost });
+          actions.push(linkToPostAction);
+          actions.push(disableCommentsAction);
+          actions.push(enableCommentsAction);
         }
         // actions for guests
         else {
-          if (options.allowMute) { actions.push({ name: 'Mute post', invoke: deleteNewsPost }); }
-          actions.push({ name: 'Link to post', invoke: function () {
-            showLinkDialog(post);
-          }});
-          actions.push({ name: '(todo) Report spam or abuse', invoke: function () {}});
+          if (options.allowMute) { actions.push({ name: 'Mute post', visible: true, invoke: deleteNewsPost }); }
+          actions.push(linkToPostAction);
+          actions.push({ name: '(todo) Report spam or abuse', visible: true, invoke: function () {}});
         }
 
         return actions;

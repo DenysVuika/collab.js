@@ -23,7 +23,8 @@ angular.module('collabjs.services')
         var d = $q.defer()
           , options = { headers: { 'last-known-id': topId } };
 
-        $http.get('/api/news', options)
+        $http
+          .get('/api/news', options)
           .success(function (data) { d.resolve(processHtmlContent(data, true)); });
         return d.promise;
       },
@@ -35,7 +36,8 @@ angular.module('collabjs.services')
               'retrieve-mode': 'count-updates'
             }
           };
-        $http.get('/api/news', options)
+        $http
+          .get('/api/news', options)
           .success(function (data) { d.resolve(data.posts || 0); })
           .error(function () { d.resolve(0); });
         return d.promise;
@@ -48,7 +50,8 @@ angular.module('collabjs.services')
               'retrieve-mode': 'get-updates'
             }
           };
-        $http.get('/api/news', options)
+        $http
+          .get('/api/news', options)
           .success(function (data) { d.resolve(processHtmlContent(data, true)); });
         return d.promise;
       },
@@ -56,7 +59,8 @@ angular.module('collabjs.services')
         var d = $q.defer()
           , query = '/api/u/' + account + '/posts'
           , options = { headers: { 'last-known-id': topId } };
-        $http.get(query, options)
+        $http
+          .get(query, options)
           .success(function (data) { d.resolve(processHtmlContent(data, true)); })
           .error(function (data) { d.reject(data); });
         return d.promise;
@@ -64,7 +68,8 @@ angular.module('collabjs.services')
       getPostById: function (postId) {
         var d = $q.defer()
           , query = '/api/posts/' + postId;
-        $http.get(query)
+        $http
+          .get(query)
           .success(function (res) { d.resolve(processHtmlContent(res, true)); })
           .error(function (data) { d.reject(data); });
         return d.promise;
@@ -72,13 +77,15 @@ angular.module('collabjs.services')
       getPostsByTag: function (tag, topId) {
         var d = $q.defer()
           , options = { headers: { 'last-known-id': topId } };
-        $http.get('/api/explore/' + tag, options)
+        $http
+          .get('/api/explore/' + tag, options)
           .success(function (data) { d.resolve(processHtmlContent(data, true)); });
         return d.promise;
       },
       getPostComments: function (postId) {
         var d = $q.defer();
-        $http.get('/api/posts/' + postId + '/comments')
+        $http
+          .get('/api/posts/' + postId + '/comments')
           .success(function (data) { d.resolve(processHtmlContent(data)); });
         return d.promise;
       },
@@ -112,13 +119,38 @@ angular.module('collabjs.services')
       },
       loadPostComments: function (post, callback) {
         if (post && post.id) {
-          $http.get('/api/posts/' + post.id + '/comments').success(function (data) {
-            post.comments = processHtmlContent(data);
-            if (callback) {
-              callback(post);
-            }
-          });
+          $http
+            .get('/api/posts/' + post.id + '/comments').success(function (data) {
+              post.comments = processHtmlContent(data);
+              if (callback) {
+                callback(post);
+              }
+            });
         }
+      },
+      /**
+       * Locks post content and disables commenting.
+       * @param {number} postId Post id.
+       * @returns {promise} Deferred promise.
+       */
+      lockPost: function (postId) {
+        var d = $q.defer();
+        $http
+          .post('/api/posts/' + postId + '/lock')
+          .then(function () { d.resolve(true); });
+        return d.promise;
+      },
+      /**
+       * Unlocks post content and enables commenting.
+       * @param {number} postId Post id.
+       * @returns {promise} Deferred promise.
+       */
+      unlockPost: function (postId) {
+        var d = $q.defer();
+        $http
+          .post('/api/posts/' + postId + '/unlock')
+          .then(function () { d.resolve(true); });
+        return d.promise;
       }
     };
   }]);
