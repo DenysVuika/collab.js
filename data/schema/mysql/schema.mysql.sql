@@ -27,6 +27,7 @@ CREATE TABLE `users` (
   `comments` varchar(45) NOT NULL DEFAULT '0',
   `following` int(11) NOT NULL DEFAULT '0',
   `followers` int(11) NOT NULL DEFAULT '0',
+  `system` tinyint(1) NOT NULL DEFAULT '0',
   PRIMARY KEY (`id`),
   UNIQUE KEY `account` (`account`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
@@ -44,7 +45,7 @@ CREATE TABLE `user_roles` (
   PRIMARY KEY (`userId`,`roleId`),
   KEY `FK_ur_user_idx` (`userId`),
   KEY `FK_ur_role_idx` (`roleId`),
-  CONSTRAINT `FK_ur_user` FOREIGN KEY (`userId`) REFERENCES `users` (`id`) ON DELETE NO ACTION ON UPDATE NO ACTION,
+  CONSTRAINT `FK_ur_user` FOREIGN KEY (`userId`) REFERENCES `users` (`id`) ON DELETE CASCADE ON UPDATE NO ACTION,
   CONSTRAINT `FK_ur_role` FOREIGN KEY (`roleId`) REFERENCES `roles` (`id`) ON DELETE NO ACTION ON UPDATE NO ACTION
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 
@@ -222,6 +223,7 @@ CREATE OR REPLACE VIEW `vw_users` AS
     u.following,
     u.followers
   FROM users AS u
+  WHERE u.system = 1
 ;
 
 CREATE OR REPLACE VIEW `vw_posts` AS
@@ -268,6 +270,7 @@ CREATE OR REPLACE VIEW `vw_people` AS
     u.following,
     u.followers
   FROM users AS u
+  WHERE u.system = 0
 ;
 
 CREATE OR REPLACE VIEW `vw_comments` AS
@@ -593,10 +596,19 @@ DELIMITER ;
 -- DEFAULT DATA
 --------------------------------------
 
+-- Create default 'administrator' role
 INSERT INTO roles (`name`, `loweredName`)
   SELECT 'Administrator', 'administrator' FROM DUAL
     WHERE NOT EXISTS (SELECT * FROM `roles` WHERE `loweredName` = 'administrator')
   LIMIT 1;
+
+-- Create default 'system' account with 'secret' password
+INSERT INTO users (`account`, `name`, `password`, `email`, `system`)
+	VALUES ('system', 'system', 'sha1$0c509f1d$1$0fe126634891b9acf3414c5eaf146b93aec75ea1', 'system@email.com', 1);
+
+-- Assign default 'system' account to 'administrator' role
+INSERT INTO user_roles (userId, roleId)
+	SELECT last_insert_id() as `userId`, id as `roleId` FROM roles where loweredName = 'administrator' LIMIT 1;
 
 /*!40101 SET SQL_MODE=IFNULL(@OLD_SQL_MODE, '') */;
 /*!40014 SET FOREIGN_KEY_CHECKS=IF(@OLD_FOREIGN_KEY_CHECKS IS NULL, 1, @OLD_FOREIGN_KEY_CHECKS) */;
