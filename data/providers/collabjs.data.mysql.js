@@ -447,6 +447,26 @@ Provider.prototype = {
         }
       });
     });
+  },
+  lockPost: function (userId, postId, callback) {
+    pool.getConnection(function (err, connection) {
+      var command = 'UPDATE posts SET readonly = 1 WHERE userId = ? AND id = ?';
+      connection.query(command, [userId, postId], function (err, result) {
+        connection.release();
+        var succeeded = (result && result.changedRows > 0);
+        callback(err, succeeded);
+      });
+    });
+  },
+  unlockPost: function (userId, postId, callback) {
+    pool.getConnection(function (err, connection) {
+      var command = 'UPDATE posts SET readonly = 0 WHERE userId = ? AND id = ?';
+      connection.query(command, [userId, postId], function (err, result) {
+        connection.release();
+        var succeeded = (result && result.changedRows > 0);
+        callback(err, succeeded);
+      });
+    });
   }
 };
 

@@ -10,8 +10,8 @@
   </div>
 */
 angular.module('collabjs.directives')
-  .directive('ngCardLayout', ['$timeout',
-    function ($timeout) {
+  .directive('ngCardLayout', ['$timeout', '$rootScope',
+    function ($timeout, $rootScope) {
       'use strict';
       return {
         restrict: 'A',
@@ -20,6 +20,7 @@ angular.module('collabjs.directives')
         },
         link: function (scope, element) {
           var layout;
+          var updateTimer;
           var layoutOptions = {
             autoResize: true,       // This will auto-update the layout when the browser window is resized.
             //direction: 'right',
@@ -48,29 +49,40 @@ angular.module('collabjs.directives')
           }
 
           function performLayout() {
-            if (layout && layout.wookmarkInstance) {
-              layout.wookmarkInstance.clear();
-            }
+            updateTimer = $timeout(function () {
+              if (layout && layout.wookmarkInstance) {
+                layout.wookmarkInstance.clear();
+              }
 
-            $(element.find('img.youtube-thumbnail')).imagesLoaded(function () {
-              layout = element.find('> ul > li');
-              layout.wookmark(layoutOptions);
+              $(element.find('img.youtube-thumbnail')).imagesLoaded(function () {
+                layout = element.find('> ul > li');
+                layout.wookmark(layoutOptions);
 
-              // wire YouTube thumbnails
-              var thumbnails = $(element.find('.youtube-thumbnail'));
-              thumbnails.unbind('click').bind('click', onThumbnailClick);
+                // wire YouTube thumbnails
+                var thumbnails = $(element.find('.youtube-thumbnail'));
+                thumbnails.unbind('click').bind('click', onThumbnailClick);
 
-              // wire YouTube Play buttons
-              var buttons = $(element.find('.youtube-play-button'));
-              buttons.unbind('click').bind('click', onThumbnailClick);
+                // wire YouTube Play buttons
+                var buttons = $(element.find('.youtube-play-button'));
+                buttons.unbind('click').bind('click', onThumbnailClick);
 
-            }).done(function(instance) {
-              console.log('Loaded images: ' + instance.images.length);
-            });
+              })/*.done(function(instance) {
+                console.log('Loaded images: ' + instance.images.length);
+              })*/;
+            }, 0);
           }
 
           scope.$watchCollection('ngItems', function () {
-            $timeout(performLayout, 0);
+            performLayout();
+          });
+
+          var unbindUpdateLayout = $rootScope.$on('updateLayout@collab.js', function () {
+            performLayout();
+          });
+
+          scope.$on('$destroy', function () {
+            $timeout.cancel(updateTimer);
+            unbindUpdateLayout();
           });
         }
       };

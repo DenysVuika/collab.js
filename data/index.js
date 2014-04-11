@@ -264,3 +264,23 @@ module.exports.addComment = function (json, callback) {
 module.exports.getComments = function (postId, callback) {
 	provider.getComments(postId, callback);
 };
+
+/**
+ * Lock post content and disable commenting.
+ * @param {number} userId User account id.
+ * @param {number} postId Post id.
+ * @param {function(err, result)} callback Callback function.
+ */
+module.exports.lockPost = function (userId, postId, callback) {
+  provider.lockPost(userId, postId, callback);
+};
+
+/**
+ * Unlock post content and enable commenting.
+ * @param {number} userId User account id.
+ * @param {number} postId Post id.
+ * @param {function(err, result)} callback Callback function.
+ */
+module.exports.unlockPost = function (userId, postId, callback) {
+  provider.unlockPost(userId, postId, callback);
+};
