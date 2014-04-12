@@ -3,7 +3,7 @@ Simple test to check mandatory API availability
  */
 'use strict';
 
-var data = require('../data')
+var data = require('../../data/index')
   , expect = require('expect.js');
 
 describe('collab.js data layer', function () {

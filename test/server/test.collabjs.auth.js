@@ -2,7 +2,7 @@
 
 var express = require('express')
   , request = require('supertest')
-  , auth = require('../collabjs.auth')
+  , auth = require('../../collabjs.auth.js')
   , should = require('should');
 
 describe('collabjs.auth', function () {

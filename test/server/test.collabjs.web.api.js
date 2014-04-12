@@ -1,16 +1,17 @@
 'use strict';
 
 var express = require('express')
+  , bodyParser = require('body-parser')
   , request = require('supertest')
   , expect = require('expect.js')
-  , runtime = require('../collabjs.runtime')
+  , runtime = require('../../collabjs.runtime.js')
   , RuntimeEvents = runtime.RuntimeEvents;
 
 describe('collab.js web.api', function () {
 
   var app = express()
     , context = runtime.RuntimeContext
-    , webApi = require('../collabjs.web.api')(context);
+    , webApi = require('../../collabjs.web.api.js')(context);
 
   // user to authenticate requests
   var testUser = {
@@ -20,13 +21,13 @@ describe('collab.js web.api', function () {
     pictureId: '00000000000000000000000000000000'
   };
 
-  app.use(express.json());
-  app.use(express.urlencoded());
+  app.use(bodyParser.json());
+  app.use(bodyParser.urlencoded());
   // make application always authenticated for test purposes
   app.use(function (req, res, next) {
     req.user = testUser;
     req.isAuthenticated = function() { return true; };
-    res.locals({ hasSavedSearch: function () { return true; }});
+    res.locals.hasSavedSearch = function () { return true; };
     next();
   });
 

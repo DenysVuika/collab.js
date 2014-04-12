@@ -1,20 +1,15 @@
 'use strict';
 
-var config = require('../../config')
+var session = require('express-session')
+  , config = require('../../config')
   , pool = require('./collabjs.pool.mysql').pool;
 
 /**
- * Return the 'MySqlSessionStore' extending `connect`'s session Store.
- *
- * @param {Object} connect
- * @returns {Function}
+ * MySql-based Session Store implementation
  */
-module.exports = function (connect) {
+module.exports = (function () {
 
-  /**
-   * Connect's Store.
-   */
-  var Store = connect.session.Store;
+  var Store = session.Store;
 
   /**
    * Initialize MySqlSessionStore with the given 'options'.
@@ -116,4 +111,4 @@ module.exports = function (connect) {
   };
 
   return MySqlSessionStore;
-};
+})();

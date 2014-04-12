@@ -5,6 +5,14 @@
 'use strict';
 
 var express = require('express')
+  , favicon = require('static-favicon')
+  , logger = require('morgan')
+  , cookieParser = require('cookie-parser')
+  , bodyParser = require('body-parser')
+  , methodOverride = require('method-override')
+  , session = require('express-session')
+  , csrf = require('csurf')
+  , compress = require('compression')
   , http = require('http')
   , https = require('https')
   , fs = require('fs')
@@ -99,19 +107,19 @@ app.set('view engine', 'jade');
 
 // use content compression middleware if enabled
 if (config.server.compression) {
-  app.use(express.compress());
+  app.use(compress());
 }
 
-app.use(express.logger('dev'));
+app.use(logger('dev'));
 app.use(express.static(__dirname + '/public', { maxAge: 86400000})); // one day
 runtimeContext.emit(RuntimeEvents.app_init_static, app);
 
-app.use(express.favicon(path.join(__dirname, config.ui.favicon || '/favicon.ico')));
-app.use(express.cookieParser(config.server.cookieSecret));
-app.use(express.json());
-app.use(express.urlencoded());
-app.use(express.methodOverride());
-app.use(express.session({
+app.use(favicon(path.join(__dirname, config.ui.favicon || '/favicon.ico')));
+app.use(cookieParser(config.server.cookieSecret));
+app.use(bodyParser.json());
+app.use(bodyParser.urlencoded());
+app.use(methodOverride()); // support for 'PUT' and 'DELETE' requests
+app.use(session({
   secret: config.server.sessionSecret,
   cookie: { maxAge: 14 * 24 * 3600 * 1000 }, // 2 weeks
   store: sessionStore
@@ -119,7 +127,7 @@ app.use(express.session({
 
 // use CSRF protection middleware if enabled
 if (config.server.csrf) {
-  app.use(express.csrf());
+  app.use(csrf());
 }
 
 // Initialize Passport! Also use passport.session() middleware, to support
@@ -132,14 +140,10 @@ app.use(passport.session());
 app.use(utils.commonLocals);
 //app.use(utils.detectMobileBrowser);
 
-// Router
-
-app.use(app.router);
-
 // Socket.io authorization
 
 io.set('authorization', passportSocketIo.authorize({
-  cookieParser: express.cookieParser, // or connect.cookieParser
+  cookieParser: cookieParser, // or connect.cookieParser
   secret: config.server.sessionSecret,
   store: sessionStore,
   fail: function (data, accept) {
@@ -165,17 +169,6 @@ require('./collabjs.web.api.js')(runtimeContext);
 runtimeContext.emit(RuntimeEvents.app_init_routes, app);
 
 // Error handling
-
-/*
-// Default error handlers for development/production modes
-app.configure('development', function(){
-  app.use(express.errorHandler({ dumpExceptions: true, showStack: true }));
-});
-
-app.configure('production', function(){
-  app.use(express.errorHandler());
-});
-*/
 
 // Since this is the last non-error-handling middleware used,
 // we assume 404, as nothing else responded.

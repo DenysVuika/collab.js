@@ -2,8 +2,7 @@
 
 var config = require('../config')
 	, Provider = require('./providers/' + config.data.provider)
-  , express = require('express')
-  , SessionStore = require('./providers/' + config.data.sessionStore)(express);
+  , SessionStore = require('./providers/' + config.data.sessionStore);
 
 module.exports.SessionStore = SessionStore;
 
