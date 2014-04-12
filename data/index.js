@@ -86,6 +86,16 @@ module.exports.setAccountPassword = function (userId, password, callback) {
 };
 
 /**
+ * Set new email for the user account.
+ * @param {number} userId User account id.
+ * @param {string} email New email address.
+ * @param {function(err, result)} callback Callback function.
+ */
+module.exports.setAccountEmail = function (userId, email, callback) {
+  provider.setAccountEmail(userId, email, callback);
+};
+
+/**
  * Get public profile.
  * @param {string} callerAccount Originator account name.
  * @param {string} targetAccount Target account name.

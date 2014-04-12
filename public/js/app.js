@@ -174,7 +174,13 @@ angular.module('collabjs', [
         templateUrl: '/templates/account-password.html',
         controller: 'PasswordController',
         resolve: { isLoggedIn: auth },
-        title: 'Change Password'
+        title: 'Password Settings'
+      })
+      .when('/account/email', {
+        templateUrl: '/templates/account-email.html',
+        controller: 'EmailController',
+        resolve: { isLoggedIn: auth },
+        title: 'Email Settings'
       })
       .when('/help/:article?', {
         templateUrl: '/templates/help.html',
