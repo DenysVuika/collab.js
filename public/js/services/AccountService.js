@@ -29,6 +29,13 @@ angular.module('collabjs.services')
             .success(function (res) { d.resolve(res); })
             .error(function (data) { d.reject(data); });
           return d.promise;
+        },
+        changeEmail: function (oldValue, newValue) {
+          var d = $q.defer();
+          $http.post('/api/profile/email', { oldValue: oldValue, newValue: newValue })
+            .success(function (res) { d.resolve(res); })
+            .error(function (data) { d.reject(data); });
+          return d.promise;
         }
       };
     }]);

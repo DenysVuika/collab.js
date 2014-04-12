@@ -152,6 +152,21 @@ Provider.prototype = {
       });
     }
   },
+  setAccountEmail: function (userId, email, callback) {
+    if (!userId || !email) {
+      callback('Error setting account email.', null);
+    } else {
+      var command = 'UPDATE users SET email = ?, emailHash = ? WHERE id = ?';
+      var hash = utils.createHash(email);
+      pool.getConnection(function (err, connection) {
+        connection.query(command, [email, hash, userId], function (err, result) {
+          connection.release();
+          var succeeded = (result && result.changedRows > 0);
+          callback(err, succeeded);
+        });
+      });
+    }
+  },
   getPublicProfile: function (callerId, targetAccount, callback) {
     pool.getConnection(function (err, connection) {
       getFollowedUsers(connection, callerId, function (err, followed) {

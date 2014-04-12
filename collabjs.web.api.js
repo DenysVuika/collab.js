@@ -84,6 +84,7 @@ module.exports = function (context) {
         avatarServer: config.env.avatarServer,
         pictureUrl: req.user.pictureUrl,
         name: req.user.name,
+        email: req.user.email,
         location: req.user.location,
         website: req.user.website,
         bio: req.user.bio
@@ -97,13 +98,14 @@ module.exports = function (context) {
       });
     });
 
+    // TODO: move confirmation check to the client
     app.post('/api/profile/password', authenticate, function(req, res) {
       var settings = req.body;
 
       // verify fields
-      if (!settings.pwdOld || settings.pwdOld.length === 0 ||
-        !settings.pwdNew || settings.pwdNew.length === 0 ||
-        !settings.pwdConfirm || settings.pwdConfirm.length === 0 ||
+      if (!settings.pwdOld ||
+        !settings.pwdNew ||
+        !settings.pwdConfirm ||
         settings.pwdNew !== settings.pwdConfirm) {
         res.send(400, 'Incorrect password values.');
         return;
@@ -127,6 +129,29 @@ module.exports = function (context) {
         }
         req.user.password = hash;
         res.send(200, 'Password has been successfully changed.');
+      });
+    });
+
+    app.post('/api/profile/email', authenticate, function (req, res) {
+      var settings = req.body;
+
+      if (!settings.oldValue || !settings.newValue) {
+        res.send(400, 'Incorrect email values');
+        return;
+      }
+
+      if (settings.oldValue === settings.newValue) {
+        res.send(400, 'New email is the same as old one.');
+        return;
+      }
+
+      repository.setAccountEmail(req.user.id, settings.newValue, function (err) {
+        if (err) {
+          res.send(400, 'Error setting email.');
+          return;
+        }
+        req.user.email = settings.newValue;
+        res.send(200, 'Email has been successfully changed.');
       });
     });
 
@@ -340,7 +365,7 @@ module.exports = function (context) {
         res.send(400);
         return;
       }
-      repository.unlockPost(req.user.id, postId, function (err, result) {
+      repository.unlockPost(req.user.id, postId, function () {
         res.send(200);
       });
     });
