@@ -1,3 +1,4 @@
+/* Controls password settings for user Profile */
 angular.module('collabjs.controllers')
   .controller('PasswordController', ['$scope', 'accountService',
     function ($scope, accountService) {
@@ -29,14 +30,16 @@ angular.module('collabjs.controllers')
         accountService
           .changePassword(settings)
           .then(
-          function () {
-            $scope.info = 'Password has been successfully changed.';
-            clear();
-          },
-          function (err) {
-            $scope.error = 'Error: ' + err;
-            clear();
-          }
+            // success handler
+            function () {
+              $scope.info = 'Password has been successfully changed.';
+              clear();
+            },
+            // error handler
+            function (err) {
+              $scope.error = 'Error: ' + err;
+              clear();
+            }
         );
       };
     }
