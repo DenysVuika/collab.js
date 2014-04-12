@@ -1,4 +1,4 @@
-<div class="container">
+<div class="container" ng-init="init()">
   <div class="row">
     <div class="col-md-3" ng-include="'/templates/account-sidebar.html'"></div>
     <div class="col-md-9">
@@ -54,7 +54,7 @@
         <div class="form-group">
           <label class="col-lg-2 control-label" for="bio">Bio</label>
           <div class="col-lg-10">
-            <textarea class="form-control v-resize" ng-model="bio" id="bio" rows="3"></textarea>
+            <textarea class="form-control v-resize" id="bio" ng-model="bio" rows="3" text-limit="160" counter="bio_counter"></textarea>
             <span class="help-block">About yourself in 160 characters or less. <span class="bio-counter-label" id="bio_counter"></span></span>
           </div>
         </div>

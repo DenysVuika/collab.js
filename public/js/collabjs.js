@@ -257,12 +257,15 @@ collabjs.countries = {
     var options = $.extend($.fn.countdown.defaults, config);
     
     function updateUi(sender) {
-      var available = options.limit - $(sender).val().length;
-      var counter = options.prefix + available + options.suffix;
-      if (counter >= 0) {
-        options.plus(counter);
-      } else {
-        options.minus(counter);
+      var $sender = $(sender);
+      if ($sender.length > 0) {
+        var available = options.limit - $sender.val().length;
+        var counter = options.prefix + available + options.suffix;
+        if (counter >= 0) {
+          options.plus(counter);
+        } else {
+          options.minus(counter);
+        }
       }
     }
 
