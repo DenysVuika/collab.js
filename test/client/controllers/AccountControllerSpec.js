@@ -6,7 +6,6 @@ describe('controllers', function () {
 
     var ctrl, scope;
     var deferred;
-    /*var $httpBackend;*/
     var accountService;
 
 
@@ -23,8 +22,7 @@ describe('controllers', function () {
       };
     }));
 
-    beforeEach(inject(function($rootScope, $controller/*, _$httpBackend_*/) {
-      /*$httpBackend = _$httpBackend_;*/
+    beforeEach(inject(function($rootScope, $controller) {
       scope = $rootScope.$new();
       ctrl = $controller('AccountController', {
         $scope: scope,
