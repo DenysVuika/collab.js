@@ -5,13 +5,15 @@ angular.module('collabjs.controllers')
       $scope.content = null;
 
       $scope.submit = function () {
-        if ($scope.content && $scope.content.length > 0) {
+        if ($scope.content) {
           postsService
             .createPost($scope.content)
             .then(function (post) {
               $scope.content = null;
               // access and modify parent scope items
-              $scope.posts.push(post);
+              if ($scope.posts) {
+                $scope.posts.push(post);
+              }
             });
         }
       };
