@@ -136,7 +136,7 @@ angular.module('collabjs', [
       })
       .when('/people', {
         templateUrl: '/templates/people.html',
-        controller: 'PeopleListController',
+        controller: 'PeopleController',
         resolve: { isLoggedIn: auth },
         title: 'People'
       })
