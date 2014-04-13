@@ -7,12 +7,6 @@ angular.module('collabjs.controllers')
       // server returns no people for current user
       $scope.hasNoPeople = false;
 
-      peopleService.getFollowing($routeParams.account).then(function (data) {
-        $scope.profile = data.user;
-        $scope.people = data.feed || [];
-        $scope.hasNoPeople = ($scope.people.length === 0);
-      });
-
       $scope.canFollow = peopleService.canFollow;
       $scope.canUnfollow = peopleService.canUnfollow;
       $scope.getCountryName = peopleService.getCountryName;
@@ -20,5 +14,13 @@ angular.module('collabjs.controllers')
       $scope.getFollowersUrl = peopleService.getFollowersUrl;
       $scope.follow = peopleService.follow;
       $scope.unfollow = peopleService.unfollow;
+
+      $scope.init = function () {
+        peopleService.getFollowing($routeParams.account).then(function (data) {
+          $scope.profile = data.user;
+          $scope.people = data.feed || [];
+          $scope.hasNoPeople = ($scope.people.length === 0);
+        });
+      };
     }
   ]);
