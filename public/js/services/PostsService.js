@@ -25,7 +25,9 @@ angular.module('collabjs.services')
 
         $http
           .get('/api/news', options)
-          .success(function (data) { d.resolve(processHtmlContent(data, true)); });
+          .success(function (data) {
+            d.resolve(processHtmlContent(data || [], true));
+          });
         return d.promise;
       },
       getNewsUpdatesCount: function (topId) {

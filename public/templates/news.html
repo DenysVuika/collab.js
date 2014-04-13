@@ -1,9 +1,11 @@
-<div class="alert alert-info text-center" ng-if="newPostsCount > 0">
-  <a href="" ng-click="loadNewPosts()">You got {{newPostsCount}} new post(s) for your timeline.</a>
-</div>
+<div ng-init="init()">
+  <div class="alert alert-info text-center" ng-if="newPostsCount > 0">
+    <a href="" ng-click="loadNewPosts()">You got {{newPostsCount}} new post(s) for your timeline.</a>
+  </div>
 
-<div ng-include="'/templates/card-layout.html'"></div>
+  <div ng-include="'/templates/card-layout.html'"></div>
 
-<div class="text-center" ng-show="isLoadingMorePosts">
-  <i class="fa fa-spinner fa-2x fa-spin"></i>
+  <div class="text-center" ng-show="isLoadingMorePosts">
+    <i class="fa fa-spinner fa-2x fa-spin"></i>
+  </div>
 </div>
