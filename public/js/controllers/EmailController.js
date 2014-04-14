@@ -1,7 +1,7 @@
 /* Controls email settings for user Profile */
 angular.module('collabjs.controllers')
-  .controller('EmailController', ['$scope', '$timeout', '$http', 'accountService',
-    function ($scope, $timeout, $http, accountService) {
+  .controller('EmailController', ['$scope', 'accountService',
+    function ($scope, accountService) {
       'use strict';
 
       $scope.error = false;
@@ -14,22 +14,33 @@ angular.module('collabjs.controllers')
       $scope.newEmail = '';
       $scope.confirmEmail = '';
 
+      $scope.errInvalidValues = 'Incorrect email values.';
+      $scope.errConfirmation = 'Email confirmation must match value above.';
+      $scope.errSameEmail = 'New email is the same as old one.';
+      $scope.msgSuccess = 'Email has been successfully changed.';
+
+      $scope.init = function () {
+        accountService.getAccount().then(function (account) {
+          $scope.oldEmail = account.email;
+        });
+      };
+
       $scope.submit = function () {
 
         $scope.error = false;
 
         if (!$scope.oldEmail || !$scope.newEmail || !$scope.confirmEmail) {
-          $scope.error = 'Incorrect email values.';
+          $scope.error = $scope.errInvalidValues;
           return;
         }
 
         if ($scope.confirmEmail !== $scope.newEmail) {
-          $scope.error = 'Email confirmation must match value above.';
+          $scope.error = $scope.errConfirmation;
           return;
         }
 
         if ($scope.newEmail === $scope.oldEmail) {
-          $scope.error = 'New email is the same as old one.';
+          $scope.error = $scope.errSameEmail;
           return;
         }
 
@@ -38,7 +49,7 @@ angular.module('collabjs.controllers')
           .then(
             // success handler
             function () {
-              $scope.info = 'Email has been successfully changed.';
+              $scope.info = $scope.msgSuccess;
               $scope.oldEmail = $scope.newEmail;
               $scope.newEmail = '';
               $scope.confirmEmail = '';
@@ -51,9 +62,4 @@ angular.module('collabjs.controllers')
             }
           );
       };
-
-      accountService.getAccount().then(function (account) {
-        $scope.oldEmail = account.email;
-      });
-
     }]);

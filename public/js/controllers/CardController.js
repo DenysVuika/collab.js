@@ -2,8 +2,8 @@
  Single card controller (used as a child of NewsController)
  */
 angular.module('collabjs.controllers')
-  .controller('CardController', ['$rootScope', '$scope', '$timeout', '$location', 'authService', 'postsService', 'dialogService',
-    function ($rootScope, $scope, $timeout, $location, authService, postsService, dialogService) {
+  .controller('CardController', ['$rootScope', '$scope', '$timeout', '$location', 'authService', 'postsService', 'uiService',
+    function ($rootScope, $scope, $timeout, $location, authService, postsService, uiService) {
       'use strict';
 
       var disableCommentsAction;
@@ -13,11 +13,6 @@ angular.module('collabjs.controllers')
       $scope.comment = '';
       $scope.contextActions = [];
 
-      function requestLayoutUpdate() {
-        // TODO: extract into a separate UI service
-        $rootScope.$broadcast('updateLayout@collab.js');
-      }
-
       $scope.init = function (post) {
         $scope.post = post;
         $scope.contextActions = setupContextActions(post);
@@ -26,27 +21,31 @@ angular.module('collabjs.controllers')
       $scope.toggleComments = function () {
         if ($scope.commentsExpanded) {
           $scope.commentsExpanded = false;
-          requestLayoutUpdate();
+          uiService.updateLayout();
         } else {
-          postsService.loadPostComments($scope.post, function () {
+          postsService.loadPostComments($scope.post).then(function () {
             $scope.commentsExpanded = true;
-            requestLayoutUpdate();
+            uiService.updateLayout();
           });
         }
       };
 
       $scope.postComment = function () {
-        if ($scope.comment && $scope.comment.length > 0) {
+        if ($scope.post && $scope.post.id && $scope.comment) {
           postsService
             .addComment($scope.post.id, $scope.comment)
             .then(function (comment) {
               var comments = $scope.post.comments || [];
               comments.push(comment);
               $scope.post.comments = comments;
-              $scope.post.commentsCount++;
+
+              var count = $scope.post.commentsCount;
+              count = count ? count + 1 : 1;
+              $scope.post.commentsCount = count;
+
               $scope.comment = null;
               if ($scope.commentsExpanded) {
-                requestLayoutUpdate();
+                uiService.updateLayout();
               }
             });
         }
@@ -54,43 +53,38 @@ angular.module('collabjs.controllers')
 
       // Context Actions
 
-      function deleteWallPost(post) {
+      function onPostRemoved(postId) {
+        // on successful removal update the client side collection
+        var toRemove = $scope.posts.filter(function (p) { return p.id === postId; });
+        if (toRemove.length > 0) {
+          var i = $scope.posts.indexOf(toRemove[0]);
+          if (i > -1) {
+            $scope.posts.splice(i, 1);
+            // TODO: replace with collection watching
+            $scope.hasNoPosts = ($scope.posts.length === 0);
+          }
+        }
+      }
+
+      $scope.deleteWallPost = function (post) {
         if (post && post.id) {
           postsService.deleteWallPost(post.id)
             .then(function () {
-              // on successful removal update the client side collection
-              var toRemove = $scope.posts.filter(function (p) { return p.id === post.id; });
-              if (toRemove.length > 0) {
-                var i = $scope.posts.indexOf(toRemove[0]);
-                if (i > -1) {
-                  $scope.posts.splice(i, 1);
-                  // TODO: replace with collection watching
-                  $scope.hasNoPosts = ($scope.posts.length === 0);
-                }
-              }
+              onPostRemoved(post.id);
             });
         }
-      }
+      };
 
-      function deleteNewsPost(post) {
+      $scope.deleteNewsPost = function (post) {
         if (post && post.id) {
           postsService.deleteNewsPost(post.id)
             .then(function () {
-              // on successful removal update the client side collection
-              var toRemove = $scope.posts.filter(function (p) { return p.id === post.id; });
-              if (toRemove.length > 0) {
-                var i = $scope.posts.indexOf(toRemove[0]);
-                if (i > -1) {
-                  $scope.posts.splice(i, 1);
-                  // TODO: replace with collection watching
-                  $scope.hasNoPosts = ($scope.posts.length === 0);
-                }
-              }
+              onPostRemoved(post.id);
             });
         }
-      }
+      };
 
-      function showLinkDialog(post) {
+      $scope.showLinkDialog = function (post) {
         var location = $location;
         var port = location.port();
         var link = location.protocol() +
@@ -98,7 +92,7 @@ angular.module('collabjs.controllers')
           ((port && port !== 80 && port !== 443) ? (':' + port) : '') +
           '/#/posts/' + post.id;
 
-        dialogService.showDialog({
+        uiService.showDialog({
           title: 'Link to this post',
           template: '/templates/dlg-post-link.html',
           context: {
@@ -112,7 +106,7 @@ angular.module('collabjs.controllers')
             enabled: false
           }
         });
-      }
+      };
 
       $scope.$watch("post.readonly", function (newValue) {
         var readonly = newValue ? true : false;
@@ -124,19 +118,19 @@ angular.module('collabjs.controllers')
         }
       });
 
-      function disableComments(post) {
+      $scope.disableComments = function (post) {
         postsService.lockPost(post.id).then(function () {
           post.readonly = true;
-          $rootScope.$broadcast('updateLayout@collab.js');
+          uiService.updateLayout();
         });
-      }
+      };
 
-      function enableComments(post) {
+      $scope.enableComments = function (post) {
         postsService.unlockPost(post.id).then(function () {
           post.readonly = false;
-          requestLayoutUpdate();
+          uiService.updateLayout();
         });
-      }
+      };
 
       function setupContextActions(post) {
         var actions = [];
@@ -151,20 +145,20 @@ angular.module('collabjs.controllers')
         };
 
         var readonly = post.readonly ? true : false;
-        var linkToPostAction = { name: 'Link to post', visible: true, invoke: showLinkDialog };
-        disableCommentsAction = { name: 'Disable comments', visible: !readonly, invoke: disableComments };
-        enableCommentsAction = { name: 'Enable comments', visible: readonly, invoke: enableComments };
+        var linkToPostAction = { name: 'Link to post', visible: true, invoke: $scope.showLinkDialog };
+        disableCommentsAction = { name: 'Disable comments', visible: !readonly, invoke: $scope.disableComments };
+        enableCommentsAction = { name: 'Enable comments', visible: readonly, invoke: $scope.enableComments };
 
         // actions for the owner of the feed
         if (currentUser.account === post.account) {
-          actions.push({ name: 'Delete post', visible: true, invoke: deleteWallPost });
+          actions.push({ name: 'Delete post', visible: true, invoke: $scope.deleteWallPost });
           actions.push(linkToPostAction);
           actions.push(disableCommentsAction);
           actions.push(enableCommentsAction);
         }
         // actions for guests
         else {
-          if (options.allowMute) { actions.push({ name: 'Mute post', visible: true, invoke: deleteNewsPost }); }
+          if (options.allowMute) { actions.push({ name: 'Mute post', visible: true, invoke: $scope.deleteNewsPost }); }
           actions.push(linkToPostAction);
           actions.push({ name: '(todo) Report spam or abuse', visible: true, invoke: function () {}});
         }

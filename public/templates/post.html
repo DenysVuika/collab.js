@@ -1,4 +1,4 @@
-<div class="container">
-  <p class="lead text-center" ng-show="hasError">{{error}}</p>
+<div class="container" ng-init="init()">
+  <p class="lead text-center ng-cloak" ng-if="error">{{error}}</p>
   <div ng-include="'/templates/card-layout.html'"></div>
 </div>

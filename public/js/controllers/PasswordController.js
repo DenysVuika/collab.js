@@ -10,17 +10,20 @@ angular.module('collabjs.controllers')
 
       $scope.error = false;
       $scope.info = false;
+      $scope.msgSuccess = 'Password has been successfully changed.';
 
       $scope.dismissError = function () { $scope.error = false; };
       $scope.dismissInfo = function () { $scope.info = false; };
 
-      function clear() {
+      $scope.reset = function () {
         $scope.pwdOld = '';
         $scope.pwdNew = '';
         $scope.pwdConfirm = '';
-      }
+      };
 
       $scope.submit = function () {
+        // TODO: add client-side validation (see EmailController for details)
+
         var settings = {
           pwdOld: $scope.pwdOld,
           pwdNew: $scope.pwdNew,
@@ -32,13 +35,13 @@ angular.module('collabjs.controllers')
           .then(
             // success handler
             function () {
-              $scope.info = 'Password has been successfully changed.';
-              clear();
+              $scope.info = $scope.msgSuccess;
+              $scope.reset();
             },
             // error handler
             function (err) {
               $scope.error = 'Error: ' + err;
-              clear();
+              $scope.reset();
             }
         );
       };

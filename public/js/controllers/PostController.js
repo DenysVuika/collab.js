@@ -3,19 +3,25 @@ angular.module('collabjs.controllers')
     function ($scope, $routeParams, postsService) {
       'use strict';
 
-      $scope.postId = $routeParams.postId;
       $scope.posts = [];
       $scope.hasPost = false;
-      $scope.hasError = false;
-      $scope.error = null;
+      $scope.error = false;
+      $scope.postNotFoundMsg = 'Post not found.';
 
-      postsService.getPostById($scope.postId).then(function (data) {
-        $scope.posts = [data];
-        $scope.hasPost = ($scope.posts.length > 0);
-      }, function () {
-        $scope.error = 'Post not found.';
-        $scope.hasError = true;
-      });
+      $scope.init = function () {
+        $scope.postId = $routeParams.postId;
+        postsService.getPostById($scope.postId).then(
+          // success handler
+          function (data) {
+            $scope.posts = [data];
+            $scope.hasPost = ($scope.posts.length > 0);
+          },
+          // error handler
+          function () {
+            $scope.error = $scope.postNotFoundMsg;
+          }
+        );
+      };
 
       // do nothing here
       $scope.loadMorePosts = function () {};

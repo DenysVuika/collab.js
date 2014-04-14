@@ -23,6 +23,7 @@ angular.module('collabjs.services')
             .success(function () { d.resolve(true); });
           return d.promise;
         },
+        // TODO: should receive 'old' and 'new' values
         changePassword: function (data) {
           var d = $q.defer();
           $http.post('/api/profile/password', data)

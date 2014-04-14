@@ -1,5 +1,5 @@
 angular.module('collabjs.services')
-  .service('dialogService', ['$http', '$compile', '$rootScope',
+  .service('uiService', ['$http', '$compile', '$rootScope',
     function ($http, $compile, $rootScope) {
       'use strict';
 
@@ -24,6 +24,9 @@ angular.module('collabjs.services')
       };
 
       return {
+        updateLayout: function () {
+          $rootScope.$broadcast('updateLayout@collab.js');
+        },
         showDialog: function (options) {
           var opts = angular.extend({}, dialogDefaults, options);
           opts.submit = angular.extend(dialogDefaults.submit, options.submit || {});
@@ -76,19 +79,6 @@ angular.module('collabjs.services')
               processModalResult(result);
             }
           };
-
-          // called by form-modal cancel button
-          /*scope.close = function () {
-            var result = opts.cancel.action();
-            processModalResult(result);
-          };*/
-
-          // called by form-modal form ng-submit
-          /*scope.submit = function () {
-            var result = opts.submit.action();
-            processModalResult(result);
-          };*/
         }
       };
-    }
-  ]);
+    }]);

@@ -1,3 +1,4 @@
+// TODO: consider merging with parent controller (PeopleController)
 angular.module('collabjs.controllers')
   .controller('UserProfileController', ['$scope', 'peopleService',
     function ($scope, peopleService) {
@@ -10,9 +11,5 @@ angular.module('collabjs.controllers')
       $scope.unfollow = peopleService.unfollow;
       $scope.getFollowingUrl = peopleService.getFollowingUrl;
       $scope.getFollowersUrl = peopleService.getFollowersUrl;
-
-      /*$scope.init = function (profile) {
-        $scope.profile = profile;
-      };*/
     }
   ]);

@@ -50,18 +50,20 @@ angular.module('collabjs.controllers')
         }
 
         postsService.getNews(bottomPostId).then(function (data) {
-          $scope.posts.push.apply($scope.posts, data || []);
+          $scope.posts.push.apply($scope.posts, data);
           $scope.isLoadingMorePosts = false;
           $scope.hasNoPosts = ($scope.posts.length === 0);
         });
       };
 
-      postsService.getNews().then(function (data) {
-        $scope.posts = data;
-        $scope.hasNoPosts = (data.length === 0);
-      });
+      $scope.init = function () {
+        postsService.getNews().then(function (data) {
+          $scope.posts = data;
+          $scope.hasNoPosts = (data.length === 0);
+        });
 
-      // start monitoring new updates
-      $scope.checkNewPosts();
+        // start monitoring new updates
+        $scope.checkNewPosts();
+      };
     }
   ]);
