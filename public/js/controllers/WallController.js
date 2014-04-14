@@ -4,28 +4,32 @@ angular.module('collabjs.controllers')
       'use strict';
 
       $scope.error = false;
-      $scope.account = $routeParams.account;
       $scope.posts = [];
       $scope.hasNoPosts = false;
       $scope.isLoadingMorePosts = false;
+      $scope.errNotFound = 'THE RESOURCE YOU ARE LOOKING FOR HAS BEEN REMOVED, HAD ITS NAME CHANGED, OR IS TEMPORARILY UNAVAILABLE.';
 
       // allows switching on/off various context menu actions
       $scope.contextMenuOptions = {
         allowMute: false  // switches off 'Mute' action for Wall guests
       };
 
-      postsService.getWall($scope.account).then(
-        function (data) {
-          $scope.profile = data.user;
-          if (data.feed && data.feed.length > 0) {
-            $scope.posts = data.feed;
+      $scope.init = function () {
+        $scope.account = $routeParams.account;
+        postsService.getWall($scope.account).then(
+          // success handler
+          function (data) {
+            $scope.profile = data.user;
+            if (data.feed && data.feed.length > 0) {
+              $scope.posts = data.feed;
+            }
             $scope.hasNoPosts = ($scope.posts.length === 0);
-          }
-          $scope.hasNoPosts = ($scope.posts.length === 0);
-        },
-        function () {
-          $scope.error = 'THE RESOURCE YOU ARE LOOKING FOR HAS BEEN REMOVED, HAD ITS NAME CHANGED, OR IS TEMPORARILY UNAVAILABLE.';
-        });
+          },
+          // error handler
+          function () {
+            $scope.error = $scope.errNotFound;
+          });
+      };
 
       $scope.loadMorePosts = function () {
         if ($scope.isLoadingMorePosts) { return; }
