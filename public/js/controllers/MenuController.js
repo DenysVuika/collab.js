@@ -19,7 +19,6 @@ angular.module('collabjs.controllers')
           menuService.getMenuItems().then(function (items) {
             $scope.items = items || [];
           });
-
         } else {
           $scope.isAuthenticated = false;
           $scope.userName = null;
