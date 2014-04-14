@@ -119,16 +119,19 @@ angular.module('collabjs.services')
           .then(function (res) { d.resolve(res); });
         return d.promise;
       },
-      loadPostComments: function (post, callback) {
+      loadPostComments: function (post) {
+        var d = $q.defer();
         if (post && post.id) {
           $http
             .get('/api/posts/' + post.id + '/comments').success(function (data) {
+              // TODO: ensure post exists
               post.comments = processHtmlContent(data);
-              if (callback) {
-                callback(post);
-              }
+              d.resolve(post);
             });
+        } else {
+          d.reject();
         }
+        return d.promise;
       },
       /**
        * Locks post content and disables commenting.
