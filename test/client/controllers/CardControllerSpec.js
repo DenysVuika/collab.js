@@ -29,7 +29,9 @@ describe('controllers', function () {
         deleteWallPost: deferredFunc,
         deleteNewsPost: deferredFunc,
         lockPost: deferredFunc,
-        unlockPost: deferredFunc
+        unlockPost: deferredFunc,
+        addLike: deferredFunc,
+        removeLike: deferredFunc
       };
 
       uiService = {
@@ -324,6 +326,34 @@ describe('controllers', function () {
 
       expect(disable.visible).toBe(true);
       expect(enable.visible).toBe(false);
+    });
+
+    it('should add like and update local post', function () {
+      spyOn(postsService, 'addLike').and.callThrough();
+      var post = { id:1, liked:false, likesCount: 1 };
+      scope.post = post;
+
+      scope.toggleLike();
+      deferred.resolve();
+      scope.$root.$digest();
+
+      expect(postsService.addLike).toHaveBeenCalledWith(1);
+      expect(post.liked).toBe(true);
+      expect(post.likesCount).toBe(2);
+    });
+
+    it('should remove like and update local post', function () {
+      spyOn(postsService, 'removeLike').and.callThrough();
+      var post = { id:1, liked:true, likesCount: 2 };
+      scope.post = post;
+
+      scope.toggleLike();
+      deferred.resolve();
+      scope.$root.$digest();
+
+      expect(postsService.removeLike).toHaveBeenCalledWith(1);
+      expect(post.liked).toBe(false);
+      expect(post.likesCount).toBe(1);
     });
   });
 });

@@ -57,9 +57,16 @@
               </li>
             </ul>
           </div>
-          <form ng-submit="postComment()" role="form">
-            <input type="text" ng-model="$parent.comment" autocomplete="off" placeholder="Add a comment...">
-          </form>
+          <div class="feedback-box">
+            <div class="like-btn-container">
+              <button class="btn btn-default btn-sm" ng-click="toggleLike()" ng-class="{ 'btn-danger': post.liked }">+{{post.likesCount > 0 ? post.likesCount : 1}}</button>
+            </div>
+            <div class="comment-input-container">
+              <form ng-submit="postComment()" role="form">
+                <input type="text" ng-model="$parent.comment" autocomplete="off" placeholder="Add a comment...">
+              </form>
+            </div>
+          </div>
         </div>
       </div>
     </li>

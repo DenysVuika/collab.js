@@ -482,6 +482,28 @@ Provider.prototype = {
         callback(err, succeeded);
       });
     });
+  },
+  addLike: function (userId, postId, callback) {
+    pool.getConnection(function (err, connection) {
+      var command = 'INSERT INTO likes (userId, postId) VALUES (?,?)';
+      connection.query(command, [userId, postId], function (err, result) {
+        connection.release();
+        console.log(err);
+        console.log(result);
+        callback(err);
+      });
+    });
+  },
+  removeLike: function (userId, postId, callback) {
+    pool.getConnection(function (err, connection) {
+      var command = 'DELETE FROM likes WHERE userId = ? AND postId = ?';
+      connection.query(command, [userId, postId], function (err, result) {
+        connection.release();
+        console.log(err);
+        console.log(result);
+        callback(err);
+      });
+    });
   }
 };
 
