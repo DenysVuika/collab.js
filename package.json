@@ -63,6 +63,6 @@
   "scripts": {
     "test": "npm run test-server && npm run test-client",
     "test-server": "mocha test/server -R spec",
-    "test-client": "karma start --single-run"
+    "test-client": "./node_modules/.bin/karma start --single-run"
   }
 }
