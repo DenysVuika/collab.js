@@ -60,6 +60,8 @@
     "node": ">=0.8.2"
   },
   "scripts": {
-    "test": "mocha -R spec"
+    "test": "npm run test-server && npm run test-client",
+    "test-server": "mocha test/server -R spec",
+    "test-client": "karma start --single-run"
   }
 }
