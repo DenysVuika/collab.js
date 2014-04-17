@@ -386,18 +386,31 @@ a.comments-button {
       border-top: 1px solid #e5e5e5;
       padding: 10px 0;
 
-      input[type='text'] {
-        width: 100%;
-        border: 1px solid #ddd;
-        color: #999;
-        box-sizing: border-box;
-        font-size: 12px;
-        margin: 0;
-        padding: 6px 8px;
+      .feedback-box {
         margin-top: 5px;
 
-        &:focus {
-          color: #000;
+        .like-btn-container {
+          float: left;
+          width: auto;
+          padding-right: 5px;
+        }
+
+        .comment-input-container {
+          overflow: hidden;
+
+          input[type='text'] {
+            width: 100%;
+            border: 1px solid #ddd;
+            color: #999;
+            box-sizing: border-box;
+            font-size: 12px;
+            margin: 0;
+            padding: 6px 8px;
+
+            &:focus {
+              color: #000;
+            }
+          }
         }
       }
     }

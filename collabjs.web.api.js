@@ -316,6 +316,14 @@ module.exports = function (context) {
       });
     });
 
+    app.get('/api/posts/:id', authenticate, noCache, function (req, res) {
+      repository.getPost(req.params.id, handleJsonResult(res));
+    });
+
+    app.get('/api/posts/:id/comments', authenticate, noCache, function (req, res) {
+      repository.getComments(req.params.id, handleJsonResult(res));
+    });
+
     app.post('/api/posts/:id/comments', authenticate, function (req, res) {
       if (!req.body.content) {
         res.send(400);
@@ -348,7 +356,6 @@ module.exports = function (context) {
     });
 
     app.post('/api/posts/:id/lock', authenticate, function (req, res) {
-      console.log('Lock post ' + req.params.id);
       var postId = parseInt(req.params.id);
       if (isNaN(postId) || postId < 0) {
         res.send(400);
@@ -370,12 +377,26 @@ module.exports = function (context) {
       });
     });
 
-    app.get('/api/posts/:id', authenticate, noCache, function (req, res) {
-      repository.getPost(req.params.id, handleJsonResult(res));
+    app.post('/api/posts/:id/like', authenticate, function (req, res) {
+      var postId = parseInt(req.params.id);
+      if (isNaN(postId) || postId < 0) {
+        res.send(400);
+        return;
+      }
+      repository.addLike(req.user.id, postId, function () {
+        res.send(200);
+      });
     });
 
-    app.get('/api/posts/:id/comments', authenticate, noCache, function (req, res) {
-      repository.getComments(req.params.id, handleJsonResult(res));
+    app.del('/api/posts/:id/like', authenticate, function (req, res) {
+      var postId = parseInt(req.params.id);
+      if (isNaN(postId) || postId < 0) {
+        res.send(400);
+        return;
+      }
+      repository.removeLike(req.user.id, postId, function () {
+        res.send(200);
+      });
     });
 
     app.get('/api/explore/:tag', authenticate, function (req, res) {

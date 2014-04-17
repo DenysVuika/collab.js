@@ -51,6 +51,26 @@ angular.module('collabjs.controllers')
         }
       };
 
+      $scope.toggleLike = function () {
+        if ($scope.post && $scope.post.id) {
+          if ($scope.post.liked) {
+            postsService
+              .removeLike($scope.post.id)
+              .then(function () {
+                $scope.post.liked = false;
+                $scope.post.likesCount-=1;
+              });
+          } else {
+            postsService
+              .addLike($scope.post.id)
+              .then(function () {
+                $scope.post.liked = true;
+                $scope.post.likesCount+=1;
+              });
+          }
+        }
+      };
+
       // Context Actions
 
       function onPostRemoved(postId) {

@@ -77,11 +77,10 @@ CREATE TABLE `comments` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 
 CREATE TABLE `likes` (
-  `id` int(11) NOT NULL AUTO_INCREMENT,
   `userId` int(11) NOT NULL,
   `postId` int(11) NOT NULL,
   `created` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
-  PRIMARY KEY (`id`)
+  PRIMARY KEY (`userId`,`postId`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 
 CREATE TABLE `following` (
@@ -335,11 +334,14 @@ DELIMITER ;
 DELIMITER $$
 CREATE PROCEDURE `get_posts_by_tag`(IN tag TEXT)
 BEGIN
-	SELECT p.* FROM vw_posts as p
-  	LEFT JOIN post_tags AS pt ON pt.postId = p.id
-  	LEFT JOIN tags AS t ON t.id = pt.tagId
-  WHERE t.content = tag AND (topId <= 0 || p.id < topId)
-  LIMIT 20;
+	SELECT p.*
+	  , IF (l.postId IS NULL, 0, 1) as liked
+	FROM vw_posts as p
+	  LEFT JOIN post_tags AS pt ON pt.postId = p.id
+	  LEFT JOIN tags AS t ON t.id = pt.tagId
+	  LEFT JOIN likes as l ON l.postId = p.id AND l.userId = p.userId
+	WHERE t.content = tag AND (topId <= 0 || p.id < topId)
+	LIMIT 20;
 END$$
 DELIMITER ;
 
@@ -439,44 +441,50 @@ BEGIN
 END$$
 DELIMITER ;
 
--- TODO: replace with inline query
 DELIMITER $$
 CREATE PROCEDURE `get_news`(
 	IN userId INT,
 	IN topId INT
 )
 BEGIN
-  SELECT * FROM vw_news
-  WHERE targetId = userId AND (topId <= 0 || id < topId)
-  ORDER BY created DESC
+  SELECT n.*
+    , IF (l.postId IS NULL, 0, 1) as liked
+  FROM vw_news AS n
+    LEFT JOIN likes as l ON l.postId = n.id AND l.userId = n.targetId
+  WHERE n.targetId = userId AND (topId <= 0 || n.id < topId)
+  ORDER BY n.created DESC
   LIMIT 20;
 END$$
 DELIMITER ;
 
--- TODO: replace with inline query
 DELIMITER $$
 CREATE PROCEDURE `get_wall`(
 	IN userId INT,
 	IN topId INT
 )
 BEGIN
-	SELECT * FROM vw_wall
-  WHERE targetId = userId AND (topId <= 0 || id < topId)
-  ORDER BY created DESC
-  LIMIT 20;
+	SELECT w.*
+	  , IF (l.postId IS NULL, 0, 1) as liked
+	FROM vw_wall AS w
+	  LEFT JOIN likes as l ON l.postId = w.id AND l.userId = w.targetId
+	WHERE w.targetId = userId AND (topId <= 0 || w.id < topId)
+	ORDER BY w.created DESC
+	LIMIT 20;
 END$$
 DELIMITER ;
 
--- TODO: replace with inline query
 DELIMITER $$
 CREATE PROCEDURE `get_news_updates`(
 	IN userId INT,
 	IN topId INT
 )
 BEGIN
-	SELECT * FROM vw_news
-  WHERE targetId = userId AND (id > topId AND topId > 0)
-  LIMIT 20;
+	SELECT n.*
+	  , IF (l.postId IS NULL, 0, 1) as liked
+	FROM vw_news AS n
+	  LEFT JOIN likes as l ON l.postId = n.id AND l.userId = n.targetId
+	WHERE n.targetId = userId AND (n.id > topId AND topId > 0)
+	LIMIT 20;
 END$$
 DELIMITER ;
 
@@ -592,6 +600,15 @@ CREATE TRIGGER comment_deleted AFTER DELETE ON `comments` FOR EACH ROW
 	UPDATE `posts` SET commentsCount = commentsCount - 1 WHERE id = OLD.postId;//
 DELIMITER ;
 
+DELIMITER $$
+CREATE TRIGGER like_inserted AFTER INSERT ON `likes` FOR EACH ROW
+	UPDATE `posts` SET likesCount = likesCount + 1 WHERE id = NEW.postId;$$
+DELIMITER ;
+
+DELIMITER $$
+CREATE TRIGGER like_deleted AFTER DELETE ON `likes` FOR EACH ROW
+	UPDATE `posts` SET likesCount = likesCount - 1 WHERE id = OLD.postId;$$
+DELIMITER ;
 --------------------------------------
 -- DEFAULT DATA
 --------------------------------------

@@ -156,6 +156,30 @@ angular.module('collabjs.services')
           .post('/api/posts/' + postId + '/unlock')
           .then(function () { d.resolve(true); });
         return d.promise;
+      },
+      /**
+       * Add like for the given post.
+       * @param postId Post id.
+       */
+      addLike: function (postId) {
+        // TODO: get most recent number of likes with result
+        var d = $q.defer();
+        $http
+          .post('/api/posts/' + postId + '/like')
+          .then(function () { d.resolve(true); });
+        return d.promise;
+      },
+      /**
+       * Removes previously assigned like for the given post.
+       * @param postId Post id.
+       */
+      removeLike: function (postId) {
+        // TODO: get most recent number of likes with result
+        var d = $q.defer();
+        $http
+          .delete('/api/posts/' + postId + '/like')
+          .then(function () { d.resolve(true); });
+        return d.promise;
       }
     };
   }]);

@@ -293,3 +293,23 @@ module.exports.lockPost = function (userId, postId, callback) {
 module.exports.unlockPost = function (userId, postId, callback) {
   provider.unlockPost(userId, postId, callback);
 };
+
+/**
+ * Add like for the given post.
+ * @param userId User account id.
+ * @param postId Post id.
+ * @param {function(err, result)} callback Callback function.
+ */
+module.exports.addLike = function (userId, postId, callback) {
+  provider.addLike(userId, postId, callback);
+};
+
+/**
+ * Removes previously assigned like for the given post.
+ * @param userId User account id.
+ * @param postId Post id.
+ * @param {function(err, result)} callback Callback function.
+ */
+module.exports.removeLike = function (userId, postId, callback) {
+  provider.removeLike(userId, postId, callback);
+};
