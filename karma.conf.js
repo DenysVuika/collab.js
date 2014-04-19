@@ -15,6 +15,7 @@ module.exports = function(config) {
     // list of files / patterns to load in the browser
     files: [
       'public/lib/jquery/jquery-2.1.0.min.js',
+      'public/lib/bootstrap/js/bootstrap.min.js',
       'public/lib/angular/angular.js',
       'public/lib/angular/angular-resource.js',
       'public/lib/angular/angular-route.js',
