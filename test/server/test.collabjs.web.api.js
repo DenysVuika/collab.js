@@ -365,11 +365,11 @@ describe('collab.js web.api', function () {
         .expect(200)
         .end(function (err, res) {
           var post = res.body;
-          post.id.should.equal(1);
-          post.account.should.equal(testUser.account);
-          post.content.should.equal('hello world');
-          post.pictureId.should.equal(testUser.pictureId);
-          post.commentsCount.should.equal(0);
+          expect(post.id).to.be(1);
+          expect(post.account).to.be(testUser.account);
+          expect(post.content).to.be('hello world');
+          expect(post.pictureId).to.be(testUser.pictureId);
+          expect(post.commentsCount).to.be(0);
           done();
         });
     });
@@ -457,13 +457,13 @@ describe('collab.js web.api', function () {
         .expect(200)
         .end(function (err, res) {
           var result = res.body;
-          result.userId.should.equal(testUser.id);
-          result.postId.should.equal(comment.postId);
-          result.content.should.equal(comment.content);
-          result.id.should.equal(1);
-          result.account.should.equal(testUser.account);
-          result.name.should.equal(testUser.name);
-          result.pictureId.should.equal(testUser.pictureId);
+          expect(result.userId).to.be(testUser.id);
+          expect(result.postId).to.be(comment.postId);
+          expect(result.content).to.be(comment.content);
+          expect(result.id).to.be(1);
+          expect(result.account).to.be(testUser.account);
+          expect(result.name).to.be(testUser.name);
+          expect(result.pictureId).to.be(testUser.pictureId);
           done();
         });
     });

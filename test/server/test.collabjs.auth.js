@@ -3,7 +3,7 @@
 var express = require('express')
   , request = require('supertest')
   , auth = require('../../collabjs.auth.js')
-  , should = require('should');
+  , expect = require('expect.js');
 
 describe('collabjs.auth', function () {
 
@@ -45,7 +45,7 @@ describe('collabjs.auth', function () {
         .get('/timeline')
         .expect(302)
         .end(function (err, res) {
-          res.headers.should.have.property('location', '/login?returnUrl=/timeline');
+          expect(res.headers.location).to.be('/login?returnUrl=/timeline');
           done();
         });
     });
@@ -95,7 +95,7 @@ describe('collabjs.auth', function () {
         .get('/timeline')
         .expect(302)
         .end(function (err, res) {
-          res.headers.should.have.property('location', '/login?returnUrl=/timeline');
+          expect(res.headers.location).to.be('/login?returnUrl=/timeline');
           done();
         });
     });
@@ -157,7 +157,7 @@ describe('collabjs.auth', function () {
         .get('/timeline')
         .expect(302)
         .end(function (err, res) {
-          res.headers.should.have.property('location', '/login?returnUrl=/timeline');
+          expect(res.headers.location).to.be('/login?returnUrl=/timeline');
           done();
         });
     });
@@ -211,27 +211,27 @@ describe('collabjs.auth', function () {
 
   describe('.isUserInRole', function () {
     it('returns false when user is not defined', function (done) {
-      auth.isUserInRole(null, 'admin').should.equal(false);
+      expect(auth.isUserInRole(null, 'admin')).to.be(false);
       done();
     });
 
     it('returns false when user roles are not defined', function (done) {
-      auth.isUserInRole({}, 'admin').should.equal(false);
+      expect(auth.isUserInRole({}, 'admin')).to.be(false);
       done();
     });
 
     it('returns false when user is not in role', function (done) {
-      auth.isUserInRole({ roles: 'role1,role2' }, 'admin').should.equal(false);
+      expect(auth.isUserInRole({ roles: 'role1,role2' }, 'admin')).to.be(false);
       done();
     });
 
     it('returns false when role is not defined', function (done) {
-      auth.isUserInRole({ roles: 'role1' }, null).should.equal(false);
+      expect(auth.isUserInRole({ roles: 'role1' }, null)).to.be(false);
       done();
     });
 
     it('returns true when user is in role', function (done) {
-      auth.isUserInRole({ roles: 'admin,role2' }, 'admin').should.equal(true);
+      expect(auth.isUserInRole({ roles: 'admin,role2' }, 'admin')).to.be(true);
       done();
     });
   });
