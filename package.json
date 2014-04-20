@@ -59,7 +59,7 @@
   "analyze": false,
   "license": "MIT",
   "engines": {
-    "node": ">=0.8.2"
+    "node": ">=0.10.21"
   },
   "scripts": {
     "test": "npm run test-server && npm run test-client",
