@@ -38,7 +38,7 @@ angular.module('collabjs.services')
           scope.template = opts.template;
 
           scope.okButtonText = opts.submit.title;
-          scope.cancelButtonText = opts.submit.title;
+          scope.cancelButtonText = opts.cancel.title;
           scope.formObject = opts.context;
 
           $http.get('/templates/form-modal.html')

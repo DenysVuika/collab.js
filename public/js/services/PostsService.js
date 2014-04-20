@@ -3,6 +3,8 @@ angular.module('collabjs.services')
     'use strict';
 
     function processHtmlContent(items, youtube) {
+      if (!items) { return items; }
+
       var array = Array.isArray(items);
       if (!array) {
         items = [items];
@@ -19,6 +21,7 @@ angular.module('collabjs.services')
     }
 
     return {
+      processHtmlContent: processHtmlContent,
       getNews: function (topId) {
         var d = $q.defer()
           , options = { headers: { 'last-known-id': topId } };
