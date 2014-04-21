@@ -1,7 +1,7 @@
 module.exports = function (context) {
   'use strict';
 
-  context.once('app.init.routes', function (app) {
+  context.once(context.events.initWebRoutes, function (app) {
 
     app.get('/', function (req, res) {
       res.render('index', {

@@ -39,7 +39,7 @@ describe('collab.js web.api', function () {
   });
 
   // raise 'app.init.routes' event for web.api to initialize routes
-  context.emit(RuntimeEvents.app_init_routes, app);
+  context.emit(RuntimeEvents.initWebRoutes, app);
 
   describe('getPeople: GET /api/people:topId?', function () {
 

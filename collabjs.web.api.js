@@ -10,7 +10,7 @@ module.exports = function (context) {
     , noCache = utils.noCache
     , passport = require('passport');
 
-  context.once('app.init.routes', function (app) {
+  context.once(context.events.initWebRoutes, function (app) {
 
     function getUser(req) {
       var user = {

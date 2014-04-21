@@ -8,7 +8,7 @@
  */
 
 module.exports = function (context) {
-  context.once('app.init.routes', function (app) {
+  context.once(context.events.initWebRoutes, function (app) {
     app.get('/avatar/:id?', function (req, res) {
       res.sendfile(__dirname + '/public/img/avatar.png');
     });

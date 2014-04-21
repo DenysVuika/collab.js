@@ -8,9 +8,9 @@ var events = require('events')
   , data = require('./data');
 
 var runtimeEvents = {
-  app_init_static: 'app.init.static',
-  app_init_routes: 'app.init.routes',
-  app_start: 'app.start',
+  initStaticContent: 'app.init.static',
+  initWebRoutes: 'app.init.routes',
+  appStart: 'app.start',
   userRegistered: 'user_registered@collab.js'
 };
 
@@ -23,6 +23,38 @@ var RuntimeContext = function() {
   this.config = config;
   this.auth = auth;
   this.data = data;
+
+  /**
+   * Register JavaScript files for automatic loading at run time.
+   * @param {string|string[]} paths Single or multiple JS paths.
+   */
+  this.js = function (paths) {
+    if (!paths || !config.client || !config.client.js) {return;}
+    var items = Array.isArray(paths) ? paths: [paths];
+    var client = config.client;
+    for (var i = 0; i < items.length; i++) {
+      if (client.js.indexOf(paths[i]) < 0) {
+        client.js.push(paths[i]);
+        console.log('\t + ' + paths[i]);
+      }
+    }
+  };
+
+  /**
+   * Register CSS files for automatic loading at run time.
+   * @param {string|string[]} paths Single or multiple CSS paths.
+   */
+  this.css = function (paths) {
+    if (!paths || !config.client || !config.client.css) {return;}
+    var items = Array.isArray(paths) ? paths: [paths];
+    var client = config.client;
+    for (var i = 0; i < items.length; i++) {
+      if (client.css.indexOf(paths[i]) < 0) {
+        client.css.push(paths[i]);
+        console.log('\t + ' + paths[i]);
+      }
+    }
+  };
 
   // Return this object reference
   return (this);
