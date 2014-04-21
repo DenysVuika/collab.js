@@ -6,7 +6,9 @@ module.exports = function (context) {
   // JS files to be loaded at run time
   context.js([
     '/admin/js/module.js',
-    '/admin/js/controllers/AdminSettingsCtrl.js'
+    '/admin/js/controllers/AdminSettingsCtrl.js',
+    '/admin/js/controllers/Section1Ctrl.js',
+    '/admin/js/controllers/Section2Ctrl.js'
   ]);
 
   // CSS files to be loaded at run time
