@@ -245,8 +245,8 @@ describe('services', function () {
     });
 
     it('should unlock the post', function () {
-      var url = '/api/posts/2/unlock';
-      httpBackend.expectPOST(url).respond(200);
+      var url = '/api/posts/2/lock';
+      httpBackend.expectDELETE(url).respond(200);
 
       service.unlockPost(2).then(successCallback);
       httpBackend.flush();

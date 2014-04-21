@@ -156,7 +156,7 @@ angular.module('collabjs.services')
       unlockPost: function (postId) {
         var d = $q.defer();
         $http
-          .post('/api/posts/' + postId + '/unlock')
+          .delete('/api/posts/' + postId + '/lock')
           .then(function () { d.resolve(true); });
         return d.promise;
       },

@@ -488,8 +488,6 @@ Provider.prototype = {
       var command = 'INSERT INTO likes (userId, postId) VALUES (?,?)';
       connection.query(command, [userId, postId], function (err, result) {
         connection.release();
-        console.log(err);
-        console.log(result);
         callback(err);
       });
     });
@@ -499,8 +497,6 @@ Provider.prototype = {
       var command = 'DELETE FROM likes WHERE userId = ? AND postId = ?';
       connection.query(command, [userId, postId], function (err, result) {
         connection.release();
-        console.log(err);
-        console.log(result);
         callback(err);
       });
     });

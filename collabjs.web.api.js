@@ -78,25 +78,26 @@ module.exports = function (context) {
       }
     });
 
-    app.get('/api/profile', authenticate, noCache, function (req, res) {
-      res.json(200, {
-        token: config.server.csrf ? req.csrfToken() : null,
-        avatarServer: config.env.avatarServer,
-        pictureUrl: req.user.pictureUrl,
-        name: req.user.name,
-        email: req.user.email,
-        location: req.user.location,
-        website: req.user.website,
-        bio: req.user.bio
+    app.route('/api/profile')
+      .all(authenticate)
+      .get(noCache, function (req, res) {
+        res.json(200, {
+          token: config.server.csrf ? req.csrfToken() : null,
+          avatarServer: config.env.avatarServer,
+          pictureUrl: req.user.pictureUrl,
+          name: req.user.name,
+          email: req.user.email,
+          location: req.user.location,
+          website: req.user.website,
+          bio: req.user.bio
+        });
+      })
+      .post(function (req, res) {
+        repository.updateAccount(req.user.id, req.body, function (err) {
+          if (err) { res.send(400); }
+          else { res.send(200); }
+        });
       });
-    });
-
-    app.post('/api/profile', authenticate, function (req, res) {
-      repository.updateAccount(req.user.id, req.body, function (err) {
-        if (err) { res.send(400); }
-        else { res.send(200); }
-      });
-    });
 
     // TODO: move confirmation check to the client
     app.post('/api/profile/password', authenticate, function(req, res) {
@@ -320,84 +321,87 @@ module.exports = function (context) {
       repository.getPost(req.params.id, handleJsonResult(res));
     });
 
-    app.get('/api/posts/:id/comments', authenticate, noCache, function (req, res) {
-      repository.getComments(req.params.id, handleJsonResult(res));
-    });
-
-    app.post('/api/posts/:id/comments', authenticate, function (req, res) {
-      if (!req.body.content) {
-        res.send(400);
-        return;
-      }
-
-      var postId = parseInt(req.params.id);
-      if (isNaN(postId) || postId < 0) {
-        res.send(400);
-        return;
-      }
-
-      var comment = {
-        userId: req.user.id,
-        postId: postId,
-        created: new Date(),
-        content: req.body.content
-      };
-      repository.addComment(comment, function (err, result) {
-        if (err || !result) { res.send(400); }
-        else {
-          comment.id = result.id;
-          comment.account = req.user.account;
-          comment.name = req.user.name;
-          comment.pictureId = req.user.pictureId;
-          comment.pictureUrl = utils.getAvatarUrl(comment.pictureId);
-          res.json(200, comment);
+    app.route('/api/posts/:id/comments')
+      .all(authenticate)
+      .get(noCache, function (req, res) {
+        repository.getComments(req.params.id, handleJsonResult(res));
+      })
+      .post(function (req, res) {
+        if (!req.body.content) {
+          res.send(400);
+          return;
         }
-      });
-    });
 
-    app.post('/api/posts/:id/lock', authenticate, function (req, res) {
-      var postId = parseInt(req.params.id);
-      if (isNaN(postId) || postId < 0) {
-        res.send(400);
-        return;
-      }
-      repository.lockPost(req.user.id, postId, function () {
-        res.send(200);
-      });
-    });
+        var postId = parseInt(req.params.id);
+        if (isNaN(postId) || postId < 0) {
+          res.send(400);
+          return;
+        }
 
-    app.post('/api/posts/:id/unlock', authenticate, function (req, res) {
-      var postId = parseInt(req.params.id);
-      if (isNaN(postId) || postId < 0) {
-        res.send(400);
-        return;
-      }
-      repository.unlockPost(req.user.id, postId, function () {
-        res.send(200);
+        var comment = {
+          userId: req.user.id,
+          postId: postId,
+          created: new Date(),
+          content: req.body.content
+        };
+        repository.addComment(comment, function (err, result) {
+          if (err || !result) { res.send(400); }
+          else {
+            comment.id = result.id;
+            comment.account = req.user.account;
+            comment.name = req.user.name;
+            comment.pictureId = req.user.pictureId;
+            comment.pictureUrl = utils.getAvatarUrl(comment.pictureId);
+            res.json(200, comment);
+          }
+        });
       });
-    });
 
-    app.post('/api/posts/:id/like', authenticate, function (req, res) {
-      var postId = parseInt(req.params.id);
-      if (isNaN(postId) || postId < 0) {
-        res.send(400);
-        return;
-      }
-      repository.addLike(req.user.id, postId, function () {
-        res.send(200);
+    app.route('/api/posts/:id/lock')
+      .all(authenticate)
+      .post(function (req, res) {
+        var postId = parseInt(req.params.id);
+        if (isNaN(postId) || postId < 0) {
+          res.send(400);
+          return;
+        }
+        repository.lockPost(req.user.id, postId, function () {
+          res.send(200);
+        });
+      })
+      .delete(function (req, res) {
+        var postId = parseInt(req.params.id);
+        if (isNaN(postId) || postId < 0) {
+          res.send(400);
+          return;
+        }
+        repository.unlockPost(req.user.id, postId, function () {
+          res.send(200);
+        });
       });
-    });
 
-    app.del('/api/posts/:id/like', authenticate, function (req, res) {
-      var postId = parseInt(req.params.id);
-      if (isNaN(postId) || postId < 0) {
-        res.send(400);
-        return;
-      }
-      repository.removeLike(req.user.id, postId, function () {
-        res.send(200);
+    app.route('/api/posts/:id/like')
+      .all(authenticate)
+      .post(function (req, res) {
+        var postId = parseInt(req.params.id);
+        if (isNaN(postId) || postId < 0) {
+          res.send(400);
+          return;
+        }
+        repository.addLike(req.user.id, postId, function () {
+          res.send(200);
+        });
+      })
+      .delete(function (req, res) {
+        var postId = parseInt(req.params.id);
+        if (isNaN(postId) || postId < 0) {
+          res.send(400);
+          return;
+        }
+        repository.removeLike(req.user.id, postId, function () {
+          res.send(200);
+        });
       });
-    });
 
     app.get('/api/explore/:tag', authenticate, function (req, res) {
       var lastId = parseInt(req.header('last-known-id'));
