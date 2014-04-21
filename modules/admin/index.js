@@ -7,8 +7,8 @@ module.exports = function (context) {
   context.js([
     '/admin/js/module.js',
     '/admin/js/controllers/AdminSettingsCtrl.js',
-    '/admin/js/controllers/Section1Ctrl.js',
-    '/admin/js/controllers/Section2Ctrl.js'
+    '/admin/js/controllers/AdminUsersCtrl.js',
+    '/admin/js/controllers/AdminRolesCtrl.js'
   ]);
 
   // CSS files to be loaded at run time

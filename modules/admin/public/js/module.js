@@ -9,16 +9,16 @@ angular.module('collabjs')
         title: 'Admin Settings',
         resolve: { isAdmin: collabjs.isAdmin }
       })
-      .when('/admin/section1', {
+      .when('/admin/users', {
         template: '<div ng-include="templateUrl"></div>',
-        controller: 'Section1Ctrl',
-        title: 'admin: section 1',
+        controller: 'AdminUsersCtrl',
+        title: 'admin: users',
         resolve: { isAdmin: collabjs.isAdmin }
       })
-      .when('/admin/section2', {
+      .when('/admin/roles', {
         template: '<div ng-include="templateUrl"></div>',
-        controller: 'Section2Ctrl',
-        title: 'admin: section 1',
+        controller: 'AdminRolesCtrl',
+        title: 'admin: roles',
         resolve: { isAdmin: collabjs.isAdmin }
       });
   }])
