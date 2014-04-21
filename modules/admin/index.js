@@ -3,10 +3,15 @@ module.exports = function (context) {
 
   var express = require('express');
 
-  // JS files to be injected at run time
+  // JS files to be loaded at run time
   context.js([
     '/admin/js/module.js',
     '/admin/js/controllers/AdminSettingsCtrl.js'
+  ]);
+
+  // CSS files to be loaded at run time
+  context.css([
+    '/admin/css/admin.css'
   ]);
 
   context.once(context.events.initStaticContent, function (app) {
