@@ -1,0 +1,47 @@
+<div class="container fill-width" ng-init="init()">
+  <div class="row">
+    <div class="col-md-2" ng-include="'/admin/templates/sidebar.html'"></div>
+    <div class="col-md-10">
+      <!--<div class="btn-toolbar account-toolbar" role="toolbar">
+        <div class="btn-group pull-right">
+          <button class="btn btn-default">
+            <i class="fa fa-plus"></i> Create
+          </button>
+        </div>
+      </div>-->
+      <table class="table table-bordered table-hover account-table">
+        <thead>
+        <tr>
+          <th>Account</th>
+          <th>Name</th>
+          <th>Email</th>
+          <th>Location</th>
+          <th>Roles</th>
+          <th>
+            <button class="btn btn-default">
+              <i class="fa fa-plus"></i> Create
+            </button>
+          </th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr ng-repeat="account in accounts">
+          <td>{{account.account}}</td>
+          <td>{{account.name}}</td>
+          <td>{{account.email}}</td>
+          <td>{{account.location}}</td>
+          <td>{{account.roles}}</td>
+          <td class="account-actions-inline">
+            <button class="btn btn-danger">
+              <i class="fa fa-times"></i>
+            </button>
+            <button class="btn btn-default">
+              <i class="fa fa-pencil"></i>
+            </button>
+          </td>
+        </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>

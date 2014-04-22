@@ -1,3 +1,18 @@
-.admin-test-header {
-  color: red;
+.account-table {
+  background-color: #ffffff;
+  margin-top: 5px;
+}
+.account-table thead th {
+  vertical-align: middle !important;
+}
+.account-table tbody td {
+  vertical-align: middle !important;
+}
+.account-toolbar {
+  margin-top: 5px;
+}
+.account-actions-inline {
+  /*text-align: right;*/
+  width: 1%;
+  white-space: nowrap;
 }

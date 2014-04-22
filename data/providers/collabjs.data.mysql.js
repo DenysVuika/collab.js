@@ -66,6 +66,17 @@ function getFollowedUsers(connection, userId, callback) {
 function Provider() {}
 
 Provider.prototype = {
+  // TODO: introduce paging support
+  getAccounts: function (callback) {
+    pool.getConnection(function (err, connection) {
+      var command = 'SELECT id, account, name, created, email, location, roles FROM vw_accounts';
+      connection.query(command, function (err, result) {
+        connection.release();
+        if (err) { return callback(err, null); }
+        callback(err, result);
+      });
+    });
+  },
   getAccountById: function (id, callback) {
     pool.getConnection(function (err, connection) {
       var command = "SELECT * FROM vw_accounts WHERE id = ? LIMIT 1";

@@ -7,7 +7,7 @@ module.exports = function (context) {
   context.js([
     '/admin/js/module.js',
     '/admin/js/controllers/AdminSettingsCtrl.js',
-    '/admin/js/controllers/AdminUsersCtrl.js',
+    '/admin/js/controllers/AdminAccountsCtrl.js',
     '/admin/js/controllers/AdminRolesCtrl.js'
   ]);
 

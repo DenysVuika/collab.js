@@ -11,8 +11,8 @@ angular.module('collabjs')
       })
       .when('/admin/users', {
         template: '<div ng-include="templateUrl"></div>',
-        controller: 'AdminUsersCtrl',
-        title: 'admin: users',
+        controller: 'AdminAccountsCtrl',
+        title: 'admin: accounts',
         resolve: { isAdmin: collabjs.isAdmin }
       })
       .when('/admin/roles', {

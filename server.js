@@ -162,8 +162,9 @@ io.set('authorization', passportSocketIo.authorize({
 
 // Default routes
 
-require('./collabjs.web.js')(runtimeContext);
-require('./collabjs.web.api.js')(runtimeContext);
+require('./collabjs.web')(runtimeContext);
+require('./collabjs.web.api')(runtimeContext);
+require('./collabjs.admin.api')(runtimeContext);
 
 // Notify external modules that their routes need to be initialized
 runtimeContext.emit(RuntimeEvents.initWebRoutes, app);

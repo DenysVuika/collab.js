@@ -171,7 +171,9 @@ module.exports = function (context) {
     app.post('/api/u/:account/follow', authenticate, function (req, res) {
       var account = req.params.account;
       if (account) {
-        repository.followAccount(req.user.id, account, handleHtmlResult(res));
+        repository.followAccount(req.user.id, account, function (err) {
+          res.send(err ? 400 : 200);
+        });
       } else {
         res.send(400);
       }
@@ -180,7 +182,9 @@ module.exports = function (context) {
     app.post('/api/u/:account/unfollow', authenticate, function (req, res) {
       var account  = req.params.account;
       if (account) {
-        repository.unfollowAccount(req.user.id, account, handleHtmlResult(res));
+        repository.unfollowAccount(req.user.id, account, function (err) {
+          res.send(err ? 400 : 200);
+        });
       } else {
         res.send(400);
       }
@@ -436,13 +440,6 @@ module.exports = function (context) {
       return function (err, result) {
         if (err || !result) { res.send(400); }
         else { res.json(200, result); }
-      };
-    }
-
-    function handleHtmlResult(res) {
-      return function (err) {
-        if (err) { res.send(400); }
-        else { res.send(200); }
       };
     }
   }); // app.init.routes

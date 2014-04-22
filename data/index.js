@@ -24,6 +24,14 @@ module.exports.setProvider = function (instance) {
 };
 
 /**
+ * Gets all registered account. This is a management api.
+ * @param {function(err, user)} callback Callback function.
+ */
+module.exports.getAccounts = function (callback) {
+  provider.getAccounts(callback);
+};
+
+/**
  * Get account by id.
  * @param {number} id Account id.
  * @param {function(err, user)} callback Callback function.
