@@ -47,7 +47,10 @@ angular.module('collabjs', [
           if (user.roles && user.roles.indexOf('administrator') > -1) {
             $timeout(function() { d.resolve(true); }, 0);
           } else {
-            $timeout(function() { d.resolve(false); }, 0);
+            $timeout(function() {
+              d.reject(false);
+              $location.path('/403');
+            }, 0);
           }
         }
         // Not Authenticated
@@ -187,10 +190,24 @@ angular.module('collabjs', [
         controller: 'HelpController',
         title: 'Help'
       })
+      .when('/403', {
+        templateUrl: '/templates/403.html',
+        title: 'Not authorized'
+      })
       .otherwise({ redirectTo: '/news' });
   }])
-  .run(function ($rootScope) {
+  .run(function ($rootScope, authService) {
     'use strict';
+
+    /*$rootScope.$on('$routeChangeStart', function (event, next, current) {
+      var roles = next.$$route.roles;
+      if (Array.isArray(roles) && roles.length > 0) {
+        var user = authService.getCurrentUser();
+        if (user) {
+
+        }
+      }
+    });*/
 
     // synchronize page title with current route title
     $rootScope.$on('$routeChangeSuccess', function (event, currentRoute/*, previousRoute */) {

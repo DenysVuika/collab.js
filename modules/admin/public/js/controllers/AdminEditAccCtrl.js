@@ -1,7 +1,5 @@
 angular.module('collabjs.controllers')
-  .controller('AdminEditAccCtrl', ['$scope', 'adminService', 'isAdmin',
-    function ($scope, adminService, isAdmin) {
+  .controller('AdminEditAccCtrl', ['$scope', 'adminService',
+    function ($scope, adminService) {
       'use strict';
-      // TODO: automate this
-      $scope.templateUrl = isAdmin ? '/admin/templates/account-edit.html' : '/templates/403.html';
     }]);

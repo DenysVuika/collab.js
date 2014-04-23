@@ -1,32 +1,38 @@
 angular.module('collabjs')
   .config(['$routeProvider', function ($routeProvider) {
     'use strict';
+    /*var resolver = function (roles) {
+      return {
+        load: function ($q) {
+          var d = $q.defer();
+          d.resolve();
+          return d.promise;
+        },
+        isAdmin: collabjs.isAdmin
+      };
+    };*/
     // register additional routes within application
     $routeProvider
-      // TODO: add admin role check and redirection
       .when('/admin', {
-        template: '<div ng-include="templateUrl"></div>',
+        templateUrl: '/admin/templates/index.html',
         controller: 'AdminSettingsCtrl',
         title: 'Admin Settings',
         resolve: { isAdmin: collabjs.isAdmin }
       })
-      // TODO: add admin role check and redirection
       .when('/admin/users', {
-        template: '<div ng-include="templateUrl"></div>',
+        templateUrl: '/admin/templates/accounts.html',
         controller: 'AdminAccountsCtrl',
         title: 'admin: accounts',
         resolve: { isAdmin: collabjs.isAdmin }
       })
-      // TODO: add admin role check and redirection
       .when('/admin/users/new', {
         templateUrl: '/admin/templates/account-new.html',
         controller: 'AdminNewAccCtrl',
         title: 'admin: new account',
         resolve: { isAdmin: collabjs.isAdmin }
       })
-      // TODO: add admin role check and redirection
       .when('/admin/roles', {
-        template: '<div ng-include="templateUrl"></div>',
+        templateUrl: '/admin/templates/roles.html',
         controller: 'AdminRolesCtrl',
         title: 'admin: roles',
         resolve: { isAdmin: collabjs.isAdmin }

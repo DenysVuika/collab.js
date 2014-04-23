@@ -1,9 +1,8 @@
 angular.module('collabjs.controllers')
-  .controller('AdminAccountsCtrl', ['$scope', 'adminService', 'isAdmin',
-    function ($scope, adminService, isAdmin) {
+  .controller('AdminAccountsCtrl', ['$scope', 'adminService',
+    function ($scope, adminService) {
       'use strict';
-      // TODO: automate this
-      $scope.templateUrl = isAdmin ? '/admin/templates/accounts.html' : '/templates/403.html';
+
       $scope.accounts = [];
 
       $scope.init = function () {
@@ -11,5 +10,4 @@ angular.module('collabjs.controllers')
           $scope.accounts = accounts;
         });
       };
-
     }]);

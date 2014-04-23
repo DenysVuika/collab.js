@@ -1,6 +1,6 @@
 angular.module('collabjs.controllers')
-  .controller('AdminNewAccCtrl', ['$scope', '$location', 'adminService', 'isAdmin',
-    function ($scope, $location, adminService, isAdmin) {
+  .controller('AdminNewAccCtrl', ['$scope', '$location', 'adminService',
+    function ($scope, $location, adminService) {
       'use strict';
 
       $scope.init = function () {

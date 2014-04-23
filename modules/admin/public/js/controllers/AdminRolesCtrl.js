@@ -1,7 +1,5 @@
 angular.module('collabjs.controllers')
-  .controller('AdminRolesCtrl', ['$scope', 'isAdmin',
-    function ($scope, isAdmin) {
+  .controller('AdminRolesCtrl', ['$scope',
+    function ($scope) {
       'use strict';
-      // TODO: automate this
-      $scope.templateUrl = isAdmin ? '/admin/templates/roles.html' : '/templates/403.html';
     }]);
