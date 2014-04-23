@@ -69,7 +69,7 @@ Provider.prototype = {
   // TODO: introduce paging support
   getAccounts: function (callback) {
     pool.getConnection(function (err, connection) {
-      var command = 'SELECT id, account, name, created, email, location, roles FROM vw_accounts';
+      var command = 'SELECT id, account, name, created, email, roles FROM vw_accounts';
       connection.query(command, function (err, result) {
         connection.release();
         if (err) { return callback(err, null); }

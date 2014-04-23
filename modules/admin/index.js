@@ -8,6 +8,8 @@ module.exports = function (context) {
     '/admin/js/module.js',
     '/admin/js/controllers/AdminSettingsCtrl.js',
     '/admin/js/controllers/AdminAccountsCtrl.js',
+    '/admin/js/controllers/AdminNewAccCtrl.js',
+    '/admin/js/controllers/AdminEditAccCtrl.js',
     '/admin/js/controllers/AdminRolesCtrl.js'
   ]);
 
