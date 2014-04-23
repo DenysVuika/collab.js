@@ -49,6 +49,16 @@ module.exports = function (context) {
         });
       });
 
+    router.route('/accounts/:account')
+      .delete(function (req, res) {
+        repository.deleteAccount(req.params.account, function (err) {
+          if (err) { res.send(400, err); }
+          else {
+            res.send(200);
+          }
+        });
+      });
+
     app.use('/api/admin', router);
   });
 };

@@ -124,6 +124,20 @@ Provider.prototype = {
       });
     });
   },
+  deleteAccount: function (account, callback) {
+    pool.getConnection(function (err, connection) {
+      var command = 'DELETE FROM users WHERE account = ?';
+      connection.query(command, account, function (err, result) {
+        connection.release();
+        if (err) {
+          callback('Error removing account.');
+        } else {
+          var succeeded = result.affectedRows > 0;
+          callback(null, succeeded);
+        }
+      });
+    });
+  },
   updateAccount: function (id, json, callback) {
     var fields = {
       location: json.location || '',                  // update or reset user.location

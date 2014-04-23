@@ -66,6 +66,15 @@ module.exports.createAccount = function (json, callback) {
 };
 
 /**
+ * Delete user account.
+ * @param {string} account Account name.
+ * @param {function(err, result)} callback Callback function.
+ */
+module.exports.deleteAccount = function (account, callback) {
+  provider.deleteAccount(account, callback);
+};
+
+/**
  * Update account details for the specific user.
  *
  * This function requires at least one of the following parameters (passed as a json object):

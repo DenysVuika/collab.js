@@ -50,9 +50,8 @@ angular.module('collabjs.services')
 
           function processModalResult(result) {
             if ((typeof result === 'object') && (result !== null)) {
-              result.success(function () {
-                $element.modal('hide');
-              });
+              // process promise object
+              result.then(function () { $element.modal('hide'); });
             } else if (result === false) {
               // noop
               return false;
@@ -79,6 +78,24 @@ angular.module('collabjs.services')
               processModalResult(result);
             }
           };
+        },
+        confirmDialog: function (message, submitFunc) {
+          var opts = {
+            title: 'Confirm',
+            template: '/templates/dlg-confirm.html',
+            context: { content: message || 'Are you sure you want to proceed?' },
+            submit: {
+              title: 'Confirm',
+              action: function () {
+                if (typeof submitFunc === 'function') {
+                  return submitFunc();
+                } else {
+                  return true;
+                }
+              }
+            }
+          };
+          this.showDialog(opts);
         }
       };
     }]);
