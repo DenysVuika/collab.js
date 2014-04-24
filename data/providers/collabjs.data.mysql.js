@@ -126,7 +126,7 @@ Provider.prototype = {
   },
   deleteAccount: function (account, callback) {
     pool.getConnection(function (err, connection) {
-      var command = 'DELETE FROM users WHERE account = ?';
+      var command = 'DELETE FROM users WHERE account = ? AND system = 0';
       connection.query(command, account, function (err, result) {
         connection.release();
         if (err) {
