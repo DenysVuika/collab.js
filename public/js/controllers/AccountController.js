@@ -6,25 +6,12 @@ angular.module('collabjs.controllers')
       $scope.error = false;
       $scope.info = false;
 
-      $scope.formatCountry = function(entry) {
-        if (!entry) { return ''; }
-        if (!entry.id) { return entry.text || ''; }
-        return '<i class="flag-icon-16 flag-' + entry.id.toLowerCase() + '"></i>' + entry.text;
-      };
-
-      var countryData = [];
-      for (var key in collabjs.countries) {
-        if (collabjs.countries.hasOwnProperty(key)) {
-          countryData.push({ id: key, text: collabjs.countries[key] });
-        }
-      }
-
-      $scope.countries = countryData;
+      $scope.countries = collabjs.countryData;
       $scope.select2Options = {
         placeholder: 'Select a Country',
         allowClear: true,
-        formatResult: $scope.formatCountry,
-        formatSelection: $scope.formatCountry
+        formatResult: collabjs.formatCountry,
+        formatSelection: collabjs.formatCountry
       };
 
       $scope.init = function() {

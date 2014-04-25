@@ -157,6 +157,7 @@ Provider.prototype = {
       });
     });
   },
+  // TODO: pass and verify old password before changing
   setAccountPassword: function (userId, password, callback) {
     if (!userId || !password) {
       callback('Error setting account password.', null);

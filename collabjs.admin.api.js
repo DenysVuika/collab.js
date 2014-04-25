@@ -49,7 +49,32 @@ module.exports = function (context) {
         });
       });
 
-    router.route('/accounts/:account')
+    router.route('/accounts/a/:account')
+      .get(noCache, function (req, res) {
+        repository.getAccount(req.params.account, function (err, result) {
+          if (err) { res.send(400); }
+          else {
+            delete result.password;
+            res.json(200, result);
+          }
+        });
+      })
+      .post(function (req, res) {
+        var json = req.body;
+        var id = json.id;
+        var account = {
+          name: json.name,
+          location: json.location,
+          website: json.website,
+          bio: json.bio
+        };
+        repository.updateAccount(id, account, function (err) {
+          if (err) { res.send(400); }
+          else {
+            res.send(200);
+          }
+        });
+      })
       .delete(function (req, res) {
         repository.deleteAccount(req.params.account, function (err) {
           if (err) { res.send(400, err); }

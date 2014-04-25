@@ -229,6 +229,25 @@ collabjs.countries = {
   'ZW': 'Zimbabwe'
 };
 
+collabjs.countryData = (function () {
+  'use strict';
+  var data = [];
+  for (var key in collabjs.countries) {
+    if (collabjs.countries.hasOwnProperty(key)) {
+      data.push({ id: key, text: collabjs.countries[key] });
+    }
+  }
+  return data;
+}());
+
+collabjs.formatCountry = function (c) {
+  'use strict';
+  if (!c) { return ''; }
+  if (!c.id) { return c.text || ''; }
+  return '<i class="flag-icon-16 flag-' + c.id.toLowerCase() + '"></i>' + c.text;
+};
+
+
 /*
   jQuery plugin: Twitter-like dynamic character countdown for textareas
 
@@ -284,9 +303,9 @@ collabjs.countries = {
 
   $.fn.countdown.defaults = {
     limit: 160,
-    init: function (counter) { },
-    plus: function (counter) { },
-    minus: function (counter) { },
+    init: function (/*counter*/) { },
+    plus: function (/*counter*/) { },
+    minus: function (/*counter*/) { },
     prefix: '',
     suffix: ''
   };

@@ -30,14 +30,46 @@ angular.module('collabjs.services')
             .error(function (err) { d.reject(err); });
           return d.promise;
         },
+        /**
+         * Get account by account name.
+         * @param {string} account Account name.
+         * @returns {promise} Deferred promise object.
+         */
+        getAccount: function (account) {
+          var d = $q.defer();
+          $http
+            .get('/api/admin/accounts/a/' + account)
+            .success(function (res) {d.resolve(res); })
+            .error(function (err) {d.reject(err); });
+          return d.promise;
+        },
+        /**
+         * Delete account by account name.
+         * @param {string} account Account name.
+         * @returns {promise} Deferred promise object.
+         */
         deleteAccount: function (account) {
           var d = $q.defer();
           $http
-            .delete('/api/admin/accounts/' + account)
+            .delete('/api/admin/accounts/a/' + account)
             .then(
               function (res) { d.resolve(res); },
               function (err) { d.reject(err); }
             );
+          return d.promise;
+        },
+        /**
+         * Update existing account.
+         * @param {string} account Account name.
+         * @param {object} data Account data in JSON format.
+         * @returns {promise} Deferred promise object.
+         */
+        updateAccount: function (account, data) {
+          var d = $q.defer();
+          $http
+            .post('/api/admin/accounts/a/' + account, data)
+            .success(function (res) {d.resolve(res); })
+            .error(function (err) {d.reject(err); });
           return d.promise;
         }
       };

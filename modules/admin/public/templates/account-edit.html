@@ -1,1 +1,60 @@
-<p>EDIT ACCOUNT</p>
+<div class="container fill-width" ng-init="init()">
+  <div class="row">
+    <div class="col-md-2" ng-include="'/admin/templates/sidebar.html'"></div>
+    <div class="col-md-10">
+      <div class="panel panel-default" style="margin-top: 5px;">
+        <div class="panel-heading">
+          <h3 class="panel-title">{{account}}</h3>
+        </div>
+        <div class="panel-body">
+          <p class="text-danger ng-cloak" ng-if="error">{{error}}</p>
+          <form class="form-horizontal" role="form" ng-submit="update()">
+            <div class="form-group">
+              <label class="col-lg-2 control-label" for="name">Name</label>
+              <div class="col-lg-10">
+                <input class="form-control" ng-model="name" id="name" type="text" required="required" placeholder="real name">
+                <span class="help-block">Enter your real name, so people you know can recognize you.</span>
+              </div>
+            </div>
+            <div class="form-group">
+              <label class="col-lg-2 control-label" for="location">Location</label>
+              <div class="col-lg-10">
+                <select class="form-control" ui-select2="select2Options" ng-model="location" id="location">
+                  <option value=""></option>
+                  <option ng-repeat="country in countries" value="{{country.id}}">{{country.text}}</option>
+                </select>
+                <span class="help-block">Where in the world are you?</span>
+              </div>
+            </div>
+            <div class="form-group">
+              <label class="col-lg-2 control-label" for="website">Website</label>
+              <div class="col-lg-10">
+                <input class="form-control" ng-model="website" type="text" id="website" placeholder="website">
+                <span class="help-block">Have a homepage or a blog? Put the address here.</span>
+              </div>
+            </div>
+            <div class="form-group">
+              <label class="col-lg-2 control-label" for="bio">Bio</label>
+              <div class="col-lg-10">
+                <textarea class="form-control v-resize" id="bio" ng-model="bio" rows="3" text-limit="160" counter="bio_counter"></textarea>
+                <span class="help-block">About yourself in 160 characters or less. <span class="bio-counter-label" id="bio_counter"></span></span>
+              </div>
+            </div>
+            <div class="form-group">
+              <div class="col-lg-offset-2 col-lg-4">
+                <a class="btn btn-default" href="/#/admin/accounts">Cancel</a>
+                <button class="btn btn-primary" type="submit">Update</button>
+              </div>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+  $(function() {
+    $("input").not(["type=submit"]).jqBootstrapValidation();
+  });
+</script>

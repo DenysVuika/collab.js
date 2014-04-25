@@ -19,22 +19,28 @@ angular.module('collabjs')
         title: 'Admin Settings',
         resolve: { isAdmin: collabjs.isAdmin }
       })
-      .when('/admin/users', {
+      .when('/admin/accounts', {
         templateUrl: '/admin/templates/accounts.html',
         controller: 'AdminAccountsCtrl',
-        title: 'admin: accounts',
+        title: 'Accounts',
         resolve: { isAdmin: collabjs.isAdmin }
       })
-      .when('/admin/users/new', {
+      .when('/admin/accounts/new', {
         templateUrl: '/admin/templates/account-new.html',
         controller: 'AdminNewAccCtrl',
-        title: 'admin: new account',
+        title: 'New account',
+        resolve: { isAdmin: collabjs.isAdmin }
+      })
+      .when('/admin/accounts/a/:account', {
+        templateUrl: '/admin/templates/account-edit.html',
+        controller: 'AdminEditAccCtrl',
+        title: 'Edit account',
         resolve: { isAdmin: collabjs.isAdmin }
       })
       .when('/admin/roles', {
         templateUrl: '/admin/templates/roles.html',
         controller: 'AdminRolesCtrl',
-        title: 'admin: roles',
+        title: 'Roles',
         resolve: { isAdmin: collabjs.isAdmin }
       });
   }])

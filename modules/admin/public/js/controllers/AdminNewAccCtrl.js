@@ -12,15 +12,11 @@ angular.module('collabjs.controllers')
         $scope.confirmPassword = '';
       };
 
-      $scope.cancel = function () {
-        $location.path('/admin/users').replace();
-      };
-
       $scope.create = function () {
         adminService
           .createAccount($scope.account, $scope.name, $scope.email, $scope.password)
           .then(
-            function () { $location.path('/admin/users').replace(); },
+            function () { $location.path('/admin/accounts').replace(); },
             function (err) {
               $scope.err = err;
               $scope.password = '';

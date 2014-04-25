@@ -11,7 +11,7 @@
           <th>Created</th>
           <th>Roles</th>
           <th>
-            <a class="btn btn-default" href="/#/admin/users/new">
+            <a class="btn btn-default" href="/#/admin/accounts/new">
               <i class="fa fa-plus"></i> Create
             </a>
           </th>
@@ -28,7 +28,7 @@
             <button class="btn btn-danger" ng-click="deleteAccount(account)">
               <i class="fa fa-times"></i>
             </button>
-            <button class="btn btn-default">
+            <a class="btn btn-default" ng-href="{{'/#/admin/accounts/a/' + account.account}}">
               <i class="fa fa-pencil"></i>
             </button>
           </td>
