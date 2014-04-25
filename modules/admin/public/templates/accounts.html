@@ -11,7 +11,7 @@
           <th>Created</th>
           <th>Roles</th>
           <th>
-            <a class="btn btn-default" href="/#/admin/accounts/new">
+            <a class="btn btn-default btn-sm" href="/#/admin/accounts/new">
               <i class="fa fa-plus"></i> Create
             </a>
           </th>
@@ -19,18 +19,37 @@
         </thead>
         <tbody>
         <tr ng-repeat="account in accounts">
-          <td>{{account.account}}</td>
+          <td>
+            <span class="account-value">
+              <i class="fa fa-lock" ng-if="account.system" title="This is a system account."></i>
+              <span>{{account.account}}</span>
+            </span>
+          </td>
           <td>{{account.name}}</td>
-          <td>{{account.email}}</td>
-          <td>{{account.created}}</td>
-          <td>{{account.roles}}</td>
-          <td class="account-actions-inline">
-            <button class="btn btn-danger" ng-click="deleteAccount(account)">
+          <td>
+            <span class="account-value">
+              <i class="fa fa-envelope"></i> {{account.email}}
+            </span>
+          </td>
+          <td>
+            <span class="account-value">
+              <i class="fa fa-clock-o"></i>
+              <span>{{account.created | amDateFormat: 'lll'}}</span>
+            </span>
+          </td>
+          <td>
+            <span class="account-value" ng-if="account.roles">
+              <i class="fa fa-sitemap"></i>
+              <span>{{account.roles}}</span>
+            </span>
+          </td>
+          <td class="account-actions-inline text-right">
+            <button class="btn btn-danger btn-sm" ng-click="deleteAccount(account)" ng-if="!account.system">
               <i class="fa fa-times"></i>
             </button>
-            <a class="btn btn-default" ng-href="{{'/#/admin/accounts/a/' + account.account}}">
+            <a class="btn btn-default btn-sm" ng-href="{{'/#/admin/accounts/a/' + account.account}}">
               <i class="fa fa-pencil"></i>
-            </button>
+            </a>
           </td>
         </tr>
         </tbody>

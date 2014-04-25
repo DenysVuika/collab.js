@@ -8,6 +8,9 @@
 .account-table tbody td {
   vertical-align: middle !important;
 }
+.account-table .account-value {
+  white-space: nowrap;
+}
 .account-toolbar {
   margin-top: 5px;
 }
@@ -15,4 +18,7 @@
   /*text-align: right;*/
   width: 1%;
   white-space: nowrap;
+}
+.account-panel {
+  margin-top: 5px;
 }
