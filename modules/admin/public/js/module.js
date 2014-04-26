@@ -37,6 +37,12 @@ angular.module('collabjs')
         title: 'Edit account',
         resolve: { isAdmin: collabjs.isAdmin }
       })
+      .when('/admin/accounts/a/:account/pwd', {
+        templateUrl: '/admin/templates/account-pwd.html',
+        controller: 'AdminPwdCtrl',
+        title: 'Change password',
+        resolve: { isAdmin: collabjs.isAdmin }
+      })
       .when('/admin/roles', {
         templateUrl: '/admin/templates/roles.html',
         controller: 'AdminRolesCtrl',

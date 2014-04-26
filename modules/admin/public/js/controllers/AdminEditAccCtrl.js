@@ -26,7 +26,6 @@ angular.module('collabjs.controllers')
             .then(
               function (result) {
                 if (result) {
-                  console.log(result);
                   $scope.id = result.id;
                   $scope.account = result.account;
                   $scope.name = result.name;

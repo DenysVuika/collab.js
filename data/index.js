@@ -92,6 +92,16 @@ module.exports.updateAccount = function (id, json, callback) {
 };
 
 /**
+ * Change account password.
+ * @param {string} account Account name.
+ * @param {string} password Old password.
+ * @param {function(err, result)} callback Callback function.
+ */
+module.exports.setPassword = function (account, password, callback) {
+  provider.setPassword(account, password, callback);
+};
+
+/**
  * Set new password for the user account.
  * @param {number} userId User id.
  * @param {string} password New password.

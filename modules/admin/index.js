@@ -10,6 +10,7 @@ module.exports = function (context) {
     '/admin/js/controllers/AdminAccountsCtrl.js',
     '/admin/js/controllers/AdminNewAccCtrl.js',
     '/admin/js/controllers/AdminEditAccCtrl.js',
+    '/admin/js/controllers/AdminPwdCtrl.js',
     '/admin/js/controllers/AdminRolesCtrl.js'
   ]);
 

@@ -70,18 +70,27 @@ module.exports = function (context) {
         };
         repository.updateAccount(id, account, function (err) {
           if (err) { res.send(400); }
-          else {
-            res.send(200);
-          }
+          else { res.send(200); }
         });
       })
       .delete(function (req, res) {
         repository.deleteAccount(req.params.account, function (err) {
           if (err) { res.send(400, err); }
-          else {
-            res.send(200);
-          }
+          else { res.send(200); }
         });
+      });
+
+    router.route('/accounts/a/:account/pwd')
+      .post(function (req, res) {
+        // TODO: add validation
+        repository.setPassword(
+          req.params.account,
+          req.body.password,
+          function (err) {
+            if (err) { res.send(400, err); }
+            else { res.send(200); }
+          }
+        );
       });
 
     app.use('/api/admin', router);

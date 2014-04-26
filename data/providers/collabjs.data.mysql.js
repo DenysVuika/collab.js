@@ -157,6 +157,23 @@ Provider.prototype = {
       });
     });
   },
+  setPassword: function (account, password, callback) {
+    if (!account || !password) {
+      callback('Error setting account password.');
+      return;
+    }
+
+    var hash = passwordHash.generate(password);
+    var command = 'UPDATE users SET password = ? WHERE account = ?';
+
+    pool.getConnection(function (err, connection) {
+      connection.query(command, [hash, account], function (err, result) {
+        connection.release();
+        var succeeded = (result && result.changedRows > 0);
+        callback(err, succeeded);
+      });
+    });
+  },
   // TODO: pass and verify old password before changing
   setAccountPassword: function (userId, password, callback) {
     if (!userId || !password) {

@@ -68,8 +68,23 @@ angular.module('collabjs.services')
           var d = $q.defer();
           $http
             .post('/api/admin/accounts/a/' + account, data)
-            .success(function (res) {d.resolve(res); })
-            .error(function (err) {d.reject(err); });
+            .success(function (res) { d.resolve(res); })
+            .error(function (err) { d.reject(err); });
+          return d.promise;
+        },
+        /**
+         * Change account password.
+         * @param {string} account Account name.
+         * @param {string} password Old password.
+         * @returns {promise} Deferred promise object.
+         */
+        changePassword: function (account, password) {
+          var d = $q.defer();
+          var data = { password: password };
+          $http
+            .post('/api/admin/accounts/a/' + account + '/pwd', data)
+            .success(function (res) { d.resolve(res); })
+            .error(function (err) { d.reject(err); });
           return d.promise;
         }
       };
