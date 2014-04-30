@@ -47,7 +47,17 @@ angular.module('collabjs.directives')
             var path = $location.path();
             var parts = (path.indexOf('/') === 0 ? path.substr(1) : path).split('/');
             if (parts.length > 0) {
-              pathLink = urlMap['/' + parts[0]];
+              if (parts.length > 1) {
+                for (var i = parts.length - 1; i >= 0; i--) {
+                  var upperLevel = '/' + parts.slice(0, i).join('/');
+                  pathLink = urlMap[upperLevel];
+                  if (pathLink) {
+                    break;
+                  }
+                }
+              } else {
+                pathLink = urlMap['/' + parts[0]];
+              }
             }
           }
 

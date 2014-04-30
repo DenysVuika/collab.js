@@ -1,0 +1,67 @@
+<div class="container fill-width" ng-init="init()">
+  <div class="row">
+    <div class="col-md-2" ng-include="'/admin/templates/sidebar.html'"></div>
+    <div class="col-md-10">
+      <div class="panel panel-default account-panel">
+        <div class="panel-heading">
+          <h3 class="panel-title">New account</h3>
+        </div>
+        <div class="panel-body">
+          <p class="text-danger ng-cloak" ng-if="error">{{error}}</p>
+          <form class="form-horizontal" role="form" ng-submit="create()">
+            <div class="form-group">
+              <label class="col-lg-2 control-label" for="account">Account</label>
+              <div class="col-lg-10">
+                <input class="form-control" ng-model="account" id="account" type="text" required="required" placeholder="account">
+                <span class="help-block"></span>
+              </div>
+            </div>
+            <div class="form-group">
+              <label class="col-lg-2 control-label" for="username">Name</label>
+              <div class="col-lg-10">
+                <input class="form-control" ng-model="name" id="username" type="text" required="required" placeholder="username">
+                <span class="help-block"></span>
+              </div>
+            </div>
+            <div class="form-group">
+              <label class="col-lg-2 control-label" for="email">Email</label>
+              <div class="col-lg-10">
+                <input class="form-control" ng-model="email" id="email" type="email" required="required" placeholder="email">
+                <span class="help-block"></span>
+              </div>
+            </div>
+            <div class="form-group">
+              <label class="col-lg-2 control-label" for="password">Password</label>
+              <div class="col-lg-10">
+                <input class="form-control" ng-model="password" type="password" id="password" name="password" required="required" placeholder="password">
+                <span class="help-block"></span>
+              </div>
+            </div>
+            <div class="form-group">
+              <label class="col-lg-2 control-label" for="confirmPassword">Confirm Password</label>
+              <div class="col-lg-10">
+                <input class="form-control" ng-model="confirmPassword" type="password" id="confirmPassword" required="required" placeholder="confirm password"
+                       data-validation-required-message="Password confirmation is required"
+                       data-validation-matches-match="password"
+                       data-validation-matches-message="Must match password entered above">
+                <span class="help-block"></span>
+              </div>
+            </div>
+            <div class="form-group">
+              <div class="col-lg-offset-2 col-lg-4">
+                <a class="btn btn-default" href="/#/admin/accounts">Cancel</a>
+                <button class="btn btn-primary" type="submit">Create</button>
+              </div>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+  $(function() {
+    $("input").not(["type=submit"]).jqBootstrapValidation();
+  });
+</script>

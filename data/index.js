@@ -24,6 +24,14 @@ module.exports.setProvider = function (instance) {
 };
 
 /**
+ * Gets all registered account. This is a management api.
+ * @param {function(err, user)} callback Callback function.
+ */
+module.exports.getAccounts = function (callback) {
+  provider.getAccounts(callback);
+};
+
+/**
  * Get account by id.
  * @param {number} id Account id.
  * @param {function(err, user)} callback Callback function.
@@ -58,6 +66,15 @@ module.exports.createAccount = function (json, callback) {
 };
 
 /**
+ * Delete user account.
+ * @param {string} account Account name.
+ * @param {function(err, result)} callback Callback function.
+ */
+module.exports.deleteAccount = function (account, callback) {
+  provider.deleteAccount(account, callback);
+};
+
+/**
  * Update account details for the specific user.
  *
  * This function requires at least one of the following parameters (passed as a json object):
@@ -72,6 +89,16 @@ module.exports.createAccount = function (json, callback) {
  */
 module.exports.updateAccount = function (id, json, callback) {
 	provider.updateAccount(id, json, callback);
+};
+
+/**
+ * Change account password.
+ * @param {string} account Account name.
+ * @param {string} password Old password.
+ * @param {function(err, result)} callback Callback function.
+ */
+module.exports.setPassword = function (account, password, callback) {
+  provider.setPassword(account, password, callback);
 };
 
 /**

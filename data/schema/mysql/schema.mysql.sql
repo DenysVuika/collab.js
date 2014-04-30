@@ -202,6 +202,7 @@ CREATE OR REPLACE VIEW `vw_accounts` AS
     u.comments,
     u.following,
     u.followers,
+    u.system,
     USER_ROLES(u.id) as roles
   FROM users AS u
 ;

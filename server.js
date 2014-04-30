@@ -112,7 +112,7 @@ if (config.server.compression) {
 
 app.use(logger('dev'));
 app.use(express.static(__dirname + '/public', { maxAge: 86400000})); // one day
-runtimeContext.emit(RuntimeEvents.app_init_static, app);
+runtimeContext.emit(RuntimeEvents.initStaticContent, app);
 
 app.use(favicon(path.join(__dirname, config.ui.favicon || '/favicon.ico')));
 app.use(cookieParser(config.server.cookieSecret));
@@ -162,11 +162,12 @@ io.set('authorization', passportSocketIo.authorize({
 
 // Default routes
 
-require('./collabjs.web.js')(runtimeContext);
-require('./collabjs.web.api.js')(runtimeContext);
+require('./collabjs.web')(runtimeContext);
+require('./collabjs.web.api')(runtimeContext);
+require('./collabjs.admin.api')(runtimeContext);
 
 // Notify external modules that their routes need to be initialized
-runtimeContext.emit(RuntimeEvents.app_init_routes, app);
+runtimeContext.emit(RuntimeEvents.initWebRoutes, app);
 
 // Error handling
 
@@ -242,6 +243,6 @@ app.get('/500', function(req, res, next){
 // Server startup
 
 // Notify external modules that application is about to start
-runtimeContext.emit(RuntimeEvents.app_start, app);
+runtimeContext.emit(RuntimeEvents.appStart, app);
 server.listen(app.get('port'), app.get('host'));
 console.log("collab.js server listening on port %d in %s mode", app.get('port'), app.settings.env);

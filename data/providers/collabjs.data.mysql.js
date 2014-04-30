@@ -66,6 +66,17 @@ function getFollowedUsers(connection, userId, callback) {
 function Provider() {}
 
 Provider.prototype = {
+  // TODO: introduce paging support
+  getAccounts: function (callback) {
+    pool.getConnection(function (err, connection) {
+      var command = 'SELECT id, account, name, created, email, system, roles FROM vw_accounts';
+      connection.query(command, function (err, result) {
+        connection.release();
+        if (err) { return callback(err, null); }
+        callback(err, result);
+      });
+    });
+  },
   getAccountById: function (id, callback) {
     pool.getConnection(function (err, connection) {
       var command = "SELECT * FROM vw_accounts WHERE id = ? LIMIT 1";
@@ -113,6 +124,20 @@ Provider.prototype = {
       });
     });
   },
+  deleteAccount: function (account, callback) {
+    pool.getConnection(function (err, connection) {
+      var command = 'DELETE FROM users WHERE account = ? AND system = 0';
+      connection.query(command, account, function (err, result) {
+        connection.release();
+        if (err) {
+          callback('Error removing account.');
+        } else {
+          var succeeded = result.affectedRows > 0;
+          callback(null, succeeded);
+        }
+      });
+    });
+  },
   updateAccount: function (id, json, callback) {
     var fields = {
       location: json.location || '',                  // update or reset user.location
@@ -132,6 +157,24 @@ Provider.prototype = {
       });
     });
   },
+  setPassword: function (account, password, callback) {
+    if (!account || !password) {
+      callback('Error setting account password.');
+      return;
+    }
+
+    var hash = passwordHash.generate(password);
+    var command = 'UPDATE users SET password = ? WHERE account = ?';
+
+    pool.getConnection(function (err, connection) {
+      connection.query(command, [hash, account], function (err, result) {
+        connection.release();
+        var succeeded = (result && result.changedRows > 0);
+        callback(err, succeeded);
+      });
+    });
+  },
+  // TODO: pass and verify old password before changing
   setAccountPassword: function (userId, password, callback) {
     if (!userId || !password) {
       callback('Error setting account password.', null);
@@ -488,8 +531,6 @@ Provider.prototype = {
       var command = 'INSERT INTO likes (userId, postId) VALUES (?,?)';
       connection.query(command, [userId, postId], function (err, result) {
         connection.release();
-        console.log(err);
-        console.log(result);
         callback(err);
       });
     });
@@ -499,8 +540,6 @@ Provider.prototype = {
       var command = 'DELETE FROM likes WHERE userId = ? AND postId = ?';
       connection.query(command, [userId, postId], function (err, result) {
         connection.release();
-        console.log(err);
-        console.log(result);
         callback(err);
       });
     });

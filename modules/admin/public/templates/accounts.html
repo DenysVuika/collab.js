@@ -1,0 +1,59 @@
+<div class="container fill-width" ng-init="init()">
+  <div class="row">
+    <div class="col-md-2" ng-include="'/admin/templates/sidebar.html'"></div>
+    <div class="col-md-10">
+      <table class="table table-bordered table-hover account-table">
+        <thead>
+        <tr>
+          <th>Account</th>
+          <th>Name</th>
+          <th>Email</th>
+          <th>Created</th>
+          <th>Roles</th>
+          <th>
+            <a class="btn btn-default btn-sm" href="/#/admin/accounts/new">
+              <i class="fa fa-plus"></i> Create
+            </a>
+          </th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr ng-repeat="account in accounts">
+          <td>
+            <span class="account-value">
+              <i class="fa fa-lock" ng-if="account.system" title="This is a system account."></i>
+              <span>{{account.account}}</span>
+            </span>
+          </td>
+          <td>{{account.name}}</td>
+          <td>
+            <span class="account-value">
+              <i class="fa fa-envelope"></i> {{account.email}}
+            </span>
+          </td>
+          <td>
+            <span class="account-value">
+              <i class="fa fa-clock-o"></i>
+              <span>{{account.created | amDateFormat: 'lll'}}</span>
+            </span>
+          </td>
+          <td>
+            <span class="account-value" ng-if="account.roles">
+              <i class="fa fa-sitemap"></i>
+              <span>{{account.roles}}</span>
+            </span>
+          </td>
+          <td class="account-actions-inline text-right">
+            <button class="btn btn-danger btn-sm" ng-click="deleteAccount(account)" ng-if="!account.system">
+              <i class="fa fa-times"></i>
+            </button>
+            <a class="btn btn-default btn-sm" ng-href="{{'/#/admin/accounts/a/' + account.account}}">
+              <i class="fa fa-pencil"></i>
+            </a>
+          </td>
+        </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>

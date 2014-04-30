@@ -10,24 +10,15 @@ describe('services', function () {
     var service;
     var successCallback;
     var errorCallback;
+    var q;
 
-    /*function compile() {
-      console.log('$compile invoked');
-      return $('<div></div>');
-    }*/
-
-    /*beforeEach(module(function($provide) {
-      $provide.value('$compile', function () {
-        console.log('$compile requested');
-        return compile;
-      });
-    }));*/
     beforeEach(module('collabjs.services'));
 
-    beforeEach(inject(function ($rootScope, $httpBackend, uiService) {
+    beforeEach(inject(function ($rootScope, $httpBackend, $q, uiService) {
       scope = $rootScope;
       httpBackend = $httpBackend;
       service = uiService;
+      q = $q;
       successCallback = jasmine.createSpy('success');
       errorCallback = jasmine.createSpy('error');
     }));
@@ -225,14 +216,12 @@ describe('services', function () {
       var template = '<div id="modal1" class="modal"></div>';
       httpBackend.expectGET().respond(200, template);
 
+      var d = q.defer();
+
       var options = {
         submit: {
           action: function () {
-            return {
-              success: function (func) {
-                func();
-              }
-            };
+            return d.promise;
           }
         }
       };
@@ -246,6 +235,8 @@ describe('services', function () {
       var scope = element.scope();
 
       scope.okButton.action();
+      d.resolve();
+      scope.$root.$digest();
       expect(element.hasClass('in')).toBe(false);
 
       element.remove();
