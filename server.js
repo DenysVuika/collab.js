@@ -5,7 +5,7 @@
 'use strict';
 
 var express = require('express')
-  , favicon = require('static-favicon')
+  , favicon = require('serve-favicon')
   , logger = require('morgan')
   , cookieParser = require('cookie-parser')
   , bodyParser = require('body-parser')

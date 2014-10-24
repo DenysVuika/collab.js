@@ -53,7 +53,10 @@ function getFollowedUsers(connection, userId, callback) {
     if (err) { callback(err, []); }
     else {
       var list = result[0].list;
-      var ids = list.split(',').map(Number);
+      var ids = [];
+      if (list) {
+        ids = list.split(',').map(Number);
+      }
       callback(false, ids);
     }
   });
