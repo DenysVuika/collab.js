@@ -51,16 +51,6 @@ config.data = {
   password: '[password]'
 };
 
-// mail settings
-config.smtp = {
-  enabled: false,
-  host: '[host]',
-  user: '[user]',
-  password: '[password]',
-  // used for automatic notification purposes
-  noreply: 'collab.js <noreply@collabjs.org>'
-};
-
 config.client = {
   js: [],   // JavaScript files to be automatically embedded
   css: []   // CSS files to be automatically embedded

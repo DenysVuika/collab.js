@@ -16,18 +16,13 @@ module.exports = function (context) {
     router.use(authenticate);
     router.use(requireRole('administrator'));
 
-    /*router.route('/')
-      .get(noCache, function (req, res) {
-        res.json(200, { 'root': '/' });
-      });*/
-
     router.route('/accounts')
       .get(noCache, function (req, res) {
         repository.getAccounts(function (err, result) {
           if (err) {
-            res.json(400);
+            res.status(400).end();
           } else {
-            res.json(200, result);
+            res.json(result);
           }
         });
       })
@@ -52,10 +47,10 @@ module.exports = function (context) {
     router.route('/accounts/a/:account')
       .get(noCache, function (req, res) {
         repository.getAccount(req.params.account, function (err, result) {
-          if (err) { res.send(400); }
+          if (err) { res.status(400).end(); }
           else {
             delete result.password;
-            res.json(200, result);
+            res.json(result);
           }
         });
       })
@@ -69,8 +64,8 @@ module.exports = function (context) {
           bio: json.bio
         };
         repository.updateAccount(id, account, function (err) {
-          if (err) { res.send(400); }
-          else { res.send(200); }
+          if (err) { res.status(400).end(); }
+          else { res.status(200).end(); }
         });
       })
       .delete(function (req, res) {
