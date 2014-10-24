@@ -22,7 +22,7 @@ describe('collab.js web.api', function () {
   };
 
   app.use(bodyParser.json());
-  app.use(bodyParser.urlencoded());
+  app.use(bodyParser.urlencoded({ extended: true }));
   // make application always authenticated for test purposes
   app.use(function (req, res, next) {
     req.user = testUser;
