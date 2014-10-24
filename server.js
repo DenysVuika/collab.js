@@ -18,7 +18,6 @@ var express = require('express')
   , fs = require('fs')
   , passport = require('passport')
   , LocalStrategy = require('passport-local').Strategy
-  , passportSocketIo = require('passport.socketio')
   , passwordHash = require('password-hash')
   , config = require('./config')
   , utils = require('./collabjs.utils')
@@ -50,8 +49,6 @@ else {
   app.set('host', config.env.host);
   server = http.createServer(app);
 }
-
-var io = require('socket.io').listen(server);
 
 /*
  * Authentication Layer
@@ -117,12 +114,14 @@ runtimeContext.emit(RuntimeEvents.initStaticContent, app);
 app.use(favicon(path.join(__dirname, config.ui.favicon || '/favicon.ico')));
 app.use(cookieParser(config.server.cookieSecret));
 app.use(bodyParser.json());
-app.use(bodyParser.urlencoded());
+app.use(bodyParser.urlencoded({ extended: true }));
 app.use(methodOverride()); // support for 'PUT' and 'DELETE' requests
 app.use(session({
   secret: config.server.sessionSecret,
   cookie: { maxAge: 14 * 24 * 3600 * 1000 }, // 2 weeks
-  store: sessionStore
+  store: sessionStore,
+  saveUninitialized: true,
+  resave: true
 }));
 
 // use CSRF protection middleware if enabled
@@ -139,26 +138,6 @@ app.use(passport.session());
 
 app.use(utils.commonLocals);
 //app.use(utils.detectMobileBrowser);
-
-// Socket.io authorization
-
-io.set('authorization', passportSocketIo.authorize({
-  cookieParser: cookieParser, // or connect.cookieParser
-  secret: config.server.sessionSecret,
-  store: sessionStore,
-  fail: function (data, accept) {
-    accept(null, false);
-  },
-  success: function (data, accept) {
-    accept(null, true);
-  }
-}));
-
-/*
- io.sockets.on('connection', function (socket) {
- console.log('user connected: ', socket.handshake.user);
- });
-*/
 
 // Default routes
 
