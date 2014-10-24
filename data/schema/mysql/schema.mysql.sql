@@ -8,9 +8,7 @@
 CREATE DATABASE IF NOT EXISTS `collabjs` /*!40100 DEFAULT CHARACTER SET utf8 COLLATE utf8_unicode_ci */;
 USE `collabjs`;
 
---------------------------------------
--- TABLES
---------------------------------------
+/* TABLES */
 
 CREATE TABLE `users` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
@@ -127,14 +125,12 @@ CREATE TABLE `post_tags` (
   CONSTRAINT `FK_pt_post` FOREIGN KEY (`postId`) REFERENCES `posts` (`id`) ON DELETE CASCADE ON UPDATE NO ACTION
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 
---------------------------------------
--- FUNCTIONS
---------------------------------------
+/* FUNCTIONS */
 
 DELIMITER $$
 CREATE FUNCTION `USER_ROLES`(
   uid INT
-) RETURNS TEXT CHARSET utf8 COLLATE utf8_unicode_ci
+) RETURNS TEXT CHARSET utf8
 BEGIN
   DECLARE result TEXT;
   SET result =
@@ -148,9 +144,10 @@ BEGIN
 END$$
 DELIMITER ;
 
+DELIMITER $$
 CREATE FUNCTION `POST_TAGS`(
   postId INT
-) RETURNS text CHARSET utf8 COLLATE utf8_unicode_ci
+) RETURNS text CHARSET utf8
 BEGIN
 	DECLARE RESULT TEXT;
 	SET RESULT =
@@ -161,14 +158,15 @@ BEGIN
 		WHERE p.Id = postId
 	);
 	RETURN RESULT;
-END
+END$$
+DELIMITER ;
 
 DELIMITER $$
 CREATE FUNCTION `SPLIT_STR`(
 	str TEXT,
 	delim VARCHAR(12),
 	pos INT
-) RETURNS text CHARSET utf8 COLLATE utf8_unicode_ci
+) RETURNS text CHARSET utf8
     DETERMINISTIC
 BEGIN
 	DECLARE output TEXT;
@@ -182,9 +180,7 @@ BEGIN
 END$$
 DELIMITER ;
 
---------------------------------------
--- VIEWS
---------------------------------------
+/* VIEWS */
 
 CREATE OR REPLACE VIEW `vw_accounts` AS
   SELECT
@@ -287,9 +283,7 @@ CREATE OR REPLACE VIEW `vw_comments` AS
   LEFT JOIN users AS u ON u.id = c.userId
 ;
 
---------------------------------------
--- PROCEDURES
---------------------------------------
+/* PROCEDURES */
 
 -- TODO: replace with inline query
 DELIMITER $$
@@ -561,9 +555,7 @@ BEGIN
 END$$
 DELIMITER ;
 
---------------------------------------
--- TRIGGERS
---------------------------------------
+/* TRIGGERS */
 
 DELIMITER $$
 CREATE TRIGGER following_added AFTER INSERT ON `following`
@@ -610,9 +602,8 @@ DELIMITER $$
 CREATE TRIGGER like_deleted AFTER DELETE ON `likes` FOR EACH ROW
 	UPDATE `posts` SET likesCount = likesCount - 1 WHERE id = OLD.postId;$$
 DELIMITER ;
---------------------------------------
--- DEFAULT DATA
---------------------------------------
+
+/* DEFAULT DATA */
 
 -- Create default 'administrator' role
 INSERT INTO roles (`name`, `loweredName`)
