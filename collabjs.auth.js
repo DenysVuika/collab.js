@@ -67,7 +67,7 @@ module.exports.requireRole = function (role) {
     } else if (req.user && req.user.roles && req.user.roles.split(',').indexOf(role) >= 0) {
       return next();
     } else {
-      return res.send(403);
+      return res.status(403).end();
     }
   };
 };

@@ -3,6 +3,7 @@
 // Runtime context implementation
 
 var events = require('events')
+  , debug = require('debug')('collabjs:runtime')
   , config = require('./config')
   , auth = require('./collabjs.auth')
   , data = require('./data');
@@ -35,7 +36,7 @@ var RuntimeContext = function() {
     for (var i = 0; i < items.length; i++) {
       if (client.js.indexOf(paths[i]) < 0) {
         client.js.push(paths[i]);
-        console.log('\t + ' + paths[i]);
+        debug('\t + ' + paths[i]);
       }
     }
   };
@@ -51,7 +52,7 @@ var RuntimeContext = function() {
     for (var i = 0; i < items.length; i++) {
       if (client.css.indexOf(paths[i]) < 0) {
         client.css.push(paths[i]);
-        console.log('\t + ' + paths[i]);
+        debug('\t + ' + paths[i]);
       }
     }
   };

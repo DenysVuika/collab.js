@@ -1,7 +1,8 @@
 'use strict';
 
 var fs = require('fs')
-  , path = require('path');
+  , path = require('path')
+  , debug = require('debug')('collabjs:modules');
 
 /*
 module.exports = function(context) {
@@ -17,12 +18,12 @@ module.exports = function(context) {
 */
 
 module.exports = function(context) {
-  console.log('Starting external modules...');
+  debug('Starting external modules...');
   fs.readdirSync(__dirname).forEach(function(file) {
     var currentFile = path.join(__dirname, file);
     var stats = fs.statSync(currentFile);
     if (stats.isDirectory()) {
-      console.log('info: loading module ' + file);
+      debug('Loading module ' + file);
       require(currentFile)(context);
     }
   });

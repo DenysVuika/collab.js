@@ -54,7 +54,7 @@ describe('collabjs.auth', function () {
 
       app.use(authAccept);
       app.use(auth.ensureAuthenticated);
-      app.get('/timeline', function (req, res) { res.send(200); });
+      app.get('/timeline', function (req, res) { res.sendStatus(200); });
 
       request(app)
         .get('/timeline')
@@ -77,7 +77,7 @@ describe('collabjs.auth', function () {
 
       app.use(authAccept);
       app.use(auth.requireAuthenticated);
-      app.get('/timeline', function (req, res) { res.send(200); });
+      app.get('/timeline', function (req, res) { res.sendStatus(200); });
 
       request(app)
         .get('/timeline')
@@ -140,7 +140,7 @@ describe('collabjs.auth', function () {
     it('allows access by role', function (done) {
       app.use(authAcceptWithRoles('admin,role2'));
       app.use(auth.ensureRole('admin'));
-      app.get('/timeline', function (req, res) { res.send(200); });
+      app.get('/timeline', function (req, res) { res.sendStatus(200); });
 
       request(app)
         .get('/timeline')
@@ -201,7 +201,7 @@ describe('collabjs.auth', function () {
     it('allows access by role', function (done) {
       app.use(authAcceptWithRoles('role1,admin,role2'));
       app.use(auth.requireRole('admin'));
-      app.get('/timeline', function (req, res) { res.send(200); });
+      app.get('/timeline', function (req, res) { res.sendStatus(200); });
 
       request(app)
         .get('/timeline')
