@@ -7,18 +7,23 @@ config.env = {
 };
 
 config.server = {
-  sessionSecret: 'keyboard cat',  // session secret, SHOULD BE CHANGED IN PRODUCTION
-  sessionCleanupTime: 60000,      // one minute
-  cookieSecret: 'keyboard cat',   // cookie secret, SHOULD BE CHANGED IN PRODUCTION
+  session: {
+    databaseStore: false,                             /* enable database store, by default uses cookie sessions (recommended) */
+    secret: '{4766B0F9-6B34-4065-B06A-C87B1D027E02}', /* session secret, SHOULD BE CHANGED IN PRODUCTION */
+    duration: 14 * 24 * 3600 * 1000,                  /* 2 weeks */
+    activeDuration: 1000 * 60 * 60,                   /* 1 hour */
+    secureProxy: false                                /* requires SSL proxy, enable when running under HTTP */
+  },
   csrf: true,                     // toggle cross-site request forgery protection middleware
   compression: true,              // toggle content compression middleware,
-  allowUserRegistration: true
+  allowUserRegistration: true     // toggle self-registration for users
 };
 
-// data layer
+// data layer, supported db engines: MySQL
 config.data = {
   provider: 'collabjs.data.mysql',
-  sessionStore: 'collabjs.session.mysql',
+  sessionStore: 'collabjs.session.mysql', /* used only if config.server.session.databaseStore = true */
+  sessionCleanupTime: 60000,              /* 1 minute */
   //provider: 'collabjs.data.mssql',
   // Note: if defined, 'connectionString' value supersedes parameters host/database/user/password
   // this allows providing driver-specific connection strings like one the following samples:
