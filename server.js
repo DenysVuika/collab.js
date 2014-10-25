@@ -10,7 +10,6 @@ var express = require('express')
   , cookieParser = require('cookie-parser')
   , bodyParser = require('body-parser')
   , methodOverride = require('method-override')
-  , session = require('express-session')
   , csrf = require('csurf')
   , compress = require('compression')
   , passport = require('passport')
@@ -22,7 +21,6 @@ var express = require('express')
   , RuntimeEvents = runtime.RuntimeEvents
   , runtimeContext = runtime.RuntimeContext
   , db = require('./data')
-  , sessionStore = new db.SessionStore()
   , path = require('path');
 
 // Create server
@@ -95,17 +93,53 @@ app.use(express.static(__dirname + '/public', { maxAge: 86400000})); // one day
 runtimeContext.emit(RuntimeEvents.initStaticContent, app);
 
 app.use(favicon(path.join(__dirname, config.ui.favicon || '/favicon.ico')));
-app.use(cookieParser(config.server.cookieSecret));
+app.use(cookieParser(config.server.session.secret));
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(methodOverride()); // support for 'PUT' and 'DELETE' requests
-app.use(session({
-  secret: config.server.sessionSecret,
-  cookie: { maxAge: 14 * 24 * 3600 * 1000 }, // 2 weeks
-  store: sessionStore,
-  saveUninitialized: true,
-  resave: true
-}));
+
+/*
+  Enables database store for sessions
+  Warning, causes database hits for EVERY http request
+  Might require additional efforts for scaling
+  Warning: this mode might be deprecated in future versions
+*/
+if (config.server.session.databaseStore) {
+  debug('Using database sessions');
+  var dbSession = require('express-session');
+  app.use(dbSession({
+    name: 'collab.sid',
+    secret: config.server.session.secret,
+    cookie: {
+      maxAge: config.server.session.duration
+    },
+    store: new db.SessionStore(),
+    saveUninitialized: true,
+    resave: true
+  }));
+}
+/*
+  Enables encrypted cookie sessions (default)
+  Does not require additional efforts when scaling
+  Greatly improves overall performance
+*/
+else {
+  debug('Using encrypted cookie sessions');
+  var cookieSession = require('client-sessions');
+  app.use(cookieSession({
+    requestKey: 'session',
+    cookieName: 'collab.sid',
+    secret: config.server.session.secret,
+    duration: config.server.session.duration,
+    activeDuration: config.server.session.activeDuration,
+    cookie: {
+      maxAge: config.server.session.duration,
+      httpOnly: true,
+      secureProxy: config.server.session.secureProxy
+    }
+  }));
+}
+
 
 // use CSRF protection middleware if enabled
 if (config.server.csrf) {

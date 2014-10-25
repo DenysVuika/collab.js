@@ -33,7 +33,7 @@ module.exports = (function () {
     });
 
     // every minute go and burn the old sessions
-    self.checkUpInterval = typeof(config.server.sessionCleanupTime) === "undefined" ? 60000 : config.server.sessionCleanupTime;
+    self.checkUpInterval = typeof(config.data.sessionCleanupTime) === "undefined" ? 60000 : config.data.sessionCleanupTime;
     if(self.checkUpInterval > 0) {
       setInterval(function(){
         //console.log('[info]: cleaning old sessions...');
