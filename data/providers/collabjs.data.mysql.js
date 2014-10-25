@@ -2,7 +2,8 @@
 
 var utils = require('../../collabjs.utils')
   , pool = require('./collabjs.pool.mysql').pool
-  , passwordHash = require('password-hash');
+  , passwordHash = require('password-hash')
+  , debug = require('debug')('collabjs:mysql');
 
 /**
  * Creates mentions for the given post.
@@ -15,11 +16,11 @@ function addMentions(connection, postId, content, callback) {
   var accounts = utils.parseAccountNames(content, ',');
   if (accounts) {
     connection.query('CALL add_mentions (?,?)', [postId, accounts], function (err) {
-      callback(err);
+      if (err) { debug('addMentions: %j', err); }
+      return callback(err);
     });
-  } else {
-    callback(false);
   }
+  callback(false);
 }
 
 /**
@@ -33,11 +34,11 @@ function addHashTags(connection, postId, content, callback) {
   var tags = utils.parseHashTags(content, ',');
   if (tags) {
     connection.query('CALL assign_tags (?,?)', [postId, tags], function (err) {
-      callback(err);
+      if (err) { debug('addHashTags: %j', err); }
+      return callback(err);
     });
-  } else {
-    callback(false);
   }
+  callback(false);
 }
 
 /**
@@ -50,15 +51,16 @@ function addHashTags(connection, postId, content, callback) {
 function getFollowedUsers(connection, userId, callback) {
   var command = "SELECT GROUP_CONCAT(f.targetId separator ',') as list FROM following AS f WHERE f.userId = ?";
   connection.query(command, [userId], function (err, result) {
-    if (err) { callback(err, []); }
-    else {
-      var list = result[0].list;
-      var ids = [];
-      if (list) {
-        ids = list.split(',').map(Number);
-      }
-      callback(false, ids);
+    if (err) {
+      debug('getFollowedUsers: %j', err);
+      return callback(err, []);
     }
+    var list = result[0].list;
+    var ids = [];
+    if (list) {
+      ids = list.split(',').map(Number);
+    }
+    callback(false, ids);
   });
 }
 
@@ -75,7 +77,10 @@ Provider.prototype = {
       var command = 'SELECT id, account, name, created, email, system, roles FROM vw_accounts';
       connection.query(command, function (err, result) {
         connection.release();
-        if (err) { return callback(err, null); }
+        if (err) {
+          debug('getAccounts: %j', err);
+          return callback(err, null);
+        }
         callback(err, result);
       });
     });
@@ -85,13 +90,16 @@ Provider.prototype = {
       var command = "SELECT * FROM vw_accounts WHERE id = ? LIMIT 1";
       connection.query(command, [id], function (err, result) {
         connection.release();
-        if (err) { return callback(err, null); }
+        if (err) {
+          debug('getAccountById: %j', err);
+          return callback(err, null);
+        }
         if (result.length > 0) {
           var account = result[0];
           account.pictureUrl = utils.getAvatarUrl(account.pictureId);
           return callback(err, account);
         }
-        else { return callback(err, null); }
+        return callback(err, null);
       });
     });
   },
@@ -100,13 +108,16 @@ Provider.prototype = {
       var command = "SELECT * FROM vw_accounts WHERE account = ? LIMIT 1";
       connection.query(command, [account], function (err, result) {
         connection.release();
-        if (err) { return callback(err, null); }
+        if (err) {
+          debug('getAccount: %j', err);
+          return callback(err, null);
+        }
         if (result.length > 0) {
           var acc = result[0];
           acc.pictureUrl = utils.getAvatarUrl(acc.pictureId);
           return callback(err, acc);
         }
-        else { return callback(err, null); }
+        return callback(err, null);
       });
     });
   },
@@ -116,14 +127,14 @@ Provider.prototype = {
       connection.query('INSERT INTO users SET ?', json, function (err, result) {
         connection.release();
         if (err) {
+          debug('createAccount: %j', err);
           var errorMessage = 'Error creating account.';
           if (err.code === 'ER_DUP_ENTRY') {
             errorMessage = 'User with such account already exists.';
           }
-          callback(errorMessage);
-        } else {
-          callback(null, { id: result.insertId });
+          return callback(errorMessage);
         }
+        callback(null, { id: result.insertId });
       });
     });
   },
@@ -133,11 +144,10 @@ Provider.prototype = {
       connection.query(command, account, function (err, result) {
         connection.release();
         if (err) {
-          callback('Error removing account.');
-        } else {
-          var succeeded = result.affectedRows > 0;
-          callback(null, succeeded);
+          debug('deleteAccount: %j', err);
+          return callback('Error removing account.');
         }
+        callback(null, result.affectedRows > 0);
       });
     });
   },
@@ -156,6 +166,7 @@ Provider.prototype = {
     pool.getConnection(function (err, connection) {
       connection.query('UPDATE users SET ? WHERE id = ' + connection.escape(id), fields, function (err, result) {
         connection.release();
+        if (err) { debug('updateAccount: %j', err); }
         callback(err, result);
       });
     });
@@ -166,12 +177,13 @@ Provider.prototype = {
       return;
     }
 
-    var hash = passwordHash.generate(password);
-    var command = 'UPDATE users SET password = ? WHERE account = ?';
+    var hash = passwordHash.generate(password)
+      , command = 'UPDATE users SET password = ? WHERE account = ?';
 
     pool.getConnection(function (err, connection) {
       connection.query(command, [hash, account], function (err, result) {
         connection.release();
+        if (err) { debug('setPassword: %j', err); }
         var succeeded = (result && result.changedRows > 0);
         callback(err, succeeded);
       });
@@ -180,38 +192,41 @@ Provider.prototype = {
   // TODO: pass and verify old password before changing
   setAccountPassword: function (userId, password, callback) {
     if (!userId || !password) {
-      callback('Error setting account password.', null);
-    } else {
-      this.getAccountById(userId, function (err, result) {
-        if (err) { callback(err, result); }
-        else {
-          var hashedPassword = passwordHash.generate(password)
-            , command = 'UPDATE users SET password = ? WHERE id = ?';
-          pool.getConnection(function (err, connection) {
-            connection.query(command, [hashedPassword, userId], function (err, result) {
-              connection.release();
-              if (err) { callback(err, result); }
-              else { callback(null, hashedPassword); }
-            });
-          });
-        }
-      });
+      return callback('Error setting account password.', null);
     }
+    this.getAccountById(userId, function (err, result) {
+      if (err) {
+        debug('setAccountPassword: %j', err);
+        return callback(err, result);
+      }
+      var hashedPassword = passwordHash.generate(password)
+        , command = 'UPDATE users SET password = ? WHERE id = ?';
+      pool.getConnection(function (err, connection) {
+        connection.query(command, [hashedPassword, userId], function (err, result) {
+          connection.release();
+          if (err) {
+            debug('setAccountPassword: %j', err);
+            return callback(err, result);
+          }
+          callback(null, hashedPassword);
+        });
+      });
+    });
   },
   setAccountEmail: function (userId, email, callback) {
     if (!userId || !email) {
-      callback('Error setting account email.', null);
-    } else {
-      var command = 'UPDATE users SET email = ?, emailHash = ? WHERE id = ?';
-      var hash = utils.createHash(email);
-      pool.getConnection(function (err, connection) {
-        connection.query(command, [email, hash, userId], function (err, result) {
-          connection.release();
-          var succeeded = (result && result.changedRows > 0);
-          callback(err, succeeded);
-        });
-      });
+      return callback('Error setting account email.', null);
     }
+    var command = 'UPDATE users SET email = ?, emailHash = ? WHERE id = ?'
+      , hash = utils.createHash(email);
+    pool.getConnection(function (err, connection) {
+      connection.query(command, [email, hash, userId], function (err, result) {
+        connection.release();
+        if (err) { debug('setAccountEmail: %j', err); }
+        var succeeded = (result && result.changedRows > 0);
+        callback(err, succeeded);
+      });
+    });
   },
   getPublicProfile: function (callerId, targetAccount, callback) {
     pool.getConnection(function (err, connection) {
@@ -219,14 +234,15 @@ Provider.prototype = {
         var command = "SELECT * FROM vw_people WHERE account = ? LIMIT 1";
         connection.query(command, [targetAccount], function (err, result) {
           connection.release();
-          if (err || result.length === 0) { callback(err, null); }
-          else {
-            var profile = result[0];
-            profile.pictureUrl = utils.getAvatarUrl(profile.pictureId);
-            profile.isOwnProfile = (profile.id === callerId);
-            profile.isFollowed = (followed.indexOf(profile.id) > -1);
-            callback(err, profile);
+          if (err || result.length === 0) {
+            debug('getPublicProfile: %j', err);
+            return callback(err, null);
           }
+          var profile = result[0];
+          profile.pictureUrl = utils.getAvatarUrl(profile.pictureId);
+          profile.isOwnProfile = (profile.id === callerId);
+          profile.isFollowed = (followed.indexOf(profile.id) > -1);
+          callback(err, profile);
         });
       });
     });
@@ -236,6 +252,7 @@ Provider.prototype = {
       var command = 'CALL follow (?,?)';
       connection.query(command, [callerId, targetAccount], function (err, result) {
         connection.release();
+        if (err) { debug('followAccount: %j', err); }
         callback(err, result);
       });
     });
@@ -245,6 +262,7 @@ Provider.prototype = {
       var command = 'CALL unfollow(?,?)';
       connection.query(command, [callerId, targetAccount], function (err, result) {
         connection.release();
+        if (err) { debug('unfollowAccount: %j', err); }
         callback(err, result);
       });
     });
@@ -255,20 +273,21 @@ Provider.prototype = {
         var command = 'CALL get_people (?)';
         connection.query(command, [topId], function (err, result) {
           connection.release();
-          if (err) { callback(err, null); }
-          else {
-            var rows = result[0], row;
-            // init additional properties
-            if (rows.length > 0) {
-              for (var i = 0; i < rows.length; i++) {
-                row = rows[i];
-                row.pictureUrl = utils.getAvatarUrl(row.pictureId);
-                row.isOwnProfile = (row.id === callerId);
-                row.isFollowed = (followed.indexOf(row.id) > -1);
-              }
-            }
-            callback(err, rows);
+          if (err) {
+            debug('getPeople: %j', err);
+            return callback(err, null);
           }
+          var rows = result[0], row;
+          // init additional properties
+          if (rows.length > 0) {
+            for (var i = 0; i < rows.length; i++) {
+              row = rows[i];
+              row.pictureUrl = utils.getAvatarUrl(row.pictureId);
+              row.isOwnProfile = (row.id === callerId);
+              row.isFollowed = (followed.indexOf(row.id) > -1);
+            }
+          }
+          callback(err, rows);
         });
       });
     });
@@ -279,6 +298,7 @@ Provider.prototype = {
         var command = "SELECT u.* FROM following AS f LEFT JOIN vw_users AS u ON u.id = f.userId WHERE f.targetId = ?";
         connection.query(command, [targetId], function (err, result) {
           connection.release();
+          if (err) { debug('getFollowers: %j', err); }
           // init additional properties
           if (result.length > 0) {
             var profile;
@@ -300,6 +320,7 @@ Provider.prototype = {
         var command = "SELECT u.* FROM following AS f LEFT JOIN vw_users AS u ON u.id = f.targetId WHERE f.userId = ?";
         connection.query(command, [targetId], function (err, result) {
           connection.release();
+          if (err) { debug('getFollowing: %j', err); }
           // init additional properties
           if (result.length > 0) {
             var profile;
@@ -321,19 +342,20 @@ Provider.prototype = {
         , params = [userId, topId];
       connection.query(command, params, function (err, result) {
         connection.release();
-        if (err) { callback(err, null); }
-        else {
-          var rows = result[0];
-          // init additional properties
-          if (rows.length > 0) {
-            var post;
-            for (var i = 0; i < rows.length; i++) {
-              post = rows[i];
-              post.pictureUrl = utils.getAvatarUrl(post.pictureId);
-            }
-          }
-          callback(err, rows);
+        if (err) {
+          debug('getWall: %j', err);
+          return callback(err, null);
         }
+        var rows = result[0];
+        // init additional properties
+        if (rows.length > 0) {
+          var post;
+          for (var i = 0; i < rows.length; i++) {
+            post = rows[i];
+            post.pictureUrl = utils.getAvatarUrl(post.pictureId);
+          }
+        }
+        callback(err, rows);
       });
     });
   },
@@ -343,25 +365,24 @@ Provider.prototype = {
       connection.query('CALL add_post (?,?,?)', params, function (err, result) {
         if (err) {
           connection.release();
-          callback(err, null);
+          debug('addPost: %j', err);
+          return callback(err, null);
         }
-        else {
-          var rows = result[0];
-          var postId = rows[0].insertId;
+        var rows = result[0];
+        var postId = rows[0].insertId;
 
-          if (postId && postId > 0) {
-            // process mentions
-            addMentions(connection, postId, json.content, function () {
-              // process hashtags
-              addHashTags(connection, postId, json.content, function () {
-                connection.release();
-                callback(err, postId);
-              });
+        if (postId && postId > 0) {
+          // process mentions
+          addMentions(connection, postId, json.content, function () {
+            // process hashtags
+            addHashTags(connection, postId, json.content, function () {
+              connection.release();
+              callback(err, postId);
             });
-          } else {
-            connection.release();
-            callback(err, false);
-          }
+          });
+        } else {
+          connection.release();
+          callback(err, false);
         }
       });
     });
@@ -370,12 +391,13 @@ Provider.prototype = {
     pool.getConnection(function (err, connection) {
       connection.query('SELECT * FROM vw_posts WHERE id = ? LIMIT 1', [postId], function (err, result) {
         connection.release();
-        if (err || result.length === 0) { callback(err, null); }
-        else {
-          var post = result[0];
-          post.pictureUrl = utils.getAvatarUrl(post.pictureId);
-          callback(err, post);
+        if (err || result.length === 0) {
+          debug('getPost: %j', err);
+          return callback(err, null);
         }
+        var post = result[0];
+        post.pictureUrl = utils.getAvatarUrl(post.pictureId);
+        callback(err, post);
       });
     });
   },
@@ -385,19 +407,20 @@ Provider.prototype = {
         , params = [userId, topId];
       connection.query(command, params, function (err, result) {
         connection.release();
-        if (err) { callback(err, null); }
-        else {
-          var rows = result[0];
-          // init additional properties
-          if (rows.length > 0) {
-            var post;
-            for (var i = 0; i < rows.length; i++) {
-              post = rows[i];
-              post.pictureUrl = utils.getAvatarUrl(post.pictureId);
-            }
-          }
-          callback(err, rows);
+        if (err) {
+          debug('getNews: %j', err);
+          return callback(err, null);
         }
+        var rows = result[0];
+        // init additional properties
+        if (rows.length > 0) {
+          var post;
+          for (var i = 0; i < rows.length; i++) {
+            post = rows[i];
+            post.pictureUrl = utils.getAvatarUrl(post.pictureId);
+          }
+        }
+        callback(err, rows);
       });
     });
   },
@@ -407,8 +430,11 @@ Provider.prototype = {
       var command = 'CALL delete_news_post (?,?)';
       connection.query(command, [userId, postId], function (err, result) {
         connection.release();
-        if (err || !result) { callback(err, false); }
-        else { callback(err, true); }
+        if (err || !result) {
+          debug('deleteNewsPost: %j', err);
+          return callback(err, false);
+        }
+        callback(err, true);
       });
     });
   },
@@ -418,8 +444,11 @@ Provider.prototype = {
       var command = 'CALL delete_wall_post (?,?)';
       connection.query(command, [userId, postId], function (err, result) {
         connection.release();
-        if (err || !result) { callback(err, false); }
-        else { callback(err, true); }
+        if (err || !result) {
+          debug('deleteWallPost: %j', err);
+          return callback(err, false);
+        }
+        callback(err, true);
       });
     });
   },
@@ -428,11 +457,12 @@ Provider.prototype = {
       var command = 'CALL check_news_updates (?,?)';
       connection.query(command, [userId, topId], function (err, result) {
         connection.release();
-        if (err) { callback(err, null); }
-        else {
-          var row = result[0];
-          callback(err, row[0]);
+        if (err) {
+          debug('checkNewsUpdates: %j', err);
+          return callback(err, null);
         }
+        var row = result[0];
+        callback(err, row[0]);
       });
     });
   },
@@ -441,19 +471,20 @@ Provider.prototype = {
       var command = 'CALL get_news_updates (?,?)';
       connection.query(command, [userId, topId], function (err, result) {
         connection.release();
-        if (err) { callback(err, null); }
-        else {
-          var rows = result[0];
-          // init additional properties
-          if (rows.length > 0) {
-            var post;
-            for (var i = 0; i < rows.length; i++) {
-              post = rows[i];
-              post.pictureUrl = utils.getAvatarUrl(post.pictureId);
-            }
-          }
-          callback(err, rows);
+        if (err) {
+          debug('getNewsUpdates: %j', err);
+          return callback(err, null);
         }
+        var rows = result[0];
+        // init additional properties
+        if (rows.length > 0) {
+          var post;
+          for (var i = 0; i < rows.length; i++) {
+            post = rows[i];
+            post.pictureUrl = utils.getAvatarUrl(post.pictureId);
+          }
+        }
+        callback(err, rows);
       });
     });
   },
@@ -461,19 +492,20 @@ Provider.prototype = {
     pool.getConnection(function (err, connection) {
       connection.query('CALL get_posts_by_tag (?,?)', [hashtag, topId], function (err, result) {
         connection.release();
-        if (err) { callback (err, null); }
-        else {
-          var rows = result[0];
-          // init additional properties
-          if (rows.length > 0) {
-            var post;
-            for (var i = 0; i < rows.length; i++) {
-              post = rows[i];
-              post.pictureUrl = utils.getAvatarUrl(post.pictureId);
-            }
-          }
-          callback(err, rows);
+        if (err) {
+          debug('getPostsByHashTag: %j', err);
+          return callback (err, null);
         }
+        var rows = result[0];
+        // init additional properties
+        if (rows.length > 0) {
+          var post;
+          for (var i = 0; i < rows.length; i++) {
+            post = rows[i];
+            post.pictureUrl = utils.getAvatarUrl(post.pictureId);
+          }
+        }
+        callback(err, rows);
       });
     });
   },
@@ -483,8 +515,11 @@ Provider.prototype = {
         , params = [json.userId, json.postId, json.created, json.content];
       connection.query(command, params, function (err, result) {
         connection.release();
-        if (err) { callback(err, null); }
-        else { callback(err, { id: result[0][0].insertId }); }
+        if (err) {
+          debug('addComment: %j', err);
+          return callback(err, null);
+        }
+        callback(err, { id: result[0][0].insertId });
       });
     });
   },
@@ -494,18 +529,19 @@ Provider.prototype = {
       var command = 'SELECT * FROM vw_comments WHERE postId = ?';
       connection.query(command, [postId], function (err, result) {
         connection.release();
-        if (err) { callback(err, null); }
-        else {
-          // init additional properties
-          if (result.length > 0) {
-            var comment;
-            for (var i = 0; i < result.length; i++) {
-              comment = result[i];
-              comment.pictureUrl = utils.getAvatarUrl(comment.pictureId);
-            }
-          }
-          callback(err, result);
+        if (err) {
+          debug('getComments: %j', err);
+          return callback(err, null);
         }
+        // init additional properties
+        if (result.length > 0) {
+          var comment;
+          for (var i = 0; i < result.length; i++) {
+            comment = result[i];
+            comment.pictureUrl = utils.getAvatarUrl(comment.pictureId);
+          }
+        }
+        callback(err, result);
       });
     });
   },
@@ -514,6 +550,7 @@ Provider.prototype = {
       var command = 'UPDATE posts SET readonly = 1 WHERE userId = ? AND id = ?';
       connection.query(command, [userId, postId], function (err, result) {
         connection.release();
+        if (err) { debug('lockPost: %j', err); }
         var succeeded = (result && result.changedRows > 0);
         callback(err, succeeded);
       });
@@ -524,6 +561,7 @@ Provider.prototype = {
       var command = 'UPDATE posts SET readonly = 0 WHERE userId = ? AND id = ?';
       connection.query(command, [userId, postId], function (err, result) {
         connection.release();
+        if (err) { debug('unlockPost: %j', err); }
         var succeeded = (result && result.changedRows > 0);
         callback(err, succeeded);
       });
@@ -532,8 +570,9 @@ Provider.prototype = {
   addLike: function (userId, postId, callback) {
     pool.getConnection(function (err, connection) {
       var command = 'INSERT INTO likes (userId, postId) VALUES (?,?)';
-      connection.query(command, [userId, postId], function (err, result) {
+      connection.query(command, [userId, postId], function (err/*, result*/) {
         connection.release();
+        if (err) { debug('addLike: %j', err); }
         callback(err);
       });
     });
@@ -541,8 +580,9 @@ Provider.prototype = {
   removeLike: function (userId, postId, callback) {
     pool.getConnection(function (err, connection) {
       var command = 'DELETE FROM likes WHERE userId = ? AND postId = ?';
-      connection.query(command, [userId, postId], function (err, result) {
+      connection.query(command, [userId, postId], function (err/*, result*/) {
         connection.release();
+        if (err) { debug('removeLike: %j', err); }
         callback(err);
       });
     });
