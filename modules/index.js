@@ -23,7 +23,7 @@ module.exports = function(context) {
     var currentFile = path.join(__dirname, file);
     var stats = fs.statSync(currentFile);
     if (stats.isDirectory()) {
-      debug('info: loading module ' + file);
+      debug('Loading module ' + file);
       require(currentFile)(context);
     }
   });

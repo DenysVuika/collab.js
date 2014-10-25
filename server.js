@@ -1,10 +1,10 @@
 #!/bin/env node
 // for more details on the command above please refer to the following resource:
 // http://stackoverflow.com/questions/15061001/what-do-bin-env-mean-in-node-js
-
 'use strict';
 
 var express = require('express')
+  , debug = require('debug')('collabjs:server')
   , favicon = require('serve-favicon')
   , logger = require('morgan')
   , cookieParser = require('cookie-parser')
@@ -13,9 +13,6 @@ var express = require('express')
   , session = require('express-session')
   , csrf = require('csurf')
   , compress = require('compression')
-  , http = require('http')
-  , https = require('https')
-  , fs = require('fs')
   , passport = require('passport')
   , LocalStrategy = require('passport-local').Strategy
   , passwordHash = require('password-hash')
@@ -30,25 +27,10 @@ var express = require('express')
 
 // Create server
 
-var app = express()
-  , server;
+var app = express();
 
-// HTTPS
-if (config.server.https.enabled) {
-  app.set('port', config.server.https.port);
-  app.set('host', config.server.https.host);
-  var options = {
-    key: fs.readFileSync(config.server.https.options.key),
-    cert: fs.readFileSync(config.server.https.options.cert)
-  };
-  server = https.createServer(options, app);
-}
-// HTTP
-else {
-  app.set('port', config.env.port);
-  app.set('host', config.env.host);
-  server = http.createServer(app);
-}
+app.set('port', config.env.port);
+app.set('host', config.env.host);
 
 /*
  * Authentication Layer
@@ -65,6 +47,7 @@ passport.serializeUser(function (user, done) {
 
 passport.deserializeUser(function (id, done) {
   db.getAccountById(id, function (err, user) {
+    if (err) { debug('deserializeUser: %j', err); }
     done(err, user);
   });
 });
@@ -152,10 +135,6 @@ runtimeContext.emit(RuntimeEvents.initWebRoutes, app);
 
 // Since this is the last non-error-handling middleware used,
 // we assume 404, as nothing else responded.
-
-// $ curl http://localhost:3000/notfound
-// $ curl http://localhost:3000/notfound -H "Accept: application/json"
-// $ curl http://localhost:3000/notfound -H "Accept: text/plain"
 app.use(function (req, res, next) {
   res.status(404);
 
@@ -223,5 +202,7 @@ app.get('/500', function(req, res, next){
 
 // Notify external modules that application is about to start
 runtimeContext.emit(RuntimeEvents.appStart, app);
-server.listen(app.get('port'), app.get('host'));
-console.log("collab.js server listening on port %d in %s mode", app.get('port'), app.settings.env);
+var server = app.listen(app.get('port'), app.get('host'), function () {
+  debug("collab.js server listening on port %d in %s mode", app.get('port'), app.settings.env);
+});
+
