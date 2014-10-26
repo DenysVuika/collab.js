@@ -36,7 +36,8 @@ describe('controllers', function () {
 
       uiService = {
         updateLayout: function () {},
-        showDialog: function () {}
+        showDialog: function () {},
+        confirmDialog: function (msg, callback) { callback(); }
       };
 
       scope = $rootScope.$new();
@@ -207,8 +208,12 @@ describe('controllers', function () {
     });
 
     it('should use posts service to delete wall post', function () {
+      spyOn(uiService, 'confirmDialog').and.callThrough();
       spyOn(postsService, 'deleteWallPost').and.callThrough();
+
       scope.deleteWallPost({id:1});
+
+      expect(uiService.confirmDialog).toHaveBeenCalled();
       expect(postsService.deleteWallPost).toHaveBeenCalledWith(1);
     });
 

@@ -5,7 +5,7 @@ describe('controllers', function () {
 
     var ctrl, scope;
     var deferred;
-    var peopleService;
+    var peopleService, uiService;
 
     beforeEach(module('collabjs.controllers'));
 
@@ -17,10 +17,15 @@ describe('controllers', function () {
         }
       };
 
+      uiService = {
+        confirmDialog: function (msg, callback) { callback(); }
+      };
+
       scope = $rootScope.$new();
       ctrl = $controller('PeopleController', {
         $scope: scope,
-        peopleService: peopleService
+        peopleService: peopleService,
+        uiService: uiService
       });
     }));
 
