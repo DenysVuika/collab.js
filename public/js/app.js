@@ -139,49 +139,49 @@ angular.module('collabjs', [
         title: 'Explore'
       })
       .when('/people', {
-        templateUrl: '/templates/people.html',
+        templateUrl: '/templates/people/index.html',
         controller: 'PeopleController',
         resolve: { isLoggedIn: auth },
         title: 'People'
       })
       .when('/people/:account', {
-        templateUrl: '/templates/wall.html',
+        templateUrl: '/templates/people/wall.html',
         controller: 'WallController',
         resolve: { isLoggedIn: auth },
         title: 'Account'
       })
       .when('/people/:account/following', {
-        templateUrl: '/templates/following.html',
+        templateUrl: '/templates/people/following.html',
         controller: 'FollowingController',
         resolve: { isLoggedIn: auth },
         title: 'Following'
       })
       .when('/people/:account/followers', {
-        templateUrl: '/templates/followers.html',
+        templateUrl: '/templates/people/followers.html',
         controller: 'FollowersController',
         resolve: { isLoggedIn: auth },
         title: 'Followers'
       })
       .when('/posts/:postId', {
-        templateUrl: '/templates/post.html',
+        templateUrl: '/templates/core/post.html',
         controller: 'PostController',
         resolve: { isLoggedIn: auth },
         title: 'Post'
       })
       .when('/account', {
-        templateUrl: '/templates/account-profile.html',
+        templateUrl: '/templates/account/profile.html',
         controller: 'AccountController',
         resolve: { isLoggedIn: auth },
         title: 'Profile'
       })
       .when('/account/password', {
-        templateUrl: '/templates/account-password.html',
+        templateUrl: '/templates/account/password.html',
         controller: 'PasswordController',
         resolve: { isLoggedIn: auth },
         title: 'Password Settings'
       })
       .when('/account/email', {
-        templateUrl: '/templates/account-email.html',
+        templateUrl: '/templates/account/email.html',
         controller: 'EmailController',
         resolve: { isLoggedIn: auth },
         title: 'Email Settings'
@@ -196,7 +196,7 @@ angular.module('collabjs', [
         title: 'About'
       })
       .when('/403', {
-        templateUrl: '/templates/403.html',
+        templateUrl: '/templates/errors/403.html',
         title: 'Not authorized'
       })
       .otherwise({ redirectTo: '/news' });

@@ -1,10 +1,10 @@
 <div class="container content-container" ng-init="init()">
-  <div ng-include="'/templates/profile-box.html'"></div>
+  <div ng-include="'/templates/people/profile-box.html'"></div>
 
   <p class="lead" ng-if="error">{{error}}</p>
   <p class="lead" ng-if="hasNoPosts">This user has no public posts for the moment...</p>
 
-  <div ng-include="'/templates/card-layout.html'"></div>
+  <div ng-include="'/templates/core/card-layout.html'"></div>
 
   <div class="text-center" ng-show="isLoadingMorePosts">
     <i class="fa fa-spinner fa-2x fa-spin"></i>

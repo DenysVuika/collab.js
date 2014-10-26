@@ -118,7 +118,7 @@ angular.module('collabjs.controllers')
 
         uiService.showDialog({
           title: 'Link to this post',
-          template: '/templates/dlg-post-link.html',
+          template: '/templates/dialogs/dlg-post-link.html',
           context: {
             post: post,
             link: link

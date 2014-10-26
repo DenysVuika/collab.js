@@ -47,7 +47,7 @@ describe('services', function () {
     });
 
     it('showDialog should load base template', function () {
-      var url = '/templates/form-modal.html';
+      var url = '/templates/dialogs/form-modal.html';
       // respond with 500 as only request validation is the only goal of this test
       httpBackend.expectGET(url).respond(500);
 
@@ -92,7 +92,7 @@ describe('services', function () {
 
       var options = {
         title: 'Link to this post',
-        template: '/templates/dlg-post-link.html',
+        template: '/templates/dialogs/dlg-post-link.html',
         context: {},
         submit: {
           title: 'Done'

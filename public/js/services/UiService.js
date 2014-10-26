@@ -41,9 +41,9 @@ angular.module('collabjs.services')
           scope.cancelButtonText = opts.cancel.title;
           scope.formObject = opts.context;
 
-          $http.get('/templates/form-modal.html')
+          $http.get('/templates/dialogs/form-modal.html')
             .success(function (response) {
-              // compile templates/form-modal.html and wrap it in a jQuery object
+              // compile templates/dialogs/form-modal.html and wrap it in a jQuery object
               $element = $($compile(response)(scope));
               $element.modal('show');
             });
@@ -82,7 +82,7 @@ angular.module('collabjs.services')
         confirmDialog: function (message, submitFunc) {
           var opts = {
             title: 'Confirm',
-            template: '/templates/dlg-confirm.html',
+            template: '/templates/dialogs/dlg-confirm.html',
             context: { content: message || 'Are you sure you want to proceed?' },
             submit: {
               title: 'Confirm',
