@@ -2,7 +2,9 @@
   <ul class="cards">
     <li class="card" ng-if="canUpdateStatus">
       <form class="status-card" ng-controller="StatusController" ng-submit="submit()" role="form">
-        <textarea class="form-control" ng-model="content" name="content" rows="3" style="resize: none;" placeholder="Share what's new..."></textarea>
+        <textarea class="form-control" name="content" rows="3" style="resize: none;" placeholder="Share what's new..."
+                  ng-model="content" ui-keydown="{'ctrl-enter': 'submit()'}">
+        </textarea>
         <div class="text-right" style="padding-top: 5px;">
           <input class="btn btn-success" type="submit" value="Share">
         </div>

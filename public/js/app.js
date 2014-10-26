@@ -7,6 +7,7 @@ angular.module('collabjs', [
     'collabjs.controllers',
     'angularMoment',
     'ui.select2',
+    'ui.keypress',
     'chieffancypants.loadingBar',
     'ngAnimate'
   ])
@@ -190,13 +191,17 @@ angular.module('collabjs', [
         controller: 'HelpController',
         title: 'Help'
       })
+      .when('/about', {
+        templateUrl: '/templates/about.html',
+        title: 'About'
+      })
       .when('/403', {
         templateUrl: '/templates/403.html',
         title: 'Not authorized'
       })
       .otherwise({ redirectTo: '/news' });
   }])
-  .run(function ($rootScope, authService) {
+  .run(function ($rootScope/*, authService*/) {
     'use strict';
 
     /*$rootScope.$on('$routeChangeStart', function (event, next, current) {
