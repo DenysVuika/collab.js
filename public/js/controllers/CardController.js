@@ -88,19 +88,23 @@ angular.module('collabjs.controllers')
 
       $scope.deleteWallPost = function (post) {
         if (post && post.id) {
-          postsService.deleteWallPost(post.id)
-            .then(function () {
-              onPostRemoved(post.id);
-            });
+          uiService.confirmDialog('Do you want to delete this post?', function () {
+            postsService.deleteWallPost(post.id)
+              .then(function () {
+                onPostRemoved(post.id);
+              });
+          });
         }
       };
 
       $scope.deleteNewsPost = function (post) {
         if (post && post.id) {
-          postsService.deleteNewsPost(post.id)
-            .then(function () {
-              onPostRemoved(post.id);
-            });
+          uiService.confirmDialog('Do you want to mute this post?', function () {
+            postsService.deleteNewsPost(post.id)
+              .then(function () {
+                onPostRemoved(post.id);
+              });
+          });
         }
       };
 

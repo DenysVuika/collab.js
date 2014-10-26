@@ -1,6 +1,6 @@
 angular.module('collabjs.controllers')
-  .controller('PeopleController', ['$scope', 'peopleService',
-    function ($scope, peopleService) {
+  .controller('PeopleController', ['$scope', 'peopleService', 'uiService',
+    function ($scope, peopleService, uiService) {
       'use strict';
 
       $scope.people = [];
@@ -13,7 +13,14 @@ angular.module('collabjs.controllers')
       $scope.getFollowingUrl = peopleService.getFollowingUrl;
       $scope.getFollowersUrl = peopleService.getFollowersUrl;
       $scope.follow = peopleService.follow;
-      $scope.unfollow = peopleService.unfollow;
+
+      $scope.unfollow = function (profile) {
+        if (profile) {
+          uiService.confirmDialog('Do you want to unfollow this user?', function () {
+            peopleService.unfollow(profile);
+          });
+        }
+      };
 
       $scope.init = function () {
         peopleService.getPeople().then(function (data) {

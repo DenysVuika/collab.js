@@ -66,7 +66,12 @@ angular.module('collabjs.services')
           , options = { headers: { 'last-known-id': topId } };
         $http
           .get(query, options)
-          .success(function (data) { d.resolve(processHtmlContent(data, true)); })
+          .success(function (data) {
+            if (data) {
+              data.feed = processHtmlContent(data.feed, true);
+            }
+            d.resolve(data);
+          })
           .error(function (data) { d.reject(data); });
         return d.promise;
       },
