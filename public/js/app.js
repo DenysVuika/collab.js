@@ -7,6 +7,7 @@ angular.module('collabjs', [
     'collabjs.controllers',
     'angularMoment',
     'ui.select2',
+    'ui.keypress',
     'chieffancypants.loadingBar',
     'ngAnimate'
   ])
