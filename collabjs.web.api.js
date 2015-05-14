@@ -2,7 +2,8 @@ module.exports = function (context) {
   'use strict';
 
   var passwordHash = require('password-hash')
-    , marked = require('marked')
+    , MarkdownIt = require('markdown-it')
+    , md = new MarkdownIt()
     , utils = require('./collabjs.utils')
     , config = context.config
     , repository = context.data
@@ -430,7 +431,7 @@ module.exports = function (context) {
           res.status(404).end();
           return;
         }
-        res.status(200).send(marked(data));
+        res.status(200).send(md.render(data));
       });
     });
 

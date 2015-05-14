@@ -32,7 +32,7 @@
     "express": "^4.10.0",
     "express-session": "^1.9.1",
     "jade": "^1.7.0",
-    "marked": "^0.3.3",
+    "markdown-it": "^4.2.1",
     "method-override": "^2.3.0",
     "morgan": "^1.0.0",
     "mysql": "^2.5.2",
