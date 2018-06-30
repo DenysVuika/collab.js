@@ -4,7 +4,6 @@ collab.js
 collab.js is a starter kit for modern, extensible and social-enabled web applications created with node.js, express and jade.
 
 [![Build Status](https://travis-ci.org/DenisVuyka/collab.js.png?branch=master)](https://travis-ci.org/DenisVuyka/collab.js)
-[![Dependency Status](https://gemnasium.com/DenisVuyka/collab.js.png)](https://gemnasium.com/DenisVuyka/collab.js)
 
 ## Table of Contents
 
