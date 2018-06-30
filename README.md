@@ -6,10 +6,6 @@ collab.js is a starter kit for modern, extensible and social-enabled web applica
 [![Build Status](https://travis-ci.org/DenisVuyka/collab.js.png?branch=master)](https://travis-ci.org/DenisVuyka/collab.js)
 [![Dependency Status](https://gemnasium.com/DenisVuyka/collab.js.png)](https://gemnasium.com/DenisVuyka/collab.js)
 
-sponsored by [Raythos Interactive](http://raythos.com/)
-
-[![Raythos Interactive](public/img/raythos.png)](http://raythos.com)
-
 ## Table of Contents
 
 - [Features](#major-features)
